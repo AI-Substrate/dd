@@ -1,0 +1,33 @@
+tsconfig.json
+  s_e2f9fea2897e59::t_b8abcc949ea568 1-19
+tsconfig.test.json
+  s_e2f9fea2897e59::t_8bfab661cbc5b3 1-9
+biome.json
+  s_e2f9fea2897e59::t_2f3ec1ccb1f101 9-16
+  s_e2f9fea2897e59::t_41a500cf5e391b 2,27
+  s_e2f9fea2897e59::t_81b874378242c4 1,3-8,17-26,28-45
+package.json
+  s_e2f9fea2897e59::t_7f94ce0704db82 1-46
+vitest.config.ts
+  s_e2f9fea2897e59::t_78b2d524394c1e 1-14
+justfile
+  s_e2f9fea2897e59::t_5042bfbdce9053 1-41
+package-lock.json
+  s_e2f9fea2897e59::t_e20a308681d6d7 1-1720
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "38b5b0781ce135c1b109eed7495684d0bc87b775",
+  "prompts": {},
+  "sessions": {
+    "s_e2f9fea2897e59": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "a9cadd08-0dd0-44db-b24f-2f307172b6c1",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
