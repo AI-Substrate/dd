@@ -1,0 +1,45 @@
+{
+  "schema_version": "2.7",
+  "command": "checks",
+  "harness": "copilot-cli",
+  "harness_version": "unknown",
+  "harness_session_id": "a9cadd08-0dd0-44db-b24f-2f307172b6c1",
+  "timecode": "2026-08-06T21:56:46.268Z",
+  "window": {
+    "since": "session-start",
+    "from": 0,
+    "to": 0
+  },
+  "branch": null,
+  "tokens": null,
+  "effort": null,
+  "captured_env": {
+    "PIJ_HARNESS": "copilot",
+    "PIJ_PARENT_ID": "pij-related-koala",
+    "PIJ_SESSION_ID": "pij-exact-crawdad"
+  },
+  "event_stream": [
+    {
+      "t": "2026-08-06T21:56:46.268Z",
+      "kind": "checks",
+      "status": "ok"
+    }
+  ],
+  "rollup": {
+    "activity": {
+      "wall_s": 0,
+      "agent_working_s": 0,
+      "human_s": 0,
+      "idle_s": 0,
+      "working_ratio": 0
+    },
+    "flow_stage_time_s": {},
+    "skills": {},
+    "tokens": null,
+    "tools": {},
+    "outcomes": {
+      "checks": "ok",
+      "exits": {}
+    }
+  }
+}
