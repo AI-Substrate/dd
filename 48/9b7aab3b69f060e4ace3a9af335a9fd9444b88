@@ -1,0 +1,36 @@
+.harness/extensions/boot/instructions.md
+  s_e2f9fea2897e59::t_5eadeaac0151e8 1-2,6-8,10,31,43-45
+  s_e2f9fea2897e59::t_0b5592419fdd2f 17,20,24-25,27-28,30,32-37,46,53-57
+  s_e2f9fea2897e59::t_0328652f578701 3-5,9,11-16,18-19,21-23,26,29,38-42,47-52
+AGENTS.md
+  s_e2f9fea2897e59::t_4ece3b57532f22 1-82
+.harness/extensions/checks/extension.ts
+  s_e2f9fea2897e59::t_55c224caa30091 1-2,5-12,15,17-18,20-44
+  s_e2f9fea2897e59::t_4221730f993d6f 3-4,13-14,16,19,45-48
+.harness/extensions/checks/instructions.md
+  s_e2f9fea2897e59::t_4221730f993d6f 1-2,5-7,10,22,35,39-41
+  s_e2f9fea2897e59::t_55c224caa30091 3-4,8-9,11-21,23-34,36-38,42-49
+.gitignore
+  s_e2f9fea2897e59::t_127d0815cd3d30 144-161
+justfile
+  s_e2f9fea2897e59::t_9ee96d2af3586c 31-39
+.harness/extensions/boot/extension.ts
+  s_e2f9fea2897e59::t_e01ac43e363ad0 1-4,7-14,16-17,19-29,31-36,39-43
+  s_e2f9fea2897e59::t_6c552d394e6453 5-6,15,18,30,37-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "489b7aab3b69f060e4ace3a9af335a9fd9444b88",
+  "prompts": {},
+  "sessions": {
+    "s_e2f9fea2897e59": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "a9cadd08-0dd0-44db-b24f-2f307172b6c1",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
