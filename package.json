@@ -1,0 +1,46 @@
+{
+  "name": "@ai-substrate/dd",
+  "version": "0.1.0",
+  "description": "dd — deterministic documents: validate, render, address, and inspect structured docs.",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AI-Substrate/dd.git"
+  },
+  "bin": {
+    "dd": "./bin/dd.js"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "test": "vitest run --coverage",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "fix": "biome check --write ."
+  },
+  "dependencies": {
+    "commander": "^15.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.0",
+    "@types/node": "^26",
+    "@vitest/coverage-v8": "^4.1.8",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.8"
+  }
+}
