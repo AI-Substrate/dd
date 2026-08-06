@@ -1,0 +1,25 @@
+test/smoke.test.ts
+  s_e2f9fea2897e59::t_bfe046b040f318 1-92
+test/envelope.test.ts
+  s_e2f9fea2897e59::t_339fab014a1162 1-57
+test/output-port.test.ts
+  s_e2f9fea2897e59::t_92fc563166be11 1-64
+test/status.test.ts
+  s_e2f9fea2897e59::t_64ba82e0973bad 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "69387edcc44ee54c4f152d563b3771abbc206f55",
+  "prompts": {},
+  "sessions": {
+    "s_e2f9fea2897e59": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "a9cadd08-0dd0-44db-b24f-2f307172b6c1",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
