@@ -141,3 +141,21 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Harness scratch buffer — crash-resilient agent working notes (.harness/ itself is
+# committed; only the temp/ scratch dir is ignored, so records under
+# .harness/records/ stay tracked).
+.harness/temp/
+
+# Installed skill copies are DERIVED artifacts of the published
+# @ai-substrate/engineering-harness package, not source. They are produced by
+# `harness skills install` (which shells `npx skills add`) and must never be
+# committed — re-create them with the command in AGENTS.md:
+#   - .harness/skills.lock.json — harness-owned per-project install lock (targets + scope)
+#   - /skills-lock.json         — the vercel `skills` tool's own lockfile (written at cwd)
+#   - .claude/skills/           — installed skill copies (project-local `-a claude-code`)
+#   - .agents/                  — the canonical project-local skill store
+.harness/skills.lock.json
+/skills-lock.json
+.claude/skills/
+.agents/
