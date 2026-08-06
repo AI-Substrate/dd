@@ -1,0 +1,183 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Version-independent static gates — run ONCE here, not per Node matrix leg.
+  # Pure shell + the runner's preinstalled Node, so this finishes in seconds.
+  static-gates:
+    name: static-gates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Package scope matches repo owner
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          SCOPE=${NAME#@}; SCOPE=${SCOPE%%/*}
+          OWNER=${GITHUB_REPOSITORY%%/*}
+          echo "package='$NAME' scope='$SCOPE' owner='$OWNER'"
+          lc() { printf %s "$1" | tr '[:upper:]' '[:lower:]'; }
+          if [ "$(lc "$SCOPE")" != "$(lc "$OWNER")" ]; then
+            echo "::error title=scope-owner::package scope '@$SCOPE' != repo owner '$OWNER'"
+            exit 1
+          fi
+          echo "OK: scope matches owner (case-insensitive)"
+
+  build-test:
+    name: build-test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22', '24']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node ${{ matrix.node }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Same three gates `just checks` runs locally, in the same order, so CI and
+      # local can't drift. Split into steps here only so a failure names itself.
+      - name: Lint (biome)
+        run: npx biome check .
+
+      - name: Build (tsc emit) — prerequisite for the bin smoke test
+        run: npm run build
+
+      - name: Typecheck (src + test)
+        run: npm run typecheck
+
+      - name: Test (vitest + coverage)
+        run: npx vitest run --coverage
+
+      - name: Upload coverage (lcov)
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-lcov-node${{ matrix.node }}
+          path: coverage/lcov.info
+          if-no-files-found: error
+
+      - name: Audit (advisory)
+        run: npm audit --audit-level=high || true
+
+  # Packaging smoke: pack the tarball, install it into a clean temp project, and
+  # invoke the installed `dd` bin through its symlink. Guards the two things unit
+  # tests structurally cannot see — the `files` allowlist and the bin execute bit.
+  package-smoke:
+    name: package-smoke
+    runs-on: ubuntu-latest
+    needs: [build-test]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish dry-run — scoped name + bin/dist packed
+        run: |
+          # Dry-run validates the publish path/registry config (exits 0 without
+          # auth — never contacts the registry) and proves the scoped name plus
+          # bin/dist are in the packed set.
+          npm publish --dry-run 2>&1 | tee /tmp/pub.txt
+          grep -q "registry.npmjs.org" /tmp/pub.txt \
+            || { echo "::error title=dry-run::not targeting the public npm registry"; exit 1; }
+          grep -qi "public access" /tmp/pub.txt \
+            || { echo "::error title=dry-run::not publishing with public access"; exit 1; }
+          npm pack --dry-run --json > /tmp/pack.json
+          jq -e '.[0].name == "@ai-substrate/dd"' /tmp/pack.json >/dev/null \
+            || { echo "::error title=dry-run::scoped name mismatch"; exit 1; }
+          jq -e '[.[0].files[].path] | any(test("bin/dd\\.js"))' /tmp/pack.json >/dev/null \
+            || { echo "::error title=dry-run::bin not packed"; exit 1; }
+          jq -e '[.[0].files[].path] | any(startswith("dist/"))' /tmp/pack.json >/dev/null \
+            || { echo "::error title=dry-run::dist not packed"; exit 1; }
+          echo "OK: scoped name + bin + dist present; targeting the public npm registry"
+
+      - name: Pack and smoke-test the installed bin
+        run: |
+          set -euo pipefail
+          # Deterministic tarball capture: --json + jq, with a mechanical *.tgz
+          # assert so ANY lifecycle stdout leak fails loudly instead of silently
+          # corrupting $TARBALL.
+          TARBALL="$(npm pack --json | jq -r '.[0].filename')"
+          [[ "$TARBALL" == *.tgz ]] || { echo "ERROR: npm pack capture corrupt: '$TARBALL'"; exit 1; }
+          echo "Packed: $TARBALL"
+          SMOKE_DIR="$(mktemp -d)"
+          cd "$SMOKE_DIR"
+          npm init -y >/dev/null 2>&1
+          # --omit=dev mirrors a real consumer install: every dependency the bin
+          # needs at runtime must resolve without devDependencies present.
+          npm install --omit=dev "$GITHUB_WORKSPACE/$TARBALL"
+          echo "Installed bin symlink:"
+          ls -l node_modules/.bin/dd
+
+          echo "dd --version:"
+          ./node_modules/.bin/dd --version
+
+          echo "dd version (ok envelope, exit 0):"
+          ./node_modules/.bin/dd --json version | tee version.json
+          jq -e '.status == "ok"' version.json >/dev/null
+          jq -e '.command == "version" and (.timestamp | type) == "string"' version.json >/dev/null
+
+          echo "dd status (unconfigured envelope, exit 2):"
+          set +e
+          ./node_modules/.bin/dd --json status > status.json; code=$?
+          set -e
+          cat status.json
+          [ "$code" -eq 2 ] || { echo "::error title=smoke::unconfigured must exit 2, got $code"; exit 1; }
+          jq -e '.status == "unconfigured" and (.next_action | length) > 0' status.json >/dev/null
+
+          echo "dd no-such-verb (error envelope, exit 1):"
+          set +e
+          ./node_modules/.bin/dd --json no-such-verb > err.json; code=$?
+          set -e
+          cat err.json
+          [ "$code" -eq 1 ] || { echo "::error title=smoke::error must exit 1, got $code"; exit 1; }
+          jq -e '.status == "error" and .error.code == "E001"' err.json >/dev/null
+
+          echo "OK: installed bin honours the envelope contract and the exit-code mapping"
+
+  # Stable, matrix-independent required check for branch protection. Always runs
+  # and fails if any required job failed or was cancelled.
+  ci-required:
+    name: ci-required
+    runs-on: ubuntu-latest
+    needs: [static-gates, build-test, package-smoke]
+    if: always()
+    steps:
+      - name: Verify required jobs passed
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: |
+          echo "One or more required jobs did not succeed."
+          exit 1
+      - name: All required jobs passed
+        run: echo "All required jobs passed."
