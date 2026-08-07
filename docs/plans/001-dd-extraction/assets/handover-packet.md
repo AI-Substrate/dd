@@ -2,7 +2,7 @@
 
 **From**: plan 001 (dd extraction), phase 4 `tk-0005` · **To**: `pij-related-koala`
 **Repo**: `AI-Substrate/dd` · **Prepared**: 2026-08-07
-**Measured at**: `99e4157` unless a row says otherwise. Every count below carries the
+**Measured at**: `d2520ad` unless a row says otherwise. Every count below carries the
 command that re-derives it, because a count without its SHA is an assertion rather than
 a measurement and re-rots silently as the repo moves.
 
@@ -271,7 +271,7 @@ own prediction: the stay set is 11, not the "~9" the plan estimated.
 
 ## 6. Proof you inherit
 
-Measured at `99e4157`; re-derive with `just checks`, `just pack-gate`,
+Measured at `d2520ad`; re-derive with `just checks`, `just pack-gate`,
 `harness plan validate docs/plans/001-dd-extraction/plan.dd.json`.
 
 | Gate | Result | What it proves |
@@ -279,7 +279,7 @@ Measured at `99e4157`; re-derive with `just checks`, `just pack-gate`,
 | `just checks` | 703 tests, 59 files, exit 0 | lint, build, typecheck, docs-drift, self-host, tests |
 | `just pack-gate` | exit 0 | the TARBALL works: clean clone → pack → install → drive the installed bin, including a jiti-loaded custom render type written in untranspiled TypeScript |
 | `just self-host` | 6 documents, zero drift | dd renders this repo's own plan corpus |
-| `harness plan validate` | 0 ERROR, 6 WARN | semantic gate; WARNs are open-item contradictions, not defects |
+| `harness plan validate` | 0 ERROR, **10** WARN at `d2520ad` | semantic gate. **This count moves** — the WARNs are open-item contradictions (a task checked against an acceptance criterion not yet flipped), so it rises as work lands and falls as the o-prime flips ACs. It was 6 at `99e4157`. Treat a change as expected, not as drift; only `error` is a defect signal. |
 | Coverage | 70.21% statements | report-only, not gated |
 
 **Three properties of this repo worth keeping** — each one an instance of §0, offered as

@@ -275,6 +275,15 @@ its own author.
    uncommitted file was wrong when I read it and was repaired minutes later. This is now
    guardrail 13.
 
+7a. **Three self-catches are what make the stamping rule credible rather than
+   aspirational.** It has now caught each of us on our own artifact, mid-use: the
+   o-prime's E422 self-catch and its own "34+ commits" record; the PM's 34-versus-46;
+   and mine twice while writing the packet — a "15 WARN" carried from the phase-3 record
+   that re-measured to 6, and a pointer table still reading "20 items" after the backlog
+   became 21. A rule that only ever catches other people is a rule nobody has tested on
+   themselves. **The strongest evidence for a guardrail is that it reddens its author
+   during the act of arguing for it.**
+
 7. **The recipient owns the number.** A borrowed figure costs nothing while it is loose
    in chat and becomes a defect the moment it enters a durable artifact underived. Both
    recorded instances — the "34+ commits" figure and koala's six-versus-nine — became
@@ -289,12 +298,15 @@ Measured at `4c14d84`.
 | gate | result | command |
 |---|---|---|
 | `just checks` | 703 tests, 59 files, exit 0 | `just checks` |
+| pack gate | PASSED — tarball consumable | `bash scripts/pack-gate.sh` |
 | self-host | 6 documents, zero drift | `./scripts/self-host-check.sh` |
-| semantic | `degraded`, 0 ERROR, 6 WARN | `harness plan validate docs/plans/001-dd-extraction/plan.dd.json` |
-| pack gate | exit 0 | `just pack-gate` |
+| semantic | `degraded`, 0 ERROR, 10 WARN at `d2520ad` (was 6 at `4c14d84`) | `harness plan validate docs/plans/001-dd-extraction/plan.dd.json` |
 | coverage | 70.21% statements | report-only, not gated |
 
-The 6 WARNs are open-item contradictions (tasks checked against acceptance criteria the
-o-prime has not flipped yet), not defects.
+The WARNs are open-item contradictions (tasks checked against acceptance criteria the
+o-prime has not flipped yet), not defects. **The count moves as work lands**: 6 at
+`4c14d84`, 10 at `d2520ad`. An eighth discovery, and the cheapest possible demonstration
+of why the stamping rule exists — a bare "6 WARN" written an hour ago would already be
+wrong, and would have been read as drift.
 
 **Nothing was pushed.** `git push` was not run at any point in this phase.
