@@ -1,0 +1,43 @@
+{
+  "dd_schema": 1,
+  "description": "A forward-looking build wishlist: candidate work not yet planned, each row carrying why it exists, what it would cost, and what it is blocked on. Deliberately NOT a plan — nothing here is scheduled, allocated or attested.",
+  "sections": {
+    "meta": {
+      "required": true,
+      "shape": {
+        "type": "object",
+        "required": ["title"],
+        "fields": {
+          "title": { "type": "string" },
+          "owner": { "type": "string" },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "items": {
+      "shape": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["id", "title", "why", "state"],
+          "fields": {
+            "id": { "type": "string" },
+            "title": { "type": "string" },
+            "why": { "type": "string" },
+            "state": {
+              "type": "enum",
+              "values": ["idea", "shaped", "ready", "planned", "dropped"]
+            },
+            "size": {
+              "type": "enum",
+              "values": ["xs", "s", "m", "l", "xl", "unknown"]
+            },
+            "blocked_on": { "type": "string" },
+            "source": { "type": "string" },
+            "note": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

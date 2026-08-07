@@ -1,0 +1,100 @@
+{
+  "dd": {
+    "schema": "project/wishlist"
+  },
+  "sections": [
+    {
+      "name": "meta",
+      "value": {
+        "title": "dd — build wishlist",
+        "owner": "pij-mental-dajeil (o-prime, dd)",
+        "note": "Candidate work, NOT a plan. Nothing here is scheduled, allocated or attested — a row graduates by becoming a builder plan, at which point it flips to `planned` and the plan owns it. Opened 2026-08-08 on Jordan's ask, immediately after his OQ-1 ruling that dd ships a supported LIBRARY surface and not merely a CLI. Kept as a dd document rather than prose so the rows are queryable and the render is deterministic."
+      }
+    },
+    {
+      "name": "items",
+      "value": [
+        {
+          "id": "wl-0001",
+          "title": "SDK design flow — research best-in-class SDK design guidelines, then design dd's public surface against them",
+          "why": "Jordan's OQ-1 ruling (2026-08-08) makes dd an SDK, not a CLI with an accidental import surface. The current exports map was derived from what harness happened to import (dossier F-04), which is a description of one consumer rather than a designed API. An SDK that ships under semver needs a surface chosen on purpose.",
+          "state": "shaped",
+          "size": "l",
+          "blocked_on": "plan 001 closing out first — Jordan: 'close out current work then creaet a new builder flow on the SDK'",
+          "source": "Jordan 2026-08-08, verbatim in plan 001 open_questions OQ-1 note",
+          "note": "Jordan specified the research step explicitly: best-in-class SDK design guidelines via perplexity, BEFORE designing. Its own builder flow, not an extension of plan 001. Inputs already measured and waiting for it: the runtime exports probe (scripts/exports-reachability-probe.mjs), koala's consumer census (4 surviving files, 4 live symbols), and the root-export defect below."
+        },
+        {
+          "id": "wl-0002",
+          "title": "Fix Windows drive-letter re-anchoring at three sites",
+          "why": "LIVE PRODUCT DEFECT in the shipped CLI. `startsWith('/')` misreads a drive-letter path as relative, so `C:/Users/x` becomes `<repoRoot>/C:/Users/x`. Two of the three sites back `dd doctor --path` and `dd graph --path`, so it reaches users directly.",
+          "state": "ready",
+          "size": "s",
+          "blocked_on": "Jordan's call: hotfix now vs plan 002",
+          "source": "backlog #22 — found by pij-related-koala reading this fork, reproduced here before recording",
+          "note": "core/validate.ts:88 is the one that matters most: byte-identical to upstream, and upstream deliberately deferred its fix to a later PR, so it will NEVER arrive by forward port. Not a separator bug — toPosix does not fix it. Two distinct families per upstream's own split; do not port as one change."
+        },
+        {
+          "id": "wl-0003",
+          "title": "Add `prepare` so a git-URL install produces a working package",
+          "why": "`npm install github:AI-Substrate/dd` reports SUCCESS and installs a broken package — no dist/, bin throws ERR_MODULE_NOT_FOUND. We have `prepack` but npm runs `prepare` on git installs, and dist/ is gitignored. A failure that looks like success.",
+          "state": "ready",
+          "size": "xs",
+          "blocked_on": "Jordan's call on whether to land it now or behind the distribution decision",
+          "source": "measured 2026-08-08 while answering Jordan's git-URL distribution question",
+          "note": "One line. Fix verified against a real git install: dist/ builds, bin runs, envelope correct. Live defect regardless of which distribution method is chosen."
+        },
+        {
+          "id": "wl-0004",
+          "title": "Decide and implement the distribution method: git-URL dependency vs npm publish",
+          "why": "Jordan raised distributing to harness via the git repo rather than npm. A git DEPENDENCY serves both the bin and library imports; `npx`-the-runner serves only the CLI and gives harness nothing importable, which does not fit the four surviving library consumers.",
+          "state": "shaped",
+          "size": "m",
+          "blocked_on": "Jordan's ruling",
+          "source": "Jordan 2026-08-08",
+          "note": "Measured: the exports map gates IDENTICALLY under a git install — ./plan is still ERR_PACKAGE_PATH_NOT_EXPORTED — so the distribution method does NOT answer OQ-2. It does soften the freeze: without publishing, freezing stops being a semver promise to strangers and becomes 'do not break harness'. Choosing git-URL would let the whole release apparatus stay permanently inert."
+        },
+        {
+          "id": "wl-0005",
+          "title": "Fix the root export so importing the package does not execute the CLI",
+          "why": "`.` resolves to dist/index.js, which IS the bin entry — it carries the node shebang and calls main(). So `import '@ai-substrate/dd'` runs the CLI, prints help to stdout, and yields zero named exports. Harmless to harness today (it imports subpaths only) but wrong for an SDK.",
+          "state": "ready",
+          "size": "s",
+          "blocked_on": "nothing technically — but it must land BEFORE any exports freeze, since a freeze is when a latent defect becomes permanent",
+          "source": "surfaced by the runtime exports probe, predicted by koala from the same defect in harness-engineering",
+          "note": "Already inside tk-0002's scope for exactly the freeze-timing reason. Listed here too because it is a real SDK-surface defect in its own right and wl-0001 will care about it."
+        },
+        {
+          "id": "wl-0006",
+          "title": "Mechanize the two guardrails that are still pure discipline",
+          "why": "Plan 001 shipped guardrails against claims outrunning evidence, but only some are enforced. The out-of-diff assertion sweep and measured-at stamping are still human discipline — nothing fails if a reviewer skips the sweep or a receipt omits its SHA. A rule not yet mechanized is a rule we pay for in attention every review.",
+          "state": "idea",
+          "size": "m",
+          "blocked_on": "nothing",
+          "source": "SUGG-001, raised by the PM and endorsed 2026-08-07; sits in the migrated backlog",
+          "note": "Two candidate instruments: a gate over assertions naming changed behaviour outside the diff, and a linter that every count-claim in an execution log carries a resolvable SHA. Precedent exists — `just check-orient` and `just check-handover` both started as discipline and became gates."
+        },
+        {
+          "id": "wl-0007",
+          "title": "Forward-port cfa501a6 onto the consumed surface",
+          "why": "First non-zero fork debt since the extraction. Two of three consumed files move (plan/index-plan.ts, links/map.ts); core/validate.ts is untouched, so four symbols are in play rather than seven.",
+          "state": "shaped",
+          "size": "m",
+          "blocked_on": "OQ-2 — not building against an unfrozen map, agreed with koala both ways",
+          "source": "backlog #23 — koala's dd-fork-divergence detector fired, which is the instrument working rather than a surprise",
+          "note": "Patch already prepared by koala with hunks rather than a description. wl-0002's act-site fix does NOT depend on this port and should not wait for it."
+        },
+        {
+          "id": "wl-0008",
+          "title": "Run `harness init` to stamp the governance doc",
+          "why": ".harness/engineering-harness.md has never existed, so every pre-flight boot across all four phases of plan 001 returned UNAVAILABLE over a demonstrably healthy substrate. The verdict describes a missing file, not the repo.",
+          "state": "ready",
+          "size": "xs",
+          "blocked_on": "Jordan — offered several times across plan 001, never ruled",
+          "source": "o-prime standing offer, unanswered",
+          "note": "One seeded-empty file (L0, TODO fields). Turns a permanently-uninformative boot verdict into a real one."
+        }
+      ]
+    }
+  ]
+}
