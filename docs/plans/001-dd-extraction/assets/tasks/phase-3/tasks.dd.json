@@ -51,10 +51,11 @@
           "id": "tk-0004",
           "title": "prepack wiring: prepack script runs the build so npm pack from a clean clone self-builds; files map sanity (bin+dist+LICENSE, no test/ no src/ leakage); version/manifest alignment with release-please config (NO publish, NO tags)",
           "phase": "ph-356b",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0007"
-          ]
+          ],
+          "receipt": "prepack=npm run build wired; files map [bin,dist,LICENSE] with zero leakage proven by npm pack --dry-run; version==release-please manifest asserted mechanically; real pack+install verified (bin symlink executable, dd status ok/exit 0/ported 10). Fixed a BROKEN CI assertion that phase 2 left behind (package-smoke demanded unconfigured/exit 2). No publish, no tags."
         },
         {
           "id": "tk-0005",
@@ -110,7 +111,7 @@
           {
             "id": "dw-0004",
             "assertion": "npm pack from a fresh clone succeeds with prepack building dist; --dry-run file list == bin+dist+LICENSE+package.json+README (no test/, no src/, no .dd/); release-please manifest version matches package.json",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: pack --dry-run parsed; jq version diff"
           }

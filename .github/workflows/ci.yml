@@ -148,13 +148,19 @@ jobs:
           jq -e '.status == "ok"' version.json >/dev/null
           jq -e '.command == "version" and (.timestamp | type) == "string"' version.json >/dev/null
 
-          echo "dd status (unconfigured envelope, exit 2):"
+          echo "dd status (complete port ledger, exit 0):"
           set +e
           ./node_modules/.bin/dd --json status > status.json; code=$?
           set -e
           cat status.json
-          [ "$code" -eq 2 ] || { echo "::error title=smoke::unconfigured must exit 2, got $code"; exit 1; }
-          jq -e '.status == "unconfigured" and (.next_action | length) > 0' status.json >/dev/null
+          [ "$code" -eq 0 ] || { echo "::error title=smoke::a complete ledger must exit 0, got $code"; exit 1; }
+          # The ledger is derived from the verbs actually registered on the
+          # program, so this asserts the SHIPPED tarball carries a working CLI —
+          # not that a constant was edited. While verbs were still landing this
+          # read `unconfigured`/exit 2; it flipped when the last one registered.
+          jq -e '.status == "ok"' status.json >/dev/null
+          jq -e '(.data.remaining | length) == 0' status.json >/dev/null
+          jq -e '(.data.ported | length) == 10' status.json >/dev/null
 
           echo "dd no-such-verb (error envelope, exit 1):"
           set +e
