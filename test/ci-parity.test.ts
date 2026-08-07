@@ -33,7 +33,7 @@ const justfile = readFileSync(join(repoRoot, 'justfile'), 'utf8');
  * Throws if the recipe is absent — callers are asserting something ABOUT the
  * recipe, so its disappearance must redden them, not excuse them.
  */
-export function justRecipeBody(source: string, recipe: string): string[] {
+function justRecipeBody(source: string, recipe: string): string[] {
   const lines = source.split('\n');
   const start = lines.findIndex((line) => line.startsWith(`${recipe}:`));
   if (start === -1) throw new Error(`justfile has no recipe "${recipe}:"`);
@@ -60,7 +60,7 @@ export function justRecipeBody(source: string, recipe: string): string[] {
  * moves this expectation automatically, so the guard tracks the justfile
  * instead of carrying a second copy of it that can rot.
  */
-export function checksGateCommands(source: string): { gate: string; command: string }[] {
+function checksGateCommands(source: string): { gate: string; command: string }[] {
   const gates: { gate: string; command: string }[] = [];
   for (const line of justRecipeBody(source, 'checks')) {
     const match = /^just\s+(\S+)$/.exec(line);
@@ -84,7 +84,7 @@ export function checksGateCommands(source: string): { gate: string; command: str
  * is narrow and strict — it takes the job block by its two-space key, stops at
  * the next key at that indent, and throws if the job is missing.
  */
-export function jobInlineRuns(source: string, job: string): string[] {
+function jobInlineRuns(source: string, job: string): string[] {
   const lines = source.split('\n');
   const start = lines.findIndex((line) => line === `  ${job}:`);
   if (start === -1) throw new Error(`ci.yml has no job "${job}"`);
