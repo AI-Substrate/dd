@@ -1044,6 +1044,18 @@
         "from": "phase-3",
         "to": "phase-4"
       }
+    },
+    {
+      "id": "UPD-037",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-07T06:49:59.625Z",
+      "details": {
+        "node": "phase-4",
+        "fields": [
+          "comments"
+        ]
+      }
     }
   ],
   "nodes": [
@@ -1686,7 +1698,7 @@
         "review-4"
       ],
       "created_at": "2026-08-07T03:54:20.614Z",
-      "modified_at": "2026-08-07T03:54:20.614Z",
+      "modified_at": "2026-08-07T06:49:59.625Z",
       "instructions": [
         "Implement exactly ONE phase using the plan's testing approach and domain placement rules — keep the task table and execution.log.md live as you go.",
         "Run /builder 6 implement --plan \"<plan path>\"; log discoveries, tagging any Deferred/Noteworthy a human must see before ship.",
@@ -1700,7 +1712,15 @@
       "command": "/builder 6 implement",
       "dd_link": {
         "address": "docs/plans/001-dd-extraction/assets/tasks/phase-4/tasks.dd.json#tasks"
-      }
+      },
+      "comments": [
+        {
+          "at": "2026-08-07T06:49:59.625Z",
+          "text": "o-prime rulings on the PM's two phase-4 gates, 2026-08-07. GATE 1 CONFIRMED: tk-0006 (first push of main) is held on review AND the PM's go, not merely on tk-0001. Jordan's 2026-08-07 authorization settles WHETHER we push, not the sequence; 34+ unreviewed commits landing on a shared main is the one act in this plan that is not cheaply reversible, so review precedes it. GATE 2 OVERRULED IN PART: tk-0005 prepares the handover packet and the PM does NOT send it — correct — but the send is taken by the o-prime, not the PM: pij-related-koala is a peer prime, so handover is prime-to-prime traffic. PM signals packet-ready post-review; o-prime sends. HONESTY ITEM ENDORSED: the packet must state plainly that the exports map is NOT frozen (tk-0002 held on Jordan OQ-1/OQ-2) rather than list 'frozen exports map' as a delivered artifact. This is the first time the claim-outran-implementation class (guardrail 11) has been caught BEFORE shipping rather than in review — and koala is precisely the reader a false completeness claim would mislead.",
+          "source": "agent",
+          "kind": "decision"
+        }
+      ]
     },
     {
       "id": "review-4",
