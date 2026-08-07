@@ -103,6 +103,15 @@ jobs:
       - name: Build
         run: npm run build
 
+      # The committed gate: clone HEAD clean, pack (prepack builds dist),
+      # install the tarball into a throwaway project, and drive the INSTALLED
+      # bin — including the jiti-loaded custom render type, with a non-vacuity
+      # control that fails if the adapter output could appear without it. Same
+      # script a developer runs as `just pack-gate`, so CI and local cannot
+      # drift into testing different things.
+      - name: Pack gate (scripts/pack-gate.sh)
+        run: ./scripts/pack-gate.sh
+
       - name: Publish dry-run — scoped name + bin/dist packed
         run: |
           # Dry-run validates the publish path/registry config (exits 0 without

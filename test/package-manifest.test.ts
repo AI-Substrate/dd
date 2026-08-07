@@ -86,7 +86,9 @@ describe('package manifest', () => {
 });
 
 describe('the packed tarball', () => {
-  it('carries the bin, the build output and the licence, and nothing else', { timeout: 60_000 }, () => {
+  it('carries the bin, the build output and the licence, and nothing else', {
+    timeout: 60_000,
+  }, () => {
     const packed = packDryRun();
     const roots = [...new Set(packed.files.map((file) => file.path.split('/')[0]))].sort();
     // `package.json` and `LICENSE` are included by npm regardless of `files`;

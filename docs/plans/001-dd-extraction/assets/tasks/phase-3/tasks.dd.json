@@ -61,10 +61,11 @@
           "id": "tk-0005",
           "title": "Pack gate as a COMMITTED script (scripts/pack-gate.sh + just recipe): clean-clone pack -> temp-project install (registry permitted for declared deps only) -> dd validate + dd build run against a fixture corpus incl. a jiti-loaded custom type -> npm pack --dry-run file-list assertion; wire into CI",
           "phase": "ph-356b",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0007"
-          ]
+          ],
+          "receipt": "scripts/pack-gate.sh exits 0 end to end: clean clone of HEAD -> npm ci -> npm pack (prepack builds dist, asserted absent beforehand) -> file-list assertion -> tarball installed --omit=dev into a throwaway project -> installed bin drives a fixture corpus. The jiti custom type renders **43h 30m** from 2610 through the TARBALL, with a non-vacuity control (adapter removed -> 2610 survives) so the assertion provably can fail. Wired as 'just pack-gate' and a CI step in package-smoke."
         },
         {
           "id": "tk-0006",
@@ -120,7 +121,7 @@
           {
             "id": "dw-0005",
             "assertion": "scripts/pack-gate.sh exits 0 end-to-end in a clean temp dir; the jiti custom-type fixture actually loads through the installed tarball (proven by an assertion that fails when the fixture is absent); CI runs the gate",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: pack-gate exit code local + CI run"
           }

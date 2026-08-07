@@ -54,6 +54,15 @@ checks:
     just check-docs
     just test
 
+# Prove the PUBLISHED ARTIFACT works: clone HEAD clean, pack (prepack builds
+# dist), install the tarball into a throwaway project, and drive the INSTALLED
+# bin against a fixture corpus — including a custom render type written in
+# untranspiled TypeScript, which only runs if the shipped jiti dependency does.
+# Deliberately NOT in `just checks`: it clones, installs from the registry and
+# takes ~a minute, which is the wrong shape for the inner loop. CI runs it.
+pack-gate:
+    ./scripts/pack-gate.sh
+
 # Remove build output.
 clean:
     rm -rf dist coverage
