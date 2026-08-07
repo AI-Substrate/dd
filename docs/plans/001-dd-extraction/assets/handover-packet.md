@@ -177,6 +177,30 @@ again, in the act of guarding against itself. Note that adjacency is marked **pa
 reachable and deliberately not flattened in with the unreachable rows: overstating the boundary,
 in the paragraph warning against overstatement, would be the same joke told twice.
 
+**That clause did not protect its own author, and that is the honest limit of this entire
+packet.** *"Do not build a gate that pretends to"* was committed at `283e566`, **before the
+defect that broke it existed.** One commit after writing the pin-versus-detector
+distinction down, the guard protecting this very section shipped with a comment claiming it
+pinned every phrasing it had removed while its arrays held **half of them** — a pretend-gate
+inside the guard against pretend-gates. **The clause did not catch it. The adversarial
+reviewer did.**
+
+**And each author on this plan broke a rule they had personally written**, days to minutes
+after writing it: the o-prime overstated an argument *while correcting someone else's
+overstatement*; the PM pre-authorised dismissing a red *one cycle after arguing that a red
+nobody looks at is worse than no red*; I overclaimed a guard's coverage *one commit after
+documenting the difference between a pin and a detector.* Named rather than counted, and
+expect the list to grow.
+
+> **Writing the rule down did not protect its author. The file is not the instrument — the
+> file plus a reader trying to beat it is.**
+
+Read this packet on those terms. It is documentation, and **a document claiming that its own
+rules prevent violations would be the pretend-gate at the highest level** — the artifact
+asserting exactly the coverage it warns you against asserting. What these rules buy you is a
+faster diagnosis once someone catches the thing, and a shorter argument about whether it
+counts. They do not buy you the catch. **Fund the adversarial seat.**
+
 ### The adjacency axis, in full
 
 What distinguishes this axis is that it needs neither decay nor overstatement:

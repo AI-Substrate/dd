@@ -722,3 +722,91 @@ here**. Do not run `harness telemetry sync` as part of tk-0006.
 `check-handover` (embeds up to date) and `self-host` (6 documents, zero drift).
 `tk-0002` and `tk-0006` untouched: no exports shape inferred, no `git push` invoked, and
 neither task inspected.
+
+### Correction: the entry above says three, its own table says five, and the diff says six
+
+**The entry above is wrong and stays there.** It opens *"the same class was living in three
+more places"* and then tabulates **five** — a receipt disagreeing with the table one line
+beneath it, which is the adjacency axis with the two claims about as adjacent as they get.
+I wrote the prose from recall of my own sweep and the table from the edits, so the two were
+built from different sources and never read against each other.
+
+**Derived from the artifact rather than re-counted from memory** — the same failure again
+would be to fix the number by counting the table:
+
+```bash
+git show 313feee -- docs/plans/001-dd-extraction/assets/handover-packet.md \
+  | grep '^-' | grep -v '^---'
+```
+
+That yields **six** distinct removed phrasings, so **the table was short by one too**: the
+FLOOR paragraph's *"falsified about an hour later by **the third row below**"* → *"by the
+**adjacency** row below"*. It was missing because I built the table from the ordinals I
+went looking for, and that one I fixed in passing while rewriting the paragraph around it.
+
+**A list built from what you did is not a list of what changed.** The PM made the same
+class twice today — a line-based grep that shipped a false all-clear, and a drain list
+enumerated from what it had contributed rather than from the file, so the one row that was
+the o-prime's fell out. One command settles it in every case, and recall was used instead
+in every case.
+
+The set, named rather than counted, each restored individually and confirmed RED:
+
+| # | where | removed phrasing | mutation |
+|---|---|---|---|
+| R1 | the FLOOR paragraph | *"the third row below"* | RED |
+| R2 | axis prose | *"does nothing for the other two"* | RED |
+| R3 | the non-flattening note | *"not flattened in with the other two"* | RED |
+| R4 | adjacency intro | *"the only one of the three"* | RED |
+| R5 | adjacency narrative | *"There were three incidents"* | RED |
+| R6 | the gates section | *"There is a second failure"* | RED |
+| R7 | the instance list | *"Two independent instances"* | RED |
+| R8 | *(inverse)* deleting a QUOTED example from the naming rule | RED |
+
+R2 and R3 are the same string in two places, which is why the phrasings number six and the
+restorations seven. Packet verified byte-identical after the run (`diff -q`).
+
+### HIGH closed: the pin claimed coverage it did not have
+
+The guard's doc-comment said it pinned *"the exact phrasings that were removed"*. It pinned
+**three of six**. Restoring *"There were three incidents"* or *"Two independent instances"*
+left it green. **That is the pretend-gate, inside the guard protecting the section that
+warns against pretend-gates, one commit after I documented the pin-versus-detector
+distinction correctly.** I got the hard part right and the comment wrong.
+
+Fixed by **option (a): pin all six**, and by removing the reason the comment could be wrong
+at all. The doc-comment no longer restates what is pinned — it points at the `banned` arrays
+and says nothing else is pinned. **The enumeration now exists in exactly one place, in
+code, so the comment cannot disagree with it.** A prose list that must be kept in step with
+a code list is the same defect waiting on the next edit; the reviewer's own note is the
+argument for it — *a comment naming four of five reads as complete and is worse than one
+naming three of three.*
+
+The pin is now scoped in three slices rather than two, because the phrasings were not all in
+one section, and each slice keeps the **banned-where-used / required-where-quoted** split:
+the FLOOR paragraph, the axis table and the prose under it, and the gates-do-not-catch
+section. R8 proves the mention side still holds — deleting a quoted example reds too, so a
+future "fix" cannot quietly erase the evidence that the defect existed.
+
+**What it still cannot do, and the comment says so:** see a NEW ordinal in new words. It is
+a pin, not a detector.
+
+**Packet addition (o-prime's framing, carried as ruled):** the clause *"do not build a gate
+that pretends to"* was committed at `283e566`, **before this defect existed. The clause did
+not catch it. The adversarial reviewer did.** With it, the three-for-three record — the
+o-prime overstating while correcting an overstatement, the PM pre-authorising a dismissed
+red one cycle after arguing reds must not be dismissible, and me overclaiming a guard's
+coverage one commit after documenting the distinction. **Writing the rule down did not
+protect its author.** Recorded in §0 as a **limit on what documentation buys**, not as a
+compliment to reviewers: this packet is documentation, and a document claiming its own rules
+prevent violations would be the pretend-gate at the highest level.
+
+**Named rather than counted, deliberately, including here.** The dispatch asked for
+"three-for-three"; the packet names the three authors instead and says to expect the list to
+grow. A count of found instances is the exact construction §0 forbids, and the naming
+carries the same force without the closure claim.
+
+**Gates:** `just checks` green — 713 tests / 59 files, exit 0. The five `check:dd-docs FAIL`
+lines are captured stderr from `dd-docs-drift.test.ts` exercising both sides of its own gate,
+confirmed by exit code rather than assumed. `tk-0002` and `tk-0006` untouched and
+uninspected.

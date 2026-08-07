@@ -586,31 +586,55 @@ describe('the handover packet carries the contracts it claims to carry', () => {
    * The boundary section is a declared FLOOR — the list of axes is expected to
    * grow — so any count of it goes wrong the moment an entry lands. Every author
    * who has worked on that section has written an ordinal into it anyway, twice
-   * after quoting the previous author doing it. This pins the exact phrasings
-   * that were removed so they cannot come back unnoticed.
+   * after quoting the previous author doing it.
+   *
+   * WHAT IT PINS IS THE `banned` LIST ON EACH SLICE BELOW — nothing else. This
+   * comment deliberately does NOT restate that list in prose: an earlier draft
+   * claimed to pin "the exact phrasings that were removed" while the arrays held
+   * three of six, which is the pretend-gate this very section warns against,
+   * written into the guard protecting it. A comment that names four of five
+   * reads as complete and is worse than one naming three of three, so the
+   * enumeration lives in ONE place, in code, where it cannot disagree with
+   * itself.
    *
    * What it CANNOT do: see a NEW ordinal, in new words. It is a pin, not a
    * detector, and the packet's own §0.1 says not to build a gate that pretends
    * otherwise. Naming that limit here is the price of keeping the pin honest.
    */
   it('keeps ordinals out of the section that argues against them', () => {
-    // Split the same way §2.1/§0.1 are split: the phrase is BANNED where the
+    // Split the same way §2.1/§0.1 are split: a phrase is BANNED where the
     // argument is MADE and REQUIRED where it is QUOTED as the example. Scoping
     // by section is what makes that possible without a regex trying to tell a
     // use from a mention.
-    const axes = section('**Sort by WHEN the claim goes wrong**', '## 0.1');
-    for (const banned of ['the other two', 'the only one of the three']) {
-      expect(
-        axes,
-        `the axis list is a FLOOR — "${banned}" is wrong the moment an axis lands. Name it instead`,
-      ).not.toContain(banned);
+    const slices: Array<{ what: string; text: string; banned: string[] }> = [
+      {
+        what: 'the FLOOR paragraph',
+        text: section('### The boundary', '**The pull toward counting'),
+        banned: ['the third row below'],
+      },
+      {
+        what: 'the axis table and the prose under it',
+        text: section('**Sort by WHEN the claim goes wrong**', '## 0.1'),
+        banned: ['the other two', 'the only one of the three', 'There were three incidents'],
+      },
+      {
+        what: 'the gates-do-not-catch section',
+        text: section('### What the gates do NOT catch', '### The protective corollary'),
+        banned: ['There is a second failure', 'Two independent instances'],
+      },
+    ];
+    for (const slice of slices) {
+      for (const banned of slice.banned) {
+        expect(
+          slice.text,
+          `${slice.what}: the list is a FLOOR — "${banned}" is wrong the moment an entry lands. Name it instead`,
+        ).not.toContain(banned);
+      }
     }
+    // The mentions must survive, or the fix reads as if the defect never existed.
     const naming = section('**The pull toward counting', '**Sort by WHEN the claim goes wrong**');
-    expect(naming, 'the naming rule must keep its own worked examples').toContain('the other two');
-    const gates = section('### What the gates do NOT catch', '### The protective corollary');
-    expect(
-      gates,
-      'an ordinal in the sentence that introduces the rule against ordinals — name the failure instead',
-    ).not.toContain('There is a second failure');
+    for (const quoted of ['the other two', 'the third row below']) {
+      expect(naming, 'the naming rule must keep its own worked examples').toContain(quoted);
+    }
   });
 });
