@@ -60,6 +60,15 @@ gen-handover:
 check-handover:
     node scripts/gen-handover-embeds.mjs --check
 
+# Prove the exports map is REACHABLE, not merely declared. A map does not fail to
+# list a subpath, it FORBIDS it (ERR_PACKAGE_PATH_NOT_EXPORTED), so "the module
+# exports it" and "a consumer can import it" are different facts and only the
+# second one matters to a consumer. Builds its own scratch project + symlink and
+# refuses if dist/ is absent, so it cannot report everything-forbidden from a
+# broken setup. Carries positive controls for the same reason.
+check-exports:
+    node scripts/exports-reachability-probe.mjs
+
 # Fail if orient-local's repo-state block no longer matches `dd --json status`.
 # orient-local is the mandatory first read for a new seat; it once carried a
 # hand-written "Measured:" line claiming the port had not happened, long after it
@@ -91,6 +100,7 @@ checks:
     just check-docs
     just check-orient
     just check-handover
+    just check-exports
     just self-host
     just test
 

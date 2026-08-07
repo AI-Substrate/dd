@@ -1,13 +1,15 @@
 #!/usr/bin/env node
 // Runtime reachability probe for @ai-substrate/dd's exports map.
 //
-// RUN IT:  node scripts/exports-reachability-probe.mjs
-// (from a scratch dir with node_modules/@ai-substrate/dd symlinked to this repo —
-//  see the header of docs/plans/001-dd-extraction/execution-log.dd.md lg-0006.)
+// RUN IT:  node scripts/exports-reachability-probe.mjs   (from the repo root)
 //
-// NOT wired into `just checks` yet — that is a deliberate hold, not an oversight:
-// wiring a new gate requires the matching ci.yml step (test/ci-parity.test.ts reds
-// otherwise), and it should not land while a CI run is in flight.
+// SELF-SUFFICIENT BY DESIGN. It builds its own scratch project and symlink rather
+// than requiring a hand-made one. A gate that only works when its operator has
+// prepared the environment correctly is the shallow-clone defect waiting to happen:
+// CI's first run went red because `sourceStamp` asked "which commit last changed
+// this path" of a shallow clone, which cannot answer and does not say so. An
+// instrument must either work where it runs or refuse — never answer a question it
+// cannot see.
 // Answers the question a barrel-file reading cannot: can a CONSUMER import this
 // subpath? An exports map does not merely fail to list a path, it FORBIDS it
 // (ERR_PACKAGE_PATH_NOT_EXPORTED), so "the module exports it" and "a consumer can
@@ -15,6 +17,28 @@
 //
 // Every result is paired with a POSITIVE CONTROL: a probe that reports "all
 // forbidden" proves nothing if the probe itself is broken.
+
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, mkdirSync, symlinkSync, writeFileSync, existsSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
+
+const REPO = resolve(import.meta.dirname, '..');
+
+// dist/ is what the exports map points at — probing without it measures nothing.
+if (!existsSync(join(REPO, 'dist', 'index.js'))) {
+  console.error('dist/ is missing — run `npm run build` first. Refusing to probe a tree');
+  console.error('whose exports map points at files that do not exist: a probe that cannot');
+  console.error('see the artifact must refuse, not report everything forbidden.');
+  process.exit(1);
+}
+
+// Build the consumer view in a scratch dir, so the probe never depends on the
+// operator having prepared one.
+const scratch = mkdtempSync(join(tmpdir(), 'dd-exports-probe-'));
+writeFileSync(join(scratch, 'package.json'), JSON.stringify({ name: 'probe', type: 'module' }));
+mkdirSync(join(scratch, 'node_modules', '@ai-substrate'), { recursive: true });
+symlinkSync(REPO, join(scratch, 'node_modules', '@ai-substrate', 'dd'), 'dir');
 
 const CONSUMED = [
   'core/address', 'core/model', 'core/parse', 'core/validate', 'core/walk',
@@ -31,21 +55,36 @@ const CONTROLS = [
   { spec: 'core/parse.js', expect: 'forbidden', why: 'declared path with wrong extension must be refused' },
 ];
 
-async function probe(sub) {
+function probe(sub) {
   const spec = sub === '.' ? '@ai-substrate/dd' : `@ai-substrate/dd/${sub}`;
+  // Child process per subpath: resolution must happen from the CONSUMER's cwd, and
+  // a root import executes the CLI as a side effect — which would otherwise set this
+  // process's exit code and print help into our own output.
+  const src =
+    `import(${JSON.stringify(spec)})` +
+    `.then(m=>{const n=Object.keys(m).filter(k=>k!=='default');` +
+    `process.stdout.write('OK '+n.length+' '+n.slice(0,3).join(','))})` +
+    `.catch(e=>process.stdout.write('ERR '+(e.code??'UNKNOWN')))`;
   try {
-    const m = await import(spec);
-    const names = Object.keys(m).filter((k) => k !== 'default');
-    return { ok: true, names: names.length, sample: names.slice(0, 3) };
-  } catch (e) {
-    return { ok: false, code: e.code ?? 'UNKNOWN', msg: String(e.message).split('\n')[0].slice(0, 90) };
+    const out = execFileSync(process.execPath, ['--input-type=module', '-e', src], {
+      cwd: scratch, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+    const marker = out.lastIndexOf('OK ') >= 0 ? out.slice(out.lastIndexOf('OK ')) : out;
+    if (marker.startsWith('OK ')) {
+      const [, count, names = ''] = marker.split(' ');
+      return { ok: true, names: Number(count), sample: names ? names.split(',') : [] };
+    }
+    const err = out.slice(out.lastIndexOf('ERR '));
+    return { ok: false, code: err.replace('ERR ', '').trim() || 'UNKNOWN' };
+  } catch {
+    return { ok: false, code: 'SPAWN_FAILED' };
   }
 }
 
 console.log('=== CONTROLS (probe validity) ===');
 let controlsPassed = true;
 for (const c of CONTROLS) {
-  const r = await probe(c.spec);
+  const r = probe(c.spec);
   const got = r.ok ? 'reachable' : 'forbidden';
   const pass = got === c.expect;
   if (!pass) controlsPassed = false;
@@ -61,7 +100,7 @@ console.log(controlsPassed
 console.log('=== CONSUMED SUBPATHS (from packet section 2.1) ===');
 const forbidden = [];
 for (const sub of CONSUMED) {
-  const r = await probe(sub);
+  const r = probe(sub);
   if (r.ok) {
     console.log(`reachable  ${sub.padEnd(18)} ${r.names} named exports  [${r.sample.join(', ')}...]`);
   } else {

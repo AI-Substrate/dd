@@ -90,6 +90,9 @@ jobs:
       - name: Handover-packet drift (embedded guardrails + standing constraints)
         run: node scripts/gen-handover-embeds.mjs --check
 
+      - name: Exports reachability (map is consumable, not merely declared)
+        run: node scripts/exports-reachability-probe.mjs
+
       - name: Self-host (dd renders this repo's own documents)
         run: ./scripts/self-host-check.sh
 
