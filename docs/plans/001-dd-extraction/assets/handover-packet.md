@@ -45,6 +45,7 @@ Worked instances in this repo, each one chosen **over** a discipline:
 | a habit of citing carefully | guardrail 13: **authority is a SHA**, never a working tree |
 | a comment promising CI matches `just checks` | `test/ci-parity.test.ts`, which reds when they diverge |
 | remembering to rebuild a document after editing it | `scripts/self-host-check.sh`, run by `just checks` and CI |
+| remembering to update the orientation file as the repo moves | `scripts/gen-orient-state.mjs`, which derives the block from the shipped bin **in the operation that writes it**; `just check-orient` reds on drift |
 | trusting a supplied figure | re-deriving it in the operation that produces its evidence (§2.1) |
 
 **So here is the honest frame for what you are receiving**, and we would rather say it
@@ -54,8 +55,53 @@ why the guardrails below are reproduced verbatim rather than summarised, and why
 count in this packet carries the command that re-derives it.
 
 A handover claiming careful agents would be the exact defect class we spent this plan
-catching — five times, including once from outside the fleet, and once in the document
-that argues for the rule.
+catching — six times, enumerated in §7, including once in the document that argues for
+the rule.
+
+## 0.1 The operating rule that follows from it
+
+If you take one line from this packet, take this one:
+
+> **Assert contracts, stamp states, and derive anything that must read as current.**
+> The first is durable, the second is honest, the third is the only one that survives
+> the repo moving.
+
+It comes from a propagation sweep run after the sixth instance (§7 row 6), and it is
+worth more than the rows it produced, because it says **which claims rot and which do
+not** — the answer is not what most reviewers assume.
+
+**The failure mode is not the value. It is the tense.** The sweep checked every file
+mentioning `dd status` rather than grepping for the bad phrase, and found two kinds of
+claim:
+
+| kind | example | does it rot? |
+|---|---|---|
+| **Contract** — asserts a *rule* | `AGENTS.md`: `dd status` "reported `unconfigured` (exit 2) while verbs were missing and now reports `ok` (exit 0) with `ported[10]`; because the list is DERIVED from the registered commands, it flips back on its own if a registration is ever lost" | **No.** It records the *flip*, so it dates itself and stays true after the flip happens. |
+| **State stamped to a moment** — a past-tense record | phase-2's task rows and execution log recording `ported[validate,schema,docs]`, exit 2 | **No.** A log of what was measured *then* is not a claim about *now*. Those rows are still correct. |
+| **State asserted in the present tense as standing guidance** | `government/orient-local.md`: "Measured: `dd status` reports `ported: []`, `remaining: 10`, exit 2" | **Yes, and only this one.** |
+
+A present-tense measurement inside a document meant to stay current **has no expiry and
+no owner**. Nobody is wrong when it rots, so nobody fixes it. All six instances in §7
+have that shape.
+
+**The reader-side twin**, from a near-miss in this fleet an hour before writing: an agent
+grepped `ci.yml` for a gate's *recipe name*, did not find it, and concluded a guard was
+unsatisfied. Running the guard gave the right answer in one call — CI invokes the
+*script*, not the recipe name. Same principle from the other end: **the derived thing is
+the authority; the read is not.** Reach for the command before the grep.
+
+**The sweep result itself**, re-derived here rather than relayed, measured at `0fafbf2`:
+
+```bash
+git grep -Iln 'ported: \[\]' -- '*.md'        # 0 — no markdown carries the stale reading
+git grep -In  'zero dd logic'                  # 0 — anywhere, any file type
+git grep -Il  'dd status' -- '*.md' | wc -l    # 19 files discuss the ledger; none assert a stale value
+```
+
+The stale claim **did not propagate** — it was confined to the one file. Two non-markdown
+hits for `ported: []` survive and are correct by construction: the generator's own
+docstring quoting the defect it exists to fix, and a unit-test fixture asserting the
+pre-registration envelope shape. Neither is a standing claim about the repo.
 
 ---
 
@@ -302,25 +348,57 @@ things that earned their place rather than as decoration:
    a **semantically wrong but syntactically valid** input, and be **unable to silently
    skip**. One red is not resistance.
 
-3. **A guard that caught its own author, unprompted.** Adding the self-host gate to
-   `just checks` immediately reddened the parity guard for a **real** missing CI step —
-   not a rehearsed mutation, a genuine omission committed minutes earlier. A guard that
-   catches the person who wrote it is proven rather than asserted.
+3. **A guard that has caught its own authors in real use, not in rehearsal.** Twice in
+   one phase the parity guard reddened on a genuine omission committed minutes earlier,
+   by two different agents:
+
+   - adding the self-host gate to `just checks` without adding it to CI (`045f958`);
+   - the o-prime adding `check-orient` to `just checks` without adding it to CI
+     (`0fafbf2`) — **an author who did not write the guard and was not in the coding
+     pair.** It named both the missing gate and the order mismatch.
+
+   Re-derived here rather than taken on report: delete the `check-orient` step from
+   `ci.yml` and `npx vitest run test/ci-parity.test.ts` goes **2 failed / 17 passed**,
+   naming the gate and the order; restore it and it is **19 passed**.
+
+   **This is the distinction worth carrying: it is not a test that passes, it is a test
+   that has demonstrably failed the people who wrote it.** A guard nobody has ever been
+   caught by is still a claim.
 
 ## 7. What is still costing us attention
 
 Three plan guardrails cover the class where **a claim outran its implementation** — a
-docstring, a comment or a receipt asserting something no code checks. That class was
-caught **three times** during this extraction (a CI assertion, a write-family ledger, a
-sibling-count receipt), and once more in review when a README guard turned out to
-re-type the commands it claimed to execute.
+docstring, a comment or a receipt asserting something no code checks. Here is every
+instance, so the count below is the number of rows rather than a figure carried from
+someone's summary:
 
-Only one of the three is even partly mechanized — the `na`-requires-a-reason rule in §6.
-**OUT-OF-DIFF SWEEP** and **MEASURED-AT STAMPING** are still pure discipline: nothing
-fails today if a reviewer skips the sweep or a receipt omits its SHA. Both have a known
-shape (a gate over assertions naming behaviour changed outside the diff; a linter
-requiring every count-claim to carry a resolvable SHA), and both are carried as backlog
-item 19.
+| # | The claim | When it stopped being true | The fix that stuck |
+|---|---|---|---|
+| 1 | CI's `package-smoke` job asserted `dd status` answers `unconfigured`, exit 2 | true while verbs were landing; the ledger flipped when the tenth registered | assertion corrected to the post-port truth and verified against a real installed tarball (phase 3) |
+| 2 | a ledger of the write-family verbs, asserted **outside** the diff that changed them | phase-2 out-of-diff escape | guardrail 8, the out-of-diff assertion sweep |
+| 3 | a receipt that a rename regenerated the generated siblings | the rename commit `13d86f8` regenerated **11 of 14** | corrected, and the invariant re-phrased as *which sibling LACKS a matching rebuild* so it is derived rather than counted (§1) |
+| 4 | the README anti-rot guard's docstring: extracts the quick start and runs it through the shipped bin | true of the JSON heredocs it did extract; the `dd` commands were retyped as hardcoded arrays, so a wrong command in the README stayed green | guard rewritten to execute what it extracts, proved by mutation (`8a13e53`) |
+| 5 | `ci.yml`: *the same three gates `just checks` runs, in the same order, so CI and local cannot drift* | true when written; `just checks` grew to five, and the missing one was `check-docs` — the drift gate itself | `test/ci-parity.test.ts` (`408caa7`) |
+| 6 | `government/orient-local.md`: *Measured: `dd status` reports `ported: []`, `remaining: 10`, exit 2* | true before phase 1; wrong on all four values by `d2520ad`, in the mandatory first read for a new seat, carrying the word **Measured** so it read as derived when it was inherited | `scripts/gen-orient-state.mjs` + `just check-orient` (`0fafbf2`); re-reading the file rather than patching the one line surfaced two further stale claims in it |
+
+**Every single one of those was a claim that was true when it was written.** Not one was
+ever a lie. The defect is always the same: **nothing re-derives, so truth decays into
+assertion at whatever rate the repo moves.** That is why the fixes that stuck are
+generators and gates rather than corrections — correcting the text resets the clock,
+generating it removes the clock. That one line explains the entire guardrail set in §9a.
+
+**What is still unmechanized.** Only one of the three guardrails is fully mechanized —
+the `na`-requires-a-reason rule in §6. The other two:
+
+- **OUT-OF-DIFF SWEEP** remains pure discipline. Nothing fails today if a reviewer skips
+  it. Known shape: a gate over assertions naming behaviour changed outside the diff.
+- **MEASURED-AT STAMPING** is now mechanized in **exactly one file** — row 6 above is the
+  worked shape, and it is no longer hypothetical: derive the block in the operation that
+  writes it, gate the drift. Every execution log, receipt, commit message and flow
+  comment is still unmechanized. Known shape: a linter requiring every count-claim to
+  carry a resolvable SHA.
+
+Both are carried as backlog item 19.
 
 *A rule not yet mechanized is a rule we are still paying for in attention every review.*
 You inherit both the guardrails and that ongoing cost.
@@ -348,7 +426,7 @@ You inherit both the guardrails and that ongoing cost.
 | Import-direction audit, all 60 tests | `docs/plans/001-dd-extraction/assets/test-audit.md` |
 | Frozen P1 CLI surface | `docs/plans/001-dd-extraction/assets/dd-surface.md` |
 | Research dossier (F-04 consumer surface) | `docs/plans/001-dd-extraction/assets/research-dossier.md` |
-| Local orientation (o-prime is sole writer) | `government/orient-local.md` |
+| Local orientation (o-prime is sole writer; repo-state block is **generated** — `just gen-orient`) | `government/orient-local.md` |
 | The plan itself | `docs/plans/001-dd-extraction/plan.dd.md` |
 | Quick start (executed as a test) | `README.md` |
 
@@ -366,13 +444,25 @@ agent's memory.
 
 ---
 
-## 9a. The execution guardrails, VERBATIM
+## 9a. The execution guardrails and standing constraints, VERBATIM
 
 Reproduced in full rather than summarised, because koala asked to see them and has
-adopted its own version — a rule someone intends to cite has to arrive citable, or the
-quoted version stops matching the enforced one. Source of truth:
-`docs/plans/001-dd-extraction/plan.dd.md#execution_guardrails` (13 rows, measured at
-`c53c85a`; re-derive with `dd get "docs/plans/001-dd-extraction/plan.dd.json#execution_guardrails"`).
+adopted its own version — **a rule someone intends to cite has to arrive matching the
+enforced version**, or the quoted copy silently stops being the real one.
+
+**Both blocks below are GENERATED, not pasted** (`scripts/gen-handover-embeds.mjs`,
+`just gen-handover`; `just check-handover` reds on drift, in `just checks` and CI). That
+is not decoration — the guardrail block **went stale inside a single review cycle** when
+guardrail 9 was amended upstream while this packet sat in review. A hand-pasted contract
+body is a present-tense claim in a document meant to read as current, so pasting it
+would have made the packet break its own headline rule (§0.1).
+
+### The execution guardrails
+
+<!-- BEGIN GENERATED: guardrails (scripts/gen-handover-embeds.mjs) -->
+
+Source of truth: `docs/plans/001-dd-extraction/plan.dd.json#execution_guardrails` — **13 rows**, derived at
+`47d8a63`. Re-derive with `dd get "docs/plans/001-dd-extraction/plan.dd.json#execution_guardrails"`.
 
 ```
 1. harness-engineering checkout is READ-ONLY reference — never write, build, or install there; the port basis SHA is recorded in phase 1 and rebased deliberately, never silently.
@@ -393,7 +483,7 @@ quoted version stops matching the enforced one. Source of truth:
 
 9. CORRECTION to the renderer-authority guardrail (measured by the PM): harness plan validate is NOT drift-affected — drift comparison is build alone. Blast radius of the banner skew = upstream write path + upstream dd build --check (E422 false-fail). The authority split stands; the harness-drift adjudication clause in the earlier row describes a case that cannot occur and is superseded here (append-only, prior row retained).
 
-10. MEASURED-AT STAMPING (o-prime 2026-08-07; sharpened by the PM after the o-prime applied it to its own record). Any count or completeness claim in an execution-log entry, receipt, report, commit message, brief or flow comment carries the commit SHA it was measured at PLUS the re-derivation command. A claim without its SHA is an assertion, not a measurement, and re-rots silently as the repo moves. THE RULE BINDS AT THE MOMENT OF MAKING SOMETHING AUTHORITATIVE, not merely at the moment of counting: a loose wrong number costs nothing until someone puts it in a durable artifact, and whoever does that owns the defect regardless of who first said it. Instances: CI assertion, write-family ledger, sibling-count receipt, and the o-prime's own stale first-push premise.
+10. MEASURED-AT STAMPING (o-prime 2026-08-07; sharpened by the PM after the o-prime applied it to its own record). Any count or completeness claim in an execution-log entry, receipt, report, commit message, brief or flow comment carries the commit SHA it was measured at PLUS the re-derivation command. A claim without its SHA is an assertion, not a measurement, and re-rots silently as the repo moves. THE RULE BINDS AT THE MOMENT OF MAKING SOMETHING AUTHORITATIVE, not merely at the moment of counting: a loose wrong number costs nothing until someone puts it in a durable artifact, and whoever does that owns the defect regardless of who first said it. Instances: CI assertion, write-family ledger, sibling-count receipt, and the o-prime's own stale first-push premise. TENSE IS THE DISCRIMINATOR, NOT THE VALUE (o-prime + PM, after sweeping the orient-local defect for propagation and finding none). Three kinds of claim, and only one decays: a CONTRACT claim asserts a rule and never rots; a PAST-TENSE record stamped to a commit is correct forever, because it describes what was measured then; a PRESENT-TENSE state claim in a document meant to stay current has no expiry and no owner, and every instance of this class has had that shape. PROTECTIVE COROLLARY: never sweep stamped history. An auditor who 'fixes' phase-2's execution log for saying ported[validate,schema,docs] exit 2 would DESTROY EVIDENCE while believing they were removing rot — that entry is a correct historical record, and the stamp is precisely what makes it legible as history rather than as a stale current claim. Assert contracts, stamp states, and DERIVE anything that must read as current. THE STAMP CAN BE PERFORMED AS THEATRE (PM + reviewer, phase-4 review, the sharpest critique of this rule so far). The handover packet stated the push as 46 commits WITH THE RE-DERIVATION COMMAND PRINTED BENEATH IT — and that command does not produce 46: it gives 57 at the packet's own declared base, 58 at the review SHA, 59 on the next run. The figure was already stale at its own stamp. Printing a command beside a number does not make the number derived; the command was RECORDED, NOT RUN, so measured-at was satisfied in form and violated in substance. A stamp is evidence only if someone ran the thing at the moment they wrote it. For a fast-decaying value — a commit count, a branch delta, anything that moves every commit — even an honestly-run stamp is wrong by the time a reader arrives, so DO NOT STATE IT AT ALL: print the command and let it be the answer.
 
 11. TYPECHECK IS NOT IMPLIED BY GREEN TESTS (PM-measured during the phase-3 fix round; fixed at c0af550): vitest STRIPS types, so a test file can be fully green while the test lane does not typecheck. 'The tests pass' is therefore NOT sufficient proof for a test-lane change — only just checks is. Binding on every remaining phase (all of them add tests) and on every reviewer accepting a test-lane diff.
 
@@ -402,9 +492,77 @@ quoted version stops matching the enforced one. Source of truth:
 13. AUTHORITY IS A SHA, NEVER A WORKING TREE (o-prime 2026-08-07, from a near-miss the PM caught). A ruling, brief, guardrail or constraint is actionable only as COMMITTED text that can be cited by SHA. Working-tree text is never authority, and a governance file read mid-write is actively dangerous: the coder read this plan's ESC-1 ruling out of the-flow.json while it was still being repaired, and the text it saw had two branch names missing to a shell-substitution defect. It refused to act and escalated, which is the second line of defence; NOT OPENING the file was the first, since flow files are a forbidden path in every packet. Two individually-survivable faults (a transcription loss and a read-mid-write) compound into a wrong implementation. Corollaries: verbatim-critical text travels as a file plus pointer, never as an argv string; and a ruling that arrives by any channel other than the recipient's own chain of command is not actionable, whatever it says.
 ```
 
-The eight standing constraints are likewise reproduced in full at
-`government/standing-constraints.md` and are cited **by number** across this subtree.
-Read that file directly rather than any summary of it, including this one.
+<!-- END GENERATED: guardrails -->
+
+### The standing constraints
+
+Binding on **every seat in the dd subtree**, including seats that never saw koala's
+original brief. They exist as a file because they previously lived only in the o-prime's
+context — and the file says so plainly, including that the o-prime was not a reliable
+place to keep them. You inherit a subtree where the constraints you wrote are citable by
+number instead of living in one agent's memory.
+
+<!-- BEGIN GENERATED: constraints (scripts/gen-handover-embeds.mjs) -->
+
+Source of truth: `government/standing-constraints.md` — **8 constraints**, derived at
+`47d8a63`. Cite them BY NUMBER.
+
+```
+## 1 — harness-engineering is READ-ONLY reference
+
+Never write it, never build or install there. Copy out of it only. The port basis SHA
+is recorded in phase 1 and is rebased deliberately, never silently.
+
+## 2 — No publish, no tags, no releases from agents
+
+Jordan publishes. No `npm publish`. No `--provenance` experiments. Local commits only.
+**Superseded for landing only** by Jordan's ruling of 2026-08-07: pushing `main` and
+driving CI to green *is* authorized, and no PR is required. That ruling settles
+**whether** we push — not the sequence, and not anything about releasing.
+
+## 3 — Flow files are engine-owned and a forbidden path
+
+`.the-flow-state.json`, `the-flow.json`, `the-flow.md` — never read or written by hand,
+in either repo. builder guided mode is their sole writer. **Reading them is forbidden
+too, not merely writing**: see guardrail "AUTHORITY IS A SHA, NEVER A WORKING TREE" for
+the near-miss that proves why.
+
+## 4 — Release workflows sit INERT until Jordan enables release
+
+Verbatim from the brief: *"Release enablement (RELEASE_PLEASE_TOKEN + npm trusted
+publisher) is Jordan's; the workflows sit inert until then."*
+
+**"Fails closed" is not "inert."** A workflow that fires on push and goes red is not
+inert — it is a false-alarm generator inherited by every future contributor, and by
+koala. Gating such a workflow is *compliance with this constraint*, not a new policy
+decision. (Applied 2026-08-07 as the ESC-1 ruling; see the phase-4 flow node.)
+
+## 5 — The consume step is koala's, not ours
+
+Handover completes when the SDK surface is stable and the packet is sent. Upgrading
+harness-engineering to consume `@ai-substrate/dd` and stripping the old code is
+**koala's work**. Never start it.
+
+## 6 — Handover traffic is prime-to-prime
+
+`pij-related-koala` is a peer prime. The PM prepares the handover packet; the **o-prime
+sends it**. A worker messaging another fleet is the wrong altitude, and an unreviewed
+packet makes our defects their problem.
+
+## 7 — Human rulings are transcribed verbatim before anyone acts
+
+Whoever receives a ruling from Jordan writes it verbatim into the durable artifact and
+sends the other party the pointer **before** acting on it. Do not paraphrase a ruling
+into an implementation.
+
+## 8 — Open questions block only what depends on them
+
+OQ-1 (SDK-as-library vs CLI-shelled) and OQ-2 (does `plan/` ship public) gate the
+exports freeze — phase-4 `tk-0002` — and **nothing else**. Do not guess them, and do not
+let them stall independent work.
+```
+
+<!-- END GENERATED: constraints -->
 
 ## 10. Status of this packet
 
