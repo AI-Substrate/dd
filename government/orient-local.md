@@ -127,7 +127,20 @@ step — pointing harness at this package and deleting the old code — is koala
   then assumed coverage, which is the completeness reflex one level up. It said *three*
   until item 4 was drained into this list an hour later.
 
-  **A note on 4–6: all three arrive as HELP.** An expected-red note, a clean sweep, a
+  8. **A supervisor's helpful command, defeating an ATTESTATION rule rather than a gate.**
+     The o-prime chased a stale-assignment anomaly and told the PM which command to run —
+     `report state blocked`. The anomaly offered two resolutions and the o-prime then
+     over-corrected toward the other, `task close --reason done`, calling it "may well be
+     the accurate one". **Only the assignee may attest done**, and that rule exists so a
+     supervisor cannot close work it did not do. It did not fail by being overridden. It
+     nearly failed by the supervisor offering a plausible command and the assignee running
+     it. The PM refused: its assignment was the brief *implement plan 001 to completion*,
+     `ac-0002` was still unchecked, and closing done would have **contradicted its own
+     earlier attestation** of *delivered but not closed*. Its line: *"I would rather sit
+     blocked and visible than closed and tidy."* **Never hand a subordinate the command for
+     a decision only they can attest** — offer the options and the anomaly text, then stop.
+
+  **A note on 4–6 and 8: all four arrive as HELP.** An expected-red note, a clean sweep, a
   compliment — every one is a cooperative act, which is why nothing here inspects them.
 
   The pattern worth carrying: this repo's instruments check **artifacts**, so the failures
