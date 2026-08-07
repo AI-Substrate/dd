@@ -1,0 +1,78 @@
+src/adapters/hash/fake-hash.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-25
+src/adapters/fs/fake-fs.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-450
+test/status.test.ts
+  s_743eafe62757dd::t_b8119ce1677371 3,5
+src/adapters/env/env-port.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-24
+src/adapters/exec/node-exec.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-70
+docs/plans/001-dd-extraction/assets/tasks/phase-2/tasks.dd.json
+  s_743eafe62757dd::t_828109effeea09 26,29-30,99
+src/adapters/env/fake-env.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-30
+src/adapters/env/node-env.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-26
+src/adapters/hash/hash-port.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-10
+src/adapters/loader/jiti-loader.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-45
+package.json
+  s_743eafe62757dd::t_dc05a21deff789 86-87
+src/adapters/clock/fake-clock.ts
+  s_743eafe62757dd::t_45dc06763b6444 1-84
+src/adapters/fs/node-fs.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-328
+src/adapters/hash/node-hash.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-9
+src/output/style.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-96
+src/adapters/exec/exec-port.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-29
+src/adapters/exec/windows-command.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-186
+src/adapters/loader/module-loader-port.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-12
+src/adapters/clock/system-clock.ts
+  s_743eafe62757dd::t_45dc06763b6444 3,8-21
+  s_743eafe62757dd::t_50937f79e8e969 22
+test/envelope.test.ts
+  s_743eafe62757dd::t_d1ab1213c7eee6 2,12
+src/adapters/loader/fake-loader.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-25
+src/adapters/process/process-port.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-21
+src/adapters/process/node-process.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-32
+src/adapters/fs/fs-port.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-166
+src/adapters/exec/fake-exec.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-83
+src/adapters/clock/clock-port.ts
+  s_743eafe62757dd::t_45dc06763b6444 2-5,8,10-17
+src/adapters/process/fake-process.ts
+  s_743eafe62757dd::t_63c51e33b55630 1-39
+docs/plans/001-dd-extraction/assets/tasks/phase-2/tasks.dd.md
+  s_743eafe62757dd::t_828109effeea09 38,54
+docs/plans/001-dd-extraction/assets/tasks/phase-2/execution.log.md
+  s_743eafe62757dd::t_4bdcac6f2cd23c 1-75
+package-lock.json
+  s_743eafe62757dd::t_9c2913261c7e87 11-12,976-984
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "fd651ff53cf4de96a241f6372c77a00b9c3acc03",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
