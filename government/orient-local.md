@@ -50,6 +50,24 @@ step — pointing harness at this package and deleting the old code — is koala
   the port is in flight. **Any stream porting a verb inherits a moving honesty gate.**
 - Conventional commits are load-bearing: release-please reads them to cut versions and the
   CHANGELOG.
+- **Where mechanism cannot reach — the two known exceptions, and the rule for each.** The
+  row below says prefer the mechanical fix. Plan 001 found exactly two failure modes that
+  **no gate in this repo can catch**, and both live one layer *above* the artifact, which
+  is why no artifact check sees them:
+  1. **An overclaim assembled from correct facts.** Nothing is stale, unstamped or
+     miscounted — only the modal verb is wrong (*impossible* where only *no drop-in
+     substitution* was true). **Instrument: an adversarial reader trying to beat the
+     argument**, not a check. See the reviewer row under Repo mechanics.
+  2. **A gate defeated socially, without being touched.** A supervisor tells an operator
+     "expect a red here" and the gate stays perfectly correct while the operator stops
+     reading it. No diff, no bad faith, no trace in any artifact. **Rule, not a gate:
+     never tell an operator a red is expected unless you have DERIVED that it is, in the
+     same message.** Both times this nearly landed in plan 001, the person doing it had
+     personally argued the opposing principle one cycle earlier.
+
+  The pattern worth carrying: this repo's instruments check **artifacts**, so the failures
+  that survive them are the ones that live in **what people say about artifacts**. Do not
+  expect the gates to cover that, and do not build a gate that pretends to.
 - **Prefer the fix that does not depend on anyone being diligent.** Named by the PM at the
   end of plan 001, as the pattern behind every governance decision that stuck. Twice a
   sincere, competent agent volunteered the disciplined version of a fix — *"ask me every
