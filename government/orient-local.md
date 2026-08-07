@@ -122,6 +122,21 @@ step — pointing harness at this package and deleting the old code — is koala
   that survive them are the ones that live in **what people say about artifacts** and in
   **how artifacts get rearranged**. Do not expect the gates to cover that, and do not build
   a gate that pretends to.
+- **A clean verification is evidence about its SCOPE as much as about the artifact.** When
+  you delegate a check, ask the clean result **"what did I not ask it to look at"**, never
+  "is this right". Plan 001: a PA verified a 7-row drain table against its destinations and
+  returned 7/7 clean — correctly, and it reported exactly what it was asked. But the scope
+  was *table → destination*; nobody had checked *history → table*, and **a row dropped from
+  the table itself would have been invisible to every check run**, because the table is
+  internally consistent about its own contents. The gap was in the **task design, not the
+  verifier's work**. A verifier can only be as complete as the scope it is handed, so a
+  clean result is a statement about the question, and the question is the delegator's.
+- **State the STRENGTH of your evidence, not just its result.** On receiving the handover
+  packet, `pij-related-koala` re-derived every consumer claim and then volunteered that its
+  own HEAD was the *same basis* as the packet's — so its confirmation was **not** a second
+  independent basis, and the cross-drift check was ours at a different SHA. Nobody asked;
+  it refused to let a correct confirmation read as stronger than it was. **Two agreeing
+  checks on one basis are one check.**
 - **Prefer the fix that does not depend on anyone being diligent.** Named by the PM at the
   end of plan 001, as the pattern behind every governance decision that stuck. Twice a
   sincere, competent agent volunteered the disciplined version of a fix — *"ask me every
