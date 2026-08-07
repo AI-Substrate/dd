@@ -41,7 +41,9 @@ from byte-identical input.
   permanently.
 - **Adjudication rule** for a suspected drift: run the LOCAL `dd build --check`. Green locally
   plus a banner-only diff = renderer skew, expected. Anything beyond the banner line = real
-  drift, investigate it.
+  drift, investigate it. Note the narrow scope this actually has — see the correction below:
+  `harness plan validate` never reports drift at all, so the only harness command that can raise
+  a banner false-positive is `harness dd build --check`, which the authority split forbids.
 
 ## 2. Renderer authority split (in force from the tk-0003 landing commit)
 
@@ -56,10 +58,24 @@ Quoted from `plan.dd.md#risks` (o-prime, 2026-08-07), because this is the bindin
 > banner-only diff = renderer skew (expected until koala swaps upstream), anything else = real.
 > Window closes at handover.
 
+The plan is append-only, and a later row narrows this one. Quoted from the same source
+(`plan.dd.md#risks`, o-prime `b479372`):
+
+> CORRECTION to the renderer-authority guardrail (measured by the PM): harness plan validate is
+> NOT drift-affected — drift comparison is build alone. Blast radius of the banner skew =
+> upstream write path + upstream dd build --check (E422 false-fail). The authority split stands;
+> the harness-drift adjudication clause in the earlier row describes a case that cannot occur and
+> is superseded here (append-only, prior row retained).
+
+So: the split itself is unchanged, and the blast radius is **narrower** than the original wording
+implies. Read the two together — the second is the operative scope.
+
 ### Measured behaviour behind that ruling
 
-Probed 2026-08-07 against this repository, upstream basis `d08f4942`. Every row is an
-observation, not an inference; the write-path rows were probed on a throwaway copy and reverted.
+Probed 2026-08-07 against this repository at commit `13d86f8`, upstream basis `d08f4942`. Every
+row is an observation, not an inference; the write-path rows were probed on a throwaway copy and
+reverted. Re-derive any row by running the command in its cell against a locally-generated
+sibling and diffing the first line.
 
 | Command | Effect on a locally-generated sibling | Severity |
 |---|---|---|
