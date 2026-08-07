@@ -80,7 +80,9 @@
     "test": "vitest run --coverage",
     "lint": "biome check .",
     "format": "biome format --write .",
-    "fix": "biome check --write ."
+    "fix": "biome check --write .",
+    "gen:dd-docs": "node scripts/gen-dd-docs.mjs",
+    "check:dd-docs": "node scripts/check-dd-docs.mjs"
   },
   "dependencies": {
     "commander": "^15.0.0",

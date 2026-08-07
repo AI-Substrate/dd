@@ -35,12 +35,23 @@ boot:
     just build
     npx vitest run test/smoke.test.ts
 
+# Regenerate the baked `dd docs` corpus from its manifest + source markdown.
+gen-docs:
+    npm run gen:dd-docs
+
+# Fail if the baked docs module drifted from its sources (regenerate-and-diff).
+check-docs:
+    npm run check:dd-docs
+
 # The canonical proof lane: what CI runs and what `harness checks` wraps. Build
-# before test — the smoke test spawns the compiled bin.
+# before test — the smoke test spawns the compiled bin. The docs drift gate runs
+# here because `src/docs/content/*.md` is only reachable by the CLI once it has
+# been baked into `docs-content.ts`; without it, editing a chapter drifts silently.
 checks:
     just lint
     just build
     just typecheck
+    just check-docs
     just test
 
 # Remove build output.

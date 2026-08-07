@@ -349,3 +349,55 @@ false as of phases 1–2: the SDK and all ten verbs are here. It now states what
 what remains (package/release readiness, self-hosting), that the ledger reads `ok`/`ported[10]`
 and flips back on its own if a registration is lost, and that either flag may be written
 before or after the verb at any depth.
+
+---
+
+## tk-0006 — Docs pipeline (the phase-1 gap, closed)
+
+This is the scope gap **escalated from phase 1** and ruled into this phase by o-prime. Until
+now, editing `src/docs/content/*.md` changed nothing the CLI ships: `docs-content.ts` inlines
+the markdown at build time, and no generator or gate had been ported — so the prose an agent
+reads via `dd docs get` could silently diverge from the prose in the repo.
+
+**Ported**: `scripts/gen-dd-docs.mjs` + `scripts/check-dd-docs.mjs`. Zero dependencies, pure
+Node. Only the two paths changed (manifest and output now at `src/docs/`), plus the
+`harness dd docs` → `dd docs` wording in their own header comments.
+
+**Wired**: `npm run gen:dd-docs` / `npm run check:dd-docs`, and `just gen-docs` /
+`just check-docs`. `check-docs` is **inside `just checks`**, between typecheck and test — the
+gate is worthless if it is not on the lane CI runs.
+
+### The gate found a real defect on its very first run
+
+Before any deliberate test, `check:dd-docs` reported **drift** against the committed module:
+
+```
+- // Source of truth: harness/cli/src/services/dd/docs/dd-docs-manifest.json + the .md files it names.
++ // Source of truth: src/docs/dd-docs-manifest.json + the .md files it names.
+```
+
+Phase 1 copied `docs-content.ts` verbatim, so its `@generated` header still pointed at the
+UPSTREAM manifest path — a file that does not exist in this repo. Cosmetic in effect, but it
+is exactly the class of staleness the gate exists to catch, and it was caught the first time
+the gate was ever run here. The baked *content* was unchanged; only the header line moved.
+
+### Evidence (dw-0006) — red proven, then reverted
+
+| step | command | result |
+| --- | --- | --- |
+| baseline | `npm run check:dd-docs` | `OK — no drift`, exit 0 |
+| **RED** | append a scratch paragraph to `src/docs/content/dd-overview.md`, re-run | **`FAIL — baked dd docs drifted from their sources`, exit 1** |
+| revert | restore the file, re-run | detects the now-stale baked module, exit 1 |
+| settle | re-run | `OK — no drift`, exit 0 |
+
+The middle step is worth keeping: after reverting the source, the gate still failed once,
+because the RED run had already written the scratch paragraph INTO `docs-content.ts`. That is
+the gate being symmetric — it fails on a stale baked module just as it fails on an unbaked
+source edit — not a flake. `git diff` confirms the source file is byte-identical to committed.
+
+**Ported test**: `test/services/dd/docs/dd-docs-drift.test.ts` (4 tests, green). It stages a
+hermetic copy of the tree in a temp dir and runs the REAL generator, so it proves the shipped
+script rather than a re-description of it, and never perturbs the working repository. It
+asserts drift is detected from BOTH directions — an edited source, and a hand-edited baked
+module — plus a clean run against the real repository. Only two constants changed
+(`REPO_ROOT` depth 6→4, `DOCS_DIR` → `src/docs`).

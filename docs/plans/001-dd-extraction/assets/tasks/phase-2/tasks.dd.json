@@ -76,11 +76,12 @@
           "id": "tk-0006",
           "title": "Docs pipeline (RULED into phase 2): port scripts/gen-dd-docs.mjs + scripts/check-dd-docs.mjs, wire an npm script + just recipe, include test/services/dd/docs/dd-docs-drift.test.ts in the ported set — closes the silent-drift gap on src/docs/content/*.md",
           "phase": "ph-8bda",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0006",
             "../../../plan.dd.json#acceptance_criteria/ac-000a"
-          ]
+          ],
+          "receipt": "gen/check scripts ported; npm run gen:dd-docs + check:dd-docs; just gen-docs/check-docs wired into just checks; drift test 4/4 green; RED proven by scratch edit (exit 1) then reverted to green"
         },
         {
           "id": "tk-0007",
@@ -145,7 +146,7 @@
           {
             "id": "dw-0006",
             "assertion": "gen/check dd-docs scripts run via npm script + just; dd-docs-drift.test.ts green; a deliberate scratch edit to a content .md makes the check FAIL (red proven, then reverted)",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: drift test red-then-green demonstrated in execution log"
           }
