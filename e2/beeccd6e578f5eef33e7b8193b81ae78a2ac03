@@ -1,0 +1,43 @@
+docs/plans/001-dd-extraction/plan.dd.json
+  s_999c04c32012c8::t_c8a18eb28b8d41 99-101
+docs/plans/001-dd-extraction/plan.dd.md
+  s_999c04c32012c8::t_a28b1e863a956c 70
+.harness/records/retro/2026-08-07/001-001-dd-extraction-phase-3.md
+  s_03af1b33a2eaa2::t_d32f191af5fb48 1-154
+docs/plans/001-dd-extraction/assets/tasks/phase-3/tasks.dd.json
+  s_03af1b33a2eaa2::t_b1cf096f99f16e 26,29-30,36,39-40,91,100
+docs/plans/001-dd-extraction/assets/tasks/phase-3/tasks.dd.md
+  s_03af1b33a2eaa2::t_9b820b5b9c9370 38-39,53,59
+docs/plans/001-dd-extraction/execution-log.dd.json
+  s_03af1b33a2eaa2::t_701c66a657125c 36-40
+docs/plans/001-dd-extraction/execution-log.dd.md
+  s_03af1b33a2eaa2::t_dc297551e0c2c0 26
+docs/plans/001-dd-extraction/the-flow.json
+  s_03af1b33a2eaa2::t_8bda0a277799fd 6-7,922-1046,1508,1513,1526-1534,1543-1544,1550,1555,1572-1577,1579-1580,1586,1591,1604-1613,1619,1624,1638-1647,1653,1658,1669-1678
+docs/plans/001-dd-extraction/the-flow.md
+  s_03af1b33a2eaa2::t_3c43b3cb2c0659 4,6,16-17,28,48,97-106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "e2beeccd6e578f5eef33e7b8193b81ae78a2ac03",
+  "prompts": {},
+  "sessions": {
+    "s_03af1b33a2eaa2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_03af1b33a2eaa2",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_999c04c32012c8": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "a6f283bd-865f-4d6f-b240-b806797a00c8",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
