@@ -3,8 +3,8 @@
   "kind": "flight-plan",
   "slug": "dd-extraction",
   "nav": {
-    "now": "plan",
-    "next": "plan",
+    "now": "phase-2",
+    "next": "review-2",
     "intent": "set up a new plan, get builder spine in and perform explore step based on our pre-amble. (dd standalone extraction out of harness-engineering)",
     "bag": {
       "mode": "unknown",
@@ -582,6 +582,173 @@
           "comments"
         ]
       }
+    },
+    {
+      "id": "STA-005",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-07T04:50:31.779Z",
+      "details": {
+        "node": "phase-1",
+        "from": "known",
+        "to": "in_progress"
+      }
+    },
+    {
+      "id": "CUR-003",
+      "kind": "cursor-moved",
+      "origin": "engine",
+      "fired_at": "2026-08-07T04:50:31.927Z",
+      "details": {
+        "from": "plan",
+        "to": "phase-1"
+      }
+    },
+    {
+      "id": "UPD-023",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-07T04:50:54.799Z",
+      "details": {
+        "node": "boot-1",
+        "fields": [
+          "comments"
+        ]
+      }
+    },
+    {
+      "id": "STA-006",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-07T04:50:54.952Z",
+      "details": {
+        "node": "boot-1",
+        "from": "known",
+        "to": "done",
+        "chore": {
+          "kind": "command",
+          "importance": "recommended"
+        }
+      }
+    },
+    {
+      "id": "UPD-024",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-07T04:50:55.104Z",
+      "details": {
+        "node": "observe-1",
+        "fields": [
+          "comments"
+        ]
+      }
+    },
+    {
+      "id": "STA-007",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-07T04:50:55.259Z",
+      "details": {
+        "node": "observe-1",
+        "from": "known",
+        "to": "done",
+        "chore": {
+          "kind": "command",
+          "importance": "recommended"
+        }
+      }
+    },
+    {
+      "id": "UPD-025",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-07T04:51:21.289Z",
+      "details": {
+        "node": "retro-1",
+        "fields": [
+          "comments"
+        ]
+      }
+    },
+    {
+      "id": "STA-008",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-07T04:51:21.457Z",
+      "details": {
+        "node": "retro-1",
+        "from": "known",
+        "to": "done",
+        "chore": {
+          "kind": "command",
+          "importance": "recommended"
+        }
+      }
+    },
+    {
+      "id": "STA-009",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-07T04:51:21.695Z",
+      "details": {
+        "node": "phase-1",
+        "from": "in_progress",
+        "to": "done"
+      }
+    },
+    {
+      "id": "CUR-004",
+      "kind": "cursor-moved",
+      "origin": "engine",
+      "fired_at": "2026-08-07T04:51:22.079Z",
+      "details": {
+        "from": "phase-1",
+        "to": "review-1"
+      }
+    },
+    {
+      "id": "UPD-026",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-07T04:51:22.465Z",
+      "details": {
+        "node": "review-1",
+        "fields": [
+          "comments"
+        ]
+      }
+    },
+    {
+      "id": "STA-010",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-07T04:51:22.834Z",
+      "details": {
+        "node": "review-1",
+        "from": "assumed",
+        "to": "done"
+      }
+    },
+    {
+      "id": "CUR-005",
+      "kind": "cursor-moved",
+      "origin": "engine",
+      "fired_at": "2026-08-07T04:51:23.283Z",
+      "details": {
+        "from": "review-1",
+        "to": "phase-2"
+      }
+    },
+    {
+      "id": "STA-011",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-07T04:51:23.606Z",
+      "details": {
+        "node": "phase-2",
+        "from": "known",
+        "to": "in_progress"
+      }
     }
   ],
   "nodes": [
@@ -663,13 +830,21 @@
       "type": "phase",
       "phase": 1,
       "label": "P1: Implementation",
-      "status": "known",
+      "status": "done",
       "command": "/builder 6 implement",
       "next": [
         "review-1"
       ],
       "dd_link": {
-        "address": "docs/plans/001-dd-extraction/assets/tasks/phase-1/tasks.dd.json#tasks"
+        "address": "docs/plans/001-dd-extraction/assets/tasks/phase-1/tasks.dd.json#tasks",
+        "basis_sha": "44e558530a0d05affda37b739240e9b76688f8717cf279ac3dba8dc970238f43",
+        "reading": {
+          "status": "complete",
+          "terminal": 6,
+          "total": 6,
+          "incomplete": [],
+          "at": "2026-08-07T04:51:22.079Z"
+        }
       },
       "instructions": [
         "Implement exactly ONE phase using the plan's testing approach and domain placement rules — keep the task table and execution.log.md live as you go.",
@@ -681,7 +856,8 @@
         "Match model tier to work: chores -> cheap subagent, analysis -> Opus-class, judgement -> lead; context may override (§ Shared conventions).",
         "Environment friction is work, not an apology: fix small things, otherwise `harness observe` it — is this environment working for us? (builder SKILL.md invariant #14)"
       ],
-      "modified_at": "2026-08-07T03:54:47.954Z"
+      "modified_at": "2026-08-07T04:51:21.695Z",
+      "ran_at": "2026-08-07T04:51:21.695Z"
     },
     {
       "id": "post-flight",
@@ -757,7 +933,7 @@
       "id": "boot-1",
       "type": "harness-boot",
       "label": "Boot check",
-      "status": "known",
+      "status": "done",
       "branch_of": "phase-1",
       "next": [
         "phase-1"
@@ -773,13 +949,23 @@
         "Spend tokens where they can change the outcome; use `--quiet` for routine flow mutations.",
         "Match model tier to work: chores -> cheap subagent, analysis -> Opus-class, judgement -> lead; context may override (§ Shared conventions).",
         "On done, receipt first, status second: harness flow comment --path <flow-path> --node boot-1 --kind validation --source agent --text \"verdict:<…> time:<…>\" (router missing / envelope noop/UNAVAILABLE → text \"decision:unavailable reason:<…> time:<…>\" — a completed attempt, not a skip) THEN harness flow status --path <flow-path> --node boot-1 --to done. Mandatory unless the human declines — a decline is: harness flow comment --path <flow-path> --node boot-1 --kind decision --source user --text \"<their verbatim words>\" THEN harness flow status --path <flow-path> --node boot-1 --to skipped."
-      ]
+      ],
+      "comments": [
+        {
+          "at": "2026-08-07T04:50:54.798Z",
+          "text": "decision:redirect (real /eng-harness-flow --hook pre-flight invocation) reason:S2-governance-missing, boot UNAVAILABLE behind adoption gate; harness init offered to Jordan, standing. Phase-1 boot evidence exists out-of-band (just checks exit 0, 352 tests). time:2026-08-07T04:50:54Z",
+          "source": "agent",
+          "kind": "validation"
+        }
+      ],
+      "modified_at": "2026-08-07T04:50:54.952Z",
+      "ran_at": "2026-08-07T04:50:54.952Z"
     },
     {
       "id": "observe-1",
       "type": "observe",
       "label": "Observe: P1",
-      "status": "known",
+      "status": "done",
       "branch_of": "phase-1",
       "next": [
         "phase-1"
@@ -796,13 +982,23 @@
         "Match model tier to work: chores -> cheap subagent, analysis -> Opus-class, judgement -> lead; context may override (§ Shared conventions).",
         "Terminalize at phase end BEFORE the retro drain, receipt first, status second: harness flow comment --path <flow-path> --node observe-1 --kind validation --source agent --text \"captures:<count> pointer:<real capture record> time:<…>\" THEN harness flow status --path <flow-path> --node observe-1 --to done — done only after at least one real capture. Human decline instead: harness flow comment --path <flow-path> --node observe-1 --kind decision --source user --text \"<their verbatim words>\" THEN harness flow status --path <flow-path> --node observe-1 --to skipped.",
         "Environment friction is work, not an apology: fix small things, otherwise `harness observe` it — is this environment working for us? (builder SKILL.md invariant #14)"
-      ]
+      ],
+      "comments": [
+        {
+          "at": "2026-08-07T04:50:55.104Z",
+          "text": "captures:1 pointer:harness observe kind:insight (agent bucket, phase-1 discoveries: 48-vs-45 file count, KF-1 stronger than stated, dependency-cruiser replacement, reviewer half-proof caught by PM) time:2026-08-07T04:50:54Z",
+          "source": "agent",
+          "kind": "validation"
+        }
+      ],
+      "modified_at": "2026-08-07T04:50:55.259Z",
+      "ran_at": "2026-08-07T04:50:55.259Z"
     },
     {
       "id": "retro-1",
       "type": "harness-retro",
       "label": "Retro: P1 (drain)",
-      "status": "known",
+      "status": "done",
       "branch_of": "phase-1",
       "next": [
         "phase-1"
@@ -816,7 +1012,17 @@
         "Post-coding seam: drain this phase's observe buffer into durable retro notes before moving on.",
         "Run /eng-harness-flow --hook post-coding --json — a REAL invocation; narrate its envelope verbatim.",
         "Runs after this phase's observe chore is terminalized (real capture receipt, or human decline). On done, receipt first, status second: harness flow comment --path <flow-path> --node retro-1 --kind validation --source agent --text \"verdict:<…> time:<…>\" (router missing / envelope noop/UNAVAILABLE → text \"decision:unavailable reason:<…> time:<…>\" — a completed attempt, not a skip) THEN harness flow status --path <flow-path> --node retro-1 --to done. Mandatory unless the human declines — a decline is: harness flow comment --path <flow-path> --node retro-1 --kind decision --source user --text \"<their verbatim words>\" THEN harness flow status --path <flow-path> --node retro-1 --to skipped."
-      ]
+      ],
+      "comments": [
+        {
+          "at": "2026-08-07T04:51:21.289Z",
+          "text": "decision:redirect (real /eng-harness-flow --hook post-coding invocation) reason:S2-governance-missing, retro UNAVAILABLE; observe buffer intact (5 captures, durable) — drains when harness init lands. time:2026-08-07T04:51:21Z",
+          "source": "agent",
+          "kind": "validation"
+        }
+      ],
+      "modified_at": "2026-08-07T04:51:21.457Z",
+      "ran_at": "2026-08-07T04:51:21.457Z"
     },
     {
       "id": "retro-harvest",
@@ -842,12 +1048,12 @@
       "id": "phase-2",
       "type": "phase",
       "label": "P2: CLI acts + plumbing parity",
-      "status": "known",
+      "status": "in_progress",
       "next": [
         "review-2"
       ],
       "created_at": "2026-08-07T03:54:20.614Z",
-      "modified_at": "2026-08-07T03:54:20.614Z",
+      "modified_at": "2026-08-07T04:51:23.606Z",
       "instructions": [
         "Implement exactly ONE phase using the plan's testing approach and domain placement rules — keep the task table and execution.log.md live as you go.",
         "Run /builder 6 implement --plan \"<plan path>\"; log discoveries, tagging any Deferred/Noteworthy a human must see before ship.",
@@ -1197,12 +1403,12 @@
       "id": "review-1",
       "type": "review",
       "label": "Review: P1",
-      "status": "assumed",
+      "status": "done",
       "next": [
         "phase-2"
       ],
       "created_at": "2026-08-07T03:54:47.954Z",
-      "modified_at": "2026-08-07T03:54:47.954Z",
+      "modified_at": "2026-08-07T04:51:22.834Z",
       "instructions": [
         "Review exactly ONE phase's diff against its acceptance criteria — confirm the tests prove behaviour and nothing risky slipped in.",
         "Run /builder 7 review — it inspects the newest assets/reviews/*.md and surfaces a verdict; REQUEST_CHANGES loops back to fix, clean continues to the next phase or post-flight.",
@@ -1212,7 +1418,16 @@
         "If the gate refuses and departing anyway is the HUMAN's decision, they pass --force — it records a defended override. An agent may not force a dd gate on its own judgment."
       ],
       "zone": "flight",
-      "command": "/builder 7 review"
+      "command": "/builder 7 review",
+      "comments": [
+        {
+          "at": "2026-08-07T04:51:22.465Z",
+          "text": "Verdict APPROVE_WITH_NOTES (pij-blind-deer, gpt-5.6-terra:high) — no blocking findings; single MEDIUM (docs-drift) lands owned in phase-2 tk-0006. PM closed a reviewer gap by mutation: frozen-semantics guard proven RED at :61 (newline inject) after the reviewer had proven only the isolation guard while reporting both green. ac-0001 flipped checked, proven_by execution-log.dd.json#entries/lg-0001. time:2026-08-07T04:51:21Z",
+          "source": "agent",
+          "kind": "validation"
+        }
+      ],
+      "ran_at": "2026-08-07T04:51:22.834Z"
     }
   ],
   "plan_dir": "docs/plans/001-dd-extraction"

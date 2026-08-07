@@ -55,8 +55,9 @@
         {
           "id": "ac-0001",
           "claim": "SDK standalone: every services/dd file lives under src/ with imports resolving to node: builtins or the local posix-path shim only — proven by tsc clean build + a grep gate that fails on any other external import path in the SDK tree",
-          "state": "unchecked",
-          "pressure": "not-applicable"
+          "state": "checked",
+          "pressure": "not-applicable",
+          "proven_by": "execution-log.dd.json#entries/lg-0001"
         },
         {
           "id": "ac-0002",
@@ -121,7 +122,7 @@
           "id": "ph-4c9d",
           "title": "SDK core port",
           "brief": "Copy services/dd (45 files, 7 subdirs) into src/ near-verbatim with a local posix-path shim; port the SDK-side test corpus (~40 files) + its 4 fixture dirs into test/; FIRST read the two upstream architecture tests (dd-core-isolation, dd-plan-semantics-frozen) and port the isolation ratchet as this repo guard; commit the import-direction audit of all 60 tests; record the upstream basis SHA; sketch the subpath-exports skeleton. Logical group: THE SDK — everything that is dd-the-library.",
-          "state": "unchecked",
+          "state": "checked",
           "tasks": "assets/tasks/phase-1/tasks.dd.json#tasks"
         },
         {
