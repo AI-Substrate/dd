@@ -1,0 +1,19 @@
+docs/backlog.md
+  s_7099743c8998a0::t_ec2f183df6a52f 149-207
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "447cb85e50457e31a2fe6e6c01854e556637f5bf",
+  "prompts": {},
+  "sessions": {
+    "s_7099743c8998a0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_7099743c8998a0",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
