@@ -1,0 +1,19 @@
+government/orient-local.md
+  s_bf2179c0991fc2::t_20d521f79b0286 140-155
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "463f96341304b5a250a7c957edd3ece33582b3dd",
+  "prompts": {},
+  "sessions": {
+    "s_bf2179c0991fc2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_bf2179c0991fc2",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
