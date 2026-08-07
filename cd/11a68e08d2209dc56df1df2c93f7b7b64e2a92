@@ -1,0 +1,54 @@
+.dd/schemas/builder/backpressure/schema.json
+  h_9e71e8b09f7cf2 1-133
+.dd/schemas/builder/execution-log/schema.json
+  h_9e71e8b09f7cf2 1-59
+.dd/schemas/builder/fence/schema.json
+  h_9e71e8b09f7cf2 1-47
+.dd/schemas/builder/plan/schema.json
+  h_9e71e8b09f7cf2 1-607
+.dd/schemas/builder/review/schema.json
+  h_9e71e8b09f7cf2 1-169
+docs/plans/001-dd-extraction/assets/research-dossier.md
+  h_9e71e8b09f7cf2 1-86
+docs/plans/001-dd-extraction/assets/tasks/phase-1/tasks.dd.json
+  h_9e71e8b09f7cf2 1-29
+docs/plans/001-dd-extraction/assets/tasks/phase-1/tasks.dd.md
+  h_9e71e8b09f7cf2 1-42
+docs/plans/001-dd-extraction/assets/tasks/phase-2/tasks.dd.json
+  h_9e71e8b09f7cf2 1-29
+docs/plans/001-dd-extraction/assets/tasks/phase-2/tasks.dd.md
+  h_9e71e8b09f7cf2 1-42
+docs/plans/001-dd-extraction/assets/tasks/phase-3/tasks.dd.json
+  h_9e71e8b09f7cf2 1-29
+docs/plans/001-dd-extraction/assets/tasks/phase-3/tasks.dd.md
+  h_9e71e8b09f7cf2 1-42
+docs/plans/001-dd-extraction/assets/tasks/phase-4/tasks.dd.json
+  h_9e71e8b09f7cf2 1-29
+docs/plans/001-dd-extraction/assets/tasks/phase-4/tasks.dd.md
+  h_9e71e8b09f7cf2 1-42
+docs/plans/001-dd-extraction/original-ask.md
+  h_9e71e8b09f7cf2 1-12
+docs/plans/001-dd-extraction/plan.dd.json
+  h_9e71e8b09f7cf2 1-499
+docs/plans/001-dd-extraction/plan.dd.md
+  h_9e71e8b09f7cf2 1-235
+docs/plans/001-dd-extraction/the-flow.json
+  h_9e71e8b09f7cf2 1-385
+docs/plans/001-dd-extraction/the-flow.md
+  h_9e71e8b09f7cf2 1-52
+government/briefs/pa-brief-pij-major-vicuna.md
+  h_9e71e8b09f7cf2 1-123
+government/orient-local.md
+  h_9e71e8b09f7cf2 1-107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "cd11a68e08d2209dc56df1df2c93f7b7b64e2a92",
+  "prompts": {},
+  "humans": {
+    "h_9e71e8b09f7cf2": {
+      "author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
