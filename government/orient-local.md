@@ -76,10 +76,47 @@ step — pointing harness at this package and deleting the old code — is koala
      **re-check adjacencies after any reorder**, especially in a document several authors
      have appended to.
 
-  **When a claim goes wrong — three known axes**: over *time* (decay → stamp or derive), at
-  the moment of *writing* (overstatement → adversarial reader), and at the moment of
-  *editing* (adjacency → re-check after moving text). A mitigation aimed at one axis does
-  nothing for the other two.
+  4. **A correct claim delivered at a cost the sender does not pay.** Four correct findings
+     sent to a PM whose coder was mid-fix on the last blocking item; each arrived as an
+     interrupt it had to absorb and route. Nothing about the claims was wrong — **the
+     defect is entirely in the timing, and it is invisible to the sender**, who sees only
+     that the finding was good. **Rule**: when a loop is mid-fix on a blocking item, a
+     non-blocking finding goes to a durable uncontested file its owner drains on their own
+     schedule. Route by *what the receiver is doing*, not by *how good the finding is* —
+     and this is about **routing, never withholding**.
+  5. **A clean sweep from a trusted source pre-authorises NOT LOOKING.** The mirror of the
+     expected-red note, and quieter — there is no red to ignore, nothing happens at all.
+     Worked instance: a line-based grep over reflowing prose returned one hit where the
+     document held two, reported as the only survivor; four ordinals would have shipped.
+     **Rule**: a sweep result from another agent is **evidence, not an all-clear** —
+     re-derive before acting. The trust level of the source is irrelevant; **the tool's
+     blind spot is not.**
+  6. **Crediting as method what was only a local reaction.** A worker re-audited its
+     supervisor's sweep; the supervisor began recording that as evidence workers reliably
+     audit supervisors. **The worker refused the credit** — it had re-swept because *that
+     section* had falsified its own confident claims twice, not from any policy. Its line:
+     ***"If you want it to repeat it has to be a rule, not my mood."*** A fleet that
+     believes its workers reliably audit upward **stops building the rule that would make
+     them**. **Praise is the delivery mechanism and it is exempt from every instrument
+     here** — every gate inspects *assertions*, and a generalisation smuggled inside a
+     compliment is never inspected. Watch for a generalisation wearing a compliment.
+  7. **Consolidating two findings whose ACTIONS differ.** ***The urge to consolidate is the
+     urge to overstate coverage.*** A merged rule leaves a reader performing the surviving
+     action and concluding they checked. *Re-read after moving text* and *diff the
+     enumeration against its source* are different actions, and only one sees an omission
+     your output is internally consistent about. **Test before merging: name the action
+     each demands. Consolidate causes, never instruments.**
+
+  **When a claim goes wrong — four known axes**, one per moment it can turn: over *TIME*
+  (decay → stamp or derive), at the moment of *WRITING* (overstatement → adversarial
+  reader), at the moment of *EDITING* (adjacency → re-check after moving text), and at the
+  moment of *SENDING* (timing cost → route by what the receiver is doing). **A mitigation
+  aimed at one axis does nothing for the other three** — we shipped stamping and deriving,
+  then assumed coverage, which is the completeness reflex one level up. It said *three*
+  until item 4 was drained into this list an hour later.
+
+  **A note on 4–6: all three arrive as HELP.** An expected-red note, a clean sweep, a
+  compliment — every one is a cooperative act, which is why nothing here inspects them.
 
   The pattern worth carrying: this repo's instruments check **artifacts**, so the failures
   that survive them are the ones that live in **what people say about artifacts** and in
