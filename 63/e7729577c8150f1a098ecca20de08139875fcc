@@ -1,0 +1,21 @@
+government/orient-local.md
+  s_4d87521bba8400::t_bb55adf720eef1 138-139
+justfile
+  s_4d87521bba8400::t_24b0ea8e8256fc 109-152
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "63e7729577c8150f1a098ecca20de08139875fcc",
+  "prompts": {},
+  "sessions": {
+    "s_4d87521bba8400": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_4d87521bba8400",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
