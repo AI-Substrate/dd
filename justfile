@@ -106,3 +106,47 @@ pack-gate:
 # Remove build output.
 clean:
     rm -rf dist coverage
+
+# Create an isolated worktree for a writer — the mechanism behind the
+# worktree-per-writer rule (government/orient-local.md, plan 001 P-2).
+#
+# Phase 4 produced three incidents from one shared index, two of which landed:
+# a delegate worktree staged as a gitlink, 185 lines of a live coder's file
+# swept into a governance commit, and an index.lock collision that only missed
+# because the lock fired before the commit did. All three were between the two
+# most careful agents on the fleet, which is the argument — a shared index is a
+# structural hazard, not a carelessness problem.
+#
+# What this buys and what it does not: a separate worktree has its OWN INDEX, so
+# concurrent writers cannot stage or sweep each other's files. That part is
+# structural. The residual dependency is one-time and at ALLOCATION — somebody
+# has to run this instead of just editing the main tree. This recipe exists to
+# make the right thing the cheap thing; it does not enforce anything, and this
+# comment says so rather than implying a gate that is not here.
+#
+#   just worktree s005-my-stream
+worktree slug:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    root="$(git rev-parse --show-toplevel)"
+    dest="$(dirname "$root")/dd-worktrees/{{slug}}"
+    branch="$(echo "{{slug}}" | sed 's|^\([a-z0-9]*\)-|\1/|')"
+    if [ -e "$dest" ]; then echo "ERROR: $dest already exists" >&2; exit 1; fi
+    git worktree add -b "$branch" "$dest" main
+    echo
+    echo "Worktree:  $dest"
+    echo "Branch:    $branch  (from main)"
+    echo "Its index is separate from this one — that is the whole point."
+    echo "When finished:  git worktree remove $dest"
+
+# List worktrees with their state, and name the ones that look abandoned.
+# A stale worktree is not harmful, but it hides real ones in the listing and
+# `git worktree list` alone does not say which are finished.
+worktrees:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    git worktree list
+    echo
+    echo "Detached-HEAD trees are usually finished delegate/review runs."
+    echo "Remove only trees YOU created:  git worktree remove <path>"
+    echo "Then reclaim the metadata:      git worktree prune"
