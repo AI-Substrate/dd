@@ -1,0 +1,14 @@
+docs/plans/001-dd-extraction/assets/review-packet-plan.md
+  h_9e71e8b09f7cf2 1-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "5a446c789e94599c7d2203c10f37c41f93b9ff4b",
+  "prompts": {},
+  "humans": {
+    "h_9e71e8b09f7cf2": {
+      "author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
