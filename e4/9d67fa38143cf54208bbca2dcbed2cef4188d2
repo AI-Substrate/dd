@@ -1,0 +1,387 @@
+test/services/dd/links/fixtures/repo/docs/temp-utils/kept.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-5
+test/services/dd/links/fixtures/repo/docs/target-untracked.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/render/fixtures/drift/repo/docs/drift.expected.md
+  s_743eafe62757dd::t_661a3f9a528af5 1-22
+test/services/dd/schema/fixtures/exemplar/execution-log.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-46
+test/services/dd/fixtures/warn/absolute-path.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-18
+test/services/dd/links/fixtures/repo/docs/bare-same-doc.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/schema/declarations.test.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1,3-295
+  s_743eafe62757dd::t_a5e01350d49c64 2
+test/services/dd/render/fixtures/chain/repo/docs/source.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-15
+test/services/dd/core/rel.test.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1,4-8,10-84
+  s_743eafe62757dd::t_a5e01350d49c64 2-3,9
+test/services/dd/links/fixtures/repo/docs/cycle-b.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/links/basis.test.ts
+  s_743eafe62757dd::t_a5e01350d49c64 4
+  s_743eafe62757dd::t_661a3f9a528af5 1-3,5-146
+test/services/dd/schema/corpus.test.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1-68
+test/services/dd/links/fixtures/repo/docs/two-missing-neighbours.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-14
+test/services/dd/links/fixtures/repo/.harness/temp/scratch.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-5
+src/docs/dd-docs-manifest.json
+  s_743eafe62757dd::t_c7bc4b2048371b 9,16
+test/services/dd/render/fixtures/adapters/repo/docs/adapters.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-18
+test/services/dd/schema/fixtures/invalid-enum/repo/.dd/schemas/builder/subset/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-60
+test/services/dd/schema/fixtures/README.md
+  s_743eafe62757dd::t_661a3f9a528af5 1-62
+test/services/dd/links/fixtures/repo/docs/cycle-a.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/fixtures/graph/chain-d-invalid.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-13
+test/services/dd/links/fixtures/repo/docs/untracked.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-7
+test/services/dd/render/fixtures/showcase/repo/docs/showcase.dd.md
+  s_743eafe62757dd::t_661a3f9a528af5 1-80
+test/services/dd/fixtures/invalid/bad-enum.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-14
+test/services/dd/links/fixtures/repo/docs/target-missing.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/render/fixtures/chain/repo/docs/consumer.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-13
+test/services/dd/links/fixtures/repo/docs/beyond-scope.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/schema/fixtures/deep-scan/repo/docs/plan.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-23
+test/services/dd/render/fixtures/chain/repo/docs/source.dd.md
+  s_743eafe62757dd::t_661a3f9a528af5 1-23
+test/services/dd/core/parse.test.ts
+  s_743eafe62757dd::t_a5e01350d49c64 3-4
+  s_743eafe62757dd::t_661a3f9a528af5 1-2,5-115
+test/services/dd/render/fixtures/drift/repo/docs/drift.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-17
+test/services/dd/fixtures/map/evidence-wrong-link-target.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-22
+test/services/dd/fixtures/valid/minted-id.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-16
+test/services/dd/render/fixtures/README.md
+  s_743eafe62757dd::t_661a3f9a528af5 1-73
+test/services/dd/docs/dd-docs.test.ts
+  s_743eafe62757dd::t_a5e01350d49c64 4-6
+  s_743eafe62757dd::t_c7bc4b2048371b 8,10
+  s_743eafe62757dd::t_661a3f9a528af5 1-3,7,9,11-81
+test/services/dd/links/scan.test.ts
+  s_743eafe62757dd::t_a5e01350d49c64 2-3
+  s_743eafe62757dd::t_661a3f9a528af5 1,4-64
+test/services/dd/fixtures/graph/chain-c.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-20
+test/services/dd/schema/fixtures/custom-enum/repo/docs/review-bad-value.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-23
+test/services/dd/fixtures/graph/cycle-b.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-19
+test/services/dd/schema/fixtures/chain/repo/docs/c.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-24
+test/services/dd/render/fixtures/adapters/repo/.dd/schemas/render/adapters/adapters/shapeless.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1-6
+test/services/dd/links/fixtures/repo/docs/unresolved-not-a-container.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/core/address.test.ts
+  s_743eafe62757dd::t_a5e01350d49c64 8
+  s_743eafe62757dd::t_661a3f9a528af5 1-7,9-85
+test/services/dd/core/walk.test.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1,3-7,9-143
+  s_743eafe62757dd::t_a5e01350d49c64 2,8
+test/services/dd/links/graph.test.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1,6-90
+  s_743eafe62757dd::t_a5e01350d49c64 2-5
+test/services/dd/links/fixtures/repo/docs/type-mismatch.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-18
+test/services/dd/links/fixtures/repo/docs/unresolved-part.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/links/fixtures/repo/docs/temp/kept.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-5
+test/services/dd/schema/fixtures/malformed-package/repo/.dd/schemas/builder/notes/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-11
+test/services/dd/schema/fixtures/single-root/repo/docs/plan.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-23
+test/services/dd/fixtures/schemas/test-plan.schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-39
+test/services/dd/fixtures/valid/base.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-19
+test/services/dd/core/derive.test.ts
+  s_743eafe62757dd::t_a5e01350d49c64 2-3
+  s_743eafe62757dd::t_661a3f9a528af5 1,4-121
+test/services/dd/fixtures/graph/chain-b.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-20
+test/services/dd/fixtures/derive/tasks.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-19
+test/services/dd/fixtures/graph/chain-a.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-20
+test/services/dd/fixtures/invalid/human-skipped-receipt-missing.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-13
+test/services/dd/fixtures/warn/untracked-target.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-18
+test/services/dd/fixtures/README.md
+  s_743eafe62757dd::t_661a3f9a528af5 1-39
+test/services/dd/links/fixtures/repo/docs/basis-stale.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/links/rel-graph.test.ts
+  s_743eafe62757dd::t_a5e01350d49c64 2-7
+  s_743eafe62757dd::t_661a3f9a528af5 1,8-196
+test/services/dd/fixtures/map/evidence-valid.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-48
+test/services/dd/render/fixtures/limits/repo/.dd/schemas/render/limits/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-20
+test/services/dd/fixtures/warn/missing-target.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-18
+test/services/dd/links/isolation.test.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1-8,10-62,64-71,73-84,86-88,91-92,97
+  s_743eafe62757dd::t_a6bada46c6b764 9,63,72,89-90
+  s_743eafe62757dd::t_374df5b6152255 85
+  s_743eafe62757dd::t_77b8c5abf9fb99 93-96
+test/services/dd/render/fixtures/adapters/repo/.dd/schemas/render/adapters/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-22
+test/services/dd/render/fixtures/limits/repo/docs/limits.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-21
+test/services/dd/schema/fixtures/chain/repo/docs/d.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-23
+test/services/dd/schema/fixtures/chain/repo/docs/schemas/builder/plan/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-49
+test/services/dd/links/fixtures/repo/docs/plan-cites-broken.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/schema/fixtures/deep-scan/repo/.dd/team/shared/nested/schemas/builder/plan/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-49
+test/services/dd/schema/fixtures/custom-enum/repo/docs/review.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-27
+test/services/dd/core/values-shape.test.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1,3-6,8-191
+  s_743eafe62757dd::t_a5e01350d49c64 2,7
+test/services/dd/links/fixtures/README.md
+  s_743eafe62757dd::t_661a3f9a528af5 1-85
+test/services/dd/links/fixtures/repo/docs/unresolved-id.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/render/fixtures/adapters/repo/.dd/schemas/render/adapters/adapters/good.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1-4
+test/services/dd/schema/fixtures/invalid-enum/repo/docs/plan.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-23
+test/services/dd/schema/fixtures/beyond-cap/repo/.dd/org/team/squad/area/service/module/component/feature/config/schemas/builder/plan/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-49
+test/services/dd/schema/fixtures/invalid-enum/repo/.dd/schemas/builder/unbound/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-24
+test/services/dd/schema/fixtures/precedence-chain/repo/docs/schemas/builder/plan/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-49
+test/services/dd/schema/fixtures/malformed-package/repo/docs/plan.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-23
+test/services/dd/links/fixtures/repo/docs/basis-fresh.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/links/fixtures/repo/docs/plan.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-32
+test/services/dd/schema/fixtures/unsupported-version/repo/.dd/schemas/builder/plan/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-49
+test/services/dd/core/bucket.test.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1,6-174
+  s_743eafe62757dd::t_a5e01350d49c64 2-5
+test/services/dd/links/fixtures/repo/docs/nested/child.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/fixtures/graph/chain-d-valid.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-13
+test/services/dd/fixtures/map/evidence-skip-no-receipt.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-21
+test/services/dd/fixtures/warn/untracked.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-12
+test/services/dd/schema/fixtures/single-root/repo/docs/invalid-plan.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-23
+test/services/dd/schema/fixtures/single-root/repo/docs/unknown-schema.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-23
+test/services/dd/fixtures/invalid/link-type-mismatch.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-19
+test/services/dd/schema/fixtures/chain/repo/docs/warn.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-24
+test/services/dd/fixtures/excluded/sweep-excluded.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-13
+test/services/dd/render/fixtures/showcase/repo/.dd/schemas/render/showcase/adapters/duration.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1-13
+test/services/dd/fixtures/map/evidence-typo-state.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-21
+test/services/dd/schema/fixtures/exemplar/backpressure.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-68
+test/services/dd/render/fixtures/adapters/repo/docs/adapters.dd.md
+  s_743eafe62757dd::t_661a3f9a528af5 1-18
+test/services/dd/schema/fixtures/single-root/repo/docs/warn-only.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-24
+test/services/dd/schema/fixtures/chain/repo/docs/b.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-24
+test/services/dd/helpers.ts
+  s_743eafe62757dd::t_5842e52914c150 1-44
+test/services/dd/links/fixtures/repo/docs/path-absolute.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/schema/fixtures/single-root/repo/.dd/schemas/builder/plan/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-49
+test/services/dd/render/renderer.test.ts
+  s_743eafe62757dd::t_a5e01350d49c64 4-6,11,17-18
+  s_743eafe62757dd::t_661a3f9a528af5 1-3,7-10,12-16,19-371
+test/services/dd/links/fixtures/repo/docs/notes.md
+  s_743eafe62757dd::t_661a3f9a528af5 1-3
+test/services/dd/links/fixtures/repo/docs/unresolved-section.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/render/fixtures/showcase/repo/docs/showcase.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-92
+test/services/dd/schema/fixtures/unsupported-version/repo/docs/plan.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-23
+test/services/dd/schema/fixtures/duplicate-in-root/repo/.dd/schemas/builder/plan/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-49
+test/services/dd/schema/fixtures/duplicate-in-root/repo/docs/plan.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-23
+test/services/dd/links/fixtures/repo/docs/path-non-posix.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/schema/fixtures/exemplar/plan.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-160
+test/services/dd/fixtures/warn/non-posix-path.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-18
+test/services/dd/fixtures/valid/custom-enum.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-14
+test/services/dd/render/fixtures/showcase/repo/docs/other.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-14
+test/services/dd/links/resolver.test.ts
+  s_743eafe62757dd::t_a5e01350d49c64 2
+  s_743eafe62757dd::t_661a3f9a528af5 1,3-216
+test/services/dd/links/fixtures/repo/docs/evidence.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-13
+test/services/dd/schema/fixtures/precedence-chain/home/.dd/schemas/builder/plan/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-49
+test/services/dd/fixtures/graph/cycle-a.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-20
+test/services/dd/fixtures/warn/path-escape.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-18
+test/services/dd/links/fixtures/schemas/links-evidence.schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-21
+test/services/dd/render/fixtures/showcase/repo/docs/other.dd.md
+  s_743eafe62757dd::t_661a3f9a528af5 1-28
+test/services/dd/render/fixtures/adapters/repo/.dd/schemas/render/adapters/adapters/numeric.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1-4
+test/services/dd/links/fixtures/repo/docs/map-entries.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-27
+test/services/dd/links/doctor.test.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1,4-210
+  s_743eafe62757dd::t_a5e01350d49c64 2-3
+test/services/dd/schema/fixtures/beyond-cap/repo/docs/plan.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-23
+test/services/dd/schema/fixtures/chain/repo/docs/a.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-24
+test/services/dd/fixtures/invalid/unresolvable-schema.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-13
+test/services/dd/links/map.test.ts
+  s_743eafe62757dd::t_a5e01350d49c64 3,7-8,18-19,24-25,998
+  s_743eafe62757dd::t_661a3f9a528af5 1-2,4-6,9-17,20-23,26-997,999-1164
+test/services/dd/links/fixtures/repo/docs/path-escape.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/fixtures/valid/state-notes.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-16
+test/services/dd/schema/fixtures/invalid-enum/repo/.dd/schemas/builder/conflicting/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-48
+test/services/dd/render/fixtures/chain/repo/.dd/schemas/render/chain/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-31
+test/services/dd/core/validate.test.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1,4-131
+  s_743eafe62757dd::t_a5e01350d49c64 2-3
+test/services/dd/links/fixtures/repo/docs/nested/gateway.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/render/fixtures/chain/repo/docs/consumer.dd.md
+  s_743eafe62757dd::t_661a3f9a528af5 1-27
+test/services/dd/links/fixtures/repo/docs/type-match.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-18
+test/services/dd/links/fixtures/repo/docs/self-cycle.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+test/services/dd/render/fixtures/drift/repo/docs/drift.dd.md
+  s_743eafe62757dd::t_661a3f9a528af5 1-24
+test/services/dd/render/fixtures/adapters/repo/.dd/schemas/render/adapters/adapters/boom.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1-4
+test/services/dd/schema/fixtures/custom-enum/repo/docs/review-incomplete.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-27
+test/services/dd/render/fixtures/adapters/repo/.dd/schemas/render/adapters/adapters/broken.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1-2
+test/services/dd/fixtures/invalid/malformed-address.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-18
+test/services/dd/fixtures/invalid/na-note-missing.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-13
+test/services/dd/render/fixtures/showcase/repo/.dd/schemas/render/showcase/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-68
+docs/plans/001-dd-extraction/assets/test-audit.md
+  s_743eafe62757dd::t_384d6dd1c69db5 68-92
+  s_743eafe62757dd::t_936e51cea431dd 129,136,147-148
+  s_743eafe62757dd::t_63a21541dc4313 31-34,37-38
+test/services/dd/fixtures/schemas/test-evidence.schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-61
+test/services/dd/render/fixtures/limits/repo/docs/limits.dd.md
+  s_743eafe62757dd::t_661a3f9a528af5 1-13
+test/services/dd/mutate/mutate.test.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1,3-13,15-326
+  s_743eafe62757dd::t_a5e01350d49c64 2,14
+test/services/dd/schema/fixtures/malformed-package/repo/.dd/schemas/builder/plan/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-5
+test/services/dd/schema/fixtures/precedence-chain/repo/docs/plan.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-23
+test/services/dd/schema/fixtures/chain/repo/docs/unknown.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-14
+test/services/dd/links/fixtures/schemas/links-plan.schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-80
+test/services/dd/render/fixtures/drift/repo/.dd/schemas/render/simple/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-31
+test/services/dd/schema/fixtures/precedence-chain/repo/.harness/.dd/schemas/builder/plan/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-49
+test/services/dd/fixtures/derive/plan.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-18
+test/services/dd/fixture-corpus.test.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1-63
+test/services/dd/links/helpers.ts
+  s_743eafe62757dd::t_c8eac2aa64779d 1-122
+test/services/dd/fixtures/invalid/duplicate-id.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-14
+test/services/dd/core/constants.test.ts
+  s_743eafe62757dd::t_a5e01350d49c64 8
+  s_743eafe62757dd::t_661a3f9a528af5 1-7,9-30
+test/services/dd/fixtures/invalid/blocked-note-missing.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-13
+test/services/dd/links/traverse.test.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1,4-244
+  s_743eafe62757dd::t_a5e01350d49c64 2-3
+test/services/dd/render/renderer-purity.test.ts
+  s_743eafe62757dd::t_661a3f9a528af5 1-8,10-88,92-94,96-98,104-112,115-123,125-159
+  s_743eafe62757dd::t_a6bada46c6b764 9,99-103,124
+  s_743eafe62757dd::t_374df5b6152255 89-91,95
+  s_743eafe62757dd::t_77b8c5abf9fb99 113-114
+test/services/dd/schema/fixtures/precedence-chain/repo/.dd/schemas/builder/plan/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-49
+test/services/dd/schema/fixtures/custom-enum/repo/.dd/schemas/builder/review/schema.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-69
+test/services/dd/links/fixtures/repo/docs/broken-neighbour.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-7
+test/services/dd/fixtures/invalid/malformed-minted-id.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-16
+test/services/dd/links/fixtures/repo/docs/sweep-excluded.dd.json
+  s_743eafe62757dd::t_661a3f9a528af5 1-8
+docs/plans/001-dd-extraction/assets/tasks/phase-1/tasks.dd.json
+  s_743eafe62757dd::t_95e773086f2058 53,113
+docs/plans/001-dd-extraction/assets/tasks/phase-1/tasks.dd.md
+  s_743eafe62757dd::t_145fac1d0e6452 41,71
+test/services/dd/schema/fixtures/duplicate-in-root/repo/.dd/vendor/schemas/builder/plan/schema.json
+  s_743eafe62757dd::t_0c7f0ba23f5859 1-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "e49d67fa38143cf54208bbca2dcbed2cef4188d2",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
