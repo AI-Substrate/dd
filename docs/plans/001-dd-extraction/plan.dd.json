@@ -103,20 +103,23 @@
         {
           "id": "ac-0008",
           "claim": "Self-hosting: dd build --check reports zero drift over docs/plans/001-dd-extraction using the LOCAL bin; harness plan validate (harness-side) still green over the same corpus",
-          "state": "unchecked",
-          "pressure": "not-applicable"
+          "state": "checked",
+          "pressure": "not-applicable",
+          "proven_by": "execution-log.dd.json#entries/lg-0008"
         },
         {
           "id": "ac-0009",
           "claim": "Backlog migrated: all 17 dd-next items in this repo tracker with status/ownership annotations and the #8-before-#11 ordering constraint stated; OPEN items still open",
-          "state": "unchecked",
-          "pressure": "not-applicable"
+          "state": "checked",
+          "pressure": "not-applicable",
+          "proven_by": "execution-log.dd.json#entries/lg-0008"
         },
         {
           "id": "ac-000a",
           "claim": "Docs shipped: README standalone quick-start + docs/how carrying the two baked entries; CI green on main at completion",
-          "state": "unchecked",
-          "pressure": "not-applicable"
+          "state": "checked",
+          "pressure": "not-applicable",
+          "proven_by": "execution-log.dd.json#entries/lg-0008"
         }
       ]
     },

@@ -69,7 +69,7 @@
           "id": "tk-0006",
           "title": "END STATE: push main to origin (first push — full history), watch CI to green, fix-forward anything red; record the green run URL in the execution log",
           "phase": "ph-0a40",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-000a"
           ]
