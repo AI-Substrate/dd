@@ -959,3 +959,41 @@ question being asked.**
 **`Upload coverage (lcov)` also shows red — cascade, not a second defect.** `Test` never
 ran, so no `lcov.info` existed to upload. Expect it to clear with the drift fix; if it
 survives, it is real and gets its own entry.
+
+### CI GREEN — tk-0006 complete
+
+**Green run: <https://github.com/AI-Substrate/dd/actions/runs/31164329423>** (`f8a660d`).
+
+```
+✓ static-gates        8s
+✓ build-test (22)    38s
+✓ build-test (24)    43s
+✓ package-smoke      28s
+✓ ci-required         3s
+artifacts: coverage-lcov-node22, coverage-lcov-node24
+```
+
+`Upload coverage (lcov)` cleared with the drift fix, confirming it was the predicted
+cascade — `Test` had never run, so there was no `lcov.info` to upload — and **not** a second
+defect. Recorded because the prediction was made before the evidence arrived; it happened to
+be right, which is not the same as having been derived.
+
+**The release gate held throughout, verified after the fact as well as before:**
+
+```bash
+gh run list --repo AI-Substrate/dd --limit 20            # two runs, both CI
+gh run list --repo AI-Substrate/dd --workflow=release.yml --limit 5   # EMPTY
+```
+
+`release.yml` has never run. Two pushes to `main`, two CI runs, zero release runs.
+
+**Final state:** `origin/main` = `f8a660d`, fast-forward throughout, **no force, no tags, no
+publish, no PR**. `harness telemetry sync` not run; the 147 segments on
+`refs/harness-telemetry/*` are untouched and unauthorized. **`tk-0002` never opened.**
+
+**One honest note on the first red.** It was a latent defect that only a real CI run could
+surface — the check could not be wrong locally, because a developer clone always has
+history. It sat green through every local gate in four phases. **The environment was the
+input the check was missing, and no local proof could have found it.** That is the argument
+for running the thing in the place it will actually run, and it belongs beside the
+guardrails as a limit on local proof.
