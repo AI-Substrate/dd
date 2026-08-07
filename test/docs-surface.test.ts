@@ -427,3 +427,91 @@ describe('the migrated dd-next backlog', () => {
     expect(itemRows.find((row) => row.startsWith('| 19 |'))).toContain('**CANDIDATE**');
   });
 });
+
+/**
+ * The koala handover packet reproduces what it CLAIMS to reproduce (plan 001
+ * tk-0005, review round dlg-0004 HIGH 3).
+ *
+ * The packet shipped review asserting it carried the guardrails AND the standing
+ * constraints verbatim, while the constraints were a pointer only. `just
+ * check-handover` catches a body that DRIFTED from its source; it cannot catch a
+ * body that was never embedded, because there is nothing to diff. These rows
+ * cover that gap: they read the real sources and require every rule to be present
+ * in the packet, so a claim to carry a contract fails unless the contract is
+ * there.
+ */
+describe('the handover packet carries the contracts it claims to carry', () => {
+  const packet = readFileSync(
+    join(repoRoot, 'docs/plans/001-dd-extraction/assets/handover-packet.md'),
+    'utf8',
+  );
+  const constraintsSource = readFileSync(
+    join(repoRoot, 'government/standing-constraints.md'),
+    'utf8',
+  );
+
+  /** Constraint headings, read from the binding file rather than restated here. */
+  const constraintHeadings = constraintsSource
+    .split('\n')
+    .filter((line) => /^## \d+ — /.test(line));
+
+  it('finds constraints in the source at all, rather than passing on an empty read', () => {
+    // Without this the whole block passes vacuously if the source is renamed or
+    // its heading style changes: "every constraint is present" and "no constraint
+    // was looked for" would be the same green.
+    expect(
+      constraintHeadings.length,
+      'no numbered constraints parsed out of government/standing-constraints.md — that is a broken guard, not a clean repo',
+    ).toBeGreaterThan(0);
+  });
+
+  it('reproduces every standing constraint, not a pointer to them', () => {
+    for (const heading of constraintHeadings) {
+      expect(packet, `handover packet is missing standing constraint "${heading}"`).toContain(
+        heading,
+      );
+    }
+  });
+
+  it('reproduces every execution guardrail row', () => {
+    // Read through the bin rather than hand-walking the JSON: dd is the reader of
+    // dd documents, and the generator that writes this block reads it the same
+    // way, so the guard and the generator cannot disagree about the source.
+    const run = runDd([
+      '--json',
+      'get',
+      'docs/plans/001-dd-extraction/plan.dd.json#execution_guardrails',
+    ]);
+    const guardrails = (parseEnvelope(run.stdout).data as { value?: string[] } | undefined)?.value;
+    expect(
+      Array.isArray(guardrails) && guardrails.length > 0,
+      'plan.dd.json#execution_guardrails did not read back as a non-empty list — that is a broken guard, not a clean repo',
+    ).toBe(true);
+    for (const row of guardrails as string[]) {
+      // First sentence is enough to identify the row and survives re-wrapping.
+      const fingerprint = row.slice(0, 60);
+      expect(packet, `handover packet is missing guardrail starting "${fingerprint}"`).toContain(
+        fingerprint,
+      );
+    }
+  });
+
+  it('stamps each embedded copy to the commit it was taken from', () => {
+    // A verbatim copy of a MOVING document is only honest as a past-tense record.
+    // Row 9 was amended twice while this packet sat in review, so an unstamped
+    // copy would silently stop matching the rule in force.
+    const stamps = packet.match(/\*\*Reproduced verbatim as of `[0-9a-f]{7,}`\*\*/g) ?? [];
+    expect(stamps.length, 'each embedded contract body must carry its source SHA').toBe(2);
+  });
+
+  it('states no bare commit count for the gated push', () => {
+    // The count was wrong at its own stamped base: a fast-decaying figure gets
+    // DERIVED, never asserted. The command is the answer.
+    const section = packet.slice(packet.indexOf('## 10. Status of this packet'));
+    expect(section).toContain('git rev-list --count origin/main..main');
+    expect(
+      section,
+      'a standing commit count decays immediately — print the command instead',
+    ).not.toMatch(/fast-forward of \d+ commits/);
+  });
+});

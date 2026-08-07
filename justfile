@@ -47,6 +47,19 @@ check-docs:
 gen-orient:
     node scripts/gen-orient-state.mjs
 
+# Regenerate the VERBATIM guardrail + standing-constraint blocks in the koala
+# handover packet from their real sources.
+gen-handover:
+    node scripts/gen-handover-embeds.mjs
+
+# Fail if the handover packet's embedded guardrails or standing constraints have
+# drifted from plan.dd.json / government/standing-constraints.md. koala intends to
+# CITE those blocks, so a stale copy is a wrong contract, not a cosmetic diff --
+# the guardrail block went stale inside one review cycle when guardrail 9 was
+# amended while the packet sat in review.
+check-handover:
+    node scripts/gen-handover-embeds.mjs --check
+
 # Fail if orient-local's repo-state block no longer matches `dd --json status`.
 # orient-local is the mandatory first read for a new seat; it once carried a
 # hand-written "Measured:" line claiming the port had not happened, long after it
@@ -77,6 +90,7 @@ checks:
     just typecheck
     just check-docs
     just check-orient
+    just check-handover
     just self-host
     just test
 

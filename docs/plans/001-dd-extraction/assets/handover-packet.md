@@ -84,6 +84,27 @@ A present-tense measurement inside a document meant to stay current **has no exp
 no owner**. Nobody is wrong when it rots, so nobody fixes it. All six instances in §7
 have that shape.
 
+### The protective corollary: NEVER SWEEP STAMPED HISTORY
+
+**This is the half of the rule that protects you from the rule**, and it is not a
+footnote. It is the *inverse* failure of the one we spent this plan chasing, and it is
+the one a **diligent** reader is more likely to commit.
+
+> An auditor who "fixes" phase-2's execution log for saying `ported[validate,schema,docs]`,
+> exit 2, would **destroy evidence while believing they were removing rot.**
+
+That entry is a **correct historical record**. It was true when measured, it is stamped
+to the commit where it was measured, and the stamp is precisely what makes it legible as
+*history* rather than as a stale current claim. Editing it does not remove a falsehood —
+it removes the proof that the port ever happened in stages.
+
+We are naming this to you specifically because **you are the single most likely agent to
+make this mistake, and you would be making it because we taught you to.** You arrive
+holding our guardrails and hunting stale claims; every past-tense stamped record in this
+repo will look like a hit. A packet that arms a reader to hunt rot without also
+protecting history is a net harm, so: **execution logs, receipts, and phase records are
+append-only history. Correct the claim, never the record.**
+
 **The reader-side twin**, from a near-miss in this fleet an hour before writing: an agent
 grepped `ci.yml` for a gate's *recipe name*, did not find it, and concluded a guard was
 unsatisfied. Running the guard gave the right answer in one call — CI invokes the
@@ -112,7 +133,7 @@ pre-registration envelope shape. Neither is a standing claim about the repo.
 | Package | `@ai-substrate/dd` |
 | Version | `0.1.0` (unpublished — see §2.2) |
 | Bin | `dd` → `bin/dd.js` |
-| Tarball | `ai-substrate-dd-0.1.0.tgz`, 257,573 bytes, 274 files |
+| Tarball | `ai-substrate-dd-0.1.0.tgz` — size and file count move with every change; run the command below |
 | Node | `>=22` |
 | Runtime deps | `commander` ^15.0.0, `jiti` 2.7.0 |
 | Upstream basis | `d08f4942d28b7e5181d5845a56a63b0cbb1d3402` (harness-engineering `main`) |
@@ -317,16 +338,21 @@ own prediction: the stay set is 11, not the "~9" the plan estimated.
 
 ## 6. Proof you inherit
 
-Measured at `d2520ad`; re-derive with `just checks`, `just pack-gate`,
+Re-derive with `just checks`, `just pack-gate`, and
 `harness plan validate docs/plans/001-dd-extraction/plan.dd.json`.
 
-| Gate | Result | What it proves |
+**Read the "Result" column as a contract, not a reading.** Each row states what the gate
+*asserts* — that is durable. The moving values (test counts, coverage, WARN totals) are
+deliberately not stated as standing figures; run the command. The one exception carries
+its SHA and says plainly that it moves.
+
+| Gate | What it asserts | What it proves |
 |---|---|---|
-| `just checks` | 703 tests, 59 files, exit 0 | lint, build, typecheck, docs-drift, self-host, tests |
-| `just pack-gate` | exit 0 | the TARBALL works: clean clone → pack → install → drive the installed bin, including a jiti-loaded custom render type written in untranspiled TypeScript |
-| `just self-host` | 6 documents, zero drift | dd renders this repo's own plan corpus |
-| `harness plan validate` | 0 ERROR, **10** WARN at `d2520ad` | semantic gate. **This count moves** — the WARNs are open-item contradictions (a task checked against an acceptance criterion not yet flipped), so it rises as work lands and falls as the o-prime flips ACs. It was 6 at `99e4157`. Treat a change as expected, not as drift; only `error` is a defect signal. |
-| Coverage | 70.21% statements | report-only, not gated |
+| `just checks` | **exit 0** | lint, build, typecheck, docs-drift, orient-drift, handover-drift, self-host, tests — the test and file counts rise with every phase, so run it rather than reading a number here |
+| `just pack-gate` | **exit 0** | the TARBALL works: clean clone → pack → install → drive the installed bin, including a jiti-loaded custom render type written in untranspiled TypeScript |
+| `just self-host` | **zero drift**, over a non-empty document set | dd renders this repo's own plan corpus. An empty glob **fails**: that is a broken gate, not a clean repo |
+| `harness plan validate` | **0 ERROR** | semantic gate. Only `error` is a defect signal. The WARN total is an open-item contradiction count (a task checked against an acceptance criterion not yet flipped): it was **6** at `99e4157` and **10** at `d2520ad`, rising as work lands and falling as the o-prime flips ACs. Treat a change as expected, not as drift. |
+| Coverage | report-only, **not gated** | no threshold to satisfy or regress |
 
 **Three properties of this repo worth keeping** — each one an instance of §0, offered as
 things that earned their place rather than as decoration:
@@ -421,26 +447,26 @@ You inherit both the guardrails and that ongoing cost.
 | What | Where |
 |---|---|
 | Standing constraints (cite by number) | `government/standing-constraints.md` |
-| Open backlog, 21 items, annotated | `docs/backlog.md` |
+| Open backlog, annotated (row count gated by `test/docs-surface.test.ts`) | `docs/backlog.md` |
 | Wire format + renderer authority + measured behaviour | `docs/plans/001-dd-extraction/assets/handover-notes.md` |
-| Import-direction audit, all 60 tests | `docs/plans/001-dd-extraction/assets/test-audit.md` |
+| Import-direction audit (as audited at the time, past-tense record) | `docs/plans/001-dd-extraction/assets/test-audit.md` |
 | Frozen P1 CLI surface | `docs/plans/001-dd-extraction/assets/dd-surface.md` |
 | Research dossier (F-04 consumer surface) | `docs/plans/001-dd-extraction/assets/research-dossier.md` |
 | Local orientation (o-prime is sole writer; repo-state block is **generated** — `just gen-orient`) | `government/orient-local.md` |
 | The plan itself | `docs/plans/001-dd-extraction/plan.dd.md` |
 | Quick start (executed as a test) | `README.md` |
 
-**`docs/backlog.md` carries 21 items**: the 17 migrated from `scratch/dd-next.md`
-verbatim, plus 4 opened during the extraction. **OPEN items are still OPEN** — the
+**`docs/backlog.md` carries the 17 items migrated from `scratch/dd-next.md` verbatim,
+plus the rows opened during the extraction.** The exact count is not restated here — it
+is asserted by `test/docs-surface.test.ts`, which requires a contiguous run of item
+numbers, so a dropped or duplicated row reds the build. **OPEN items are still OPEN** —
+the
 migration deliberately answered nothing. The `#8-before-#11` ordering constraint is
 carried verbatim: running 11 first turns the gate green over three documents holding
 undetermined values, and the green then argues the vocabulary is consistent.
 
-**`government/standing-constraints.md` is worth your attention specifically.** It exists
-because these constraints previously lived only in the o-prime's context, and it says so
-plainly — including that the o-prime was not a reliable place to keep them. You inherit
-a subtree where the constraints you wrote are citable by number instead of living in one
-agent's memory.
+**`government/standing-constraints.md` is worth your attention specifically** — it is
+reproduced in full in §9a, because a pointer is not a contract body.
 
 ---
 
@@ -461,8 +487,15 @@ would have made the packet break its own headline rule (§0.1).
 
 <!-- BEGIN GENERATED: guardrails (scripts/gen-handover-embeds.mjs) -->
 
-Source of truth: `docs/plans/001-dd-extraction/plan.dd.json#execution_guardrails` — **13 rows**, derived at
-`47d8a63`. Re-derive with `dd get "docs/plans/001-dd-extraction/plan.dd.json#execution_guardrails"`.
+**Reproduced verbatim as of `648febd`** — 13 rows, the commit that
+last changed the source. This is a stamped past-tense copy, not a claim to be current:
+these rows move as the o-prime amends them (row 9 was amended twice while this packet sat
+in review). Check whether yours is stale, and re-pull the live version, with:
+
+```bash
+dd get "docs/plans/001-dd-extraction/plan.dd.json#execution_guardrails"
+git log -1 --format=%h -- docs/plans/001-dd-extraction/plan.dd.json   # newer than the stamp above? re-pull.
+```
 
 ```
 1. harness-engineering checkout is READ-ONLY reference — never write, build, or install there; the port basis SHA is recorded in phase 1 and rebased deliberately, never silently.
@@ -504,8 +537,13 @@ number instead of living in one agent's memory.
 
 <!-- BEGIN GENERATED: constraints (scripts/gen-handover-embeds.mjs) -->
 
-Source of truth: `government/standing-constraints.md` — **8 constraints**, derived at
-`47d8a63`. Cite them BY NUMBER.
+**Reproduced verbatim as of `3343a09`** — 8 constraints,
+the commit that last changed the source. Cite them BY NUMBER. Stamped past-tense copy:
+check whether yours is stale, and re-pull, with:
+
+```bash
+git log -1 --format=%h -- government/standing-constraints.md   # newer than the stamp above? re-pull.
+```
 
 ```
 ## 1 — harness-engineering is READ-ONLY reference
@@ -570,10 +608,24 @@ let them stall independent work.
 PM signals packet-ready after review and the o-prime sends it. This file is the pointer.
 
 **Not done and deliberately so**: `tk-0002` (exports freeze — HELD on OQ-1/OQ-2) and
-`tk-0006` (the push to `origin/main` — gated on review plus explicit go). The push is a
-fast-forward of 46 commits onto an existing `origin/main` at `b1b794d`, which **is** an
-ancestor of local `main` — no rewrite, no force. Re-derive:
+`tk-0006` (the push to `origin/main` — gated on review plus explicit go).
+
+The push is a **fast-forward** onto an existing `origin/main` at `b1b794d`, which **is**
+an ancestor of local `main` — no rewrite, no force. **The commit count is deliberately
+not written here.** Run the command; it rises with every commit, so any number printed
+in this document would be wrong before you read it:
 
 ```bash
-git merge-base --is-ancestor origin/main main && git rev-list --count origin/main..main
+git merge-base --is-ancestor origin/main main && echo "fast-forward, no force needed"
+git rev-list --count origin/main..main
 ```
+
+This paragraph previously carried a standing figure with that command printed directly
+beneath it — and the figure did not match its own command **at its own stamped base**.
+It is worth stating rather than quietly correcting, because it is the subtlest instance
+in §7 and the one that indicts the guardrail itself: **stamping a figure with a
+re-derivation command does not make it derived.** The command was recorded, not run.
+Measured-at stamping was performed *as a claim*, which turned the instrument against
+this defect class into an instance of it. The repair is not a better number — it is the
+tense rule from §0.1: a count in a document meant to read as current gets **derived**,
+never asserted.
