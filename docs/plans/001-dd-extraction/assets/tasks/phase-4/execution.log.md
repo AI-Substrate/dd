@@ -425,3 +425,156 @@ with the structural type-boundary argument separated out because it does *not* d
 with the totals), the stay-behind test list (the list is the authority, its length is
 the count), the tarball size and file count, and the propagation-sweep block, which now
 states the **expected result** of each grep instead of the numbers seen once.
+
+### Re-review round: the modal-verb overclaim (`dlg-0004` fix re-review)
+
+One HIGH, plus an amendment that arrived and was then partly retracted. Both are worth
+recording because neither is a decay instance, and this plan's whole guardrail set is
+built for decay.
+
+**The amendment.** The recommendation that harness must consume `dd` as a library was to
+be re-argued around the value imports rather than the type imports — types are erased at
+compile time, so a consumer can simply redeclare them, and what they actually lose is
+single definition rather than possibility. That separation is right and was applied: the
+injection sites and the inline per-cell calls now lead, types are demoted to support.
+
+Every underlying fact was re-derived here rather than relayed, at upstream `ab1e7e75`:
+`acts/flow.ts:121,126` constructs `ConventionSchemaResolver` and
+`MemoizingDocLoader(new FsDocLoader(deps.fs, …))` and hands the pair to dd's gate;
+`acts/plan/index.ts:142` does the same as a resolver factory; `escapeCell` is called
+inside template literals at `pr-body.ts:160`, `:247`, `:249`. Re-deriving turned up one
+thing the relay had not: what is injected is *harness's own* `FsPort`, and upstream's
+composition-root comment names what that buys — the gate is *"drivable with fakes"*.
+
+**The HIGH, and the reason it matters more than the fix.** The amendment carried the
+claim that these imports *"cannot be shelled even in principle"*, and it was written into
+the packet that way. That is false. It is a claim about **substitution**: no drop-in CLI
+replacement exists for the existing call sites, but a redesigned boundary — a batched walk
+request, a persistent worker, an RPC — could do it, at the cost of different state and
+failure semantics. Restated as *an SDK is required to preserve the current integration; a
+CLI-only option is possible only by redesigning it.*
+
+**This is a new subclass and it is invisible to everything we built.** Rows 1–6 of the
+packet's §7 are claims that were TRUE WHEN WRITTEN and decayed. This one was **inflated at
+the moment of writing, from facts that were correct**. Nothing was unstamped, nothing
+drifted, no source moved — measured-at stamping, the could-this-rot sweep, the out-of-diff
+sweep and every `--check` generator would all have passed it, and did. What caught it was
+a reviewer whose job was to refuse the argument.
+
+Recorded as §7 row 7 and, at more length, in the packet's §0.1 under *What the gates do
+not catch*, because a successor inheriting a gate-heavy model needs to know precisely
+where the coverage stops. The error direction is predictable — inflation runs toward the
+modal verbs, *impossible / always / never* — so the review posture is to go at those verbs
+and ask what would have to be true.
+
+**My own instance, which is the useful part.** I re-derived every fact under that claim
+and carried the modal verb anyway. Deriving the evidence did not re-derive the claim the
+evidence was put to, and the gates were green throughout. Two independent people made the
+same error on the same argument.
+
+**The remaining HIGH: an unstamped ratio.** The packet still carried *8 type-only symbols
+against 16 value symbols*, sitting below a stamp that read "every figure above" — a stamp
+that covers by **page position** rather than by naming what it covers, so a later edit
+slides a new figure under a stamp that never described it. Worse, it was the exact census
+the surrounding prose now says the argument does not need. Deleted: the enumerated type
+list plus the type-system fact carries the supporting half completely. The stamp block was
+rewritten to **name the four readings it covers**, and each command under it was run
+before it was printed.
+
+### The expected-red note, and a retraction
+
+Mid-round the PM advised that `check-handover` might red because the o-prime had been
+committing, and that regenerating would be the right response — then retracted it, having
+derived that
+`git diff --name-only 9c94991..HEAD -- …/plan.dd.json government/standing-constraints.md`
+is empty. Neither embed source had moved.
+
+The check was run here rather than waved through: sources unmoved, and the packet's entire
+`## 9a` embed region **byte-identical** to the reviewed `9c94991`, so `just gen-handover`
+reporting "up to date" was confirmed against the artifact rather than trusted.
+
+The note itself is the finding. It edited no test and disabled no check; it
+**pre-authorised dismissing a signal**, which would have converted the drift gate into
+decoration for any red arriving in that window — the same argument this repo used to keep
+`release.yml` from firing on `main`. It came from the person who most wanted the gate to
+work, sent to save time. Hostility is not the delivery mechanism; helpfulness is.
+
+Together with the overclaim it marks the boundary, now stated in the packet: **our
+instruments check artifacts, so what survives them lives in what people say about
+artifacts.** Deliberately **no gate was built for either** — a gate that cannot detect the
+thing it names is a claim outrunning its implementation, which is the very class §7 exists
+to record. In both cases the person had argued the opposing principle one cycle earlier.
+
+### Guards added, and two defects mutation found in my own guard
+
+`test/docs-surface.test.ts` gained two rows, scoped narrowly and honestly: §2.1 must state
+the recommendation as substitution and must NOT contain the impossibility phrasing, while
+§0.1 MUST retain that phrasing as the worked counterexample. The same string is banned
+where the argument is made and required where the lesson is taught.
+
+Mutation-proved, and it found two defects the review had not:
+
+| # | mutation | result |
+|---|---|---|
+| M7 | reintroduce the overclaim in §2.1 | RED, naming §2.1 |
+| M8 | delete §0.1's counterexample | **PASSED — a real gap.** The assertion named §0.1 but matched the whole packet, so §7 row 7's copy satisfied it. Scoped to §0.1; now RED |
+| M9 | rename the gate-blindness section away | RED |
+| M10 | rename `### 2.2` to `### 2.2b` | passed — prefix still matches; the honest hazard is a *missing* bound |
+| M11 | remove the `### 2.2` heading entirely | RED |
+
+A third defect surfaced without a mutation: the guard failed on the **clean tree**. The
+banned phrase is one line inside §7's table row and **wraps across two lines** in §0.1's
+paragraph, so a raw `toContain` was silently dependent on where the text reflowed. Both
+slices now collapse whitespace before matching.
+
+M11 initially reddened against §7's text rather than naming the broken bound, because
+`indexOf` returning `-1` makes the slice swallow most of the document. Bounds now throw
+`cannot bound section … — guard is broken`, so a broken guard cannot read as a clean
+document — the same rule already applied to the constraints parser.
+
+Every gate green at the commit below: `just checks` (59 files, 712 tests), `just
+check-handover` up to date, `self-host-check` 6 documents zero drift.
+
+### Staging
+
+Committed by **named path only**, per the PM's rule after an `index.lock` collision showed
+the o-prime's `git add` and mine could interleave in the shared index. `git add -A`, a bare
+`git add .`, a directory add and `commit -a` are all off. The staged set was derived with
+`git diff --cached --stat` *before* the message was written, and verified after committing
+to contain only this seat's files — `648febd` is the incident in reverse, where a bare add
+swept 212 lines of this seat's in-progress packet under someone else's message.
+
+### Adjacency: a third way this class appears, and an audit of my own packet
+
+A count correct in isolation can become wrong by being placed next to another correct
+count. The o-prime hit it consolidating `government/pending.md`: two reordered paragraphs,
+one counting sweep defects and one counting near-misses over overlapping but non-identical
+incidents, each accurate where originally written, contradicting once adjacent. The defect
+was created by **moving text**, not by writing a wrong claim.
+
+It matters here because every mitigation this plan shipped assumes a claim goes wrong over
+time (decay) or at the moment of writing (overstatement). This one goes wrong at the moment
+of **editing**, from two true statements, and no stamp, generator or derivation reaches it.
+
+Its resolution was the sharper part: there were three incidents, and the distinction that
+mattered was **which landed versus which was luck** — the `.dlg-*` gitlink landed, `648febd`
+landed, the `index.lock` collision missed only because the lock fired before the commit did.
+
+**Audit run over this packet, since §0 had accumulated entries across four dispatches** —
+exactly the surface described. It found two live contradictions of my own making, neither
+of which was a wrong statement:
+
+- **`## 8. Two operational hazards`** — a count in a heading, sitting above a list I was
+  about to extend with the shared-index hazard. Correct when written; falsified by an
+  edit elsewhere. Count removed from the heading.
+- **`## 7`'s preamble** claimed *"three plan guardrails … here is every instance"* while
+  the table had just gained row 7, which is a **different class** (overclaim, not decay).
+  Both statements were true of their own subject and misleading side by side. The preamble
+  now names guardrails 7/9/13 explicitly and states that rows 1–6 are that class while row
+  7 is deliberately not.
+
+Also added as §8 hazard 3: two agents in one working tree share **one git index**, so a
+bare `git add` stages the other agent's work under your message. Carried verbatim, because
+it is the argument rather than a mitigating detail: *all three were between the two agents
+who have been most careful about everything else.* The recommendation is a worktree per
+agent — the §0 principle arriving as a repo layout instead of a rule.

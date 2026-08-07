@@ -514,4 +514,67 @@ describe('the handover packet carries the contracts it claims to carry', () => {
       'a standing commit count decays immediately — print the command instead',
     ).not.toMatch(/fast-forward of \d+ commits/);
   });
+
+  /**
+   * Deliberately NARROW, and the narrowness is the point.
+   *
+   * The packet's §0.1 argues that no gate can catch an argument INFLATED at the
+   * moment of writing — the facts under §2.1's recommendation were derived
+   * correctly by two people and the overclaim rode through every instrument we
+   * own. A test that claimed to catch overclaim would be an instance of the very
+   * defect §0.1 describes.
+   *
+   * So this guards only what a string comparison honestly can: that the corrected
+   * SUBSTITUTION framing is still the one stated, and that the packet still warns
+   * a reader where the gates stop. Both are regressions a future edit could make
+   * silently; neither is a claim to detect overclaim.
+   */
+  it('states the SDK recommendation as a cost, not as a barrier', () => {
+    // Scoped to 2.1 on purpose. The phrase is BANNED where the argument is MADE
+    // and REQUIRED in 0.1, where it is quoted as the worked counterexample. An
+    // earlier draft of this test matched the whole packet and tried to tell those
+    // two apart by regex; it reddened on 0.1, and the tempting fix was to drop
+    // the lesson from the packet to keep a test green.
+    // Collapse whitespace before matching. Prose REFLOWS — the same sentence is
+    // one line in a table row and two lines in a paragraph — so a raw toContain
+    // silently depends on where the wrap fell. This guard passed in 7 and failed
+    // in 0.1 for exactly that reason, with no content difference at all.
+    const flat = (s: string): string => s.replace(/\s+/g, ' ');
+    // A missing bound must NAME itself. Left to indexOf's -1 the slice silently
+    // becomes almost the whole document, and the assertion then reds against
+    // some other section's text — a broken guard reporting a content defect.
+    const section = (from: string, to: string): string => {
+      const start = packet.indexOf(from);
+      const end = packet.indexOf(to);
+      if (start === -1 || end === -1 || end <= start) {
+        throw new Error(`handover packet: cannot bound section ${from}..${to} — guard is broken`);
+      }
+      return flat(packet.slice(start, end));
+    };
+    const argument = section('### 2.1', '### 2.2');
+    expect(
+      argument,
+      'the recommendation must be stated as substitution, not impossibility',
+    ).toContain('possible only by REDESIGNING');
+    expect(
+      argument,
+      'an impossibility claim is beatable — it lost review once already',
+    ).not.toContain('cannot be shelled even in principle');
+    // Scoped too. Asserting this against the whole packet passed while 0.1's
+    // copy was deleted, because 7's row 7 quotes the same phrase — a guard
+    // satisfied by a DIFFERENT section than the one it names. Found by mutation,
+    // not by review.
+    const lesson = section('## 0.1', '## 1. The artifact');
+    expect(lesson, '0.1 must keep the overclaim quoted as the counterexample').toContain(
+      'cannot be shelled even in principle',
+    );
+  });
+
+  it('warns that the guardrails do not cover overclaim', () => {
+    expect(packet).toContain('What the gates do NOT catch');
+    expect(
+      packet,
+      'koala inherits a gate-heavy model and must know where its coverage ends',
+    ).toContain('INFLATED AT THE MOMENT OF WRITING');
+  });
 });

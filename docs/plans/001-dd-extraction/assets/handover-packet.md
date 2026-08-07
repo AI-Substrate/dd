@@ -55,8 +55,130 @@ why the guardrails below are reproduced verbatim rather than summarised, and why
 count in this packet carries the command that re-derives it.
 
 A handover claiming careful agents would be the exact defect class we spent this plan
-catching — six times, enumerated in §7, including once in the document that argues for
+catching — every instance enumerated in §7, including one in the document that argues for
 the rule.
+
+### The half of this that is not an instrument
+
+A governance model made of gates and generators reads as though the only valuable act is
+**building** something. It is not, and the plan's own record says so plainly: **three of
+its highest-leverage outputs were REFUSALS, and none of them produced an artifact — each
+prevented one.**
+
+- The PM **refused to become the serialization point** for delegate work, and declined the
+  authority that would have come with it.
+- The reviewer **refused the o-prime's argument** for library consumption — an argument
+  whose facts were correct and whose modal verb was wrong (§7 row 7).
+- The coder **rejected its own completed sweep**, having recognised the *is-it-wrong* test
+  wearing the disguise of the *could-it-rot* test. Nobody had asked for a redo, and the
+  first sweep would have passed review.
+
+Note where two of those point: **against the refuser's own interest, or against their own
+prior work.** That is the uncomfortable shape of the good ones.
+
+It also sets the limit on everything else in this packet honestly. **The gates are what we
+BUILT; the refusals are what caught what the gates could not.** §0.1 names the exact class
+the gates cannot see, and a refusal is the only instrument that has ever caught it. You
+inherit both halves — and only one of them is executable.
+
+### How to defeat a gate without touching it: the EXPECTED-RED note
+
+One more hazard, and it is the one most likely to reach you from a **trusted** source,
+because it arrives as helpfulness.
+
+While this packet was being fixed, the PM sent: *o-prime has committed since your base, so
+if `check-handover` reds, that is why, and regenerating is the right response.* It was
+**inferred from o-prime committing steadily, not derived**, and one command falsifies it:
+
+```bash
+# did any EMBED SOURCE actually move? empty output = no
+git diff --name-only <your-base>..HEAD -- \
+  docs/plans/001-dd-extraction/plan.dd.json government/standing-constraints.md
+```
+
+It was empty. The commits touched `government/orient-local.md` and `government/pending.md`,
+neither an embed source. So any red would have been **real**.
+
+**Understand what that note does, because it is subtler than a wrong fact.** It never
+edited a test, disabled a check, or touched a config. It **pre-authorised dismissing a
+signal** — and had a red appeared for an unrelated reason, the sanctioned response was
+already "regenerate until green". *A red that everyone has been told to expect is worse
+than no red at all*, because the day it fires for a real reason nobody looks. That is the
+exact argument this repo used to keep `release.yml` from firing on `main` (§2.2): a gate
+built one cycle earlier was nearly made decorative by a single sentence.
+
+Note the source. It came from the person who **most wanted the gate to work**, sent in good
+faith to save the recipient time. Hostility is not the risk here; **helpfulness is the
+delivery mechanism**, which is why "trust the sender" offers no protection at all.
+
+**So: never accept a pre-authorised red.** When told a failure is expected, that is the
+moment to derive it — the note costs one command to check and, unchecked, converts your
+best gate into decoration. In this instance the check was run: sources unmoved, the embed
+region byte-identical to the reviewed commit, gate green **for a real reason**.
+
+The rule this yields is about **what a supervisor may say**, not about what a gate may do:
+*never tell an operator a red is expected unless you DERIVED it in the same message.*
+
+### The boundary: two places mechanism cannot reach
+
+Those last two findings are not two more entries on the guardrail list. Read together they
+mark the **edge of what any instrument in this repo can do**, and that is the single most
+useful thing we can hand you:
+
+| what gets past every gate | why no check sees it | the only instrument that works |
+|---|---|---|
+| an **overclaim assembled from CORRECT FACTS** | nothing decayed, nothing was unstamped, no source drifted — there is no artifact defect to detect | an **adversarial reader** whose job is to refuse the argument |
+| a gate **defeated SOCIALLY** — an operator told a red is expected | the gate still runs and still reds; what changed is the meaning assigned to it | a **rule about what a supervisor may say**, held by people |
+
+> **Our instruments check ARTIFACTS. So what survives them lives in what people SAY about
+> artifacts.**
+
+**Do not expect the gates to cover that, and do not build a gate that pretends to.** The
+reflex on finding a hole this shape is to build an instrument for it; a gate that cannot
+actually detect the thing is **worse than the honest gap**, because it converts a known
+blind spot into a believed-covered one. That failure has its own name in §7 — a claim
+outrunning its implementation — so building it would be the class catching us again, this
+time in the act of guarding against itself.
+
+### A third way in: adjacency
+
+One more, and it is the only one that needs neither decay nor overstatement:
+
+> **A count that is correct in isolation can become wrong by being placed next to another
+> correct count.**
+
+While consolidating a governance file, the o-prime reordered two paragraphs — one counting
+sweep defects, the other counting near-misses, naming overlapping but **not identical**
+incidents. Each was accurate where it was originally written. **Adjacency made them
+contradict.** The defect was created by *moving text*, not by writing a wrong claim.
+
+That is worth its own line here because every mitigation in this packet assumes a claim
+goes wrong over **time** (decay) or at the moment of **writing** (overstatement). This one
+goes wrong at the moment of **editing**, out of two true statements — and **no stamp,
+generator or derivation touches it.** You can derive both counts correctly and still ship
+the contradiction.
+
+The resolution is the useful part. There were three incidents, and the distinction worth
+drawing was **which LANDED versus which was luck**: the `.dlg-*` gitlink landed, `648febd`
+landed, and the `index.lock` collision missed only because the lock fired before the commit
+did. Consolidating on that distinction produced a record **sharper than either original
+paragraph** — the fix was a better cut, not a corrected number.
+
+**Practical consequence for anyone editing a document like this one:** after relocating or
+merging sections, **re-read the adjacencies**. Any two claims newly placed near each other
+— especially counts and instance lists — may now disagree without either being wrong. This
+section accumulated its entries across four separate dispatches, which is exactly the
+surface the defect lives on, so the audit was run over this packet before it shipped; it is
+what removed the counts from the §8 heading and from §7's cross-references.
+
+**One detail belongs in the record, and it is evidence rather than confession.** In the two
+cases above the person had argued the **opposing principle one cycle earlier**: the PM had used
+"a red nobody looks at is worse than no red" to justify holding `release.yml` back, then
+sent an expected-red note; the o-prime had just corrected somebody else's overstatement
+when it made its own. Knowing the rule, having recently *applied* the rule, and being the
+person who most wants it upheld — none of that was protection. **That is what these
+failures look like from the inside**, and it is the whole argument for writing them down
+instead of trusting anyone, including yourself, to notice.
 
 ## 0.1 The operating rule that follows from it
 
@@ -66,7 +188,7 @@ If you take one line from this packet, take this one:
 > The first is durable, the second is honest, the third is the only one that survives
 > the repo moving.
 
-It comes from a propagation sweep run after the sixth instance (§7 row 6), and it is
+It comes from a propagation sweep run after the `orient-local.md` instance (§7), and it is
 worth more than the rows it produced, because it says **which claims rot and which do
 not** — the answer is not what most reviewers assume.
 
@@ -81,11 +203,12 @@ claim:
 | **State asserted in the present tense as standing guidance** | `government/orient-local.md`: "Measured: `dd status` reports `ported: []`, `remaining: 10`, exit 2" | **Yes, and only this one.** |
 
 A present-tense measurement inside a document meant to stay current **has no expiry and
-no owner**. Nobody is wrong when it rots, so nobody fixes it. All six instances in §7
-have that shape.
+no owner**. Nobody is wrong when it rots, so nobody fixes it. **Every DECAY instance in
+§7 has that shape** — which is all of them except the last row, and that exception is the
+most important thing in this section. See § *What the gates do not catch*, below.
 
 **So the test is not "is this figure wrong". It is "could this figure become wrong
-without anyone touching it".** Every instance in §7 was *correct when written* — a sweep
+without anyone touching it".** Every decay instance in §7 was *correct when written* — a sweep
 that only removes the figures someone has already proved stale leaves behind every
 figure that is accurate today and rots next week, which is precisely how each of them
 got in. When the o-prime applied this to its own orientation file it derived two
@@ -103,6 +226,60 @@ honest destinations:
 
 **In every case the bare present-tense number is deleted.** Where you see a count in
 this packet it is one of those three, deliberately.
+
+### What the gates do NOT catch
+
+You are inheriting a **gate-heavy** governance model, so you need to know precisely where
+its coverage ends — otherwise you will trust it past its edge, which is worse than having
+no gate at all.
+
+**Every guardrail in §9a catches DECAY: a claim that was true when written and went stale.**
+There is a second failure that produces an untrue claim, and **not one of our gates can see
+it** — a claim **INFLATED AT THE MOMENT OF WRITING**, from facts that are entirely correct.
+
+The worked instance is in this very section of the packet (§2.1). The recommendation that
+harness must consume dd as a library was argued as *"these imports cannot be shelled even
+in principle."* The supporting facts were **derived correctly and are not in dispute** —
+the injection sites are real, the inline per-cell calls are real. Only the **modal verb**
+was wrong. Shelling is not impossible; it is **not drop-in substitutable**, and a
+redesigned boundary (a batched walk request, a persistent worker, an RPC) could do it at
+the cost of different state and failure semantics.
+
+Now check that against the gates, because this is the whole point:
+
+| gate | would it have fired? |
+|---|---|
+| measured-at stamping | **No.** Nothing was unstamped. |
+| the could-this-rot sweep | **No.** Nothing decayed — it was untrue on the day it was written. |
+| out-of-diff assertion sweep | **No.** No assertion changed behaviour elsewhere. |
+| every drift generator and `--check` | **No.** There was no source to drift from. |
+
+**What caught it was a reviewer whose job was to REFUSE the argument.** Not care, not
+diligence, and specifically not derivation — the deriving was done correctly and the
+overclaim survived it. That is the argument for the **adversarial review pass as a distinct
+instrument**: our gates catch decay, and only a reader actively trying to beat a claim
+catches an overclaim assembled from correct facts.
+
+**The direction of this error is predictable, which is what makes it worth guarding.**
+Inflation runs toward the modal claim — *impossible*, *always*, *never*, *cannot* — because
+those read stronger. So when reviewing an argument rather than a figure, **go straight to
+the modal verbs and ask what would have to be true for each to hold.**
+
+**Two independent instances, both while people were being careful:**
+
+- The o-prime overstated it to Jordan **while correcting someone else's overstatement**,
+  and corrected him directly (recorded as P-3, `7fe4d10`).
+- I then carried that modal framing into this packet **after having re-derived every
+  underlying fact myself** at upstream `ab1e7e75`. Re-deriving the evidence did not
+  re-derive the claim the evidence was put to. That is the trap in one line, and the gates
+  were green throughout.
+
+**The practical form is COST versus BARRIER, and it is not merely a politeness.** State it
+as a cost — *an SDK is required to preserve the CURRENT integration; a CLI-only option is
+possible only by REDESIGNING the integration* — and the decision-maker weighs work they can
+fund. State it as a barrier and you invite them to hunt the counterexample; when they find
+one, **a correct recommendation dies on a technicality instead of on its merits.** The
+overstated version was not just less honest. It was **weaker**.
 
 ### The protective corollary: NEVER SWEEP STAMPED HISTORY
 
@@ -237,36 +414,92 @@ basis `d08f4942` and independently re-verified by the o-prime at upstream HEAD
   `acts/plan/index.ts`, `acts/plan/pr-body.ts`, `acts/plan/fence.ts`. **Re-run the
   commands below before you rely on the totals** — upstream moves, and the file *names*
   matter more than the count.
-- **None of it is CLI-shaped**, and this part is structural rather than a reading, so it
-  does not decay with the count. `MemoizingDocLoader` and `ConventionSchemaResolver` are
-  injected objects — a process boundary destroys the memoization they exist for.
-  `validateWalk` / `traverseCorpus` / `resolveMapSeed` return in-memory graphs. And a
-  set of the imported symbols are **TYPES** (`DdDoc`, `DdIssue`, `SchemaIssue`,
-  `PlanDocument`, `ReadyReading`, `PlanEdge`, `PlanIndex`, `PlanItem`), which **cannot
-  cross a CLI boundary at all** — a type import has no runtime representation to shell
-  out to. That argument holds whatever the census totals do next.
-- That makes library consumption **forced, not preferred**.
-- `escapeCell` and `headingSlug` were imported only by `acts/plan/pr-body.ts` (all
-  call sites table-cell and anchor composition), so a narrow public util subpath would
-  satisfy harness without dragging the whole renderer API under semver.
+- **The claim, stated at exactly the strength the evidence carries:** **an SDK is required
+  to preserve the CURRENT integration; a CLI-only option is possible only by REDESIGNING
+  the integration.** This is a claim about **substitution**, not about possibility — and
+  it is stated this way after the stronger-sounding version was written, argued, and
+  refused in review. §0.1 carries that as the worked counterexample, and it is the reason
+  this paragraph reads as a cost rather than a barrier. What the value imports prove is
+  that **no drop-in CLI replacement exists for the existing call sites**: object identity, injected ports, memoized state and synchronous utility
+  calls do not cross an ordinary subprocess invocation. A redesigned boundary *could* work
+  — send a whole walk request plus serializable config to one invocation, stand up a
+  persistent worker or RPC, batch-escape every cell in a single command. Those are
+  material caller and protocol redesigns with different state and failure semantics. They
+  are **work to fund**, and naming them puts the real cost in front of the decision-maker
+  instead of a barrier a reader can disprove.
 
-**Every figure above was re-derived here, not carried on the supplier's headline**, and
-each is stamped to upstream `ab1e7e75` rather than stated as current:
+  The two supports are not equally strong. Lead with the value imports; keep types as
+  support.
+
+  **Load-bearing — injection.** `MemoizingDocLoader` and `ConventionSchemaResolver` are
+  not called, they are **constructed and passed in**. `acts/flow.ts:121,126` builds
+  `ddGateDeps` as `{ schemaResolver: new ConventionSchemaResolver({ fs: deps.fs, … }),
+  docLoader: new MemoizingDocLoader(new FsDocLoader(deps.fs, new NodeHash(), null)) }` and
+  hands the pair to dd's gate; `acts/plan/index.ts:142` does the same as a resolver
+  factory. You cannot inject a process into a function call — so shelling here is not a
+  slower version of the same program, it is **a different one**. Note what is injected:
+  `deps.fs` is *harness's own* `FsPort`, so ownership runs inward. A subprocess cannot
+  receive its caller's port, and upstream names the thing that would cost it in the same
+  file — the composition root says taking the port back is what makes the gate *"drivable
+  with fakes"*. That testability is part of what a redesign has to re-buy.
+
+  **Load-bearing — inline composition.** `escapeCell` is called **inside the template
+  literals that build table rows** (`acts/plan/pr-body.ts:160`, `:247`, `:249` — a cell
+  expression per column). Per-cell process spawning is not a viable substitution; making
+  it CLI-shaped means batching every cell in a document into one call, which is a
+  different composition than the one written. `validateWalk` / `traverseCorpus` /
+  `resolveMapSeed` land the same way: they return in-memory graphs, not printable answers.
+
+  **Supporting — types. True, but this is the rebuttable half; never lead with it.**
+  The imported type-only symbols are `DdDoc`, `DdIssue`, `SchemaIssue`, `PlanDocument`,
+  `ReadyReading`, `PlanEdge`, `PlanIndex`, `PlanItem`, and a type import has no runtime
+  representation to shell out to. But types are **erased at compile time**, which is *why*
+  they cannot cross a process boundary and equally why a determined consumer can simply
+  **redeclare them locally**. Anyone who answers *"so redeclare the types"* has beaten this
+  argument. What they actually lose is **single definition** — two vocabularies for one
+  document, drifting. That is correctness over time rather than possibility: real,
+  rebuttable, and slow to land. Upstream names the hazard itself, about the loader rather
+  than the types but identically shaped: a second one *"would be a second answer to 'what
+  is a readable dd document', and the two would drift."*
+- **That makes library consumption forced for the integration as it stands**, and forced
+  by the injection and the inline calls rather than by the type list — no redeclaration
+  routes around those.
+- `escapeCell` and `headingSlug` were imported only by `acts/plan/pr-body.ts`, so a narrow
+  public util subpath would satisfy harness without dragging the whole renderer API under
+  semver. That is a **packaging** observation, not part of the argument above.
+
+**What is stamped, named rather than covered by position.** A stamp that covers *"every
+figure above"* is a hazard of its own: it protects by page position, so a later edit slides
+a new figure under a stamp that never described it. These four readings, and only these,
+were re-derived at upstream `ab1e7e75` — each command below was **run**, not merely
+printed, and each is a **past-tense record of that commit**, not a statement about now:
+
+1. **16 non-test consumer files of `services/dd`**, of which **12 under `acts/dd` leave
+   with the port** — leaving **4 surviving files**.
+2. **The 3 surviving injection sites** — the load-bearing claim above.
+3. **The `escapeCell` calls inside template literals** in `pr-body.ts`.
+4. **`pr-body.ts` as the only importer** of `escapeCell` / `headingSlug` outside
+   `services/dd`.
 
 ```bash
-# consumers; those under acts/dd leave with the port, the rest survive
+# 1 — consumers; those under acts/dd leave with the port, the rest survive
 grep -rlE "from '.*services/dd" harness/cli/src --include=*.ts | grep -v '^harness/cli/src/services/dd/'
-# pr-body.ts should be the only importer outside services/dd
-grep -c -E '\b(escapeCell|headingSlug)\(' harness/cli/src/acts/plan/pr-body.ts
+# 2 — injection sites that SURVIVE the port (acts/dd rows leave with it)
+git grep -nE 'new (MemoizingDocLoader|ConventionSchemaResolver)\(' -- 'harness/cli/src/acts' | grep -v '/acts/dd/'
+# 3 — escapeCell called INSIDE a template literal, i.e. per table cell
+git grep -nE '\$\{[^}]*escapeCell\(' -- 'harness/cli/src/acts/plan/pr-body.ts'
+# 4 — pr-body.ts should be the only importer outside services/dd
 grep -rl 'escapeCell\|headingSlug' harness/cli/src --include=*.ts | grep -v services/dd
 ```
 
-The type census was recomputed by parsing the four surviving files' import statements:
-8 type-only symbols (the list above) against 16 value symbols. A figure entering a
-durable artifact on someone else's summary line is how a rare bad number becomes a
-permanent one — the propagation runs through the recipient, so it is stoppable here.
-The same standard is why the o-prime re-ran koala's census at a different SHA instead of
-accepting it, which is the only reason a six-versus-nine slip surfaced at all. No
+**No type/value ratio is stated here, deliberately.** An earlier draft carried one, and it
+was the packet arguing against itself: the prose above says the argument does not need that
+census, while a fresh-looking count sat underneath collecting decay for nothing. The
+enumerated type list plus the type-system fact carries the supporting half completely. A
+figure entering a durable artifact on someone else's summary line is how a rare bad number
+becomes a permanent one — the propagation runs through the recipient, so it is stoppable
+here. The same standard is why the o-prime re-ran koala's census at a different SHA instead
+of accepting it, which is the only reason a six-versus-nine slip surfaced at all. No
 exception for a peer prime, and none for the o-prime either.
 
 **Evidence is not a ruling.** However strong the above is, OQ-1 and OQ-2 remain Jordan's
@@ -426,10 +659,12 @@ things that earned their place rather than as decoration:
 
 ## 7. What is still costing us attention
 
-Three plan guardrails cover the class where **a claim outran its implementation** — a
-docstring, a comment or a receipt asserting something no code checks. Here is every
-instance, so the count below is the number of rows rather than a figure carried from
-someone's summary:
+Guardrails 7, 9 and 13 cover the class where **a claim outran its implementation** — a
+docstring, a comment or a receipt asserting something no code checks. Every instance is
+listed here, so the count is the number of rows rather than a figure carried from someone's
+summary. **Rows 1–6 are that class. Row 7 is deliberately a different one**, kept in the
+same table because the contrast is the lesson; the paragraph under the table draws the
+line.
 
 | # | The claim | When it stopped being true | The fix that stuck |
 |---|---|---|---|
@@ -439,15 +674,23 @@ someone's summary:
 | 4 | the README anti-rot guard's docstring: extracts the quick start and runs it through the shipped bin | true of the JSON heredocs it did extract; the `dd` commands were retyped as hardcoded arrays, so a wrong command in the README stayed green | guard rewritten to execute what it extracts, proved by mutation (`8a13e53`) |
 | 5 | `ci.yml`: *the same three gates `just checks` runs, in the same order, so CI and local cannot drift* | true when written; `just checks` grew to five, and the missing one was `check-docs` — the drift gate itself | `test/ci-parity.test.ts` (`408caa7`) |
 | 6 | `government/orient-local.md`: *Measured: `dd status` reports `ported: []`, `remaining: 10`, exit 2* | true before phase 1; wrong on all four values by `d2520ad`, in the mandatory first read for a new seat, carrying the word **Measured** so it read as derived when it was inherited | `scripts/gen-orient-state.mjs` + `just check-orient` (`0fafbf2`); re-reading the file rather than patching the one line surfaced two further stale claims in it |
+| 7 | **a different subclass — read the next paragraph before reading this row.** §2.1's recommendation, argued as *"these imports cannot be shelled even in principle"* | **never.** It was **inflated at the moment of writing**, from facts that were derived correctly and are not in dispute; only the modal verb was wrong | restated at the strength the evidence carries — *an SDK is required to preserve the current integration; CLI-only is possible only by redesigning it*. **No gate caught this and none could**; an adversarial reviewer did (§0.1 *What the gates do not catch*) |
 
-**Every single one of those was a claim that was true when it was written.** Not one was
-ever a lie. The defect is always the same: **nothing re-derives, so truth decays into
-assertion at whatever rate the repo moves.** That is why the fixes that stuck are
-generators and gates rather than corrections — correcting the text resets the clock,
-generating it removes the clock. That one line explains the entire guardrail set in §9a.
+**Rows 1–6 were each a claim that was true when it was written.** Not one was ever a lie.
+The defect is always the same: **nothing re-derives, so truth decays into assertion at
+whatever rate the repo moves.** That is why the fixes that stuck are generators and gates
+rather than corrections — correcting the text resets the clock, generating it removes the
+clock. That one line explains the entire guardrail set in §9a.
 
-**What is still unmechanized.** Only one of the three guardrails is fully mechanized —
-the `na`-requires-a-reason rule in §6. The other two:
+**Row 7 is in this table precisely because it BREAKS that pattern**, and it would have been
+easy to leave out on the grounds that it does not match. It never decayed and it was never
+unstamped, so it is invisible to every instrument above; the facts under it were correct
+and independently re-derived by two people, and the overclaim rode through anyway. **Do not
+let the neatness of rows 1–6 teach you that generators and gates are the whole answer.**
+They cover decay completely and overclaim not at all — see §0.1.
+
+**What is still unmechanized.** Of those three guardrails only the `na`-requires-a-reason
+rule in §6 is fully mechanized. The other two:
 
 - **OUT-OF-DIFF SWEEP** remains pure discipline. Nothing fails today if a reviewer skips
   it. Known shape: a gate over assertions naming behaviour changed outside the diff.
@@ -457,12 +700,14 @@ the `na`-requires-a-reason rule in §6. The other two:
   comment is still unmechanized. Known shape: a linter requiring every count-claim to
   carry a resolvable SHA.
 
-Both are carried as backlog item 19.
+Both are carried as backlog item 19. Row 7 has **no** mechanized answer and is not
+expected to get one: the known shape is a review posture (interrogate the modal verbs), not
+a gate.
 
 *A rule not yet mechanized is a rule we are still paying for in attention every review.*
 You inherit both the guardrails and that ongoing cost.
 
-## 8. Two operational hazards, learned the hard way
+## 8. Operational hazards, learned the hard way
 
 1. **Backticks in text passed through a shell get evaluated and silently eat content.**
    It bit two agents in this fleet within an hour; in one case it ate two branch names
@@ -474,6 +719,28 @@ You inherit both the guardrails and that ongoing cost.
    committed text citable by SHA. During this phase a ruling was read from an
    uncommitted file, was **wrong at the moment it was read**, and needed a transcription
    repair minutes later. Acting on it would have implemented text nobody had ruled.
+
+3. **Two agents in one working tree share ONE git index.** `git add` is not private: a
+   bare `git add -A`, `git add .`, a directory add or `commit -a` stages whatever the
+   other agent happens to have staged, and sweeps their work under your commit message.
+   Three incidents in this plan — the `.dlg-*` gitlink and `648febd` both **landed**;
+   an `index.lock` collision missed **only because the lock fired before the commit did**,
+   which is luck, not safety. `648febd` carried 212 lines of one agent's in-progress
+   packet under another's message; the content survived, but the SHA is mislabelled
+   forever, and a mislabelled SHA is a broken citation in a repo whose whole authority
+   model is *cite by SHA* (hazard 2).
+
+   **Stage NAMED PATHS ONLY.** Then run `git diff --cached --stat` **before** writing the
+   message, derive the message from what is actually staged, and verify after committing
+   that you took only your own files.
+
+   > **All three were between the two agents who have been most careful about everything
+   > else.**
+
+   Read that as the argument rather than as a mitigating detail: care did not prevent any
+   of them, so if you are running more than one agent against one checkout, give each a
+   worktree. This is the same lesson as §0's — prefer the fix that does not depend on
+   anyone being diligent — arriving as a repo layout rather than as a rule.
 
 ## 9. Pointers
 
