@@ -1,0 +1,21 @@
+docs/plans/001-dd-extraction/the-flow.json
+  s_cf2b084cd219c0::t_53574965c5f880 1047-1058,1701,1715-1723
+docs/plans/001-dd-extraction/the-flow.md
+  s_cf2b084cd219c0::t_3e34b2845218d8 4,18,108-110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "20e412c2d7104d94f713f744cc277cf14761fc1d",
+  "prompts": {},
+  "sessions": {
+    "s_cf2b084cd219c0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_cf2b084cd219c0",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
