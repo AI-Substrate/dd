@@ -1,0 +1,20 @@
+docs/plans/001-dd-extraction/assets/tasks/phase-3/execution.log.md
+  s_743eafe62757dd::t_cd9af550b203f7 157,161-162,164
+  s_743eafe62757dd::t_e2b4ea252e4be8 178-254
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "6859619764c076d12c2458699307567acd9d9725",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
