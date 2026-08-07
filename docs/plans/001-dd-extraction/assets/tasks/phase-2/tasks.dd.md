@@ -27,16 +27,64 @@
 
 ## Summary
 
-_Empty._
+Phase 2 — CLI acts + plumbing parity. Bring the stub to upstream plumbing parity (output/style + six adapter families incl. jiti loader), land all 13 acts on the envelope seam registering the ten verbs honestly, fix --json to postfix-tolerant, port the docs generation/drift pipeline (RULED into this phase 2026-08-07), and land the phase-2 test corpus per the committed audit. dd status must flip to ok/exit 0 ported[10] by phase end. Logical group: dd-the-binary.
 
 <a id="tasks"></a>
 
 ## Tasks
 
-_No entries._
+| id | title | domain | phase | state | note | receipt | done | success | notes | satisfies |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| tk-0001 | Plumbing parity: port output/style.ts + adapters env/exec/fs/hash/process/loader (jiti-loader) from upstream with path adjustments only; add jiti 2.7.0 to dependencies (runtime deps land at exactly commander+jiti) | — | ph-8bda | [ ] unchecked | — | — | — | — | — | [ac-0004](../../../plan.dd.md#acceptance-criteria) |
+| tk-0002 | Acts infrastructure + first verb slice: port acts/dd/shared.ts + schema-fs.ts, then validate, schema, docs acts rewired to this repo output family; register each verb in src/app.ts ONLY in the commit where it works; envelope tests extended per verb | — | ph-8bda | [ ] unchecked | — | — | — | — | — | [ac-0003](../../../plan.dd.md#acceptance-criteria), [ac-0004](../../../plan.dd.md#acceptance-criteria) |
+| tk-0003 | Second verb slice: port address, link, links, graph acts; register + envelope tests per verb | — | ph-8bda | [ ] unchecked | — | — | — | — | — | [ac-0003](../../../plan.dd.md#acceptance-criteria), [ac-0004](../../../plan.dd.md#acceptance-criteria) |
+| tk-0004 | Third verb slice: port build, write, doctor acts (jiti custom-type loading path live); register + envelope tests per verb; dd status flips to ok/exit 0 ported[10] in the commit landing the last verb | — | ph-8bda | [ ] unchecked | — | — | — | — | — | [ac-0003](../../../plan.dd.md#acceptance-criteria), [ac-0004](../../../plan.dd.md#acceptance-criteria) |
+| tk-0005 | --json postfix fix: every verb accepts postfix --json (dd status --json exits per status, not E002) AND prefix still works; AGENTS.md example corrected in the same commit | — | ph-8bda | [ ] unchecked | — | — | — | — | — | [ac-0005](../../../plan.dd.md#acceptance-criteria) |
+| tk-0006 | Docs pipeline (RULED into phase 2): port scripts/gen-dd-docs.mjs + scripts/check-dd-docs.mjs, wire an npm script + just recipe, include test/services/dd/docs/dd-docs-drift.test.ts in the ported set — closes the silent-drift gap on src/docs/content/*.md | — | ph-8bda | [ ] unchecked | — | — | — | — | — | [ac-0006](../../../plan.dd.md#acceptance-criteria), [ac-000a](../../../plan.dd.md#acceptance-criteria) |
+| tk-0007 | Phase-2 test corpus per the committed audit (acts + remaining service tests; biome noUnsafeOptionalChaining override stays scoped to ported test dirs, NEVER src/); just checks green end to end | — | ph-8bda | [ ] unchecked | — | — | — | — | — | [ac-0006](../../../plan.dd.md#acceptance-criteria) |
 
 <a id="done-when"></a>
 
 ## Done when
 
-_No fields._
+### tk-0001
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0001 | style.ts + all six adapter families present under src/; tsc clean; package.json dependencies == {commander, jiti} exactly; npm ls --omit=dev shows no other runtime dep | [ ] unchecked | not-applicable | instrument: tsc exit; jq over package.json; npm ls |
+
+### tk-0002
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0002 | validate/schema/docs registered and working; dd status data.ported includes exactly the working verbs at every commit (ledger honesty); envelope tests cover each with exit map 0/0/2/1 | [ ] unchecked | not-applicable | instrument: vitest envelope suite; dd status --json parsed per commit |
+
+### tk-0003
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0003 | address/link/links/graph registered and working with envelope tests; dd status ported count grows only with working verbs | [ ] unchecked | not-applicable | instrument: vitest; dd status envelope |
+
+### tk-0004
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0004 | build/write/doctor working incl. a real jiti custom-type load in tests; dd status exits 0 with ported[10] remaining[] in the final commit of this task | [ ] unchecked | not-applicable | instrument: dd status exit code + envelope; jiti-load test |
+
+### tk-0005
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0005 | for EVERY registered verb, &lt;verb&gt; --json postfix returns the same envelope+exit as prefix --json &lt;verb&gt;; the E002 repro from the plan (dd status --json) now exits 0; AGENTS.md shows the working form | [ ] unchecked | not-applicable | instrument: parameterized postfix test over the verb list |
+
+### tk-0006
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0006 | gen/check dd-docs scripts run via npm script + just; dd-docs-drift.test.ts green; a deliberate scratch edit to a content .md makes the check FAIL (red proven, then reverted) | [ ] unchecked | not-applicable | instrument: drift test red-then-green demonstrated in execution log |
+
+### tk-0007
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0007 | all audit-ported phase-2 tests green under just checks; biome override diff shows scope limited to test dirs; zero stay-classified files present | [ ] unchecked | not-applicable | instrument: just checks exit; git diff of biome.json |
