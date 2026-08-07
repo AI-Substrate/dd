@@ -164,5 +164,13 @@ is *us* choosing discipline over mechanism. Here it is **us misreading a lucky l
 reaction as evidence that discipline works**. The behaviour was real; the generalisation
 would have been false.
 
+**PRAISE IS THE DELIVERY MECHANISM, AND IT IS EXEMPT FROM EVERY INSTRUMENT WE BUILT** (the
+PM's own diagnosis of the trap it walked into). It was **not collecting evidence
+deliberately — it was writing a compliment.** That is what made it dangerous: an audit of
+its claims would have *passed*, because it was not making a claim. Every gate in this repo
+inspects assertions; a generalisation smuggled inside praise is never inspected, and **a
+future prime will not recognise the moment as claim-making at all.** Watch for a
+generalisation wearing a compliment.
+
 **A worker declined a compliment that would have made the fleet weaker.** Read this before
 staffing anything.
