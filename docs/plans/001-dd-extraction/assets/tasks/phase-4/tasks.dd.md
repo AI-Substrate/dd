@@ -35,11 +35,11 @@ Phase 4 — Self-hosting + handover. Fix the latent CI package-smoke assertion (
 
 | id | title | domain | phase | state | note | receipt | done | success | notes | satisfies |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| tk-0001 | Fix the latent CI defect: package-smoke job asserts the CURRENT dd status contract (ok/exit 0/ported[10]) instead of the stale unconfigured/exit-2 snapshot; add the pack-gate job to CI; sweep ci.yml + release.yml for any OTHER assertion about behaviour that phases 1-3 changed (the out-of-diff guardrail applied to CI itself) | — | ph-0a40 | [ ] unchecked | — | — | — | — | — | [ac-000a](../../../plan.dd.md#acceptance-criteria) |
+| tk-0001 | Fix the latent CI defect: package-smoke job asserts the CURRENT dd status contract (ok/exit 0/ported[10]) instead of the stale unconfigured/exit-2 snapshot; add the pack-gate job to CI; sweep ci.yml + release.yml for any OTHER assertion about behaviour that phases 1-3 changed (the out-of-diff guardrail applied to CI itself) | — | ph-0a40 | [x] checked | — | — | — | — | — | [ac-000a](../../../plan.dd.md#acceptance-criteria) |
 | tk-0002 | Exports freeze completion + dd-surface reconcile (INHERITS the P3 tk-0002 hold): when Jordan rules OQ-1/OQ-2, transcribe verbatim per doctrine, freeze the map, extend the consumer-surface test, reconcile docs dd-surface notes; until ruled this task is HELD, never guessed | — | ph-0a40 | [ ] unchecked | — | — | — | — | — | [ac-0002](../../../plan.dd.md#acceptance-criteria) |
-| tk-0003 | Self-host proof formalized: local dd build --check clean over ALL repo documents in CI (a just recipe + CI step), prime workflow permanently on the local bin (already switched at tk-0003 landing), harness plan validate still green as the semantic gate | — | ph-0a40 | [ ] unchecked | — | — | — | — | — | [ac-0008](../../../plan.dd.md#acceptance-criteria) |
-| tk-0004 | Migrate the 17-item dd-next backlog into docs/backlog.md with status/ownership annotations + the #8-before-#11 ordering constraint verbatim; add the exemplar-corpus question (from the P3 esc-4 ruling) as a new annotated row routed to Jordan alongside #8/#10; OPEN items stay open | — | ph-0a40 | [ ] unchecked | — | — | — | — | — | [ac-0009](../../../plan.dd.md#acceptance-criteria) |
-| tk-0005 | Handover packet for pij-related-koala: tarball + frozen exports map + F-04 surface notes + basis SHA d08f4942 + wire-format banner note (upstream siblings diff on swap) + renderer-skew window note + the stay-behind test list (11) + open backlog pointer; send the pointer to koala | — | ph-0a40 | [ ] unchecked | — | — | — | — | — | [ac-000a](../../../plan.dd.md#acceptance-criteria) |
+| tk-0003 | Self-host proof formalized: local dd build --check clean over ALL repo documents in CI (a just recipe + CI step), prime workflow permanently on the local bin (already switched at tk-0003 landing), harness plan validate still green as the semantic gate | — | ph-0a40 | [x] checked | — | — | — | — | — | [ac-0008](../../../plan.dd.md#acceptance-criteria) |
+| tk-0004 | Migrate the 17-item dd-next backlog into docs/backlog.md with status/ownership annotations + the #8-before-#11 ordering constraint verbatim; add the exemplar-corpus question (from the P3 esc-4 ruling) as a new annotated row routed to Jordan alongside #8/#10; OPEN items stay open | — | ph-0a40 | [x] checked | — | — | — | — | — | [ac-0009](../../../plan.dd.md#acceptance-criteria) |
+| tk-0005 | Handover packet for pij-related-koala: tarball + frozen exports map + F-04 surface notes + basis SHA d08f4942 + wire-format banner note (upstream siblings diff on swap) + renderer-skew window note + the stay-behind test list (11) + open backlog pointer; send the pointer to koala | — | ph-0a40 | [x] checked | — | — | — | — | — | [ac-000a](../../../plan.dd.md#acceptance-criteria) |
 | tk-0006 | END STATE: push main to origin (first push — full history), watch CI to green, fix-forward anything red; record the green run URL in the execution log | — | ph-0a40 | [ ] unchecked | — | — | — | — | — | [ac-000a](../../../plan.dd.md#acceptance-criteria) |
 
 <a id="done-when"></a>
@@ -50,7 +50,7 @@ Phase 4 — Self-hosting + handover. Fix the latent CI package-smoke assertion (
 
 | id | assertion | state | pressure | note |
 | --- | --- | --- | --- | --- |
-| dw-0001 | ci.yml package-smoke asserts ok/exit-0/ported[10]; pack-gate job present; the CI-config sweep found-and-fixed or found-nothing is recorded in the execution log with the grep used | [ ] unchecked | not-applicable | instrument: yaml diff + recorded sweep; final proof is tk-0006 green run |
+| dw-0001 | ci.yml package-smoke asserts ok/exit-0/ported[10]; pack-gate job present; the CI-config sweep found-and-fixed or found-nothing is recorded in the execution log with the grep used | [x] checked | not-applicable | instrument: yaml diff + recorded sweep; final proof is tk-0006 green run |
 
 ### tk-0002
 
@@ -62,13 +62,13 @@ Phase 4 — Self-hosting + handover. Fix the latent CI package-smoke assertion (
 
 | id | assertion | state | pressure | note |
 | --- | --- | --- | --- | --- |
-| dw-0003 | just recipe + CI step run local dd build --check over every .dd.json in the repo and exit 0; a deliberate scratch drift makes the step FAIL (red proven, reverted) | [ ] unchecked | not-applicable | instrument: red-then-green in execution log + CI step |
+| dw-0003 | just recipe + CI step run local dd build --check over every .dd.json in the repo and exit 0; a deliberate scratch drift makes the step FAIL (red proven, reverted) | [x] checked | not-applicable | instrument: red-then-green in execution log + CI step |
 
 ### tk-0004
 
 | id | assertion | state | pressure | note |
 | --- | --- | --- | --- | --- |
-| dw-0004 | docs/backlog.md carries all 17 rows + annotations + the ordering constraint verbatim + the new exemplar-corpus row; diff against upstream dd-next.md shows only formatting + the added row | [ ] unchecked | not-applicable | instrument: row-count + diff recorded |
+| dw-0004 | docs/backlog.md carries all 17 rows + annotations + the ordering constraint verbatim + the new exemplar-corpus row; diff against upstream dd-next.md shows only formatting + the added row | [x] checked | not-applicable | instrument: row-count + diff recorded |
 
 ### tk-0005
 

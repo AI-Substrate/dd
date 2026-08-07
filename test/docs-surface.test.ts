@@ -385,11 +385,11 @@ describe('the migrated dd-next backlog', () => {
     .split('\n')
     .filter((line) => /^\| \d+ \| /.test(line));
 
-  it('carries all 17 migrated items plus the 3 opened during the extraction', () => {
+  it('carries all 17 migrated items plus the 4 opened during the extraction', () => {
     const numbers = itemRows.map((row) => Number(row.split('|')[1].trim()));
     // Contiguous 1..20 catches a dropped row and a duplicated one with the same
     // assertion; a bare count would miss the second.
-    expect(numbers).toEqual(Array.from({ length: 20 }, (_, index) => index + 1));
+    expect(numbers).toEqual(Array.from({ length: 21 }, (_, index) => index + 1));
   });
 
   it('keeps the backpressure ordering constraint verbatim', () => {

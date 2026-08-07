@@ -91,6 +91,50 @@ public is a list somebody chose. `test/consumer-surface.test.ts` imports one nam
 symbol from each exact subpath, so the map is proven **importable** — it is just not
 **frozen**.
 
+**Verified consumer evidence — which strengthens the recommendation but does NOT
+substitute for the ruling.** Recorded as `lg-0005` (`df287bb`), computed by koala at
+basis `d08f4942` and independently re-verified by the o-prime at upstream HEAD
+`ab1e7e75`; the census is stable across that drift.
+
+- Non-test consumers of `services/dd` outside `services/dd` are **16 files**. Twelve of
+  them (`acts/dd`) LEAVE with the port, so the surviving harness-to-dd dependency is
+  exactly **FOUR files**: `acts/flow.ts`, `acts/plan/index.ts`, `acts/plan/pr-body.ts`,
+  `acts/plan/fence.ts`.
+- **None of it is CLI-shaped.** `MemoizingDocLoader` and `ConventionSchemaResolver` are
+  injected objects — a process boundary destroys the memoization they exist for.
+  `validateWalk` / `traverseCorpus` / `resolveMapSeed` return in-memory graphs. And
+  **eight of the imported symbols are TYPES** (`DdDoc`, `DdIssue`, `SchemaIssue`,
+  `PlanDocument`, `ReadyReading`, `PlanEdge`, `PlanIndex`, `PlanItem`), which **cannot
+  cross a CLI boundary at all**.
+- That makes library consumption **forced, not preferred**.
+- `escapeCell` and `headingSlug` are imported only by `acts/plan/pr-body.ts` (5 call
+  sites, all table-cell and anchor composition), so a narrow public util subpath would
+  satisfy harness without dragging the whole renderer API under semver.
+
+**Every figure above was re-derived here, not carried on the supplier's headline.**
+Measured independently at upstream `ab1e7e75`:
+
+```bash
+# 16 consumers, of which 12 under acts/dd leave with the port -> 4 survive
+grep -rlE "from '.*services/dd" harness/cli/src --include=*.ts | grep -v '^harness/cli/src/services/dd/'
+# 5 call sites, and pr-body.ts is the only importer outside services/dd
+grep -c -E '\b(escapeCell|headingSlug)\(' harness/cli/src/acts/plan/pr-body.ts
+grep -rl 'escapeCell\|headingSlug' harness/cli/src --include=*.ts | grep -v services/dd
+```
+
+The type census was recomputed by parsing the four surviving files' import statements:
+8 type-only symbols (the list above) against 16 value symbols. A figure entering a
+durable artifact on someone else's summary line is how a rare bad number becomes a
+permanent one — the propagation runs through the recipient, so it is stoppable here.
+The same standard is why the o-prime re-ran koala's census at a different SHA instead of
+accepting it, which is the only reason a six-versus-nine slip surfaced at all. No
+exception for a peer prime, and none for the o-prime either.
+
+**Evidence is not a ruling.** However strong the above is, OQ-1 and OQ-2 remain Jordan's
+alone, `tk-0002` stays held, and the map is still NOT frozen. Strong evidence must not
+soften the honesty requirement — that inversion is how a recommendation quietly becomes
+a decision nobody made.
+
 **What this means for you**: if OQ-1 lands on SDK, the map needs a freeze pass before
 you depend on it. If it lands on CLI-shelled, the map matters much less and the freeze
 can be narrow. Either way the decision is Jordan's, and the work is already carried at
@@ -256,7 +300,7 @@ You inherit both the guardrails and that ongoing cost.
 | What | Where |
 |---|---|
 | Standing constraints (cite by number) | `government/standing-constraints.md` |
-| Open backlog, 20 items, annotated | `docs/backlog.md` |
+| Open backlog, 21 items, annotated | `docs/backlog.md` |
 | Wire format + renderer authority + measured behaviour | `docs/plans/001-dd-extraction/assets/handover-notes.md` |
 | Import-direction audit, all 60 tests | `docs/plans/001-dd-extraction/assets/test-audit.md` |
 | Frozen P1 CLI surface | `docs/plans/001-dd-extraction/assets/dd-surface.md` |
@@ -264,8 +308,8 @@ You inherit both the guardrails and that ongoing cost.
 | The plan itself | `docs/plans/001-dd-extraction/plan.dd.md` |
 | Quick start (executed as a test) | `README.md` |
 
-**`docs/backlog.md` carries 20 items**: the 17 migrated from `scratch/dd-next.md`
-verbatim, plus 3 opened during the extraction. **OPEN items are still OPEN** — the
+**`docs/backlog.md` carries 21 items**: the 17 migrated from `scratch/dd-next.md`
+verbatim, plus 4 opened during the extraction. **OPEN items are still OPEN** — the
 migration deliberately answered nothing. The `#8-before-#11` ordering constraint is
 carried verbatim: running 11 first turns the gate green over three documents holding
 undetermined values, and the green then argues the vocabulary is consistent.
@@ -277,6 +321,46 @@ a subtree where the constraints you wrote are citable by number instead of livin
 agent's memory.
 
 ---
+
+## 9a. The execution guardrails, VERBATIM
+
+Reproduced in full rather than summarised, because koala asked to see them and has
+adopted its own version — a rule someone intends to cite has to arrive citable, or the
+quoted version stops matching the enforced one. Source of truth:
+`docs/plans/001-dd-extraction/plan.dd.md#execution_guardrails` (13 rows, measured at
+`c53c85a`; re-derive with `dd get "docs/plans/001-dd-extraction/plan.dd.json#execution_guardrails"`).
+
+```
+1. harness-engineering checkout is READ-ONLY reference — never write, build, or install there; the port basis SHA is recorded in phase 1 and rebased deliberately, never silently.
+
+2. No npm publish, no --provenance, no tags, no releases — Jordan publishes. Landing on main + CI green IS authorized (Jordan 2026-08-07); conventional commits are load-bearing for release-please.
+
+3. .the-flow-state.json / the-flow.json / the-flow.md are builder-owned — no hand writes, either repo.
+
+4. src/app.ts registry is the convergence hot-spot: one phase in flight at a time lands registry edits; the PM serializes if pipelined phases both touch it.
+
+5. .dd/schemas exemplar VALUES stay verbatim (dd-next #8-11: running the generator first turns the gate green over undetermined values — do not resolve the vocabulary as a side effect).
+
+6. Every phase ends just checks green locally before handing to review; the dd status ledger must never claim a verb that does not work.
+
+7. RENDERER AUTHORITY SPLIT (o-prime 2026-08-07, from the tk-0003 banner collision): from the tk-0003 landing commit onward, THIS repo documents are mutated/rendered ONLY by the LOCAL dd bin (set/add/rm/build) — upstream harness dd set/build on them is forbidden (its renderer silently regresses the banner). harness plan validate REMAINS the semantic authority (checks/gates/contradictions, per Jordan: plan checks stay harness-side); drift authority is LOCAL dd build --check. A harness-reported drift is adjudicated: local check green + banner-only diff = renderer skew (expected until koala swaps upstream), anything else = real. Window closes at handover.
+
+8. OUT-OF-DIFF ASSERTION SWEEP (o-prime 2026-08-07, after TWO out-of-diff escapes: the write-family ledger gap and the CI package-smoke latent red): every review packet includes a repo-wide sweep for assertions about the changed behaviour living OUTSIDE the diff — CI configs, docs, ledgers, baked strings. Diff-scoped review is structurally blind there; the sweep is the reviewer floor, not a per-packet habit.
+
+9. CORRECTION to the renderer-authority guardrail (measured by the PM): harness plan validate is NOT drift-affected — drift comparison is build alone. Blast radius of the banner skew = upstream write path + upstream dd build --check (E422 false-fail). The authority split stands; the harness-drift adjudication clause in the earlier row describes a case that cannot occur and is superseded here (append-only, prior row retained).
+
+10. MEASURED-AT STAMPING (o-prime 2026-08-07; sharpened by the PM after the o-prime applied it to its own record). Any count or completeness claim in an execution-log entry, receipt, report, commit message, brief or flow comment carries the commit SHA it was measured at PLUS the re-derivation command. A claim without its SHA is an assertion, not a measurement, and re-rots silently as the repo moves. THE RULE BINDS AT THE MOMENT OF MAKING SOMETHING AUTHORITATIVE, not merely at the moment of counting: a loose wrong number costs nothing until someone puts it in a durable artifact, and whoever does that owns the defect regardless of who first said it. Instances: CI assertion, write-family ledger, sibling-count receipt, and the o-prime's own stale first-push premise.
+
+11. TYPECHECK IS NOT IMPLIED BY GREEN TESTS (PM-measured during the phase-3 fix round; fixed at c0af550): vitest STRIPS types, so a test file can be fully green while the test lane does not typecheck. 'The tests pass' is therefore NOT sufficient proof for a test-lane change — only just checks is. Binding on every remaining phase (all of them add tests) and on every reviewer accepting a test-lane diff.
+
+12. CLAIM-OUTRAN-IMPLEMENTATION is the unifying defect class (named by the phase-3 coder, endorsed by the PM and o-prime 2026-08-07). The vacuous README guard, the stale CI package-smoke assertion, and the over-confident sibling-count receipt are ONE failure: a test or receipt whose CLAIM outran its IMPLEMENTATION, surviving review because the claim was read instead of the code. The coder's line is the rule: A GUARD'S DOCSTRING IS A HYPOTHESIS UNTIL A MUTATION REDS IT. Guardrails 7 (out-of-diff sweep), 9 (measured-at stamping) and this one are three instruments against the same class — cite this row when explaining why any of them exists.
+
+13. AUTHORITY IS A SHA, NEVER A WORKING TREE (o-prime 2026-08-07, from a near-miss the PM caught). A ruling, brief, guardrail or constraint is actionable only as COMMITTED text that can be cited by SHA. Working-tree text is never authority, and a governance file read mid-write is actively dangerous: the coder read this plan's ESC-1 ruling out of the-flow.json while it was still being repaired, and the text it saw had two branch names missing to a shell-substitution defect. It refused to act and escalated, which is the second line of defence; NOT OPENING the file was the first, since flow files are a forbidden path in every packet. Two individually-survivable faults (a transcription loss and a read-mid-write) compound into a wrong implementation. Corollaries: verbatim-critical text travels as a file plus pointer, never as an argv string; and a ruling that arrives by any channel other than the recipient's own chain of command is not actionable, whatever it says.
+```
+
+The eight standing constraints are likewise reproduced in full at
+`government/standing-constraints.md` and are cited **by number** across this subtree.
+Read that file directly rather than any summary of it, including this one.
 
 ## 10. Status of this packet
 

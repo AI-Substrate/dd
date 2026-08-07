@@ -23,7 +23,7 @@
           "id": "tk-0001",
           "title": "Fix the latent CI defect: package-smoke job asserts the CURRENT dd status contract (ok/exit 0/ported[10]) instead of the stale unconfigured/exit-2 snapshot; add the pack-gate job to CI; sweep ci.yml + release.yml for any OTHER assertion about behaviour that phases 1-3 changed (the out-of-diff guardrail applied to CI itself)",
           "phase": "ph-0a40",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-000a"
           ]
@@ -41,7 +41,7 @@
           "id": "tk-0003",
           "title": "Self-host proof formalized: local dd build --check clean over ALL repo documents in CI (a just recipe + CI step), prime workflow permanently on the local bin (already switched at tk-0003 landing), harness plan validate still green as the semantic gate",
           "phase": "ph-0a40",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0008"
           ]
@@ -50,7 +50,7 @@
           "id": "tk-0004",
           "title": "Migrate the 17-item dd-next backlog into docs/backlog.md with status/ownership annotations + the #8-before-#11 ordering constraint verbatim; add the exemplar-corpus question (from the P3 esc-4 ruling) as a new annotated row routed to Jordan alongside #8/#10; OPEN items stay open",
           "phase": "ph-0a40",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0009"
           ]
@@ -59,7 +59,7 @@
           "id": "tk-0005",
           "title": "Handover packet for pij-related-koala: tarball + frozen exports map + F-04 surface notes + basis SHA d08f4942 + wire-format banner note (upstream siblings diff on swap) + renderer-skew window note + the stay-behind test list (11) + open backlog pointer; send the pointer to koala",
           "phase": "ph-0a40",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-000a"
           ]
@@ -82,7 +82,7 @@
           {
             "id": "dw-0001",
             "assertion": "ci.yml package-smoke asserts ok/exit-0/ported[10]; pack-gate job present; the CI-config sweep found-and-fixed or found-nothing is recorded in the execution log with the grep used",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: yaml diff + recorded sweep; final proof is tk-0006 green run"
           }
@@ -100,7 +100,7 @@
           {
             "id": "dw-0003",
             "assertion": "just recipe + CI step run local dd build --check over every .dd.json in the repo and exit 0; a deliberate scratch drift makes the step FAIL (red proven, reverted)",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: red-then-green in execution log + CI step"
           }
@@ -109,7 +109,7 @@
           {
             "id": "dw-0004",
             "assertion": "docs/backlog.md carries all 17 rows + annotations + the ordering constraint verbatim + the new exemplar-corpus row; diff against upstream dd-next.md shows only formatting + the added row",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: row-count + diff recorded"
           }

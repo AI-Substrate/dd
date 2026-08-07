@@ -7,7 +7,7 @@ phase 4 `tk-0004`. **Kept by**: `pij-related-koala` · **Opened**: 2026-08-06.
 **Nothing here is resolved by the migration.** Every status, owner and ordering
 constraint below is carried across as written. Items marked **OPEN** are still open —
 an OPEN item that arrived here answered would have been decided by a file move, which
-is the one thing this migration must not do. Three rows are **added** (18–20), each
+is the one thing this migration must not do. Four rows are **added** (18–21), each
 marked `ADDED` and traceable to the ruling that produced it; nothing upstream is edited.
 
 **Status of the whole list: nobody is working on any of it.** Prime has allocated
@@ -104,7 +104,7 @@ itself a required section), *not* a validator bug.
 
 ## Added during the extraction (plan 001)
 
-Three rows opened by plan 001 and carried here rather than resolved in flight. Each is
+Four rows opened by plan 001 and carried here rather than resolved in flight. Each is
 annotated with who it is routed to and why it is not being decided by the coder who
 found it.
 
@@ -113,6 +113,7 @@ found it.
 | 18 | **Port the dd exemplar corpus (`docs/how/dd/exemplar/`) into this repo, or rule that it stays upstream.** It was deliberately NOT ported: `backpressure.dd.json` carries `meta.certainty: "Partial"` — the exact contested value item 10 exists to re-rate — and the exemplar is the document new authors copy, so porting would propagate an unruled value into a second repo by imitation. `docs/how/dd/README.md` records the refusal and `src/docs/content/dd-overview.md` points at the three runnable equivalents that do ship. **Rule 8 and 10 first**; this is downstream of both. | **OPEN — Jordan** (routed alongside 8/10, per the phase-3 esc-4 ruling) |
 | 19 | **Mechanize the two unmechanized guardrails.** Of the three plan guardrails covering the claim-outran-implementation class, only one is even partly mechanized: the schema refuses a `blocked`/`na` state whose reason exists solely in the author's head (`src/core/validate.ts`, class `state-note-required`), and a mutation reds a vacuous guard. **OUT-OF-DIFF SWEEP** and **MEASURED-AT STAMPING** remain pure discipline — nothing fails today if a reviewer skips the sweep or a receipt omits its SHA. Both have a known shape: the sweep as a gate over assertions naming behaviour changed outside the diff, the stamping as a linter requiring every count-claim in an execution log to carry a resolvable SHA. *A rule not yet mechanized is a rule we are still paying for in attention every review.* | **CANDIDATE** — dd repo · proposed by o-prime (SUGG-001), not ruled work |
 | 20 | **Re-enable npm provenance on the release path.** `.github/workflows/release.yml` sets `NPM_CONFIG_PROVENANCE=false` because sigstore provenance rejects private source repos (npm E422). That premise is now stale — the repo is PUBLIC (`gh repo view AI-Substrate/dd --json visibility`, measured at `045f958`). Deliberately not flipped by the phase-4 CI sweep: it changes what the release path *emits*, and publishing is out of scope for plan 001 (standing constraint 2). Pairs naturally with release enablement (constraint 4). | **OPEN — Jordan** — dd repo · found by the `tk-0001` CI sweep |
+| 21 | **Derive every figure in the operation that prints the evidence, never retype a count from a table you just wrote.** A structural hazard in POINTER DELIVERY itself: the body behind a pointer is lossless, but the summary line carrying it is unverified prose — and the recipient reads the summary. koala diagnosed it on itself: it computed the evidence, then wrote the headline by *reading* it, and the wrong figure travelled in the summary while the correct table sat in the file behind the pointer. Second instance in this fleet: the PM's "34+ commits" figure, retyped into summary lines until a fast-forward measurement corrected it to 46. **Two halves, and the second is the one that failed in both instances.** SENDER: derive a figure in the same call that produces its evidence, or leave it out of the summary line — this makes bad numbers rarer. RECIPIENT: never put a figure into a durable artifact (commit message, flow comment, guardrail, handover packet) on someone else's headline alone, whoever supplied it and however reliable they have been — re-derive it. The "34+" cost nothing while it was a loose figure in chat; it became a defect when it was written into a commit message and a flow comment without being derived. The propagation path runs THROUGH the recipient, which is where it is stoppable. Worked instance: the o-prime re-ran koala's census at a different upstream SHA rather than accept it, which is the only reason a six-versus-nine slip surfaced. No exception for a peer prime. Every message in this fleet has that shape. Deliberately NOT a new guardrail row — it refines the measured-at and claim-outran-implementation rows, and a fourth row describing the same class is the rot we keep deleting. | **CANDIDATE** — fleet practice · from koala (INS-001), corrected by o-prime, not ruled work |
 
 ---
 
@@ -129,6 +130,7 @@ than a blank, because it would look like routing.
 | 8, 9, 10, 11, 12 | **both** — the schema is dd's (`.dd/schemas/builder/backpressure/`), the producer prose and the narration templates are harness skills. Item 11 says so explicitly: a generator aimed at one tree leaves the other two. |
 | 13 | **both** — schema in dd, `20-plan.md` in harness; the item requires they land together |
 | 18, 19, 20 | dd (added by plan 001) |
+| 21 | neither — fleet delivery practice, encodable as a habit rather than a code change |
 
 ## Provenance
 
@@ -141,5 +143,6 @@ item 3.
 The recurring shape across 1, 2, 7, 12 and 17: **an existing capability present on the
 siblings and absent from one member**, invisible when reading any single member.
 
-Items 18–20 were opened during the extraction itself: 18 by the phase-3 exemplar-corpus
-escalation, 19 by the o-prime's review of the guardrail set, 20 by the phase-4 CI sweep.
+Items 18–21 were opened during the extraction itself: 18 by the phase-3 exemplar-corpus
+escalation, 19 by the o-prime's review of the guardrail set, 20 by the phase-4 CI sweep,
+and 21 by koala's diagnosis of a wrong figure in its own pointer summary.
