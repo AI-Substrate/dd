@@ -1,0 +1,33 @@
+test/docs-surface.test.ts
+  s_743eafe62757dd::t_7daa801384d76b 453-470
+  s_743eafe62757dd::t_042af5fa56cc5c 608-609
+  s_743eafe62757dd::t_69378dccdac3d3 597-601,604
+  s_743eafe62757dd::t_5e471cb55d5abc 578,582-596,602-603,605-607,610-614
+  s_743eafe62757dd::t_401587c02a9397 615
+docs/plans/001-dd-extraction/assets/handover-packet.md
+  s_743eafe62757dd::t_93c17fabbc6d00 149-152
+  s_743eafe62757dd::t_3f3f3322d0e4e8 131,135-148
+  s_743eafe62757dd::t_7ece7c88bf078d 194-195,197-201
+  s_743eafe62757dd::t_c5a646c9e5b95c 164,177,182
+  s_743eafe62757dd::t_edc525b87d43a9 275-277,307
+  s_743eafe62757dd::t_7e75a0532a71e7 323-340
+  s_743eafe62757dd::t_edd7381ad5375b 153
+docs/plans/001-dd-extraction/assets/tasks/phase-4/execution.log.md
+  s_743eafe62757dd::t_91bfdba335ade0 626-724
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "313feee30d9afcdef93eb5b35d88da6a4436e4f4",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
