@@ -55,8 +55,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Same three gates `just checks` runs locally, in the same order, so CI and
+      # The SAME gates `just checks` runs locally, in the SAME order, so CI and
       # local can't drift. Split into steps here only so a failure names itself.
+      #
+      # That parity is not a promise in a comment — it is asserted by
+      # `test/ci-parity.test.ts`, which reads this file and the justfile and
+      # fails if a gate exists in one and not the other. The comment said
+      # "three gates" while the recipe ran five; the docs-drift gate was missing
+      # here for four commits and nothing could see it (plan 001 phase 4
+      # tk-0001). A claim about CI now has a test, like every other claim.
       - name: Lint (biome)
         run: npx biome check .
 
@@ -65,6 +72,9 @@ jobs:
 
       - name: Typecheck (src + test)
         run: npm run typecheck
+
+      - name: Docs drift (baked `dd docs` corpus)
+        run: npm run check:dd-docs
 
       - name: Test (vitest + coverage)
         run: npx vitest run --coverage
