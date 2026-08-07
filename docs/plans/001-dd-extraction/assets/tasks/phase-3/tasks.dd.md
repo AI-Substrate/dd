@@ -27,16 +27,57 @@
 
 ## Summary
 
-_Empty._
+Phase 3 — Package & release readiness. Freeze the exports map against Jordan's OQ-1/OQ-2 rulings (explicit precondition task), fix the 43 user-facing 'harness dd' strings RULED into this phase (next_actions + GENERATED banner + docs content — wire-format note travels to the handover packet), wire prepack, prove the tarball gate as a committed script, ship README + docs/how. Logical group: THE PACKAGE — everything between working code and a consumable artifact.
 
 <a id="tasks"></a>
 
 ## Tasks
 
-_No entries._
+| id | title | domain | phase | state | note | receipt | done | success | notes | satisfies |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| tk-0001 | PRECONDITION: fold Jordan OQ-1/OQ-2 rulings (asked via telegram 2026-08-07, recs 1a/2a) into a one-page exports-decision note; if unanswered when this phase dispatches, ESCALATE to prime — do not guess, do not start tk-0002 without it | — | ph-356b | [ ] unchecked | — | — | — | — | — | [ac-0002](../../../plan.dd.md#acceptance-criteria) |
+| tk-0002 | Exports map FREEZE: every observed F-04 specifier path explicit in package.json exports (core/address, core/model, core/parse, core/validate, core/walk, links, schema/model, schema/resolve, schema/index, render/renderer) plus ./plan per the OQ-2 ruling; consumer-surface test extended to the frozen map incl. plan barrel symbols if public | — | ph-356b | [ ] unchecked | — | — | — | — | — | [ac-0002](../../../plan.dd.md#acceptance-criteria) |
+| tk-0003 | RULED (o-prime 2026-08-07): rename the 43 user-facing harness-dd strings to dd across act next_actions, the GENERATED banner, and drift-checked docs content; regenerate every .dd.md sibling in this repo; drift pipeline green; add a wire-format note for the handover packet (upstream siblings will diff on koala swap — expected, per-package banners are self-consistent) | — | ph-356b | [ ] unchecked | — | — | — | — | — | [ac-000a](../../../plan.dd.md#acceptance-criteria) |
+| tk-0004 | prepack wiring: prepack script runs the build so npm pack from a clean clone self-builds; files map sanity (bin+dist+LICENSE, no test/ no src/ leakage); version/manifest alignment with release-please config (NO publish, NO tags) | — | ph-356b | [ ] unchecked | — | — | — | — | — | [ac-0007](../../../plan.dd.md#acceptance-criteria) |
+| tk-0005 | Pack gate as a COMMITTED script (scripts/pack-gate.sh + just recipe): clean-clone pack -&gt; temp-project install (registry permitted for declared deps only) -&gt; dd validate + dd build run against a fixture corpus incl. a jiti-loaded custom type -&gt; npm pack --dry-run file-list assertion; wire into CI | — | ph-356b | [ ] unchecked | — | — | — | — | — | [ac-0007](../../../plan.dd.md#acceptance-criteria) |
+| tk-0006 | Docs: README standalone quick-start (install, dd --help tour, envelope contract, .dd resolution ladder) + docs/how carrying the two baked entries (dd-overview, how-to-add-a-schema) per OQ-3 default (verbatim port + minimal standalone header) | — | ph-356b | [ ] unchecked | — | — | — | — | — | [ac-000a](../../../plan.dd.md#acceptance-criteria) |
 
 <a id="done-when"></a>
 
 ## Done when
 
-_No fields._
+### tk-0001
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0001 | [open_questions](The exports-decision note exists citing Jordan verbatim ruling (or the escalation is on record with the prime and this phase is holding); OQ-1/OQ-2 states flipped in plan.dd.md#open-questions) | [ ] unchecked | not-applicable | instrument: note file committed + open_questions states |
+
+### tk-0002
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0002 | package.json exports carries every observed F-04 path explicitly; consumer-surface test imports one named symbol per frozen subpath and passes; ./plan present-or-absent exactly per the OQ-2 ruling with a comment citing it | [ ] unchecked | not-applicable | instrument: consumer-surface vitest + jq over exports |
+
+### tk-0003
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0003 | grep for harness dd across src/ and docs content returns ZERO user-facing hits (allowed: historical docs/plans records); all .dd.md siblings regenerated in the same commit; dd-docs-drift + dd build --check green; handover wire-format note written | [ ] unchecked | not-applicable | instrument: grep count; drift test; build --check |
+
+### tk-0004
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0004 | npm pack from a fresh clone succeeds with prepack building dist; --dry-run file list == bin+dist+LICENSE+package.json+README (no test/, no src/, no .dd/); release-please manifest version matches package.json | [ ] unchecked | not-applicable | instrument: pack --dry-run parsed; jq version diff |
+
+### tk-0005
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0005 | scripts/pack-gate.sh exits 0 end-to-end in a clean temp dir; the jiti custom-type fixture actually loads through the installed tarball (proven by an assertion that fails when the fixture is absent); CI runs the gate | [ ] unchecked | not-applicable | instrument: pack-gate exit code local + CI run |
+
+### tk-0006
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0006 | README present with install + quick-start + envelope contract + resolution ladder; docs/how/ carries both baked entries; links from README resolve; drift pipeline still green after any content touch | [ ] unchecked | not-applicable | instrument: file existence + link check + drift test |

@@ -19,6 +19,13 @@
           "summary": "Phase 1 complete + reviewed clean (APPROVE_WITH_NOTES)",
           "text": "Commits a830e90 (port + both architecture guards) / ec62a7e (import audit: 11 stay, 49 port) / e49d67f (tests) / 98478d5 (exports skeleton + lane). just checks exit 0 — 32 files, 352 tests. Both guards mutation-proven RED->GREEN: isolation via commander-inject (coder, re-proven by PM); frozen-semantics via PM newline-inject at dd-plan-semantics-frozen.test.ts:61 AFTER the reviewer had mutated only src/core/address.ts and thus proven one guard while reporting both green. plan/semantics.ts sha256 3856153824f7... byte-identical to upstream pin at basis d08f4942 — copy verbatim by measurement. Reviewer pij-blind-deer (gpt-5.6-terra:high), report ~/.pij/pij-blind-deer/reports/dlg-0001-review.md; the single MEDIUM (docs-drift) lands owned in phase-2 tk-0006.",
           "state": "checked"
+        },
+        {
+          "id": "lg-0002",
+          "at": "2026-08-07T05:38:23Z",
+          "summary": "CORRECTION to lg-0001 context: phase-1 ledger had a latent structural defect",
+          "text": "PLANNED_VERBS named 'write' but the writer family registers get/set/add/rm — name-matching could NEVER reach ported[10], so the ledger's honesty guarantee (cannot claim finished) was structurally sound but its success condition was unreachable. Found by the phase-2 coder, fixed via PROVING_COMMANDS map (status.ts:39-50, write -> all four sub-commands under .every()). ac-0001's own proof (tsc + import guard) is untouched; this corrects the surrounding phase-1 narrative that treated the ledger as complete-able as scaffolded. Append-only correction; lg-0001 stands as written.",
+          "state": "checked"
         }
       ]
     }
