@@ -41,7 +41,7 @@
           "id": "tk-0003",
           "title": "Import-direction audit of ALL 60 upstream dd test files: classify port (imports only dd trees/fixtures) vs stay (imports flow/builder internals); commit the audit table to assets/test-audit.md BEFORE moving any test",
           "phase": "ph-4c9d",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0006"
           ]
@@ -101,7 +101,7 @@
           {
             "id": "dw-0003",
             "assertion": "assets/test-audit.md is committed listing all 60 files each classified port|stay with its deciding import line; the stay set contains the 6 flow-dd-*, builder-dd-teaching, flow-dd-gate, and dd-flow-gate.int files",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: table row count == upstream find count (60); git log shows the audit commit precedes any test move"
           }
