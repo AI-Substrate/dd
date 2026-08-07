@@ -159,3 +159,9 @@ vite.config.ts.timestamp-*
 /skills-lock.json
 .claude/skills/
 .agents/
+
+# flow-pair orchestration ledger — per-run worker packets, delegation records and
+# diffs written by the `flow-pair` CLI while a coder/reviewer fleet runs this repo's
+# phases. Orchestrator scratch, not source: it is machine-local, regenerated per run,
+# and names local peer/pane ids.
+.flow-pair/
