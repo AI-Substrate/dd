@@ -17,4 +17,4 @@
 ✅ **VALIDATED** — no material issues at lead level.
 - **Thesis**: advanced — target proof (Decision/Contract) = actual proof.
 - **Consumers**: 3/3 named and addressed (PM brief pending by design; OQ-1/OQ-2 must be ruled before phase-3 exports freeze — recorded in-plan as risk + open questions, non-blocking for phases 1–2).
-- **Open decision**: none for phase 1–2 start; sol critic findings pending.
+- **Critic pass (gpt-5.6-sol)**: REQUEST_CHANGES — 4 HIGH + 1 MEDIUM, all confirmed by the lead and folded in (see flow plan-node validation comment, 2026-08-07); plan re-validated 0 err / 0 warn after fixes. Verdict stands: VALIDATED WITH FIXES.

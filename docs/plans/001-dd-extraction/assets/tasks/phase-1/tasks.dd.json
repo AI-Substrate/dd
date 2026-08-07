@@ -21,7 +21,7 @@
       "value": [
         {
           "id": "tk-0001",
-          "title": "Read the two upstream architecture tests (test/architecture/dd-core-isolation.test.ts, dd-plan-semantics-frozen.test.ts) in harness-engineering (READ-ONLY); record the boundary contract they encode in the context brief; port dd-core-isolation adapted to this repo src/ layout as our own guard",
+          "title": "Read the two upstream architecture tests (dd-core-isolation, dd-plan-semantics-frozen) in harness-engineering (READ-ONLY) and PORT BOTH as this repo guards: dd-core-isolation adapted to src/ layout; dd-plan-semantics-frozen re-pinned (digest of the PORTED plan/semantics source, rationale preserved, note that OQ-2 may later re-rule it). Record both boundary contracts in the context brief.",
           "phase": "ph-4c9d",
           "state": "unchecked",
           "satisfies": [
@@ -57,7 +57,7 @@
         },
         {
           "id": "tk-0005",
-          "title": "Subpath exports skeleton in package.json (./core, ./links, ./mutate, ./plan, ./render, ./schema, ./docs mapping to dist) + a consumer-surface test importing one named F-04 symbol per subpath (parseAddress, DdDoc, parse, validateWalk, MemoizingDocLoader, resolveMapSeed, traverseCorpus, buildPlanIndex, SchemaIssue, ConventionSchemaResolver, escapeCell, headingSlug)",
+          "title": "Subpath exports skeleton in package.json covering every OBSERVED F-04 specifier path (core/address, core/model, core/parse, core/validate, core/walk, links, schema/model, schema/resolve, schema/index, render/renderer — explicit or wildcard; ./plan EXCLUDED pending OQ-2) + a consumer-surface test importing one named symbol per exact subpath; plan barrel proven importable internally only",
           "phase": "ph-4c9d",
           "state": "unchecked",
           "satisfies": [
@@ -82,7 +82,7 @@
         "tk-0001": [
           {
             "id": "dw-0001",
-            "assertion": "The ported isolation guard exists in test/, FAILS on a synthetic non-allowed external import planted in a scratch SDK file, and PASSES on the clean tree; the boundary contract from both upstream tests is written into the context brief",
+            "assertion": "BOTH ported guards exist in test/: the isolation guard FAILS on a synthetic non-allowed external import and PASSES clean; the frozen-semantics guard pins the ported plan/semantics source digest and FAILS on any byte change; both boundary contracts recorded in the context brief",
             "state": "unchecked",
             "pressure": "not-applicable",
             "note": "instrument: vitest run of the guard, red-then-green demonstrated in the execution log"
@@ -118,7 +118,7 @@
         "tk-0005": [
           {
             "id": "dw-0005",
-            "assertion": "npm pack --dry-run lists the exports map; the consumer-surface test imports one named symbol per F-04 subpath and passes typecheck + runtime",
+            "assertion": "npm pack --dry-run lists the exports map; the consumer-surface test imports one named symbol from each exact observed subpath (incl. core/validate and BOTH schema/resolve and schema/index) and passes typecheck + runtime; ./plan absent from the public map with an OQ-2 pointer comment",
             "state": "unchecked",
             "pressure": "not-applicable",
             "note": "instrument: vitest consumer-surface test exit 0"

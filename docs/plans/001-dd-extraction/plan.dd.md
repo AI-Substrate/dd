@@ -62,12 +62,12 @@ dd (deterministic documents) ships today inside harness-engineering as the harne
 | id | claim | state | note | receipt | pressure | proven_by |
 | --- | --- | --- | --- | --- | --- | --- |
 | ac-0001 | SDK standalone: every services/dd file lives under src/ with imports resolving to node: builtins or the local posix-path shim only — proven by tsc clean build + a grep gate that fails on any other external import path in the SDK tree | [ ] unchecked | — | — | not-applicable | — |
-| ac-0002 | Consumer surface importable: a test imports one named symbol per F-04 subpath (parseAddress, DdDoc, parse, validateWalk, MemoizingDocLoader, resolveMapSeed, traverseCorpus, buildPlanIndex, SchemaIssue, ConventionSchemaResolver, escapeCell/headingSlug) from the package exports map and calls or type-checks each | [ ] unchecked | — | — | not-applicable | — |
+| ac-0002 | Consumer surface importable: for EVERY import specifier observed in harness consumers (dossier F-04): core/address (parseAddress, isAddressFailure), core/model (DdDoc), core/parse (parse), core/validate (DdIssue, collectLinkCells), core/walk (validateWalk), links barrel (MemoizingDocLoader, resolveMapSeed, traverseCorpus), schema/model (SchemaIssue), schema/resolve AND schema/index (ConventionSchemaResolver via both), render/renderer (escapeCell, headingSlug) — a test imports one named symbol from each EXACT subpath and the exports map carries those exact paths (explicit or wildcard). The plan barrel (buildPlanIndex, itemKey, PlanEdge/PlanIndex/PlanItem) is EXCLUDED from the public map until OQ-2 is ruled (phase 3); until then it is proven importable internally only. | [ ] unchecked | — | — | not-applicable | — |
 | ac-0003 | Port ledger green: dd status exits 0 with ported[10] / remaining[0], and each verb registered only in the commit that made it actually work (ledger honesty preserved through history) | [ ] unchecked | — | — | not-applicable | — |
 | ac-0004 | Envelope contract: every ported verb exits through exitWithEnvelope; exit map 0 ok/degraded, 2 unconfigured, 1 error holds — existing envelope tests extended to cover every ported verb | [ ] unchecked | — | — | not-applicable | — |
 | ac-0005 | --json accepted postfix on every verb (dd status --json exits per its status, not E002) AND program-level prefix still works; AGENTS.md example corrected | [ ] unchecked | — | — | not-applicable | — |
 | ac-0006 | Test parity: the audited port set (~51 of 60, classified by import direction before any move) runs green under just checks; zero flow-dd consumer tests ported; the audit table is committed | [ ] unchecked | — | — | not-applicable | — |
-| ac-0007 | Pack gate: npm pack from a clean clone installs into a temp project and dd validate + dd build run against a fixture corpus including a jiti-loaded custom type — no repo on disk, no network beyond the tarball | [ ] unchecked | — | — | not-applicable | — |
+| ac-0007 | Pack gate: npm pack from a clean clone installs into a temp project (registry/proxy access permitted for the DECLARED runtime deps commander+jiti; the dd source repo absent from every resolution path) and dd validate + dd build run against a fixture corpus including a jiti-loaded custom type. npm pack --dry-run file list proves the tarball carries bin+dist+LICENSE and no repo-external requires survive in dist. | [ ] unchecked | — | — | not-applicable | — |
 | ac-0008 | Self-hosting: dd build --check reports zero drift over docs/plans/001-dd-extraction using the LOCAL bin; harness plan validate (harness-side) still green over the same corpus | [ ] unchecked | — | — | not-applicable | — |
 | ac-0009 | Backlog migrated: all 17 dd-next items in this repo tracker with status/ownership annotations and the #8-before-#11 ordering constraint stated; OPEN items still open | [ ] unchecked | — | — | not-applicable | — |
 | ac-000a | Docs shipped: README standalone quick-start + docs/how carrying the two baked entries; CI green on main at completion | [ ] unchecked | — | — | not-applicable | — |
@@ -201,12 +201,12 @@ Four logically-grouped phases (Jordan: group by cohesive subsystem, never by seq
 | ac | covered_by | verified_in |
 | --- | --- | --- |
 | ac-0001 | ph-4c9d | tsc build + external-import grep gate (phase 1 tasks) |
-| ac-0002 | ph-4c9d, ph-356b | consumer-surface import test (skeleton ph1, frozen ph3) |
+| ac-0002 | ph-4c9d, ph-356b | consumer-surface import test, one symbol per exact observed subpath (skeleton ph1, frozen ph3 post-OQ-2) |
 | ac-0003 | ph-8bda | dd status envelope + per-verb registration commits |
-| ac-0004 | ph-8bda | postfix --json test on every verb + AGENTS.md fix |
-| ac-0005 | ph-8bda | envelope tests extended over ported verbs |
+| ac-0004 | ph-8bda | envelope tests extended over every ported verb (exit map 0/0/2/1) |
+| ac-0005 | ph-8bda | postfix --json test on every verb + AGENTS.md fix |
 | ac-0006 | ph-4c9d, ph-8bda | import-direction audit table + just checks green |
-| ac-0007 | ph-356b | pack-gate script: clean-clone pack -&gt; temp install -&gt; validate+build incl. jiti custom type |
+| ac-0007 | ph-356b | pack-gate script: clean-clone pack -&gt; temp install (registry allowed for declared deps) -&gt; validate+build incl. jiti custom type; --dry-run file-list check |
 | ac-0008 | ph-0a40 | local-bin dd build --check over this plan folder + harness plan validate |
 | ac-0009 | ph-0a40 | migrated backlog file diffed against dd-next.md annotations |
 | ac-000a | ph-356b, ph-0a40 | README + docs/how present; CI green on main |

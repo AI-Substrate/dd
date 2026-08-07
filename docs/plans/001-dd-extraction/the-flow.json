@@ -570,6 +570,18 @@
           "artifacts"
         ]
       }
+    },
+    {
+      "id": "UPD-022",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-07T04:14:31.744Z",
+      "details": {
+        "node": "plan",
+        "fields": [
+          "comments"
+        ]
+      }
     }
   ],
   "nodes": [
@@ -611,7 +623,7 @@
         "Create the flow with harness flow create flight-plan --plan-dir \"<plan dir>\" — without it the baked gate addresses stay plan-relative and every departure refuses E441."
       ],
       "user_input": "once the plan etc is ready we will hand over to a pm to implement. When considering phases of the plan we should group them logically, not by sequencing.",
-      "modified_at": "2026-08-07T03:56:20.629Z",
+      "modified_at": "2026-08-07T04:14:31.744Z",
       "comments": [
         {
           "at": "2026-08-07T03:35:43.104Z",
@@ -630,6 +642,12 @@
           "text": "Jordan 2026-08-07 (pipeline model): prime authors phase-N tasks -> PM implements with coder -> at PM 'going to review' prime prepares phase N+1 tasks (pipelined) -> review completes -> next phase dispatched -> repeat autonomously to completion. End state: CI green on main, NO PR (working on main). Push-to-main authorized by this ruling (supersedes koala-brief no-push for landing). Questions to Jordan via pij telegram only.",
           "source": "user",
           "kind": "decision"
+        },
+        {
+          "at": "2026-08-07T04:14:31.744Z",
+          "text": "Cross-model review (pij-crowded-parakeet, gpt-5.6-sol high): REQUEST_CHANGES, 4 HIGH + 1 MEDIUM — all 5 CONFIRMED and applied: (1) ./plan pulled from public exports pending OQ-2; (2) ac-0002 now enumerates every observed F-04 specifier incl. core/validate + schema/index; (3) ac-0007 pack gate made achievable (registry allowed for declared deps, repo-absence is the proof); (4) tk-0001 now ports BOTH architecture guards incl. frozen-semantics digest re-pin; (5) ac-0004/ac-0005 coverage cross-wire swapped. plan validate 0/0 post-fix. time:2026-08-07T04:14:31Z",
+          "source": "agent",
+          "kind": "validation"
         }
       ],
       "ran_at": "2026-08-07T03:56:20.503Z",

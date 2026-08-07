@@ -60,7 +60,7 @@
         },
         {
           "id": "ac-0002",
-          "claim": "Consumer surface importable: a test imports one named symbol per F-04 subpath (parseAddress, DdDoc, parse, validateWalk, MemoizingDocLoader, resolveMapSeed, traverseCorpus, buildPlanIndex, SchemaIssue, ConventionSchemaResolver, escapeCell/headingSlug) from the package exports map and calls or type-checks each",
+          "claim": "Consumer surface importable: for EVERY import specifier observed in harness consumers (dossier F-04): core/address (parseAddress, isAddressFailure), core/model (DdDoc), core/parse (parse), core/validate (DdIssue, collectLinkCells), core/walk (validateWalk), links barrel (MemoizingDocLoader, resolveMapSeed, traverseCorpus), schema/model (SchemaIssue), schema/resolve AND schema/index (ConventionSchemaResolver via both), render/renderer (escapeCell, headingSlug) — a test imports one named symbol from each EXACT subpath and the exports map carries those exact paths (explicit or wildcard). The plan barrel (buildPlanIndex, itemKey, PlanEdge/PlanIndex/PlanItem) is EXCLUDED from the public map until OQ-2 is ruled (phase 3); until then it is proven importable internally only.",
           "state": "unchecked",
           "pressure": "not-applicable"
         },
@@ -90,7 +90,7 @@
         },
         {
           "id": "ac-0007",
-          "claim": "Pack gate: npm pack from a clean clone installs into a temp project and dd validate + dd build run against a fixture corpus including a jiti-loaded custom type — no repo on disk, no network beyond the tarball",
+          "claim": "Pack gate: npm pack from a clean clone installs into a temp project (registry/proxy access permitted for the DECLARED runtime deps commander+jiti; the dd source repo absent from every resolution path) and dd validate + dd build run against a fixture corpus including a jiti-loaded custom type. npm pack --dry-run file list proves the tarball carries bin+dist+LICENSE and no repo-external requires survive in dist.",
           "state": "unchecked",
           "pressure": "not-applicable"
         },
@@ -387,7 +387,7 @@
             "ph-4c9d",
             "ph-356b"
           ],
-          "verified_in": "consumer-surface import test (skeleton ph1, frozen ph3)"
+          "verified_in": "consumer-surface import test, one symbol per exact observed subpath (skeleton ph1, frozen ph3 post-OQ-2)"
         },
         {
           "ac": "ac-0003",
@@ -401,14 +401,14 @@
           "covered_by": [
             "ph-8bda"
           ],
-          "verified_in": "postfix --json test on every verb + AGENTS.md fix"
+          "verified_in": "envelope tests extended over every ported verb (exit map 0/0/2/1)"
         },
         {
           "ac": "ac-0005",
           "covered_by": [
             "ph-8bda"
           ],
-          "verified_in": "envelope tests extended over ported verbs"
+          "verified_in": "postfix --json test on every verb + AGENTS.md fix"
         },
         {
           "ac": "ac-0006",
@@ -423,7 +423,7 @@
           "covered_by": [
             "ph-356b"
           ],
-          "verified_in": "pack-gate script: clean-clone pack -> temp install -> validate+build incl. jiti custom type"
+          "verified_in": "pack-gate script: clean-clone pack -> temp install (registry allowed for declared deps) -> validate+build incl. jiti custom type; --dry-run file-list check"
         },
         {
           "ac": "ac-0008",
