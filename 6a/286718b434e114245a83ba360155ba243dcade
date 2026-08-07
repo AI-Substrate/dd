@@ -1,0 +1,19 @@
+docs/plans/001-dd-extraction/validations/plan.dd-validation.md
+  s_40dc55d5b47a87::t_d959bc2035cfda 1-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "6a286718b434e114245a83ba360155ba243dcade",
+  "prompts": {},
+  "sessions": {
+    "s_40dc55d5b47a87": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "82e01a2f-8b51-432f-9149-9b988bb2b5ae",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
