@@ -1,0 +1,20 @@
+government/orient-local.md
+  s_743eafe62757dd::t_f41a35aa5d4a45 71
+  s_743eafe62757dd::t_d4653a5ee7b594 78-89
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "28b69fab5819e2a096f393d02ec7d1c65e2f9392",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
