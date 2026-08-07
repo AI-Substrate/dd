@@ -623,3 +623,102 @@ Two further contradictions caught in the same sweep, neither a wrong statement:
 The general rule this yields, and the one worth carrying: **in a document that gets
 rearranged, name what you mean instead of counting it.** Every defect above was a pointer
 that resolved by adjacency or by position rather than by name.
+
+### Correction: the previous entry described a fix that never landed
+
+**The entry above is wrong and stays there.** It records the ordinal at
+`handover-packet.md:256` as fixed — *"Now reads 'other failures … the first is'"* — and that
+sentence has never said that in any commit. Derived, not remembered:
+
+```bash
+for s in 35da915 972a64b; do
+  git show "$s:docs/plans/001-dd-extraction/assets/handover-packet.md" \
+    | grep -n 'other failures\|There is a second failure'
+done
+# 35da915:237 and 972a64b:256 both still read "There is a second failure"; "other failures" appears at neither
+```
+
+I wrote down the fix I **intended** as though it were the fix I **made**. It is not decay —
+the receipt was untrue the moment it was written. It is not the adjacency axis either:
+nothing moved. It is the WRITING axis with a different mechanism from the modal-verb
+overclaim, and the sharpest thing about it is that **every gate was green**, because
+nothing in this repo compares a receipt to the artifact it describes.
+
+Guardrail 10 already names the shape from the other side — *recorded is not run*. The form
+that would have caught this: **derive a receipt from the artifact after the edit, never
+from the intention before it.** Recorded in the packet under § *What the gates do NOT
+catch* rather than mechanized, because a gate that diffed prose receipts against prose
+edits could not actually do it, and building one would be the §7 class again.
+
+The PM's review of the packet found the surviving ordinal. **My own receipt claiming it was
+fixed was three feet away in the log and nobody read it against the file, including me.**
+
+### The MEDIUM closed, plus what my own sweep found alongside it
+
+Fixed the reported ordinal by **naming** rather than renumbering, per the dispatch: the
+sentence now opens *"A failure that produces an untrue claim from entirely correct facts —
+an OVERCLAIM INFLATED AT THE MOMENT OF WRITING — is invisible to every one of them, because
+nothing about it is stale."* Naming survives the list growing; *"second"* does not.
+
+I then re-swept the section myself rather than stopping at the reported line, and the same
+class was living in three more places, none of them wrong today:
+
+| where | was | now |
+|---|---|---|
+| axis prose | *"does nothing for **the other two**"* | *"does nothing for **any other**"* |
+| the non-flattening note | *"not flattened in with **the other two**"* | *"…with **the unreachable rows**"* |
+| adjacency intro | *"the **only one of the three** that needs neither…"* | *"**What distinguishes this axis** is that it needs neither…"* |
+| the instance list | *"**Two** independent instances, both while…"* | *"**Each instance** happened while its author was being careful"* |
+| adjacency narrative | *"There were **three** incidents"* | names them; the count is gone |
+
+**One of those was invisible to a line-based grep.** *"a footnote on the other two"* wrapped
+across a newline between *"other"* and *"two"*, so `grep 'the other two'` returned a single
+hit while the document held two. The whitespace-flattening guard found it on its first run.
+The same reflow hazard that broke a `toContain` in the last round also breaks the **sweep
+tool**, which is a strictly worse failure: a green grep reads as an all-clear.
+
+**New guard** (`test/docs-surface.test.ts`) — *keeps ordinals out of the section that argues
+against them*. It is a **regression pin, not a detector**, and the doc-comment says so: it
+pins the exact phrasings removed here, scoped so they stay **banned where the argument is
+made and required where they are quoted as examples** — the same split already used for the
+impossibility phrase in §2.1/§0.1. It cannot see a new ordinal in new words. Claiming
+otherwise would build the pretend-gate §0.1 warns against.
+
+Mutation-proved, packet restored byte-identical afterwards (`diff -q`):
+
+| mutation | expected | got |
+|---|---|---|
+| M12 restore the ordinal at the rule-introducing sentence | RED | RED |
+| M13 put a count back into the axis prose | RED | RED |
+| M14 delete the worked example from the naming rule | RED | RED |
+| M15 rename a section heading (break a bound) | RED, *"guard is broken"* | RED, threw |
+| M16 **reflow** the guarded phrase across a line break | **GREEN** | GREEN |
+
+M16 is the one worth keeping: the *"INFLATED AT THE MOMENT OF WRITING"* assertion was still
+matching raw text, so it would have reddened on a pure re-wrap with no content change. The
+`flat`/`section` helpers are now hoisted to the describe block and every prose assertion
+goes through them.
+
+**Packet addition, per dispatch:** the section now records that *the pull toward counting is
+stronger than the rule against it* — the o-prime's *"exactly two failure modes"*, my *"two
+places mechanism cannot reach"* heading over a third entry, and my ordinal in the sentence
+introducing the rule against ordinals, each written while holding the rule. **The dispatch
+attributed these to three agents; deriving authorship, it is two** — the o-prime wrote one,
+I wrote the rest, and guardrail 10 assigns me the *"two places"* heading regardless of who
+first phrased it, because I am the one who made it authoritative. The packet says two, and
+names them.
+
+It also now draws the line that stops the over-correction: **a contract may state its own
+closure; a record of found instances may not.** *"Exactly three honest destinations"* is a
+rule this packet asserts and is legitimate; a count of axes we happened to find is a claim
+about the world, and the world falsifies it.
+
+**Housekeeping recorded for whoever opens the push gate, not acted on:** `harness doctor`
+reports 147 unpushed telemetry segments across 4 sessions. That is a **non-hermetic push to
+`refs/harness-telemetry/*`**, separate from the gated push to `main` and **not authorized
+here**. Do not run `harness telemetry sync` as part of tk-0006.
+
+**Gates at this commit:** `just checks` green — 713 tests / 59 files, including
+`check-handover` (embeds up to date) and `self-host` (6 documents, zero drift).
+`tk-0002` and `tk-0006` untouched: no exports shape inferred, no `git push` invoked, and
+neither task inspected.

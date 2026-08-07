@@ -450,6 +450,24 @@ describe('the handover packet carries the contracts it claims to carry', () => {
     'utf8',
   );
 
+  // Collapse whitespace before matching. Prose REFLOWS — the same sentence is
+  // one line in a table row and two lines in a paragraph — so a raw toContain
+  // silently depends on where the wrap fell. A guard here passed in one section
+  // and failed in another for exactly that reason, with no content difference
+  // at all, so every prose assertion below goes through this.
+  const flat = (s: string): string => s.replace(/\s+/g, ' ');
+  // A missing bound must NAME itself. Left to indexOf's -1 the slice silently
+  // becomes almost the whole document, and the assertion then reds against
+  // some other section's text — a broken guard reporting a content defect.
+  const section = (from: string, to: string): string => {
+    const start = packet.indexOf(from);
+    const end = packet.indexOf(to);
+    if (start === -1 || end === -1 || end <= start) {
+      throw new Error(`handover packet: cannot bound section ${from}..${to} — guard is broken`);
+    }
+    return flat(packet.slice(start, end));
+  };
+
   /** Constraint headings, read from the binding file rather than restated here. */
   const constraintHeadings = constraintsSource
     .split('\n')
@@ -535,22 +553,6 @@ describe('the handover packet carries the contracts it claims to carry', () => {
     // earlier draft of this test matched the whole packet and tried to tell those
     // two apart by regex; it reddened on 0.1, and the tempting fix was to drop
     // the lesson from the packet to keep a test green.
-    // Collapse whitespace before matching. Prose REFLOWS — the same sentence is
-    // one line in a table row and two lines in a paragraph — so a raw toContain
-    // silently depends on where the wrap fell. This guard passed in 7 and failed
-    // in 0.1 for exactly that reason, with no content difference at all.
-    const flat = (s: string): string => s.replace(/\s+/g, ' ');
-    // A missing bound must NAME itself. Left to indexOf's -1 the slice silently
-    // becomes almost the whole document, and the assertion then reds against
-    // some other section's text — a broken guard reporting a content defect.
-    const section = (from: string, to: string): string => {
-      const start = packet.indexOf(from);
-      const end = packet.indexOf(to);
-      if (start === -1 || end === -1 || end <= start) {
-        throw new Error(`handover packet: cannot bound section ${from}..${to} — guard is broken`);
-      }
-      return flat(packet.slice(start, end));
-    };
     const argument = section('### 2.1', '### 2.2');
     expect(
       argument,
@@ -573,8 +575,42 @@ describe('the handover packet carries the contracts it claims to carry', () => {
   it('warns that the guardrails do not cover overclaim', () => {
     expect(packet).toContain('What the gates do NOT catch');
     expect(
-      packet,
+      flat(packet),
       'koala inherits a gate-heavy model and must know where its coverage ends',
     ).toContain('INFLATED AT THE MOMENT OF WRITING');
+  });
+
+  /**
+   * A REGRESSION PIN, and its limits are the reason it is worth having.
+   *
+   * The boundary section is a declared FLOOR — the list of axes is expected to
+   * grow — so any count of it goes wrong the moment an entry lands. Every author
+   * who has worked on that section has written an ordinal into it anyway, twice
+   * after quoting the previous author doing it. This pins the exact phrasings
+   * that were removed so they cannot come back unnoticed.
+   *
+   * What it CANNOT do: see a NEW ordinal, in new words. It is a pin, not a
+   * detector, and the packet's own §0.1 says not to build a gate that pretends
+   * otherwise. Naming that limit here is the price of keeping the pin honest.
+   */
+  it('keeps ordinals out of the section that argues against them', () => {
+    // Split the same way §2.1/§0.1 are split: the phrase is BANNED where the
+    // argument is MADE and REQUIRED where it is QUOTED as the example. Scoping
+    // by section is what makes that possible without a regex trying to tell a
+    // use from a mention.
+    const axes = section('**Sort by WHEN the claim goes wrong**', '## 0.1');
+    for (const banned of ['the other two', 'the only one of the three']) {
+      expect(
+        axes,
+        `the axis list is a FLOOR — "${banned}" is wrong the moment an axis lands. Name it instead`,
+      ).not.toContain(banned);
+    }
+    const naming = section('**The pull toward counting', '**Sort by WHEN the claim goes wrong**');
+    expect(naming, 'the naming rule must keep its own worked examples').toContain('the other two');
+    const gates = section('### What the gates do NOT catch', '### The protective corollary');
+    expect(
+      gates,
+      'an ordinal in the sentence that introduces the rule against ordinals — name the failure instead',
+    ).not.toContain('There is a second failure');
   });
 });

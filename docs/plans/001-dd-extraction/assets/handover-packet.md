@@ -128,9 +128,28 @@ thing we can hand you.
 **Read the list as a FLOOR, not as a count.** Expect more. That wording is not modesty —
 an earlier draft of this section said *"exactly two failure modes no gate can catch"*, a
 **completeness claim inside the section explaining why completeness claims rot**, and it
-was falsified about an hour later by the third row below. The correction is shown rather
+was falsified about an hour later by the adjacency row below. The correction is shown rather
 than tidied away, because a reader who sees a completeness claim break learns more than a
 reader who sees a neat list.
+
+**The pull toward counting is stronger than the rule against it, and that is the best
+evidence this section has.** Not one author who has worked on it has escaped writing an
+ordinal or a completeness claim *inside it*: the o-prime wrote *"exactly two failure
+modes"*; I then wrote a **"two places mechanism cannot reach"** heading and left it
+standing over a third entry, and later put an ordinal in the very sentence that
+**introduces the rule against ordinals** — after quoting the o-prime's failure, while
+holding the rule, having just written the argument against it. The section is not unlucky.
+**Counting is how a writer signals a list is finished, and that reflex survives knowing the
+list is not finished.** Two consequences worth carrying:
+
+- **NAME what you mean instead of COUNTING it.** Naming is immune to the list growing;
+  *"second"*, *"the other two"* and *"the third row below"* are all wrong the moment a new
+  entry lands, which on this section's record is about an hour.
+- **A contract MAY state its own closure; a record of found instances may not.** The three
+  honest destinations for a figure (§0.1) are a **rule this packet asserts**, so "exactly
+  three" is legitimate there. The axes below are **things we happened to find**, so any
+  count of them is a claim about the world that the world can falsify. Do not over-correct
+  by stripping every enumeration — strip the ones that count discoveries.
 
 **Sort by WHEN the claim goes wrong**, because that is what decides which mitigation is
 even relevant:
@@ -142,7 +161,7 @@ even relevant:
 | at the moment of **WRITING** | a gate **defeated SOCIALLY** — an operator told a red is expected. The gate still runs and still reds; what changed is the meaning assigned to it | a **rule about what a supervisor may say** — never that a red is expected unless derived in the same message | **No** |
 | at the moment of **EDITING** | **adjacency** — two individually correct counts made to contradict by being moved next to each other | **re-reading adjacencies after moving text** | **Partly.** A consistency check over one document could catch some contradictory-count cases |
 
-**A mitigation aimed at one axis does nothing for the other two.** That is the load-bearing
+**A mitigation aimed at one axis does nothing for any other.** That is the load-bearing
 sentence. This repo shipped generators and gates against decay and they work — which is
 precisely what makes it tempting to assume the other axes are covered too. They are not.
 
@@ -155,12 +174,12 @@ gate that cannot actually detect the thing is **worse than the honest gap**, bec
 converts a known blind spot into a believed-covered one. That failure has its own name in
 §7 — a claim outrunning its implementation — so building it would be the class catching us
 again, in the act of guarding against itself. Note that adjacency is marked **partly**
-reachable and deliberately not flattened in with the other two: overstating the boundary,
+reachable and deliberately not flattened in with the unreachable rows: overstating the boundary,
 in the paragraph warning against overstatement, would be the same joke told twice.
 
 ### The adjacency axis, in full
 
-It is the only one of the three that needs neither decay nor overstatement:
+What distinguishes this axis is that it needs neither decay nor overstatement:
 
 > **A count that is correct in isolation can become wrong by being placed next to another
 > correct count.**
@@ -172,14 +191,14 @@ contradict.** The defect was created by *moving text*, not by writing a wrong cl
 
 It goes wrong at the moment of **editing**, out of two true statements — and **no stamp,
 generator or derivation touches it.** You can derive both counts correctly and still ship
-the contradiction, which is why it needed its own axis rather than a footnote on the other
-two.
+the contradiction, which is why it needed its own axis rather than a footnote on the
+mitigations that cannot reach it.
 
-The resolution is the useful part. There were three incidents, and the distinction worth
-drawing was **which LANDED versus which was luck**: the `.dlg-*` gitlink landed, `648febd`
-landed, and the `index.lock` collision missed only because the lock fired before the commit
-did. Consolidating on that distinction produced a record **sharper than either original
-paragraph** — the fix was a better cut, not a corrected number.
+The resolution is the useful part. The distinction worth drawing was **which LANDED versus
+which was luck**: the `.dlg-*` gitlink landed, `648febd` landed, and the `index.lock`
+collision missed only because the lock fired before the commit did. Consolidating on that
+distinction produced a record **sharper than either original paragraph** — the fix was a
+better cut, not a corrected number.
 
 **Practical consequence for anyone editing a document like this one:** after relocating or
 merging sections, **re-read the adjacencies**. Any two claims newly placed near each other
@@ -253,8 +272,9 @@ its coverage ends — otherwise you will trust it past its edge, which is worse 
 no gate at all.
 
 **Every guardrail in §9a catches DECAY: a claim that was true when written and went stale.**
-There is a second failure that produces an untrue claim, and **not one of our gates can see
-it** — a claim **INFLATED AT THE MOMENT OF WRITING**, from facts that are entirely correct.
+A failure that produces an untrue claim from entirely correct facts — an **OVERCLAIM
+INFLATED AT THE MOMENT OF WRITING** — is invisible to every one of them, because nothing
+about it is stale.
 
 The worked instance is in this very section of the packet (§2.1). The recommendation that
 harness must consume dd as a library was argued as *"these imports cannot be shelled even
@@ -284,7 +304,7 @@ Inflation runs toward the modal claim — *impossible*, *always*, *never*, *cann
 those read stronger. So when reviewing an argument rather than a figure, **go straight to
 the modal verbs and ask what would have to be true for each to hold.**
 
-**Two independent instances, both while people were being careful:**
+**Each instance happened while its author was being careful:**
 
 - The o-prime overstated it to Jordan **while correcting someone else's overstatement**,
   and corrected him directly (recorded as P-3, `7fe4d10`).
@@ -299,6 +319,24 @@ possible only by REDESIGNING the integration* — and the decision-maker weighs 
 fund. State it as a barrier and you invite them to hunt the counterexample; when they find
 one, **a correct recommendation dies on a technicality instead of on its merits.** The
 overstated version was not just less honest. It was **weaker**.
+
+**A RECEIPT IS A CLAIM TOO, and it fails at the moment of writing in its own way.** While
+removing the last ordinal from this section I read my own execution log and found it
+already recorded that fix — *"now reads 'other failures … the first is'"* — for a sentence
+that had never said that in any commit:
+
+```bash
+for s in 35da915 972a64b; do
+  git show "$s:docs/plans/001-dd-extraction/assets/handover-packet.md" | grep -n 'other failures'
+done   # no output at either SHA
+```
+
+I had written down the fix I **intended** as though it were the fix I **made**. Nothing
+decayed; the entry was untrue the moment it was written, and **every gate stayed green,
+because no instrument here compares a receipt to the artifact it describes.** The rule is
+guardrail 10's *recorded is not run*, reached from the other side: **derive a receipt from
+the artifact AFTER the edit, never from the intention before it.** Expect to inherit some
+of these — the honest response is to check the artifact, not to trust the log.
 
 ### The protective corollary: NEVER SWEEP STAMPED HISTORY
 
