@@ -1,0 +1,27 @@
+test/package-manifest.test.ts
+  s_743eafe62757dd::t_b007da94846501 1-125
+.github/workflows/ci.yml
+  s_743eafe62757dd::t_dba62b828dfdeb 151,156-163
+package.json
+  s_743eafe62757dd::t_9f0fc00d9ae950 79
+docs/plans/001-dd-extraction/assets/tasks/phase-3/tasks.dd.json
+  s_743eafe62757dd::t_a6bf07c72b868a 54,57-58,114
+docs/plans/001-dd-extraction/assets/tasks/phase-3/tasks.dd.md
+  s_743eafe62757dd::t_6026234eecec95 41,71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "b24aa76ca17e9bb7d6e3f0297f6d53848aedc97d",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
