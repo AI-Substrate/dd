@@ -1,0 +1,19 @@
+docs/plans/001-dd-extraction/assets/handover-packet.md
+  s_2a2451d95e064e::t_6d02236be8645b 891
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "ef95fa575dc095ff6261262ac17ba4ada40a51a5",
+  "prompts": {},
+  "sessions": {
+    "s_2a2451d95e064e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "587f8924-3447-4784-b872-2fb1c784af82",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
