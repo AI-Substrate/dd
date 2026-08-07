@@ -50,10 +50,12 @@ step — pointing harness at this package and deleting the old code — is koala
   the port is in flight. **Any stream porting a verb inherits a moving honesty gate.**
 - Conventional commits are load-bearing: release-please reads them to cut versions and the
   CHANGELOG.
-- **Where mechanism cannot reach — the two known exceptions, and the rule for each.** The
-  row below says prefer the mechanical fix. Plan 001 found exactly two failure modes that
-  **no gate in this repo can catch**, and both live one layer *above* the artifact, which
-  is why no artifact check sees them:
+- **Where mechanism cannot reach — an OPEN list, not a closed one.** The row below says
+  prefer the mechanical fix. Plan 001 found these failure modes that **no gate in this repo
+  catches**; each lives one layer *above* the artifact, which is why no artifact check sees
+  them. **Expect more — this list is a floor.** (It said "exactly two" until a third axis
+  turned up an hour later, which is the same completeness-claim defect the guardrails
+  exist to stop, committed in the paragraph describing them.)
   1. **An overclaim assembled from correct facts.** Nothing is stale, unstamped or
      miscounted — only the modal verb is wrong (*impossible* where only *no drop-in
      substitution* was true). **Instrument: an adversarial reader trying to beat the
@@ -65,9 +67,24 @@ step — pointing harness at this package and deleting the old code — is koala
      same message.** Both times this nearly landed in plan 001, the person doing it had
      personally argued the opposing principle one cycle earlier.
 
+  3. **A contradiction created by MOVING text, not writing it.** Two statements, each
+     accurate where it was written, made to contradict by being placed adjacent — e.g. two
+     paragraphs counting the same incidents differently after a reorder. Nothing decayed
+     and nobody overstated; you can derive both figures correctly and still ship the
+     contradiction. **Partially reachable** (a consistency check over a document could
+     catch some cases), which is why it sits here as a warning rather than a verdict:
+     **re-check adjacencies after any reorder**, especially in a document several authors
+     have appended to.
+
+  **When a claim goes wrong — three known axes**: over *time* (decay → stamp or derive), at
+  the moment of *writing* (overstatement → adversarial reader), and at the moment of
+  *editing* (adjacency → re-check after moving text). A mitigation aimed at one axis does
+  nothing for the other two.
+
   The pattern worth carrying: this repo's instruments check **artifacts**, so the failures
-  that survive them are the ones that live in **what people say about artifacts**. Do not
-  expect the gates to cover that, and do not build a gate that pretends to.
+  that survive them are the ones that live in **what people say about artifacts** and in
+  **how artifacts get rearranged**. Do not expect the gates to cover that, and do not build
+  a gate that pretends to.
 - **Prefer the fix that does not depend on anyone being diligent.** Named by the PM at the
   end of plan 001, as the pattern behind every governance decision that stuck. Twice a
   sincere, competent agent volunteered the disciplined version of a fix — *"ask me every
