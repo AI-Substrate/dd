@@ -76,6 +76,9 @@ jobs:
       - name: Docs drift (baked `dd docs` corpus)
         run: npm run check:dd-docs
 
+      - name: Orient drift (government/orient-local.md repo-state block)
+        run: node scripts/gen-orient-state.mjs --check
+
       - name: Self-host (dd renders this repo's own documents)
         run: ./scripts/self-host-check.sh
 

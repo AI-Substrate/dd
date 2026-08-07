@@ -43,6 +43,18 @@ gen-docs:
 check-docs:
     npm run check:dd-docs
 
+# Regenerate the repo-state block in government/orient-local.md from the shipped bin.
+gen-orient:
+    node scripts/gen-orient-state.mjs
+
+# Fail if orient-local's repo-state block no longer matches `dd --json status`.
+# orient-local is the mandatory first read for a new seat; it once carried a
+# hand-written "Measured:" line claiming the port had not happened, long after it
+# had. A stale orientation file misleads every agent that trusts it, so the claim
+# is derived in the operation that writes it and gated here.
+check-orient:
+    node scripts/gen-orient-state.mjs --check
+
 # Prove dd on its OWN documents: every repo .dd.json must still render byte-for-byte
 # to its committed .dd.md, checked with the LOCAL bin. This is the self-hosting
 # proof (plan 001 tk-0003) — the plan folder is a real dd corpus, so a renderer
@@ -64,6 +76,7 @@ checks:
     just build
     just typecheck
     just check-docs
+    just check-orient
     just self-host
     just test
 

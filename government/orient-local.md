@@ -7,16 +7,26 @@
 **dd — deterministic documents**: the tooling that validates, renders, addresses and
 inspects structured documents, published as `@ai-substrate/dd` with a `dd` bin.
 
-> ⚠️ **NOT YET HUMAN-CONFIRMED.** Derived from `AGENTS.md` + `package.json`, not from a
-> PRD (there is no PRD or README in this repo). The o-prime does not invent product
+> ⚠️ **NOT YET HUMAN-CONFIRMED.** Derived from `AGENTS.md` + `package.json` + `README.md`,
+> not from a PRD (there is no PRD in this repo). The o-prime does not invent product
 > pillars — this line is provisional until Jordan confirms it.
 
-**The repo's actual state: scaffold, not port.** dd ships today *inside*
-`AI-Substrate/harness-engineering` as the `harness dd …` verb family
-(`harness/cli/src/acts/dd` + `harness/cli/src/services/dd`). What exists here is the
-package, the build/test lane, CI, release plumbing, and a stub CLI wired to the envelope
-contract. **Zero dd logic has moved.** Measured: `dd status` reports `ported: []`,
-`remaining: 10`, exit 2.
+<!-- BEGIN GENERATED: repo-state (scripts/gen-orient-state.mjs) -->
+
+**The repo's actual state: the port has landed.** Every planned verb is registered and working.
+
+Derived from the shipped bin by `just gen-orient` — **do not hand-edit this block**,
+and do not restate these numbers in prose elsewhere in this file.
+
+- `dd --json status` → status **ok**, 10/10 ported, 0 remaining
+- Registered: `validate`, `schema`, `docs`, `build`, `address`, `link`, `links`, `graph`, `doctor`, `write`
+- Re-derive: `node bin/dd.js --json status`
+
+<!-- END GENERATED: repo-state -->
+
+dd was extracted here out of `AI-Substrate/harness-engineering` (plan 001), where it had
+shipped as the `harness dd …` verb family. Upstream is read-only reference; the consume
+step — pointing harness at this package and deleting the old code — is koala's, not ours.
 
 ## Mandatory orient reads
 
@@ -80,11 +90,11 @@ ruling** — treat `degraded` here as the expected baseline, not a defect.
 | Non-hermetic commands (write outside the worktree) | `npm ci` (global cache) · `harness skills install` (writes `.claude/skills/`, `.agents/`, `/skills-lock.json`) · `harness telemetry sync` (**pushes** `refs/harness-telemetry/*`) · `git push` · anything touching `~/.pij` |
 | Batons — what breaks under two concurrent users or converging histories? | **(1) `src/app.ts` verb registry** — all 10 ported verbs register in one file; two streams porting verbs converge here every time. **(2) `main`** — convergence/merge. **(3) npm publish + release-please** — one release train, `.release-please-manifest.json` + `package.json` version. **(4) `refs/harness-telemetry/*`** — a real remote ref. **Free probe**: worktree-local `just lint/build/typecheck/test` and reads of `dist/` — grant-free, notify-only. |
 | Never-stage list | `dist/` · `coverage/` · `node_modules/` · `.harness/temp/` · `.harness/skills.lock.json` · `/skills-lock.json` · `.claude/skills/` · `.agents/` (all already ignored — installed skills are DERIVED artifacts of the published package, never source) |
-| Flow-state rule | `.the-flow-state.json`, `the-flow.json`, `the-flow.md` — **builder guided mode is the sole writer**. None exist here yet; the first `/builder` run creates them. No agent writes them by hand. |
+| Flow-state rule | `.the-flow-state.json`, `the-flow.json`, `the-flow.md` — **builder guided mode is the sole writer**. Plan 001's flight plan exists at `docs/plans/001-dd-extraction/the-flow.json`. **Forbidden to READ as well as write**: a coder read a ruling out of it mid-write and saw text a shell defect had corrupted. Cite the committed SHA, never the working tree. |
 | Worktree root | `/Users/jordanknight/substrate/dd-worktrees/` (sibling of the repo — keeps trees out of the package and off every ignore rule) |
 | Worktree naming | `dd-worktrees/s<ord>-<slug>` · branch `s<ord>/<slug>` |
 | Base branch | `main` — remote `https://github.com/AI-Substrate/dd.git`. Resolve the SHA at allocation: `git rev-parse main` (at bootstrap: `489b7aab`) |
-| Landing policy | `/builder 8 ship` → PR → CI (`.github/workflows/ci.yml`: lint, build, typecheck, test on push+PR) → confirmed merge. `release.yml` + release-please cut the version from conventional commits. |
+| Landing policy | **Push to `main`, no PR** (Jordan, 2026-08-07) → CI (`.github/workflows/ci.yml`) must go green. Push is authorized but sequenced: review precedes it, because unreviewed work on a shared main is not cheaply reversible. `release.yml` does **not** fire on `main` — it stays inert until Jordan supplies `RELEASE_PLEASE_TOKEN` + the npm trusted publisher (`government/standing-constraints.md` §4). |
 | Shared-tree fallback | o-prime rules it explicitly, per-occasion, under a baton. **Not the construction default** — one worktree + branch per stream is. |
 | Fleet defaults | copilot `gpt-5.6-sol` coders · cross-model reviewer (`claude-opus-5` or `gpt-5.6-terra`) · ceremony/PA tier `gemini-3.6-flash` |
 | Human digest channel | Jordan, in-pane, self-identified as `pij-mental-dajeil (o-prime, dd)`; plus the durable status card (`pij report now`) |
