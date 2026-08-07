@@ -68,17 +68,25 @@ step — pointing harness at this package and deleting the old code — is koala
 
 | Need | Command | Evidence |
 |---|---|---|
-| Discover | `harness instructions` · `harness doctor --json` | 2 extensions loaded (`boot`, `checks`) |
+| Discover | `harness instructions` · `harness doctor --json` | the `extensions` layer names what is loaded — read it, don't take a count from here |
 | Boot / cheap proof | `harness boot` (wraps `just boot`) | build + `test/smoke.test.ts` spawns the compiled bin |
 | Full proof | `harness checks` (wraps `just checks`) | lint → build → typecheck → test+coverage |
 | Capture friction | `harness observe "<what>" --kind difficulty --severity <sev>` | observe buffer |
 | Drain | `harness observe --list --json` → `harness record retro` → `harness observe --clear` | `.harness/records/` |
 | Encode | new `.harness/extensions/<verb>/` or a `justfile` recipe | committed substrate |
 
-**Known harness state (verified 2026-08-07)**: `harness doctor` = **degraded** on exactly
-one layer — `telemetry-flush-hook` (no `post-commit` hook installed). AGENTS.md records
-this as deliberate. Every other layer is green. **A stream must not "fix" this without a
-ruling** — treat `degraded` here as the expected baseline, not a defect.
+**Expected harness baseline — a rule, not a reading.** Run `harness doctor`. If the **only**
+non-ok layer is `telemetry-flush-hook` (no `post-commit` hook installed), that is the
+**expected baseline, not a defect** — AGENTS.md records the omission as deliberate, and
+**a stream must not "fix" it without a ruling**. Any *other* non-ok layer is real and
+wants attention.
+
+Written as a condition rather than a stamped verdict on purpose: a present-tense state
+claim in a standing document has no expiry and no owner, which is the exact defect that
+put a four-values-wrong "Measured:" line at the top of this file (plan 001 guardrail 9 —
+assert contracts, stamp states, derive anything that must read as current). Phrased this
+way it stays true whenever it is read, and it tells you what to *do* rather than what
+someone once saw.
 
 ## Repo mechanics — derived, not copied
 
