@@ -27,16 +27,57 @@
 
 ## Summary
 
-_Empty._
+Phase 1 — SDK core port. Copy services/dd (45 files, 7 subdirs) near-verbatim into src/, shim posix-path, port the boundary guard + the SDK-side test corpus per an import-direction audit of all 60 upstream tests, and stand up the subpath-exports skeleton with a consumer-surface import test. Logical group: dd-the-library. Upstream basis SHA recorded at copy time; harness-engineering is READ-ONLY.
 
 <a id="tasks"></a>
 
 ## Tasks
 
-_No entries._
+| id | title | domain | phase | state | note | receipt | done | success | notes | satisfies |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| tk-0001 | Read the two upstream architecture tests (test/architecture/dd-core-isolation.test.ts, dd-plan-semantics-frozen.test.ts) in harness-engineering (READ-ONLY); record the boundary contract they encode in the context brief; port dd-core-isolation adapted to this repo src/ layout as our own guard | — | ph-4c9d | [ ] unchecked | — | — | — | — | — | [ac-0001](../../../plan.dd.md#acceptance-criteria) |
+| tk-0002 | Record the upstream basis SHA (git rev-parse in harness-engineering, read-only) into the context brief + execution log; copy harness/cli/src/services/dd/** (45 files, subdirs core/docs/links/mutate/plan/render/schema) into src/ preserving relative .js import specifiers; add src/shared/posix-path.ts shim (verbatim copy of services/shared/posix-path.ts) | — | ph-4c9d | [ ] unchecked | — | — | — | — | — | [ac-0001](../../../plan.dd.md#acceptance-criteria) |
+| tk-0003 | Import-direction audit of ALL 60 upstream dd test files: classify port (imports only dd trees/fixtures) vs stay (imports flow/builder internals); commit the audit table to assets/test-audit.md BEFORE moving any test | — | ph-4c9d | [ ] unchecked | — | — | — | — | — | [ac-0006](../../../plan.dd.md#acceptance-criteria) |
+| tk-0004 | Port the audit-classified SDK tests + the 4 fixture dirs into test/ (mirrored layout, adjust import paths only — no behavioural edits); vitest green | — | ph-4c9d | [ ] unchecked | — | — | — | — | — | [ac-0006](../../../plan.dd.md#acceptance-criteria) |
+| tk-0005 | Subpath exports skeleton in package.json (./core, ./links, ./mutate, ./plan, ./render, ./schema, ./docs mapping to dist) + a consumer-surface test importing one named F-04 symbol per subpath (parseAddress, DdDoc, parse, validateWalk, MemoizingDocLoader, resolveMapSeed, traverseCorpus, buildPlanIndex, SchemaIssue, ConventionSchemaResolver, escapeCell, headingSlug) | — | ph-4c9d | [ ] unchecked | — | — | — | — | — | [ac-0002](../../../plan.dd.md#acceptance-criteria) |
+| tk-0006 | Build lane whole: tsc emits the SDK into dist/, the external-import guard runs in the suite, and just checks passes end to end with the ported corpus | — | ph-4c9d | [ ] unchecked | — | — | — | — | — | [ac-0001](../../../plan.dd.md#acceptance-criteria), [ac-0006](../../../plan.dd.md#acceptance-criteria) |
 
 <a id="done-when"></a>
 
 ## Done when
 
-_No fields._
+### tk-0001
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0001 | The ported isolation guard exists in test/, FAILS on a synthetic non-allowed external import planted in a scratch SDK file, and PASSES on the clean tree; the boundary contract from both upstream tests is written into the context brief | [ ] unchecked | not-applicable | instrument: vitest run of the guard, red-then-green demonstrated in the execution log |
+
+### tk-0002
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0002 | All 45 upstream SDK files + the posix-path shim are present under src/; tsc -p tsconfig.json exits 0; the recorded basis SHA appears in the execution log | [ ] unchecked | not-applicable | instrument: file count vs upstream find; tsc exit code |
+
+### tk-0003
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0003 | assets/test-audit.md is committed listing all 60 files each classified port\|stay with its deciding import line; the stay set contains the 6 flow-dd-*, builder-dd-teaching, flow-dd-gate, and dd-flow-gate.int files | [ ] unchecked | not-applicable | instrument: table row count == upstream find count (60); git log shows the audit commit precedes any test move |
+
+### tk-0004
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0004 | Every audit-ported test file runs green under npx vitest run; fixture dirs copied intact (file counts match upstream); zero stay-classified files present in test/ | [ ] unchecked | not-applicable | instrument: vitest exit 0; find-count diff of fixture dirs |
+
+### tk-0005
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0005 | npm pack --dry-run lists the exports map; the consumer-surface test imports one named symbol per F-04 subpath and passes typecheck + runtime | [ ] unchecked | not-applicable | instrument: vitest consumer-surface test exit 0 |
+
+### tk-0006
+
+| id | assertion | state | pressure | note |
+| --- | --- | --- | --- | --- |
+| dw-0006 | just checks exits 0 end-to-end (lint, build, typecheck, test) on the ported tree | [ ] unchecked | not-applicable | instrument: just checks exit code — the same lane CI runs |
