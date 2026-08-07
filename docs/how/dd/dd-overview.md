@@ -111,6 +111,11 @@ dd schema list --json | jq -r '.data.schemas[] | "\(.name)\t\(.path)"'
 This page is the tour. The full reference — the address grammar in detail, the schema-package
 convention, the completion states and the `human-skipped` receipt convention, the basis ledger,
 the sweep's exclusion contract, and a page of jq recipes — lives in the repository at
-`docs/how/dd/` — a progressive reference, starting at `docs/how/dd/README.md`. A worked corpus
-sits in `docs/how/dd/exemplar/`, including a fully self-contained one
-with its own schema and adapters in `exemplar/custom-render/`.
+`docs/how/dd/` — a progressive reference, starting at `docs/how/dd/README.md`. The deeper
+reference pages and the worked `exemplar/` corpus — including a fully self-contained example
+with its own schema and adapters — remain **upstream**, in `AI-Substrate/harness-engineering`,
+and have not been ported into this package. What ships here and runs today: the **README quick
+start** at the repository root, a complete schema → validate → build → mutate cycle you can
+paste; the **custom-type adapter** worked end to end in `test/acts/jiti-custom-type.test.ts`;
+and the **render fixture corpus** in `test/services/dd/render/fixtures/`, which pairs every
+fixture document with its committed golden render.

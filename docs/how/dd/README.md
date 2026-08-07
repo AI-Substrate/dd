@@ -24,15 +24,24 @@ the baked module drifts from its sources.
 
 ## What is not here yet
 
-`dd-overview.md` describes this folder as a progressive reference and points at a worked corpus at
-`docs/how/dd/exemplar/`, including a self-contained example with its own schema and adapters. **That
-corpus has not been ported into this package yet.** The text came across verbatim from the
-upstream repository (`AI-Substrate/harness-engineering`), where those files live.
+The deeper reference pages and the worked `exemplar/` corpus — including a self-contained example
+with its own schema and adapters — **remain upstream**, in `AI-Substrate/harness-engineering`.
+They have not been ported into this package.
 
-Until it is ported, the runnable equivalents are:
+`dd-overview.md` used to point at them as if they were here; that pointer came across verbatim
+with the rest of the upstream text. It has been amended at the source
+(`src/docs/content/dd-overview.md`) to say where they actually live and to name what runs today.
+
+**The corpus is deliberately not ported.** It carries `meta.certainty: Partial` — the exact
+contested value of dd-next #10, which Jordan has not ruled — and the exemplar is the file new
+authors copy, so porting it would propagate an unruled value widely. Revisit rides the backlog
+row (phase-4 tk-0004).
+
+The runnable equivalents that ship here:
 
 - the **README quick start** at the repository root — a complete schema, document, validate, build
-  and mutate cycle you can paste;
+  and mutate cycle you can paste, and one this repository executes as a test
+  (`test/docs-surface.test.ts`), so it cannot rot into an example that no longer runs;
 - the **custom-type adapter** worked end to end in `test/acts/jiti-custom-type.test.ts` and again in
   `scripts/pack-gate.sh`, both of which build a self-contained corpus from scratch and assert the
   adapter's output actually reaches the rendered markdown;
