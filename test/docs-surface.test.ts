@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { ensureBuilt, parseEnvelope, repoRoot, runDd } from './support/run-cli.js';
+import { type Envelope, ensureBuilt, parseEnvelope, repoRoot, runDd } from './support/run-cli.js';
 
 /**
  * The README and the ported `docs/how/dd/` reference (plan 001 tk-0006, ac-000a).
