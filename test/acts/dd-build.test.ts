@@ -115,7 +115,7 @@ describe('harness dd build — read-only checking', () => {
     expect(result.code).toBe(1);
     expect(result.envelope.status).toBe('error');
     expect(result.envelope.error?.code).toBe('E422');
-    expect(result.envelope.next_action).toContain('harness dd build');
+    expect(result.envelope.next_action).toContain('dd build');
   });
 
   it('is degraded — never failed — by adapter issues, and names every one', async () => {
@@ -214,7 +214,7 @@ describe('harness dd build — writing the sibling', () => {
     const result = await runDd(['dd', 'build', 'docs/orphan.dd.json']);
     expect(result.code).toBe(1);
     expect(result.envelope.error?.code).toBe('E401');
-    expect(result.envelope.next_action).toContain('harness dd schema list');
+    expect(result.envelope.next_action).toContain('dd schema list');
   });
 
   it('refuses a document outside the repository root', async () => {

@@ -41,10 +41,11 @@
           "id": "tk-0003",
           "title": "RULED (o-prime 2026-08-07): rename the 43 user-facing harness-dd strings to dd across act next_actions, the GENERATED banner, and drift-checked docs content; regenerate every .dd.md sibling in this repo; drift pipeline green; add a wire-format note for the handover packet (upstream siblings will diff on koala swap — expected, per-package banners are self-consistent)",
           "phase": "ph-356b",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-000a"
-          ]
+          ],
+          "receipt": "43 strings renamed (42 act next_actions/human output + RENDER_BANNER); 6 upstream-provenance comments preserved by design and pinned by an allow-list. All 14 generated .dd.md regenerated with the LOCAL bin. binary-name.test.ts guards both source and runtime, mutation-proven. just checks exit 0, 658 tests."
         },
         {
           "id": "tk-0004",
@@ -100,7 +101,7 @@
           {
             "id": "dw-0003",
             "assertion": "grep for harness dd across src/ and docs content returns ZERO user-facing hits (allowed: historical docs/plans records); all .dd.md siblings regenerated in the same commit; dd-docs-drift + dd build --check green; handover wire-format note written",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: grep count; drift test; build --check"
           }

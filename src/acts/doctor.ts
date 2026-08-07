@@ -79,7 +79,7 @@ export function registerDoctorCommand(dd: Command, io: CliIo, deps: DdActDeps): 
             {
               details: data,
               next_action:
-                'The sweep could not enumerate the corpus — fix the reported path, then re-run `harness dd doctor`.',
+                'The sweep could not enumerate the corpus — fix the reported path, then re-run `dd doctor`.',
             },
           ),
           ctx.port,
@@ -99,7 +99,7 @@ export function registerDoctorCommand(dd: Command, io: CliIo, deps: DdActDeps): 
             ctx.clock,
             {
               details: data,
-              next_action: `Fix ${blocking.owner} at ${blocking.location}, then re-run \`harness dd doctor\`.`,
+              next_action: `Fix ${blocking.owner} at ${blocking.location}, then re-run \`dd doctor\`.`,
             },
           ),
           ctx.port,

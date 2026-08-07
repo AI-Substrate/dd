@@ -82,11 +82,11 @@ silently forking validation is not.
 ## The CLI
 
 ```bash
-harness dd validate <path> [--depth <n>]   # default depth 3: this doc, its links, their health
-harness dd schema list                     # every resolvable schema + shadowed duplicates
-harness dd schema show <pkg>/<schema>      # one schema, its path, enums, gate-terminal set
-harness dd docs list                       # this documentation, baked into the CLI
-harness dd docs get <id>
+dd validate <path> [--depth <n>]   # default depth 3: this doc, its links, their health
+dd schema list                     # every resolvable schema + shadowed duplicates
+dd schema show <pkg>/<schema>      # one schema, its path, enums, gate-terminal set
+dd docs list                       # this documentation, baked into the CLI
+dd docs get <id>
 ```
 
 `dd validate` exits `0` when clean, `0` with a `degraded` envelope when only WARN-class findings
@@ -98,8 +98,8 @@ it, which is not always the one you ran the command on.
 
 ```bash
 jq -r '.sections[] | select(.name=="tasks") | .value[] | "\(.id) \(.state)"' plan.dd.json
-harness dd validate plan.dd.json --json | jq '.data.issues[] | {code, location, owner}'
-harness dd schema list --json | jq -r '.data.schemas[] | "\(.name)\t\(.path)"'
+dd validate plan.dd.json --json | jq '.data.issues[] | {code, location, owner}'
+dd schema list --json | jq -r '.data.schemas[] | "\(.name)\t\(.path)"'
 ```
 
 ## Going deeper

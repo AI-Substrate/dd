@@ -23,7 +23,7 @@ export function registerLinksCommand(dd: Command, io: CliIo, deps: DdActDeps): v
         exitWithEnvelope(
           formatError('dd links', ErrorCodes.DD_LINK_SCAN_FAILED, failed.message, ctx.clock, {
             details: { target, path },
-            next_action: 'Fix the unreadable directory, then re-run `harness dd links <target>`.',
+            next_action: 'Fix the unreadable directory, then re-run `dd links <target>`.',
           }),
           ctx.port,
         );
@@ -72,7 +72,7 @@ export function registerLinksCommand(dd: Command, io: CliIo, deps: DdActDeps): v
       }
       exitWithEnvelope(
         formatOk('dd links', data, ctx.clock, {
-          next_action: 'Run `harness dd graph` to see the same edges as a mermaid view.',
+          next_action: 'Run `dd graph` to see the same edges as a mermaid view.',
         }),
         ctx.port,
       );

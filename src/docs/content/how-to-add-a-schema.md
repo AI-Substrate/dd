@@ -75,8 +75,8 @@ Three rules worth stating plainly:
 ## 3. Check it resolves
 
 ```bash
-harness dd schema list
-harness dd schema show review/checklist
+dd schema list
+dd schema show review/checklist
 ```
 
 `show` prints the winning path, the section shapes, every declared enum with its gate-terminal
@@ -108,7 +108,7 @@ the *same* root, that is a hard error: nothing can arbitrate them, so fix the du
 ```
 
 ```bash
-harness dd validate review.dd.json --json | jq '{status, counts: .data.counts}'
+dd validate review.dd.json --json | jq '{status, counts: .data.counts}'
 ```
 
 ## 5. The `human-skipped` receipt convention
@@ -169,6 +169,6 @@ would let a broken adapter look like a boring document forever.
 
 1. `<root>/schemas/<pkg>/<schema>/schema.json` with `dd_schema: 1` and a `description`.
 2. Enums declared once, bound per field; `gate_terminal` on the enum.
-3. `harness dd schema show <pkg>/<schema>` resolves, and the path is the one you meant.
-4. `harness dd validate <doc>` is clean at `--depth 0`, then at the default depth.
+3. `dd schema show <pkg>/<schema>` resolves, and the path is the one you meant.
+4. `dd validate <doc>` is clean at `--depth 0`, then at the default depth.
 5. Adapters (if any) at `adapters/<type>.ts`, pure and total.

@@ -57,7 +57,7 @@ export function registerAddressCommands(dd: Command, io: CliIo, deps: DdActDeps)
           },
           ctx.clock,
           {
-            next_action: `Check it against the repository with \`harness dd address validate "${formatAddress(normalized)}" --resolve\`.`,
+            next_action: `Check it against the repository with \`dd address validate "${formatAddress(normalized)}" --resolve\`.`,
           },
         ),
         ctx.port,
@@ -81,7 +81,7 @@ export function registerAddressCommands(dd: Command, io: CliIo, deps: DdActDeps)
             {
               details: { address: raw },
               next_action:
-                'Generate the address instead of writing it: `harness dd address generate "<interior>" --path <file>`.',
+                'Generate the address instead of writing it: `dd address generate "<interior>" --path <file>`.',
             },
           ),
           ctx.port,
@@ -158,7 +158,7 @@ export function registerAddressCommands(dd: Command, io: CliIo, deps: DdActDeps)
           },
           ctx.clock,
           {
-            next_action: `Run \`harness dd link resolve "${target.address}"\` to read the value it points at.`,
+            next_action: `Run \`dd link resolve "${target.address}"\` to read the value it points at.`,
           },
         ),
         ctx.port,

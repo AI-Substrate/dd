@@ -35,7 +35,7 @@ export function registerGraphCommand(dd: Command, io: CliIo, deps: DdActDeps): v
         exitWithEnvelope(
           formatError('dd graph', ErrorCodes.DD_GRAPH_FAILED, failed.message, ctx.clock, {
             details: { root },
-            next_action: 'Fix the unreadable directory, then re-run `harness dd graph`.',
+            next_action: 'Fix the unreadable directory, then re-run `dd graph`.',
           }),
           port,
         );
@@ -73,7 +73,7 @@ export function registerGraphCommand(dd: Command, io: CliIo, deps: DdActDeps): v
       }
       exitWithEnvelope(
         formatOk('dd graph', data, ctx.clock, {
-          next_action: 'Run `harness dd links <target>` to inspect one document\u2019s edges.',
+          next_action: 'Run `dd links <target>` to inspect one document\u2019s edges.',
         }),
         port,
       );
@@ -103,7 +103,7 @@ export function registerGraphCommand(dd: Command, io: CliIo, deps: DdActDeps): v
  * routing it through the wrap helper.
  *
  * Only the diagram goes to stdout — status, diagnostics and the next action go
- * to stderr — so `harness dd graph --no-json > graph.mmd` yields a file that is
+ * to stderr — so `dd graph --no-json > graph.mmd` yields a file that is
  * valid on its own. That is the point of emitting a machine format at all.
  */
 function graphPort(io: CliIo, jsonPort: OutputPort): OutputPort {
@@ -240,8 +240,7 @@ function registerGraphMapCommand(graph: Command, io: CliIo, deps: DdActDeps): vo
           exitWithEnvelope(
             formatError('dd graph map', ErrorCodes.DD_LINK_SCAN_FAILED, failed.message, ctx.clock, {
               details: { address },
-              next_action:
-                'Fix the unreadable directory, then re-run `harness dd graph map <address>`.',
+              next_action: 'Fix the unreadable directory, then re-run `dd graph map <address>`.',
             }),
             port,
           );
@@ -307,7 +306,7 @@ function registerGraphMapCommand(graph: Command, io: CliIo, deps: DdActDeps): vo
           formatOk('dd graph map', data, ctx.clock, {
             next_action: result.truncated.cut
               ? 'The walk hit a bound \u2014 re-run with a larger `--depth` or `--max-nodes` to see the rest.'
-              : 'Run `harness dd links <target>` for one document\u2019s raw edges.',
+              : 'Run `dd links <target>` for one document\u2019s raw edges.',
           }),
           port,
         );

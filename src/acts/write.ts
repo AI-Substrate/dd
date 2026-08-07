@@ -44,19 +44,18 @@ const MUTATION_CODES: Record<DdMutationFailure['reason'], string> = {
 
 const NEXT_ACTIONS: Record<DdMutationFailure['reason'], string> = {
   'address-malformed':
-    'Generate the address instead of writing it: `harness dd address generate "<interior>" --path <file>`.',
+    'Generate the address instead of writing it: `dd address generate "<interior>" --path <file>`.',
   'container-invalid':
-    'Inspect the shape with `harness dd schema show <name>`, then address a container the verb can act on.',
+    'Inspect the shape with `dd schema show <name>`, then address a container the verb can act on.',
   'id-conflict': 'Drop `--mint`, or remove the `id` from the item and let the CLI mint it.',
   'id-exhausted': 'Use a different registered prefix, or split the document.',
   'mint-prefix-unregistered':
-    'Mint under a registered prefix — run `harness dd schema show <name>` to see the shapes that carry ids.',
+    'Mint under a registered prefix — run `dd schema show <name>` to see the shapes that carry ids.',
   'schema-refused': 'Fix the reported location in the value you supplied, then re-run.',
-  'section-unknown':
-    'Run `harness dd schema show <name>` to see the sections this schema declares.',
-  'target-exists': 'Use `harness dd set` to replace a value that is not a list.',
+  'section-unknown': 'Run `dd schema show <name>` to see the sections this schema declares.',
+  'target-exists': 'Use `dd set` to replace a value that is not a list.',
   'target-unknown':
-    'Resolve the address first with `harness dd link resolve <address>` to see where it stops.',
+    'Resolve the address first with `dd link resolve <address>` to see where it stops.',
   'value-invalid':
     'Supply a value of the declared type, or pass `--value-json` for a structural one.',
 };
@@ -136,7 +135,7 @@ function readTarget(ctx: DdLinkContext, command: string, address: string): Write
       ErrorCodes.DD_SCHEMA_UNRESOLVABLE,
       resolution.issues.find((issue) => issue.severity === 'ERROR')?.message ??
         `schema not found: ${doc.dd.schema}`,
-      'Run `harness dd schema list` to see which schemas resolve from here.',
+      'Run `dd schema list` to see which schemas resolve from here.',
       { path, schema: doc.dd.schema, issues: resolution.issues },
     );
   }
@@ -278,7 +277,7 @@ export function registerWriterCommands(dd: Command, io: CliIo, deps: DdActDeps):
       }
       exitWithEnvelope(
         formatOk('dd get', data, ctx.clock, {
-          next_action: `Change it with \`harness dd set ${address} <value>\`.`,
+          next_action: `Change it with \`dd set ${address} <value>\`.`,
         }),
         ctx.port,
       );

@@ -100,7 +100,7 @@ function schemaPort(io: CliIo, render: (envelope: Envelope) => string): OutputPo
 }
 
 function renderList(data: ListData): string {
-  const lines = ['harness dd schema — resolved schemas', ''];
+  const lines = ['dd schema — resolved schemas', ''];
   if (data.schemas.length === 0) lines.push('  (none found)');
   for (const schema of data.schemas) {
     lines.push(`  ${schema.name}  [${schema.root}]`);
@@ -184,7 +184,7 @@ export function registerSchemaCommands(dd: Command, io: CliIo, deps: DdActDeps):
         exitWithEnvelope(
           formatError('dd schema list', fatal.code, fatal.message, clock, {
             details: data,
-            next_action: 'Fix the unreadable discovery root, then re-run `harness dd schema list`.',
+            next_action: 'Fix the unreadable discovery root, then re-run `dd schema list`.',
           }),
           port,
         );
@@ -197,7 +197,7 @@ export function registerSchemaCommands(dd: Command, io: CliIo, deps: DdActDeps):
             data,
             issues.length > 0
               ? `${issues.length} schema package(s) could not be loaded — see data.issues.`
-              : `${shadowing.length} schema(s) shadow a lower-precedence copy; run \`harness dd schema show <name>\` for the chain.`,
+              : `${shadowing.length} schema(s) shadow a lower-precedence copy; run \`dd schema show <name>\` for the chain.`,
             clock,
           ),
           port,
@@ -205,7 +205,7 @@ export function registerSchemaCommands(dd: Command, io: CliIo, deps: DdActDeps):
       }
       exitWithEnvelope(
         formatOk('dd schema list', data, clock, {
-          next_action: 'Run `harness dd schema show <name>` for one schema in full.',
+          next_action: 'Run `dd schema show <name>` for one schema in full.',
         }),
         port,
       );
@@ -229,7 +229,7 @@ export function registerSchemaCommands(dd: Command, io: CliIo, deps: DdActDeps):
             clock,
             {
               details: { name, issues },
-              next_action: 'Run `harness dd schema list` to see every resolvable schema.',
+              next_action: 'Run `dd schema list` to see every resolvable schema.',
             },
           ),
           port,
@@ -250,7 +250,7 @@ export function registerSchemaCommands(dd: Command, io: CliIo, deps: DdActDeps):
       }
       exitWithEnvelope(
         formatOk('dd schema show', data, clock, {
-          next_action: 'Run `harness dd validate <path>` against a document using this schema.',
+          next_action: 'Run `dd validate <path>` against a document using this schema.',
         }),
         port,
       );

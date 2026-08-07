@@ -46,7 +46,7 @@ export function registerLinkCommands(dd: Command, io: CliIo, deps: DdActDeps): v
       const { target } = resolution;
       exitWithEnvelope(
         formatOk('dd link resolve', { address, target }, ctx.clock, {
-          next_action: `Run \`harness dd link verify-basis ${target.address} --sha ${target.sha}\` to check its basis.`,
+          next_action: `Run \`dd link verify-basis ${target.address} --sha ${target.sha}\` to check its basis.`,
         }),
         ctx.port,
       );

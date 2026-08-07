@@ -207,7 +207,7 @@ describe('harness dd schema / docs — live bodies', () => {
   it('renders a human listing rather than a bare status line', async () => {
     const result = await runDd(['dd', 'schema', 'list'], 'human');
     expect(result.code).toBe(0);
-    expect(result.out).toContain('harness dd schema — resolved schemas');
+    expect(result.out).toContain('dd schema — resolved schemas');
     expect(result.out).toContain('Roots searched (precedence order):');
   });
 

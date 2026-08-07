@@ -91,9 +91,9 @@ export function nextActionFor(issues: readonly DdLinkIssue[], address: string): 
     return 'Address the file explicitly — `<path>#<interior>`. A bare-"#" address only means something inside its own document.';
   }
   if (reason === 'malformed') {
-    return 'Generate the address instead of writing it: `harness dd address generate "<interior>" --path <file>`.';
+    return 'Generate the address instead of writing it: `dd address generate "<interior>" --path <file>`.';
   }
-  return `Check the target with \`harness dd links <target>\`, then fix ${address}.`;
+  return `Check the target with \`dd links <target>\`, then fix ${address}.`;
 }
 
 /**

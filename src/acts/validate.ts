@@ -55,7 +55,7 @@ export function registerValidateCommand(dd: Command, io: CliIo, deps: DdActDeps)
             ErrorCodes.DD_DOCUMENT_INVALID,
             `document is missing or unreadable: ${target}`,
             clock,
-            { next_action: 'Check the path, then re-run `harness dd validate <path>`.' },
+            { next_action: 'Check the path, then re-run `dd validate <path>`.' },
           ),
           port,
         );
@@ -71,7 +71,7 @@ export function registerValidateCommand(dd: Command, io: CliIo, deps: DdActDeps)
             clock,
             {
               details: { path: target, failures: doc },
-              next_action: 'Fix the reported location, then re-run `harness dd validate <path>`.',
+              next_action: 'Fix the reported location, then re-run `dd validate <path>`.',
             },
           ),
           port,
@@ -115,7 +115,7 @@ export function registerValidateCommand(dd: Command, io: CliIo, deps: DdActDeps)
         exitWithEnvelope(
           formatError('dd validate', blocking.code, blocking.message, clock, {
             details: data,
-            next_action: `Fix ${blocking.owner} at ${blocking.location}, then re-run \`harness dd validate ${path}\`.`,
+            next_action: `Fix ${blocking.owner} at ${blocking.location}, then re-run \`dd validate ${path}\`.`,
           }),
           port,
         );
@@ -133,7 +133,7 @@ export function registerValidateCommand(dd: Command, io: CliIo, deps: DdActDeps)
       }
       exitWithEnvelope(
         formatOk('dd validate', data, clock, {
-          next_action: 'Run `harness dd build <path>` to regenerate the sibling markdown.',
+          next_action: 'Run `dd build <path>` to regenerate the sibling markdown.',
         }),
         port,
       );

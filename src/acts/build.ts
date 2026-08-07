@@ -86,7 +86,7 @@ export async function renderDocument(
       ok: false,
       code: ErrorCodes.DD_BUILD_INPUT_INVALID,
       message: `document is outside the repository root: ${documentPath}`,
-      next_action: 'Point `harness dd build` at a document inside this repository.',
+      next_action: 'Point `dd build` at a document inside this repository.',
     };
   }
 
@@ -96,7 +96,7 @@ export async function renderDocument(
       ok: false,
       code: ErrorCodes.DD_BUILD_INPUT_INVALID,
       message: `document is missing or unreadable: ${documentPath}`,
-      next_action: 'Check the path, then re-run `harness dd build <path>`.',
+      next_action: 'Check the path, then re-run `dd build <path>`.',
     };
   }
 
@@ -107,7 +107,7 @@ export async function renderDocument(
       code: ErrorCodes.DD_BUILD_INPUT_INVALID,
       message: `${documentPath} is not a valid dd document`,
       details: { path: documentPath, failures: doc },
-      next_action: 'Fix the reported location, then re-run `harness dd build <path>`.',
+      next_action: 'Fix the reported location, then re-run `dd build <path>`.',
     };
   }
 
@@ -125,7 +125,7 @@ export async function renderDocument(
       code: ErrorCodes.DD_SCHEMA_UNRESOLVABLE,
       message: blocking?.message ?? `schema not found: ${doc.dd.schema}`,
       details: { path: documentPath, schema: doc.dd.schema, issues: resolution.issues },
-      next_action: 'Run `harness dd schema list` to see which schemas resolve from here.',
+      next_action: 'Run `dd schema list` to see which schemas resolve from here.',
     };
   }
 
@@ -451,7 +451,7 @@ export function registerBuildCommand(dd: Command, io: CliIo, deps: DdActDeps): v
               clock,
               {
                 details: { ...data, drift: true },
-                next_action: `Regenerate with \`harness dd build ${path}\` and commit the result.`,
+                next_action: `Regenerate with \`dd build ${path}\` and commit the result.`,
               },
             ),
             port,
