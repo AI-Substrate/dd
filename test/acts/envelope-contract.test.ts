@@ -101,6 +101,36 @@ const VERB_CASES: VerbCase[] = [
   },
   // --- graph ---
   { verb: 'graph', label: 'a repo-wide mermaid sweep', argv: ['graph'], status: 'ok' },
+  // --- build ---
+  {
+    verb: 'build',
+    label: 'checking a document already in sync',
+    argv: ['build', GOOD_DOC, '--check'],
+    status: 'ok',
+  },
+  {
+    verb: 'build',
+    label: 'building a document outside the repository',
+    argv: ['build', '/etc/hosts'],
+    status: 'error',
+    code: 'E429',
+  },
+  // --- doctor ---
+  { verb: 'doctor', label: 'a clean repo-wide sweep', argv: ['doctor'], status: 'ok' },
+  // --- write (get/set/add/rm) ---
+  {
+    verb: 'write',
+    label: 'reading a part back',
+    argv: ['get', `${GOOD_DOC}#tasks/tk-0001/state`],
+    status: 'ok',
+  },
+  {
+    verb: 'write',
+    label: 'reading a part that does not exist',
+    argv: ['get', `${GOOD_DOC}#tasks/tk-9999/state`],
+    status: 'error',
+    code: 'E450',
+  },
 ];
 
 describe('envelope contract over every ported verb', () => {

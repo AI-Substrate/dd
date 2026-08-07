@@ -1,6 +1,8 @@
 import { Command, CommanderError } from 'commander';
 import { registerAddressCommands } from './acts/address.js';
+import { registerBuildCommand } from './acts/build.js';
 import { registerDocsCommands } from './acts/docs.js';
+import { registerDoctorCommand } from './acts/doctor.js';
 import { registerGraphCommand } from './acts/graph.js';
 import { registerLinkCommands } from './acts/link.js';
 import { registerLinksCommand } from './acts/links.js';
@@ -9,6 +11,7 @@ import type { ActDeps } from './acts/shared.js';
 import { registerStatusAct } from './acts/status.js';
 import { registerValidateCommand } from './acts/validate.js';
 import { registerVersionAct } from './acts/version.js';
+import { registerWriterCommands } from './acts/write.js';
 import type { Clock } from './adapters/clock/clock-port.js';
 import { SystemClock } from './adapters/clock/system-clock.js';
 import { formatError } from './output/envelope.js';
@@ -73,6 +76,9 @@ export function buildProgram(io: CliIo, deps: ActDeps): Command {
   registerLinkCommands(program, io, deps);
   registerLinksCommand(program, io, deps);
   registerGraphCommand(program, io, deps);
+  registerBuildCommand(program, io, deps);
+  registerDoctorCommand(program, io, deps);
+  registerWriterCommands(program, io, deps);
 
   return program;
 }

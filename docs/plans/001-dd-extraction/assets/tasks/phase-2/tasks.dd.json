@@ -55,11 +55,12 @@
           "id": "tk-0004",
           "title": "Third verb slice: port build, write, doctor acts (jiti custom-type loading path live); register + envelope tests per verb; dd status flips to ok/exit 0 ported[10] in the commit landing the last verb",
           "phase": "ph-8bda",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0003",
             "../../../plan.dd.json#acceptance_criteria/ac-0004"
-          ]
+          ],
+          "receipt": "build/write/doctor registered; dd status ok exit 0 ported[10] remaining[]; jiti custom-type load proven end-to-end + mutation-proven non-vacuous; 419 tests"
         },
         {
           "id": "tk-0005",
@@ -125,7 +126,7 @@
           {
             "id": "dw-0004",
             "assertion": "build/write/doctor working incl. a real jiti custom-type load in tests; dd status exits 0 with ported[10] remaining[] in the final commit of this task",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: dd status exit code + envelope; jiti-load test"
           }

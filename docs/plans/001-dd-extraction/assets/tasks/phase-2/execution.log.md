@@ -228,3 +228,76 @@ Two new mechanical ledger guards land with this slice (ac-0003):
    clause. Future slices cannot register quietly.
 2. **every ported verb answers `--help` with exit 0 on the shipped bin** — registration is
    proven against the real process, not the in-memory program object.
+
+---
+
+## tk-0004 — Slice 3 (build, write, doctor) — **the ledger flips green**
+
+`write.ts` and `doctor.ts` ported with the same four rules; `build.ts` was already ported in
+slice 2 (for `link`) and is **registered here**, which is the commit where it is proven.
+
+### DISCOVERY — the writer family is four commands, not a verb called `write`
+
+`acts/dd/write.ts` registers `get`, `set`, `add` and `rm`. It registers **nothing named
+`write`**. `PLANNED_VERBS` (phase 1) lists `write` as one of the ten, and the old ledger
+matched a verb by `registered.includes(verb)` — so `write` could never be satisfied and
+`dd status` could never reach `ported[10]`, no matter how complete the port was.
+
+The plan requires ten entries and `ported[10]` (ac-0003, dw-0004), so the list is unchanged.
+What changed is how a verb is PROVEN: a new `PROVING_COMMANDS` map says which command names
+demonstrate each verb. Nine map to their own name; `write` maps to **all four** writer
+commands. A partially-registered family stays unported, which is the honest answer — and
+`test/status.test.ts` now pins exactly that (drop `rm`, and `remaining` is `['write']`).
+
+This was a latent defect in phase-1's ledger, surfaced by the first verb whose family name is
+not a command name. **Reported to the PM.**
+
+### The flip, and what it invalidated
+
+`dd status` → `ok`, **exit 0**, `ported[10]`, `remaining[]`, in the commit that registers the
+last verb.
+
+That flip **broke two phase-1 smoke tests** — both asserted `dd status` answers `unconfigured`
+with exit 2. They were correct while the port was in flight and are false the moment it lands,
+which is the ledger doing its job rather than a regression. Both were rewritten against the
+post-port reality: the human renderer case now expects `status: ok` / exit 0, and the second
+asserts the complete port (`remaining: []`, `ported` length 10, no `next_action`). Because
+`data.ported` is derived from the registered commands, losing a registration flips both back
+automatically.
+
+### Verbs proven working IN THIS COMMIT
+
+| command | result |
+| --- | --- |
+| `dd build <doc> --check` | `ok`, exit 0, no drift |
+| `dd build /etc/hosts` | `error` **E429**, outside the repository root |
+| `dd doctor` | `ok`, exit 0 — **99 discovered, 6 swept, 0 findings** on this repo |
+| `dd get <doc>#tasks/tk-0001/state` | `ok`, exit 0 |
+| `dd get <doc>#tasks/tk-9999/state` | `error` **E450** |
+
+### Evidence (dw-0004) — jiti PROVEN, not merely installed
+
+`jiti` landed in tk-0001 as a dependency; nothing proved it until now. It is a runtime dep for
+exactly one reason: a schema registers a custom render type by **presence** of a TypeScript
+file at `<schema folder>/adapters/<type>.ts`, and the shipped CLI must load and execute that
+untranspiled module.
+
+`test/acts/jiti-custom-type.test.ts` builds a throwaway repo whose adapter is real TypeScript
+(annotated params, an `interface`, `export default`) that this package's build never compiles,
+then drives the **shipped bin** and asserts the rendered markdown contains `**43h 30m**` —
+output only that adapter can produce from `2610`.
+
+**Mutation-proven non-vacuous**: a second case builds the same document with the adapter file
+absent and asserts the cell renders `2610` verbatim. Without it, the first assertion could
+pass for the wrong reason.
+
+Two fixture facts worth keeping (both cost a red run):
+
+1. Schema resolution requires the `schemas/` level — `<root>/schemas/<pkg>/<schema>/schema.json`.
+   The last two segments ARE the qualified name; omitting `schemas/` resolves nothing.
+2. **macOS temp-path trap** — `mkdtemp` returns `/var/…`, `process.cwd()` reports the resolved
+   `/private/var/…`, so an ABSOLUTE temp path is judged outside the repository root and the
+   build refuses with **E429**. Temp-repo CLI tests must address documents RELATIVE to `cwd`
+   (which is how a user invokes them anyway). Captured via `harness observe` (DL-007).
+
+Envelope table now covers **all ten verbs** — 64 assertions in that file, **419** repo-wide.

@@ -67,18 +67,22 @@ describe('dd bin smoke', () => {
   });
 
   it('--no-json forces the human renderer even when piped', () => {
-    const { code, stdout, stderr } = runDd(['--no-json', 'status']);
-    expect(code).toBe(2);
-    expect(stdout.trim()).toBe('status: unconfigured');
-    expect(stderr).toContain('→ ');
+    const { code, stdout } = runDd(['--no-json', 'status']);
+    expect(code).toBe(0);
+    expect(stdout.trim().split('\n').at(0)).toBe('status: ok');
   });
 
-  it('an unconfigured verb emits next_action and exits 2', () => {
+  it('reports a complete port: every planned verb registered, exit 0', () => {
+    // Phase 2 landed all ten verbs, so the ledger reads `ok`. It stays honest by
+    // construction — `data.ported` is derived from the registered commands, so
+    // this flips straight back to `unconfigured`/2 if a registration is lost.
     const { code, stdout } = runDd(['--json', 'status']);
-    expect(code).toBe(2);
+    expect(code).toBe(0);
     const env = parseEnvelope(stdout);
-    expect(env.status).toBe('unconfigured');
-    expect(env.next_action).toBeTruthy();
+    expect(env.status).toBe('ok');
+    expect(env.next_action).toBeUndefined();
+    expect((env.data as { remaining: string[]; ported: string[] }).remaining).toEqual([]);
+    expect((env.data as { ported: string[] }).ported).toHaveLength(10);
   });
 
   it('an unknown command emits an error envelope and exits 1', () => {

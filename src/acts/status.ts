@@ -23,14 +23,42 @@ export const PLANNED_VERBS = [
   'write',
 ] as const;
 
+export type PlannedVerb = (typeof PLANNED_VERBS)[number];
+
+/**
+ * The command name(s) whose presence PROVES a planned verb has landed.
+ *
+ * Nine of the ten register a command of their own name. The tenth does not:
+ * upstream's writer family (`acts/dd/write.ts`) registers `get`, `set`, `add` and
+ * `rm`, and nothing called `write` — `write` is the family's name, not a command.
+ * Matching the ledger on the bare name would therefore leave `write` permanently
+ * unported no matter how much of it worked, so the family is proven by all four
+ * of its commands being registered. Partial registration stays unported, which is
+ * the honest answer.
+ */
+const PROVING_COMMANDS: Record<PlannedVerb, readonly string[]> = {
+  validate: ['validate'],
+  schema: ['schema'],
+  docs: ['docs'],
+  build: ['build'],
+  address: ['address'],
+  link: ['link'],
+  links: ['links'],
+  graph: ['graph'],
+  doctor: ['doctor'],
+  write: ['get', 'set', 'add', 'rm'],
+};
+
 /**
  * Build the status envelope from the verbs actually registered on the program.
  * Derived, never hand-maintained: as ported verbs register, the remaining set
  * shrinks and the status flips to `ok` on its own.
  */
 export function buildStatusEnvelope(registered: string[], deps: ActDeps): Envelope {
-  const ported = PLANNED_VERBS.filter((verb) => registered.includes(verb));
-  const remaining = PLANNED_VERBS.filter((verb) => !registered.includes(verb));
+  const isPorted = (verb: PlannedVerb): boolean =>
+    PROVING_COMMANDS[verb].every((command) => registered.includes(command));
+  const ported = PLANNED_VERBS.filter(isPorted);
+  const remaining = PLANNED_VERBS.filter((verb) => !isPorted(verb));
   const data = { ported, remaining, planned: PLANNED_VERBS.length };
 
   if (remaining.length === 0) {
