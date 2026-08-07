@@ -359,3 +359,71 @@ describe('the README quick start actually works', () => {
     expect(readFileSync(path, 'utf8')).toBe(before);
   });
 });
+
+/**
+ * The migrated backlog (plan 001 tk-0004, ac-0009).
+ *
+ * `docs/backlog.md` is a handover artifact: `pij-related-koala` inherits it and
+ * its usefulness is entirely in the annotations. An OPEN item silently becoming
+ * closed, or the backpressure ordering constraint being tidied away, would not
+ * break anything visible — it would just hand the next owner a list that quietly
+ * lies about what has been decided. So the properties that make it worth
+ * inheriting are asserted rather than trusted to review.
+ *
+ * The upstream source lives in another repository and is READ-ONLY reference
+ * (standing constraint 1), so it is deliberately NOT read here: a test that
+ * depends on a sibling checkout fails for everyone who does not have it. These
+ * rows assert the invariants the migration had to preserve, which is what
+ * survives the source going away.
+ */
+describe('the migrated dd-next backlog', () => {
+  const backlog = readFileSync(join(repoRoot, 'docs/backlog.md'), 'utf8');
+  // Only the item tables: the "where each item lands" summary reuses the
+  // numbers, and counting it would inflate the total.
+  const itemRows = backlog
+    .slice(0, backlog.indexOf('## Where each item lands'))
+    .split('\n')
+    .filter((line) => /^\| \d+ \| /.test(line));
+
+  it('carries all 17 migrated items plus the 3 opened during the extraction', () => {
+    const numbers = itemRows.map((row) => Number(row.split('|')[1].trim()));
+    // Contiguous 1..20 catches a dropped row and a duplicated one with the same
+    // assertion; a bare count would miss the second.
+    expect(numbers).toEqual(Array.from({ length: 20 }, (_, index) => index + 1));
+  });
+
+  it('keeps the backpressure ordering constraint verbatim', () => {
+    // Load-bearing prose, not decoration: running 11 before 8 turns the gate
+    // green over undetermined values, and the green then argues the vocabulary
+    // is consistent. Paraphrasing it would lose exactly that reasoning.
+    expect(backlog).toContain(
+      '**These four run in this order. Running 11 first turns the gate green over three\ndocuments holding undetermined values, and the green then argues the vocabulary is\nconsistent.**',
+    );
+  });
+
+  it('leaves every OPEN item open', () => {
+    // The migration must not resolve anything. These five were OPEN upstream;
+    // an item that arrived here answered would have been decided by a file move.
+    for (const number of [8, 9, 10, 12, 13]) {
+      const row = itemRows.find((entry) => entry.startsWith(`| ${number} |`));
+      expect(row, `backlog item ${number} is missing`).toBeDefined();
+      expect(row, `backlog item ${number} must still be OPEN`).toContain('**OPEN');
+    }
+  });
+
+  it('routes the two decisions that are Jordan-s to Jordan', () => {
+    // 8 and 13 arrived owner-stamped; 18 and 20 were opened here and must carry
+    // an owner too, or they become work nobody can start and nobody can rule.
+    for (const number of [8, 13, 18, 20]) {
+      const row = itemRows.find((entry) => entry.startsWith(`| ${number} |`));
+      expect(row, `backlog item ${number} is missing`).toBeDefined();
+      expect(row, `backlog item ${number} must name its owner`).toMatch(/OPEN\s*[—-]\s*Jordan/);
+    }
+  });
+
+  it('records the added rows as added rather than passing them off as migrated', () => {
+    // Provenance is the difference between a backlog and a rumour.
+    expect(backlog).toContain('## Added during the extraction (plan 001)');
+    expect(itemRows.find((row) => row.startsWith('| 19 |'))).toContain('**CANDIDATE**');
+  });
+});
