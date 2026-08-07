@@ -1,0 +1,20 @@
+docs/plans/001-dd-extraction/plan.dd.json
+  h_9e71e8b09f7cf2 503-504
+docs/plans/001-dd-extraction/plan.dd.md
+  h_9e71e8b09f7cf2 239
+docs/plans/001-dd-extraction/the-flow.json
+  h_9e71e8b09f7cf2 910-921,1421,1431-1439
+docs/plans/001-dd-extraction/the-flow.md
+  h_9e71e8b09f7cf2 4,17,96-98
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "b47937286d9bbcaf49830e29e1f908cc56e7db5f",
+  "prompts": {},
+  "humans": {
+    "h_9e71e8b09f7cf2": {
+      "author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
