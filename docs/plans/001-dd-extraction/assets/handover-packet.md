@@ -119,30 +119,48 @@ region byte-identical to the reviewed commit, gate green **for a real reason**.
 The rule this yields is about **what a supervisor may say**, not about what a gate may do:
 *never tell an operator a red is expected unless you DERIVED it in the same message.*
 
-### The boundary: two places mechanism cannot reach
+### The boundary: where mechanism stops reaching
 
-Those last two findings are not two more entries on the guardrail list. Read together they
-mark the **edge of what any instrument in this repo can do**, and that is the single most
-useful thing we can hand you:
+Those findings are not more entries on the guardrail list. Read together they mark the
+**edge of what any instrument in this repo can do**, and that is the single most useful
+thing we can hand you.
 
-| what gets past every gate | why no check sees it | the only instrument that works |
-|---|---|---|
-| an **overclaim assembled from CORRECT FACTS** | nothing decayed, nothing was unstamped, no source drifted — there is no artifact defect to detect | an **adversarial reader** whose job is to refuse the argument |
-| a gate **defeated SOCIALLY** — an operator told a red is expected | the gate still runs and still reds; what changed is the meaning assigned to it | a **rule about what a supervisor may say**, held by people |
+**Read the list as a FLOOR, not as a count.** Expect more. That wording is not modesty —
+an earlier draft of this section said *"exactly two failure modes no gate can catch"*, a
+**completeness claim inside the section explaining why completeness claims rot**, and it
+was falsified about an hour later by the third row below. The correction is shown rather
+than tidied away, because a reader who sees a completeness claim break learns more than a
+reader who sees a neat list.
+
+**Sort by WHEN the claim goes wrong**, because that is what decides which mitigation is
+even relevant:
+
+| axis — when it goes wrong | the failure | what actually answers it | reachable by mechanism? |
+|---|---|---|---|
+| over **TIME** | **decay** — true when written, false later | stamping, or deriving in the operation that writes it | **Yes.** Everything in §9a aims here |
+| at the moment of **WRITING** | **overclaim** assembled from CORRECT FACTS — nothing decayed, nothing unstamped, no source drifted, so there is no artifact defect to detect | an **adversarial reader** whose job is to refuse the argument | **No** |
+| at the moment of **WRITING** | a gate **defeated SOCIALLY** — an operator told a red is expected. The gate still runs and still reds; what changed is the meaning assigned to it | a **rule about what a supervisor may say** — never that a red is expected unless derived in the same message | **No** |
+| at the moment of **EDITING** | **adjacency** — two individually correct counts made to contradict by being moved next to each other | **re-reading adjacencies after moving text** | **Partly.** A consistency check over one document could catch some contradictory-count cases |
+
+**A mitigation aimed at one axis does nothing for the other two.** That is the load-bearing
+sentence. This repo shipped generators and gates against decay and they work — which is
+precisely what makes it tempting to assume the other axes are covered too. They are not.
 
 > **Our instruments check ARTIFACTS. So what survives them lives in what people SAY about
-> artifacts.**
+> artifacts** — and in what happens to artifacts when they are **rearranged**.
 
-**Do not expect the gates to cover that, and do not build a gate that pretends to.** The
-reflex on finding a hole this shape is to build an instrument for it; a gate that cannot
-actually detect the thing is **worse than the honest gap**, because it converts a known
-blind spot into a believed-covered one. That failure has its own name in §7 — a claim
-outrunning its implementation — so building it would be the class catching us again, this
-time in the act of guarding against itself.
+**Do not expect the gates to cover the unreachable rows, and do not build a gate that
+pretends to.** The reflex on finding a hole this shape is to build an instrument for it; a
+gate that cannot actually detect the thing is **worse than the honest gap**, because it
+converts a known blind spot into a believed-covered one. That failure has its own name in
+§7 — a claim outrunning its implementation — so building it would be the class catching us
+again, in the act of guarding against itself. Note that adjacency is marked **partly**
+reachable and deliberately not flattened in with the other two: overstating the boundary,
+in the paragraph warning against overstatement, would be the same joke told twice.
 
-### A third way in: adjacency
+### The adjacency axis, in full
 
-One more, and it is the only one that needs neither decay nor overstatement:
+It is the only one of the three that needs neither decay nor overstatement:
 
 > **A count that is correct in isolation can become wrong by being placed next to another
 > correct count.**
@@ -152,11 +170,10 @@ sweep defects, the other counting near-misses, naming overlapping but **not iden
 incidents. Each was accurate where it was originally written. **Adjacency made them
 contradict.** The defect was created by *moving text*, not by writing a wrong claim.
 
-That is worth its own line here because every mitigation in this packet assumes a claim
-goes wrong over **time** (decay) or at the moment of **writing** (overstatement). This one
-goes wrong at the moment of **editing**, out of two true statements — and **no stamp,
+It goes wrong at the moment of **editing**, out of two true statements — and **no stamp,
 generator or derivation touches it.** You can derive both counts correctly and still ship
-the contradiction.
+the contradiction, which is why it needed its own axis rather than a footnote on the other
+two.
 
 The resolution is the useful part. There were three incidents, and the distinction worth
 drawing was **which LANDED versus which was luck**: the `.dlg-*` gitlink landed, `648febd`
@@ -171,8 +188,10 @@ section accumulated its entries across four separate dispatches, which is exactl
 surface the defect lives on, so the audit was run over this packet before it shipped; it is
 what removed the counts from the §8 heading and from §7's cross-references.
 
-**One detail belongs in the record, and it is evidence rather than confession.** In the two
-cases above the person had argued the **opposing principle one cycle earlier**: the PM had used
+**One detail belongs in the record, and it is evidence rather than confession.** In **the
+expected-red note and the overclaim alike** — named rather than counted, because a bare "the
+two cases above" in a section this heavily edited points at whichever pair the reader last
+saw — the person had argued the **opposing principle one cycle earlier**: the PM had used
 "a red nobody looks at is worse than no red" to justify holding `release.yml` back, then
 sent an expected-red note; the o-prime had just corrected somebody else's overstatement
 when it made its own. Knowing the rule, having recently *applied* the rule, and being the

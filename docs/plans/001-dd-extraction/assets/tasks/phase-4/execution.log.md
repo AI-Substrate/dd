@@ -578,3 +578,48 @@ bare `git add` stages the other agent's work under your message. Carried verbati
 it is the argument rather than a mitigating detail: *all three were between the two agents
 who have been most careful about everything else.* The recommendation is a worktree per
 agent — the §0 principle arriving as a repo layout instead of a rule.
+
+### The adjacency audit run against my own §0, and what it caught
+
+The PM sharpened the re-check: reconcile counts and enumerations **against each other**,
+not just against the facts, since both numbers can be individually correct and still
+contradict. The fatal version is a packet saying three instances in one place and six in
+another, with the successor citing whichever it reads first.
+
+**The worst instance was mine, and it was the joke told twice.** §0.1 carried a heading
+reading *"The boundary: two places mechanism cannot reach"* — a **completeness claim inside
+the section explaining why completeness claims rot** — and I had then appended *"A third
+way in: adjacency"* directly beneath it. Both statements were defensible when written;
+adjacent, they contradicted outright. The o-prime shipped the same shape an hour earlier
+(*"exactly two failure modes no gate can catch"*), which is what makes it worth recording
+rather than quietly correcting: two agents, both holding this rule, both wrote a
+completeness claim into the paragraph warning against them.
+
+Rebuilt as a **floor, not a count**, with the falsified draft shown rather than tidied
+away, and re-sorted by the axis that actually decides which mitigation applies:
+
+| axis — when the claim goes wrong | failure | answered by | reachable by mechanism |
+|---|---|---|---|
+| over TIME | decay | stamping / deriving | yes — all of §9a aims here |
+| at WRITING | overclaim from correct facts | an adversarial reader | no |
+| at WRITING | a gate defeated socially | a rule on what a supervisor may say | no |
+| at EDITING | adjacency | re-reading adjacencies after moving text | **partly** |
+
+**A mitigation aimed at one axis does nothing for the other two.** Adjacency is marked
+*partly* reachable on purpose and deliberately NOT flattened in with the other two — a
+consistency check over one document could catch some contradictory-count cases, and
+collapsing it would overstate the boundary in the paragraph warning against overstatement.
+
+Two further contradictions caught in the same sweep, neither a wrong statement:
+
+- *"There is a **second** failure that produces an untrue claim"* — an ordinal sitting
+  above a table that had grown to four rows. Now reads "other failures … the first is".
+- *"In **the two cases above** …"* — the nearest preceding "two" enumerated the o-prime and
+  me on the overclaim, while the sentence's content described the PM on the expected-red
+  note and the o-prime on the overclaim. Two correct pairs, pointed at by one ambiguous
+  reference. Now **named** rather than counted, which is the same fix as the stamp block:
+  a reference that resolves by position breaks when the text around it moves.
+
+The general rule this yields, and the one worth carrying: **in a document that gets
+rearranged, name what you mean instead of counting it.** Every defect above was a pointer
+that resolved by adjacency or by position rather than by name.
