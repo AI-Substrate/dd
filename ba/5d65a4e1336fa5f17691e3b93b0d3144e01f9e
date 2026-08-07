@@ -1,0 +1,23 @@
+.github/workflows/ci.yml
+  s_65740aa865ed35::t_29b45feba74da6 93-95
+justfile
+  s_65740aa865ed35::t_c4903d56dc00ad 63-71,103
+scripts/exports-reachability-probe.mjs
+  s_65740aa865ed35::t_12eda4b6ea969d 4,6-12,21-42,58,60-67,69-80,87,103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "ba5d65a4e1336fa5f17691e3b93b0d3144e01f9e",
+  "prompts": {},
+  "sessions": {
+    "s_65740aa865ed35": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_65740aa865ed35",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
