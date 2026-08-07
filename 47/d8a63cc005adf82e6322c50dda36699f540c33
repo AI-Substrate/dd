@@ -1,0 +1,21 @@
+docs/plans/001-dd-extraction/plan.dd.json
+  s_9e6a42835b1143::t_c10c09198248bd 505
+docs/plans/001-dd-extraction/plan.dd.md
+  s_9e6a42835b1143::t_4e7a8e4083b32d 239
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "47d8a63cc005adf82e6322c50dda36699f540c33",
+  "prompts": {},
+  "sessions": {
+    "s_9e6a42835b1143": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "58af2b48-7b67-4412-93b5-70847a064c82",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
