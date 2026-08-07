@@ -23,19 +23,21 @@
           "id": "tk-0001",
           "title": "PRECONDITION: fold Jordan OQ-1/OQ-2 rulings (asked via telegram 2026-08-07, recs 1a/2a) into a one-page exports-decision note; if unanswered when this phase dispatches, ESCALATE to prime — do not guess, do not start tk-0002 without it",
           "phase": "ph-356b",
-          "state": "unchecked",
+          "state": "na",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0002"
-          ]
+          ],
+          "note": "SUPERSEDED, not skipped (o-prime 2026-08-07 at phase-3 close). Its own escalate-if-unanswered clause fired: Jordan's OQ-1/OQ-2 rulings were requested by telegram and never arrived, so the precondition could not be met inside phase 3. The work is re-homed to phase-4 tk-0002, whose title records the inheritance verbatim. ac-0002 stays UNCHECKED and phase-4 tk-0002 still satisfies it, so nothing is laundered by this state."
         },
         {
           "id": "tk-0002",
           "title": "Exports map FREEZE: every observed F-04 specifier path explicit in package.json exports (core/address, core/model, core/parse, core/validate, core/walk, links, schema/model, schema/resolve, schema/index, render/renderer) plus ./plan per the OQ-2 ruling; consumer-surface test extended to the frozen map incl. plan barrel symbols if public",
           "phase": "ph-356b",
-          "state": "unchecked",
+          "state": "na",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0002"
-          ]
+          ],
+          "note": "SUPERSEDED, not skipped (o-prime 2026-08-07 at phase-3 close). The exports FREEZE was correctly held all phase — reviewer and PM independently re-verified at HEAD that ./plan is absent from the map and package-manifest.test.ts asserts nothing about exports. Re-homed to phase-4 tk-0002 ('INHERITS the P3 tk-0002 hold'). ac-0002 stays UNCHECKED and is still satisfied-by phase-4 tk-0002."
         },
         {
           "id": "tk-0003",
@@ -86,7 +88,7 @@
           {
             "id": "dw-0001",
             "assertion": "The exports-decision note exists citing Jordan verbatim ruling (or the escalation is on record with the prime and this phase is holding); OQ-1/OQ-2 states flipped in plan.dd.json#open_questions",
-            "state": "unchecked",
+            "state": "na",
             "pressure": "not-applicable",
             "note": "instrument: note file committed + open_questions states"
           }
@@ -95,7 +97,7 @@
           {
             "id": "dw-0002",
             "assertion": "package.json exports carries every observed F-04 path explicitly; consumer-surface test imports one named symbol per frozen subpath and passes; ./plan present-or-absent exactly per the OQ-2 ruling with a comment citing it",
-            "state": "unchecked",
+            "state": "na",
             "pressure": "not-applicable",
             "note": "instrument: consumer-surface vitest + jq over exports"
           }

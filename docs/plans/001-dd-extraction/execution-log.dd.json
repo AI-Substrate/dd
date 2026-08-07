@@ -33,6 +33,11 @@
           "summary": "Phase 2 complete + reviewed APPROVE, zero findings",
           "text": "7 commits fd651ff..1e4633b, 83 files +11323/-70. just checks exit 0 (642 tests/55 files). dd status ok/exit 0/ported[10] — verified independently by PM and reviewer; postfix --json works on every verb. Verdict survived the PM red-flag test: three mutations with distinct RED signatures, 7-commit ledger table matched an independent rebuild. Structural finds this phase: top-level verb registration (binary IS dd), PROVING_COMMANDS map closing the lg-0002 ledger defect, background-* exec adapters dropped as dead weight, cross-slice build-module/verb split preserving ledger honesty. Reviewer pij-blind-deer, dispatch dlg-0002.",
           "state": "checked"
+        },
+        {
+          "id": "lg-0004",
+          "at": "2026-08-07T06:45:00Z",
+          "text": "Phase 3 (THE PACKAGE) complete — re-review APPROVE, all four findings closed (report /Users/jordanknight/.pij/pij-blind-deer/reports/dlg-0003-fix-rereview.md, persisted rev-0003-fix.json superseding rev-0003). Measured at 6859619. The blocking HIGH was a VACUOUS README guard: test/docs-surface.test.ts claimed to run the README quick start through the shipped bin but extracted only the JSON heredocs, retyping the dd commands as hardcoded arrays — the reviewer changed a README command to a nonexistent verb and it stayed 9/9 green. Fixed at 8a13e53 (+240/-51) and proven mutation-RESISTANT, not merely mutation-tested: M1 nonexistent verb reds by COMMAND EXIT CODE (not a parser accident); M2 real verb with an absent address (dw-9999) reds at E450 target-unknown, so the guard is not a verb spell-checker; M3 an unparseable line reds AT COLLECTION, so nothing silently skips. Restore byte-identical, 12/12 green. Two MEDIUMs were the same receipt-accuracy defect and are fixed at 91b2103 and 0a2f1c3. Held decision INTACT and independently re-verified at HEAD by both PM and reviewer: tk-0001/tk-0002 unchecked, ./plan absent from the exports map, package-manifest.test.ts asserting nothing about exports — the exports freeze stays held on Jordan OQ-1/OQ-2. Side-effect fix: c0af550, after vitest type-stripping let a green test file hide an untypechecked lane."
         }
       ]
     }

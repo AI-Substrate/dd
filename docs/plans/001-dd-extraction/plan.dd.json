@@ -96,8 +96,9 @@
         {
           "id": "ac-0007",
           "claim": "Pack gate: npm pack from a clean clone installs into a temp project (registry/proxy access permitted for the DECLARED runtime deps commander+jiti; the dd source repo absent from every resolution path) and dd validate + dd build run against a fixture corpus including a jiti-loaded custom type. npm pack --dry-run file list proves the tarball carries bin+dist+LICENSE and no repo-external requires survive in dist.",
-          "state": "unchecked",
-          "pressure": "not-applicable"
+          "state": "checked",
+          "pressure": "not-applicable",
+          "proven_by": "execution-log.dd.json#entries/lg-0004"
         },
         {
           "id": "ac-0008",

@@ -3,8 +3,8 @@
   "kind": "flight-plan",
   "slug": "dd-extraction",
   "nav": {
-    "now": "phase-3",
-    "next": "review-3",
+    "now": "phase-4",
+    "next": "review-4",
     "intent": "set up a new plan, get builder spine in and perform explore step based on our pre-amble. (dd standalone extraction out of harness-engineering)",
     "bag": {
       "mode": "unknown",
@@ -919,6 +919,131 @@
           "comments"
         ]
       }
+    },
+    {
+      "id": "UPD-033",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-07T06:44:23.025Z",
+      "details": {
+        "node": "retro-3",
+        "fields": [
+          "comments"
+        ]
+      }
+    },
+    {
+      "id": "UPD-034",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-07T06:44:23.187Z",
+      "details": {
+        "node": "observe-3",
+        "fields": [
+          "comments"
+        ]
+      }
+    },
+    {
+      "id": "UPD-035",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-07T06:44:59.835Z",
+      "details": {
+        "node": "boot-3",
+        "fields": [
+          "comments"
+        ]
+      }
+    },
+    {
+      "id": "STA-018",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-07T06:45:00.036Z",
+      "details": {
+        "node": "boot-3",
+        "from": "known",
+        "to": "done",
+        "chore": {
+          "kind": "command",
+          "importance": "recommended"
+        }
+      }
+    },
+    {
+      "id": "STA-019",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-07T06:45:00.215Z",
+      "details": {
+        "node": "observe-3",
+        "from": "known",
+        "to": "done",
+        "chore": {
+          "kind": "command",
+          "importance": "recommended"
+        }
+      }
+    },
+    {
+      "id": "STA-020",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-07T06:45:00.382Z",
+      "details": {
+        "node": "retro-3",
+        "from": "known",
+        "to": "done",
+        "chore": {
+          "kind": "command",
+          "importance": "recommended"
+        }
+      }
+    },
+    {
+      "id": "UPD-036",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-07T06:45:09.845Z",
+      "details": {
+        "node": "review-3",
+        "fields": [
+          "comments"
+        ]
+      }
+    },
+    {
+      "id": "STA-021",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-07T06:45:10.063Z",
+      "details": {
+        "node": "phase-3",
+        "from": "in_progress",
+        "to": "done"
+      }
+    },
+    {
+      "id": "STA-022",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-07T06:45:10.271Z",
+      "details": {
+        "node": "review-3",
+        "from": "known",
+        "to": "done"
+      }
+    },
+    {
+      "id": "CUR-008",
+      "kind": "cursor-moved",
+      "origin": "engine",
+      "fired_at": "2026-08-07T06:46:20.232Z",
+      "details": {
+        "from": "phase-3",
+        "to": "phase-4"
+      }
     }
   ],
   "nodes": [
@@ -1380,12 +1505,12 @@
       "id": "phase-3",
       "type": "phase",
       "label": "P3: Package & release readiness",
-      "status": "in_progress",
+      "status": "done",
       "next": [
         "review-3"
       ],
       "created_at": "2026-08-07T03:54:20.614Z",
-      "modified_at": "2026-08-07T05:52:11.311Z",
+      "modified_at": "2026-08-07T06:45:10.062Z",
       "instructions": [
         "Implement exactly ONE phase using the plan's testing approach and domain placement rules — keep the task table and execution.log.md live as you go.",
         "Run /builder 6 implement --plan \"<plan path>\"; log discoveries, tagging any Deferred/Noteworthy a human must see before ship.",
@@ -1398,7 +1523,15 @@
       ],
       "command": "/builder 6 implement",
       "dd_link": {
-        "address": "docs/plans/001-dd-extraction/assets/tasks/phase-3/tasks.dd.json#tasks"
+        "address": "docs/plans/001-dd-extraction/assets/tasks/phase-3/tasks.dd.json#tasks",
+        "basis_sha": "34ffb87390380e51d4df51261c7f41875e0e3a03d4a43f5c74c5b36e365b32fb",
+        "reading": {
+          "status": "complete",
+          "terminal": 6,
+          "total": 6,
+          "incomplete": [],
+          "at": "2026-08-07T06:46:20.232Z"
+        }
       },
       "comments": [
         {
@@ -1407,18 +1540,19 @@
           "source": "agent",
           "kind": "decision"
         }
-      ]
+      ],
+      "ran_at": "2026-08-07T06:45:10.062Z"
     },
     {
       "id": "review-3",
       "type": "review",
       "label": "Review: P3",
-      "status": "known",
+      "status": "done",
       "next": [
         "phase-4"
       ],
       "created_at": "2026-08-07T03:54:20.614Z",
-      "modified_at": "2026-08-07T06:23:39.031Z",
+      "modified_at": "2026-08-07T06:45:10.271Z",
       "instructions": [
         "Review exactly ONE phase's diff against its acceptance criteria — confirm the tests prove behaviour and nothing risky slipped in.",
         "Run /builder 7 review — it inspects the newest assets/reviews/*.md and surfaces a verdict; REQUEST_CHANGES loops back to fix, clean continues to the next phase or post-flight.",
@@ -1435,19 +1569,26 @@
           "text": "Verdict FIX_REQUIRED (pij-blind-deer, rev-0003): 1 HIGH blocking — README anti-rot guard VACUOUS (extracts JSON heredocs only, dd commands hardcoded; reviewer proved it green on a nonexistent verb). 3 MEDIUM: same-commit sibling claim corrected (achieved invariant = zero stale banners, history not rewritten), WARN-count rot (fix = measured-at stamping, now a plan guardrail), esc-4 amendment folded. HELD FREEZE UPHELD — reviewer independently confirmed no exports expectation leaked anywhere. Fix loop with the coder; P4 held; ac-0007 flip HELD until clean re-review. time:2026-08-07T06:23:38Z",
           "source": "agent",
           "kind": "validation"
+        },
+        {
+          "at": "2026-08-07T06:45:09.844Z",
+          "text": "decision:done verdict:APPROVE reason:dlg-0003-fix re-review clean, all four findings closed. Report /Users/jordanknight/.pij/pij-blind-deer/reports/dlg-0003-fix-rereview.md; persisted rev-0003-fix.json supersedes rev-0003. Measured at 6859619. HIGH (vacuous README guard) fixed 8a13e53 and proven mutation-RESISTANT: M1 nonexistent verb reds by command exit code, M2 real verb + absent address dw-9999 reds at E450 target-unknown, M3 unparseable line reds at collection. Restore byte-identical, 12/12 green. Two MEDIUM receipt-accuracy defects fixed 91b2103 + 0a2f1c3. Exports freeze independently re-verified held at HEAD by PM and reviewer (tk-0001/tk-0002 unchecked, ./plan absent, package-manifest.test.ts asserts nothing about exports). ac-0007 flipped, proven_by execution-log lg-0004. time:2026-08-07T06:45:00Z",
+          "source": "agent",
+          "kind": "validation"
         }
-      ]
+      ],
+      "ran_at": "2026-08-07T06:45:10.271Z"
     },
     {
       "id": "boot-3",
       "type": "harness-boot",
       "label": "Boot check",
-      "status": "known",
+      "status": "done",
       "next": [
         "phase-3"
       ],
       "created_at": "2026-08-07T03:54:20.614Z",
-      "modified_at": "2026-08-07T03:54:20.614Z",
+      "modified_at": "2026-08-07T06:45:00.036Z",
       "branch_of": "phase-3",
       "instructions": [
         "Pre-flight seam: confirm the harness is healthy before you start coding this phase.",
@@ -1460,18 +1601,27 @@
       "chore": {
         "kind": "command",
         "importance": "recommended"
-      }
+      },
+      "comments": [
+        {
+          "at": "2026-08-07T06:44:59.835Z",
+          "text": "decision:done verdict:UNAVAILABLE reason:real /eng-harness-flow --hook pre-flight invocation, boot module Step 0b. Governance doc .harness/engineering-harness.md ABSENT, so mode resolves UNAVAILABLE — boot degrades gracefully, does not block. Underlying substrate is HEALTHY and was exercised: harness boot ran 'just boot' status ok, tsc build clean, 7/7 tests passed in 617ms; checks extension present at .harness/extensions/checks so the quality gate exists. Signals: checks-gate present; governance/maturity/back-pressure NOT DECLARED (no doc to declare them). Housekeeping surfaced: 125 telemetry segments unpushed across 4 sessions. Provisioning the doc is the 'harness init' CLI writer's job, not this module, and remains a standing unactioned offer to Jordan. time:2026-08-07T06:44:43Z",
+          "source": "agent",
+          "kind": "validation"
+        }
+      ],
+      "ran_at": "2026-08-07T06:45:00.036Z"
     },
     {
       "id": "observe-3",
       "type": "observe",
       "label": "Observe: P3",
-      "status": "known",
+      "status": "done",
       "next": [
         "phase-3"
       ],
       "created_at": "2026-08-07T03:54:20.614Z",
-      "modified_at": "2026-08-07T03:54:20.614Z",
+      "modified_at": "2026-08-07T06:45:00.215Z",
       "branch_of": "phase-3",
       "instructions": [
         "Mid-phase capture: record observations (decisions, gotchas, surprises) AS you code, so they don't evaporate as remembered prose.",
@@ -1485,18 +1635,27 @@
       "chore": {
         "kind": "command",
         "importance": "recommended"
-      }
+      },
+      "comments": [
+        {
+          "at": "2026-08-07T06:44:23.187Z",
+          "text": "decision:done verdict:captured reason:real captures made during phase 3, not narrated — DL-009 (out-of-diff review escapes), DL-010 (renderer guardrail violated by its own author), DL-011 (git add -A staging .dlg-* worktrees as gitlinks). Record pointer: .harness/records/retro/2026-08-07/001-001-dd-extraction-phase-3.md. time:2026-08-07T06:44:12Z",
+          "source": "agent",
+          "kind": "validation"
+        }
+      ],
+      "ran_at": "2026-08-07T06:45:00.215Z"
     },
     {
       "id": "retro-3",
       "type": "harness-retro",
       "label": "Retro: P3 (drain)",
-      "status": "known",
+      "status": "done",
       "next": [
         "phase-3"
       ],
       "created_at": "2026-08-07T03:54:20.614Z",
-      "modified_at": "2026-08-07T03:54:20.614Z",
+      "modified_at": "2026-08-07T06:45:00.382Z",
       "branch_of": "phase-3",
       "instructions": [
         "Post-coding seam: drain this phase's observe buffer into durable retro notes before moving on.",
@@ -1507,7 +1666,16 @@
       "chore": {
         "kind": "command",
         "importance": "recommended"
-      }
+      },
+      "comments": [
+        {
+          "at": "2026-08-07T06:44:23.025Z",
+          "text": "decision:done verdict:drained reason:real /eng-harness-flow --hook post-coding invocation; harness observe --list returned 13 pending (buffer had never drained — accumulated across phases 1-3). harness record retro --slug 001-dd-extraction-phase-3 placed .harness/records/retro/2026-08-07/001-001-dd-extraction-phase-3.md; all 13 written with dispositions (12 kept/open, DL-011 fixed-now/encoded resolved_by e1c47d8); harness observe --clear reported cleared:13, malformed_skipped:0; re-list confirms empty. time:2026-08-07T06:44:12Z",
+          "source": "agent",
+          "kind": "validation"
+        }
+      ],
+      "ran_at": "2026-08-07T06:45:00.382Z"
     },
     {
       "id": "phase-4",
