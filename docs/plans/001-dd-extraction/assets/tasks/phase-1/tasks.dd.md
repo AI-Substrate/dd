@@ -38,7 +38,7 @@ Phase 1 — SDK core port. Copy services/dd (45 files, 7 subdirs) near-verbatim 
 | tk-0001 | Read the two upstream architecture tests (dd-core-isolation, dd-plan-semantics-frozen) in harness-engineering (READ-ONLY) and PORT BOTH as this repo guards: dd-core-isolation adapted to src/ layout; dd-plan-semantics-frozen re-pinned (digest of the PORTED plan/semantics source, rationale preserved, note that OQ-2 may later re-rule it). Record both boundary contracts in the context brief. | — | ph-4c9d | [x] checked | — | — | — | — | — | [ac-0001](../../../plan.dd.md#acceptance-criteria) |
 | tk-0002 | Record the upstream basis SHA (git rev-parse in harness-engineering, read-only) into the context brief + execution log; copy harness/cli/src/services/dd/** (45 files, subdirs core/docs/links/mutate/plan/render/schema) into src/ preserving relative .js import specifiers; add src/shared/posix-path.ts shim (verbatim copy of services/shared/posix-path.ts) | — | ph-4c9d | [x] checked | — | — | — | — | — | [ac-0001](../../../plan.dd.md#acceptance-criteria) |
 | tk-0003 | Import-direction audit of ALL 60 upstream dd test files: classify port (imports only dd trees/fixtures) vs stay (imports flow/builder internals); commit the audit table to assets/test-audit.md BEFORE moving any test | — | ph-4c9d | [x] checked | — | — | — | — | — | [ac-0006](../../../plan.dd.md#acceptance-criteria) |
-| tk-0004 | Port the audit-classified SDK tests + the 4 fixture dirs into test/ (mirrored layout, adjust import paths only — no behavioural edits); vitest green | — | ph-4c9d | [ ] unchecked | — | — | — | — | — | [ac-0006](../../../plan.dd.md#acceptance-criteria) |
+| tk-0004 | Port the audit-classified SDK tests + the 4 fixture dirs into test/ (mirrored layout, adjust import paths only — no behavioural edits); vitest green | — | ph-4c9d | [x] checked | — | — | — | — | — | [ac-0006](../../../plan.dd.md#acceptance-criteria) |
 | tk-0005 | Subpath exports skeleton in package.json covering every OBSERVED F-04 specifier path (core/address, core/model, core/parse, core/validate, core/walk, links, schema/model, schema/resolve, schema/index, render/renderer — explicit or wildcard; ./plan EXCLUDED pending OQ-2) + a consumer-surface test importing one named symbol per exact subpath; plan barrel proven importable internally only | — | ph-4c9d | [ ] unchecked | — | — | — | — | — | [ac-0002](../../../plan.dd.md#acceptance-criteria) |
 | tk-0006 | Build lane whole: tsc emits the SDK into dist/, the external-import guard runs in the suite, and just checks passes end to end with the ported corpus | — | ph-4c9d | [ ] unchecked | — | — | — | — | — | [ac-0001](../../../plan.dd.md#acceptance-criteria), [ac-0006](../../../plan.dd.md#acceptance-criteria) |
 
@@ -68,7 +68,7 @@ Phase 1 — SDK core port. Copy services/dd (45 files, 7 subdirs) near-verbatim 
 
 | id | assertion | state | pressure | note |
 | --- | --- | --- | --- | --- |
-| dw-0004 | Every audit-ported test file runs green under npx vitest run; fixture dirs copied intact (file counts match upstream); zero stay-classified files present in test/ | [ ] unchecked | not-applicable | instrument: vitest exit 0; find-count diff of fixture dirs |
+| dw-0004 | Every audit-ported test file runs green under npx vitest run; fixture dirs copied intact (file counts match upstream); zero stay-classified files present in test/ | [x] checked | not-applicable | instrument: vitest exit 0; find-count diff of fixture dirs |
 
 ### tk-0005
 

@@ -28,12 +28,14 @@ under-determine it (5 files, each flagged in the table with its reasoning):
 
 | lands | Needs | Count |
 |---|---|---|
-| `ph1` | dd SDK only — **moves now** | **31** |
-| `ph2` | `src/acts/dd/**`, `src/output/**`, `src/adapters/**`, or `test/support/run-cli` (the compiled CLI) | 17 |
-| `ph3` | the `docs/how/dd/` corpus | 1 |
+| `ph1` | dd SDK only — **moves now** | **27** |
+| `ph2` | `src/acts/dd/**`, `src/output/**`, `src/adapters/**`, or `test/support/run-cli` (the compiled CLI) — directly **or transitively through a test helper** | 19 |
+| `ph3` | the `docs/how/dd/` corpus | 2 |
+| `gap` | generator scripts no phase currently ports — **see finding 5** | 1 |
 | — (stay) | never ports | 11 |
 
-**49 port · 11 stay · 60 total.**
+**49 port · 11 stay · 60 total.** (`ph1` counts 29 rows in the table below: 27 SDK
+test files plus the 2 architecture guards already ported in tk-0001.)
 
 ## Why first
 
@@ -63,6 +65,31 @@ move, not after the confusion.
 4. `test/services/dd/error-codes.test.ts` imports `src/output/error-codes.js`, which *does*
    exist in this repo's stub — but it asserts dd's own `E4xx` codes, which phase 2 adds.
    Classified `ph2` on the codes, not on the module path.
+5. **`dd-docs-drift.test.ts` is a scope gap, not a phase assignment.** It stages
+   `scripts/gen-dd-docs.mjs` and runs `scripts/check-dd-docs.mjs` — the generator pair that
+   bakes `docs/content/*.md` into `docs/docs-content.ts`. Those scripts live **outside**
+   `services/dd`, so the plan's copy scope never named them, and **no phase currently ports
+   them**. Until they land, the baked corpus has no drift gate in this repo: editing
+   `docs/content/*.md` without regenerating `docs-content.ts` would go unnoticed. Raised to
+   the PM rather than resolved here (scope is not the coder's to change).
+
+## Corrections applied during tk-0004 (the port itself)
+
+The audit was written from **direct** imports. Executing the port found four rows where the
+deciding dependency was **transitive through a test helper** or through a data file, which a
+first-order import scan cannot see. The rows are corrected in the table above, and the
+lesson is the general one: *classify by what a file transitively reaches, not by what its
+own import block names.*
+
+| file | was | now | why |
+|---|---|---|---|
+| `test/services/dd/schema/resolve.test.ts` | ph1 | **ph2** | imports `./world.js`, which imports `src/adapters/fs/fake-fs.js` |
+| `test/services/dd/schema/exemplar.test.ts` | ph1 | **ph2** | same, via `./world.js` |
+| `test/services/dd/links/map-exemplar.test.ts` | ph1 | **ph3** | reads the tracked `docs/how/dd/exemplar` corpus, not a fixture |
+| `test/services/dd/docs/dd-docs-drift.test.ts` | ph1 | **gap** | needs the un-ported generator scripts (finding 5) |
+
+`test/services/dd/schema/{world,helpers}.ts` travel with the two ph2 schema tests and are
+**not** present in `test/` — nothing left behind referenced them.
 
 ## Fixture directories (4, all move with the ph1 set)
 
@@ -99,14 +126,14 @@ move, not after the confusion.
 | `test/services/dd/core/validate.test.ts` | **port** | ph1 | import type { DdDoc } from '../../../../src/services/dd/core/model.js'; |
 | `test/services/dd/core/values-shape.test.ts` | **port** | ph1 | import type { DdDoc, ResolvedDdSchema } from '../../../../src/services/dd/core/model.js'; |
 | `test/services/dd/core/walk.test.ts` | **port** | ph1 | import type { DdDoc } from '../../../../src/services/dd/core/model.js'; |
-| `test/services/dd/docs/dd-docs-drift.test.ts` | **port** | ph1 | (node builtins + local fixtures only) |
+| `test/services/dd/docs/dd-docs-drift.test.ts` | **port** | gap | cpSync(join(REPO_ROOT, 'scripts/gen-dd-docs.mjs'), …) + execFileSync('scripts/check-dd-docs.mjs') — needs generator scripts NO phase currently ports |
 | `test/services/dd/docs/dd-docs.test.ts` | **port** | ph1 | import type { DdDocRecord } from '../../../../src/services/dd/docs/contract.js'; |
 | `test/services/dd/fixture-corpus.test.ts` | **port** | ph1 | (node builtins + local fixtures only) |
 | `test/services/dd/links/basis.test.ts` | **port** | ph1 | import { updateLedgerEntry, verifyBasis } from '../../../../src/services/dd/links/basis.js'; |
 | `test/services/dd/links/doctor.test.ts` | **port** | ph1 | import { runDoctor } from '../../../../src/services/dd/links/doctor.js'; |
 | `test/services/dd/links/graph.test.ts` | **port** | ph1 | import { toMermaid } from '../../../../src/services/dd/links/graph.js'; |
 | `test/services/dd/links/isolation.test.ts` | **port** | ph1 | (node builtins + local fixtures only) |
-| `test/services/dd/links/map-exemplar.test.ts` | **port** | ph1 | import { parse } from '../../../../src/services/dd/core/parse.js'; |
+| `test/services/dd/links/map-exemplar.test.ts` | **port** | ph3 | const EXEMPLAR = `${REPO_ROOT}/docs/how/dd/exemplar` — needs the docs/how corpus phase 3 ports |
 | `test/services/dd/links/map.test.ts` | **port** | ph1 | import type { DdDoc, ResolvedDdSchema } from '../../../../src/services/dd/core/model.js'; |
 | `test/services/dd/links/rel-graph.test.ts` | **port** | ph1 | import type { DdDoc, ResolvedDdSchema } from '../../../../src/services/dd/core/model.js'; |
 | `test/services/dd/links/resolver.test.ts` | **port** | ph1 | import { resolveLink } from '../../../../src/services/dd/links/resolver.js'; |
@@ -117,8 +144,8 @@ move, not after the confusion.
 | `test/services/dd/render/renderer.test.ts` | **port** | ph1 | import { deriveState } from '../../../../src/services/dd/core/derive.js'; |
 | `test/services/dd/schema/corpus.test.ts` | **port** | ph1 | (node builtins + local fixtures only) |
 | `test/services/dd/schema/declarations.test.ts` | **port** | ph1 | import { parseSchemaDeclaration } from '../../../../src/services/dd/schema/declarations.js'; |
-| `test/services/dd/schema/exemplar.test.ts` | **port** | ph1 | import { deriveState } from '../../../../src/services/dd/core/derive.js'; |
-| `test/services/dd/schema/resolve.test.ts` | **port** | ph1 | import { validateDocument } from '../../../../src/services/dd/core/validate.js'; |
+| `test/services/dd/schema/exemplar.test.ts` | **port** | ph2 | import { ... } from './world.js'; → world.ts imports src/adapters/fs/fake-fs.js — TRANSITIVE shell dependency |
+| `test/services/dd/schema/resolve.test.ts` | **port** | ph2 | import { ... } from './world.js'; → world.ts imports src/adapters/fs/fake-fs.js — TRANSITIVE shell dependency |
 | `test/acts/dd-build.test.ts` | **port** | ph2 | import { autoRegenerateSibling, siblingPath } from '../../src/acts/dd/build.js'; |
 | `test/acts/dd-graph-human.test.ts` | **port** | ph2 | import type { VerbActDeps } from '../../src/acts/verb.js'; |
 | `test/acts/dd-graph-map-live.test.ts` | **port** | ph2 | import type { VerbActDeps } from '../../src/acts/verb.js'; |

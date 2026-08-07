@@ -50,7 +50,7 @@
           "id": "tk-0004",
           "title": "Port the audit-classified SDK tests + the 4 fixture dirs into test/ (mirrored layout, adjust import paths only — no behavioural edits); vitest green",
           "phase": "ph-4c9d",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0006"
           ]
@@ -110,7 +110,7 @@
           {
             "id": "dw-0004",
             "assertion": "Every audit-ported test file runs green under npx vitest run; fixture dirs copied intact (file counts match upstream); zero stay-classified files present in test/",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: vitest exit 0; find-count diff of fixture dirs"
           }

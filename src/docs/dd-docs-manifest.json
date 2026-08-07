@@ -6,14 +6,14 @@
       "title": "Deterministic documents (dd)",
       "summary": "The envelope, ids and addresses, completion states and the gate, schema resolution, and the CLI family.",
       "audience": "both",
-      "sourcePath": "harness/cli/src/services/dd/docs/content/dd-overview.md"
+      "sourcePath": "src/docs/content/dd-overview.md"
     },
     {
       "id": "how-to-add-a-schema",
       "title": "How to add a schema (and an adapter)",
       "summary": "A worked schema package with custom enums and gate_terminal, the human-skipped receipt convention, and a custom-type adapter.",
       "audience": "both",
-      "sourcePath": "harness/cli/src/services/dd/docs/content/how-to-add-a-schema.md"
+      "sourcePath": "src/docs/content/how-to-add-a-schema.md"
     }
   ]
 }
