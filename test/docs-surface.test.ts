@@ -95,78 +95,267 @@ describe('docs/how/dd', () => {
 });
 
 /**
- * Pull the README's own quick-start out of the README and run it. Everything
- * below comes from the document under test — nothing is retyped here, because a
- * retyped copy is exactly the thing that drifts.
+ * ---------------------------------------------------------------------------
+ * The README quick start, EXECUTED FROM THE README.
+ * ---------------------------------------------------------------------------
+ *
+ * The quick start is parsed into a transcript — `mkdir`, heredoc writes, and
+ * `dd …` command lines — and every step is replayed against the shipped bin.
+ * The commands are the README's own bytes: a verb that does not exist, an
+ * address that stopped resolving or a flag that was renamed fails HERE.
+ *
+ * An earlier version of this guard extracted the heredocs but RETYPED the
+ * commands as literal arrays, so it stayed green while the README documented a
+ * command the binary does not have. Retyping is the drift, so nothing below is
+ * retyped: even the expected values are read out of the README's own examples.
+ *
+ * An unrecognised line is a HARD FAILURE, never a skip — a guard that silently
+ * ignores what it cannot parse is the same vacuity in a new costume.
  */
-function heredocs(markdown: string): string[] {
-  return [...markdown.matchAll(/<<'JSON'\n([\s\S]*?)\nJSON\n/g)].map((match) => match[1]);
+
+type Step =
+  | { kind: 'mkdir'; path: string }
+  | { kind: 'write'; path: string; body: string }
+  | { kind: 'dd'; argv: string[] };
+
+/** The ```bash fences of the `## Quick start` section, in document order. */
+function quickStartFences(markdown: string): string[] {
+  const start = markdown.indexOf('## Quick start');
+  if (start === -1) throw new Error('README has no `## Quick start` section');
+  const rest = markdown.slice(start + 1);
+  const end = rest.indexOf('\n## ');
+  const section = end === -1 ? rest : rest.slice(0, end);
+  return [...section.matchAll(/```bash\n([\s\S]*?)```/g)].map((match) => match[1]);
+}
+
+/** Split a shell line into argv, honouring quotes and stopping at a comment. */
+function tokenize(line: string): string[] {
+  const tokens: string[] = [];
+  let token = '';
+  let open = false;
+  let quote: string | null = null;
+  for (const char of line) {
+    if (quote) {
+      if (char === quote) quote = null;
+      else token += char;
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      quote = char;
+      open = true;
+      continue;
+    }
+    // A `#` only opens a comment between tokens — inside one it is an address.
+    if (char === '#' && !open) break;
+    if (/\s/.test(char)) {
+      if (open) tokens.push(token);
+      token = '';
+      open = false;
+      continue;
+    }
+    token += char;
+    open = true;
+  }
+  if (open) tokens.push(token);
+  return tokens;
+}
+
+function parseTranscript(fences: string[]): Step[] {
+  const steps: Step[] = [];
+  for (const fence of fences) {
+    const lines = fence.split('\n');
+    for (let index = 0; index < lines.length; index += 1) {
+      const line = lines[index];
+      if (line.trim() === '') continue;
+
+      const mkdir = line.match(/^mkdir -p (\S+)$/);
+      if (mkdir) {
+        steps.push({ kind: 'mkdir', path: mkdir[1] });
+        continue;
+      }
+
+      const heredoc = line.match(/^cat > (\S+) <<'(\w+)'$/);
+      if (heredoc) {
+        const [, path, terminator] = heredoc;
+        const body: string[] = [];
+        index += 1;
+        while (index < lines.length && lines[index] !== terminator) {
+          body.push(lines[index]);
+          index += 1;
+        }
+        if (index >= lines.length) throw new Error(`README heredoc for ${path} is unterminated`);
+        steps.push({ kind: 'write', path, body: body.join('\n') });
+        continue;
+      }
+
+      if (/^dd\s/.test(line)) {
+        steps.push({ kind: 'dd', argv: tokenize(line).slice(1) });
+        continue;
+      }
+
+      // Deliberately fatal. Teach this parser the new form rather than letting
+      // a documented step go unproven.
+      throw new Error(`README quick start has a line this guard cannot execute: ${line}`);
+    }
+  }
+  return steps;
+}
+
+const STEPS = parseTranscript(quickStartFences(README));
+const WRITES = STEPS.filter(
+  (step): step is Extract<Step, { kind: 'write' }> => step.kind === 'write',
+);
+const COMMANDS = STEPS.filter((step): step is Extract<Step, { kind: 'dd' }> => step.kind === 'dd');
+
+/** The one argument carrying a `#`, i.e. the address the README addressed. */
+function addressOf(argv: string[]): string {
+  const address = argv.find((argument) => argument.includes('#'));
+  if (address === undefined) throw new Error(`no address in \`dd ${argv.join(' ')}\``);
+  return address;
+}
+
+interface Item {
+  id: string;
+  claim?: string;
+  state: string;
+}
+
+function sectionOf(document: Record<string, never>, name: string): unknown {
+  const sections = (document as unknown as { sections: { name: string; value: unknown }[] })
+    .sections;
+  return sections.find((section) => section.name === name)?.value;
 }
 
 describe('the README quick start actually works', () => {
   let workspace: string;
+  const ran = new Map<string, { argv: string[]; envelope: Envelope }>();
+  const failures: string[] = [];
 
+  /**
+   * Replay the transcript once, recording every step's outcome instead of
+   * throwing at the first bad one. A broken line then reds ONE row that names
+   * it, rather than a cascade in which the real cause is the quietest entry.
+   */
   beforeAll(() => {
     ensureBuilt();
     workspace = mkdtempSync(join(tmpdir(), 'dd-readme-'));
+    for (const step of STEPS) {
+      if (step.kind === 'mkdir') {
+        mkdirSync(join(workspace, step.path), { recursive: true });
+        continue;
+      }
+      if (step.kind === 'write') {
+        mkdirSync(dirname(join(workspace, step.path)), { recursive: true });
+        writeFileSync(join(workspace, step.path), `${step.body}\n`);
+        continue;
+      }
+      // Relative paths throughout: on macOS an absolute temp path resolves via
+      // /private and is judged outside the repository root (E429). Piped output
+      // auto-selects JSON, so the README's literal line answers an envelope.
+      const run = runDd(step.argv, { cwd: workspace });
+      const what = `dd ${step.argv.join(' ')}`;
+      // The COMMAND is judged first and on its own terms. A verb that does not
+      // exist fails here, on its exit code — never as a parse accident later.
+      if (run.code !== 0) {
+        failures.push(`\`${what}\` exited ${run.code}: ${run.stderr.trim() || run.stdout.trim()}`);
+        continue;
+      }
+      let envelope: Envelope;
+      try {
+        envelope = parseEnvelope(run.stdout);
+      } catch {
+        failures.push(`\`${what}\` exited 0 but answered no envelope: ${run.stdout.trim()}`);
+        continue;
+      }
+      if (envelope.status !== 'ok') {
+        failures.push(`\`${what}\` answered status ${envelope.status}`);
+        continue;
+      }
+      // The bin dispatched the verb the README typed, not some fallback.
+      if (!envelope.command.split(' ').includes(step.argv[0])) {
+        failures.push(`\`${what}\` was answered by \`${envelope.command}\``);
+        continue;
+      }
+      ran.set(step.argv[0], { argv: step.argv, envelope });
+    }
   }, 120_000);
 
   afterAll(() => {
     rmSync(workspace, { recursive: true, force: true });
   });
 
-  it('runs the documented schema, document and commands end to end', () => {
-    const blocks = heredocs(README);
-    // Non-vacuity: if the README stopped carrying the two examples, this row
-    // would otherwise pass by testing nothing at all.
-    expect(blocks.length, 'README must carry the schema and document examples').toBe(2);
-    const [schema, document] = blocks;
-    expect(schema).toContain('"dd_schema": 1');
-    expect(document).toContain('"schema": "review/checklist"');
+  it('is a transcript with something in it to run', () => {
+    // Non-vacuity. If the quick start lost its examples, or this parser stopped
+    // recognising them, every row below would otherwise pass by doing nothing.
+    expect(STEPS.filter((step) => step.kind === 'mkdir').length).toBe(1);
+    expect(WRITES.length, 'the schema and the document').toBe(2);
+    expect(COMMANDS.length, 'the documented dd invocations').toBeGreaterThanOrEqual(4);
+    for (const command of COMMANDS) expect(command.argv.length).toBeGreaterThan(0);
+  });
 
-    // The README's own layout: `.dd/schemas/<pkg>/<schema>/schema.json`.
-    const schemaDir = join(workspace, '.dd', 'schemas', 'review', 'checklist');
-    mkdirSync(schemaDir, { recursive: true });
-    writeFileSync(join(schemaDir, 'schema.json'), `${schema}\n`);
-    writeFileSync(join(workspace, 'review.dd.json'), `${document}\n`);
+  it('runs every line of the documented transcript against the shipped bin', () => {
+    // The whole point of the guard: a command the README prints must WORK.
+    expect(failures, 'README quick-start commands that failed').toEqual([]);
+    // …and each one must have been reached, not skipped by an earlier abort.
+    expect(ran.size).toBe(new Set(COMMANDS.map((command) => command.argv[0])).size);
+  });
 
-    // Relative paths throughout: on macOS an absolute temp path resolves via
-    // /private and is judged outside the repository root (E429).
-    const validated = runDd(['validate', 'review.dd.json', '--json'], { cwd: workspace });
-    expect(parseEnvelope(validated.stdout).status).toBe('ok');
-    expect(validated.code).toBe(0);
+  it('produces the document the README says it produces', () => {
+    const schema = JSON.parse(WRITES[0].body);
+    const document = JSON.parse(WRITES[1].body);
+    expect(schema.dd_schema, 'the first heredoc is the schema').toBe(1);
 
-    const built = runDd(['build', 'review.dd.json', '--json'], { cwd: workspace });
-    expect(parseEnvelope(built.stdout).status).toBe('ok');
-    const rendered = readFileSync(join(workspace, 'review.dd.md'), 'utf8');
-    expect(rendered).toContain('Release review');
-    expect(rendered).toContain('Migration is reversible');
+    // The README's central claim about schemas: the qualified name comes from
+    // the PATH, never from the file. Checked by comparing the two.
+    const root = STEPS.find((step) => step.kind === 'mkdir') as Extract<Step, { kind: 'mkdir' }>;
+    expect(document.dd.schema).toBe(root.path.split('schemas/')[1]);
 
-    // The documented read/write pair, including the schema-declared enum value.
-    const read = runDd(['get', 'review.dd.json#items/dw-4e01/state', '--json'], { cwd: workspace });
-    expect(parseEnvelope(read.stdout).status).toBe('ok');
-    expect(read.stdout).toContain('waived');
+    const build = ran.get('build');
+    expect(build, 'the quick start must build the document').toBeDefined();
+    const target = build?.argv.find((argument) => argument.endsWith('.dd.json')) ?? '';
+    const rendered = readFileSync(join(workspace, target.replace(/\.dd\.json$/, '.dd.md')), 'utf8');
+    // Expected content read out of the README's own document, not retyped.
+    const meta = sectionOf(document, 'meta') as { title: string };
+    const items = sectionOf(document, 'items') as Item[];
+    expect(rendered).toContain(meta.title);
+    for (const item of items) if (item.claim) expect(rendered).toContain(item.claim);
+  });
 
-    const written = runDd(['set', 'review.dd.json#items/dw-4e01/state', 'approved', '--json'], {
-      cwd: workspace,
-    });
-    expect(parseEnvelope(written.stdout).status).toBe('ok');
-    expect(written.code).toBe(0);
-    expect(
-      JSON.parse(readFileSync(join(workspace, 'review.dd.json'), 'utf8')).sections[1].value[1]
-        .state,
-    ).toBe('approved');
+  it('reads and writes the value at the address the README addresses', () => {
+    const read = ran.get('get');
+    const write = ran.get('set');
+    expect(read, 'the quick start must demonstrate `dd get`').toBeDefined();
+    expect(write, 'the quick start must demonstrate `dd set`').toBeDefined();
+    if (!read || !write) return;
+
+    const document = JSON.parse(WRITES[1].body);
+    const declared = (sectionOf(document, 'items') as Item[]).find(
+      (item) => item.id === addressOf(read.argv).split('#')[1].split('/')[1],
+    );
+    // `dd get` answered the state the README's own document declares.
+    expect((read.envelope.data as { value: unknown }).value).toBe(declared?.state);
+
+    // `dd set` wrote the value the README's own command asked for.
+    const address = addressOf(write.argv);
+    const id = address.split('#')[1].split('/')[1];
+    const wanted = write.argv.filter((argument) => !argument.startsWith('-')).at(-1);
+    const after = JSON.parse(readFileSync(join(workspace, address.split('#')[0]), 'utf8'));
+    const item = (sectionOf(after, 'items') as Item[]).find((entry) => entry.id === id);
+    expect(item?.state).toBe(wanted);
   });
 
   it('refuses a value the documented schema does not allow', () => {
     // The README claims `dd set` validates BEFORE writing and refuses, writing
     // nothing. That is a promise about behaviour, so it is asserted, not quoted.
-    const before = readFileSync(join(workspace, 'review.dd.json'), 'utf8');
-    const refused = runDd(['set', 'review.dd.json#items/dw-4e01/state', 'nonsense', '--json'], {
-      cwd: workspace,
-    });
+    const write = ran.get('set');
+    expect(write, 'the quick start must demonstrate `dd set`').toBeDefined();
+    if (!write) return;
+    const address = addressOf(write.argv);
+    const path = join(workspace, address.split('#')[0]);
+    const before = readFileSync(path, 'utf8');
+    const refused = runDd(['set', address, 'nonsense', '--json'], { cwd: workspace });
     expect(refused.code).toBe(1);
     expect(parseEnvelope(refused.stdout).status).toBe('error');
-    expect(readFileSync(join(workspace, 'review.dd.json'), 'utf8')).toBe(before);
+    expect(readFileSync(path, 'utf8')).toBe(before);
   });
 });
