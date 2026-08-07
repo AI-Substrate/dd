@@ -1,0 +1,21 @@
+docs/plans/001-dd-extraction/the-flow.md
+  s_743eafe62757dd::t_d8406b325ac964 4,16,95
+docs/plans/001-dd-extraction/the-flow.json
+  s_743eafe62757dd::t_d8406b325ac964 910-921,1388,1409-1414
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "943d8e8dcec87256a70c1efcd64fa0b4b5949482",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
