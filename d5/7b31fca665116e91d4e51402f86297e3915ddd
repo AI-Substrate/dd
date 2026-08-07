@@ -1,0 +1,32 @@
+docs/how/dd/README.md
+  s_743eafe62757dd::t_967c4b2b4a4ae4 1-43
+README.md
+  s_743eafe62757dd::t_6d425f7b52a220 1-256
+docs/how/dd/how-to-add-a-schema.md
+  s_743eafe62757dd::t_a3b13522757666 1-178
+docs/how/dd/dd-overview.md
+  s_743eafe62757dd::t_a3b13522757666 1-116
+test/docs-surface.test.ts
+  s_743eafe62757dd::t_5cdfbfb6b4d0c8 1-155,158-172
+  s_743eafe62757dd::t_0286ac3f0f6b11 156-157
+docs/plans/001-dd-extraction/assets/tasks/phase-3/tasks.dd.json
+  s_743eafe62757dd::t_eb612a6387377d 74,77-78,134
+docs/plans/001-dd-extraction/assets/tasks/phase-3/tasks.dd.md
+  s_743eafe62757dd::t_eb612a6387377d 43,83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "d57b31fca665116e91d4e51402f86297e3915ddd",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
