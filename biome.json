@@ -44,7 +44,7 @@
   },
   "overrides": [
     {
-      "includes": ["test/services/dd/**/*.ts"],
+      "includes": ["test/services/dd/**/*.ts", "test/acts/**/*.ts"],
       "linter": {
         "rules": {
           "correctness": {

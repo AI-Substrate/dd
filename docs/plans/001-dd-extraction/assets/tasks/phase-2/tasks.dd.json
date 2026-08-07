@@ -87,10 +87,11 @@
           "id": "tk-0007",
           "title": "Phase-2 test corpus per the committed audit (acts + remaining service tests; biome noUnsafeOptionalChaining override stays scoped to ported test dirs, NEVER src/); just checks green end to end",
           "phase": "ph-8bda",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0006"
-          ]
+          ],
+          "receipt": "all 19 audit-ph2 files ported and green; just checks exit 0 (642 tests/55 files); biome override diff is one line adding test/acts/** (no src/); zero stay-classified files present"
         }
       ]
     },
@@ -155,7 +156,7 @@
           {
             "id": "dw-0007",
             "assertion": "all audit-ported phase-2 tests green under just checks; biome override diff shows scope limited to test dirs; zero stay-classified files present",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: just checks exit; git diff of biome.json"
           }

@@ -401,3 +401,102 @@ script rather than a re-description of it, and never perturbs the working reposi
 asserts drift is detected from BOTH directions — an edited source, and a hand-edited baked
 module — plus a clean run against the real repository. Only two constants changed
 (`REPO_ROOT` depth 6→4, `DOCS_DIR` → `src/docs`).
+
+---
+
+## tk-0007 — Phase-2 test corpus
+
+All **19** audit-classified `ph2` files ported and green, plus 4 support modules
+(`dd-corpus`, `partial-write`, `schema/world`, `schema/helpers`).
+
+### The adaptation that made it tractable: one seam, not hundreds of edits
+
+Upstream act tests call `runCli(['dd', 'validate', …])`, because there the verbs are
+sub-commands of `harness dd`. Here `dd` IS the binary. Rather than edit that token at every
+call site, the in-process driver added to `test/support/run-cli.ts` **drops a leading `dd`
+token** and builds this repo's 2-arg `buildProgram(io, deps)`. Ported test BODIES stay
+byte-verbatim; the shim absorbs the shape difference. The same trick handles the five tests
+that build the program inline.
+
+Upstream's `VerbActDeps` (exec/fs/env/git/clock/proc) collapses to `{ clock }`: the dd acts
+are composition roots that construct their own `NodeProcess`/`NodeSchemaFs`, so the other
+fakes were never consulted on this path. That is why `FakeGit`/`FakeWatcher` — which the tk-0001
+survey flagged — never became a scope question.
+
+### Five adaptations that changed an assertion, each with its reason
+
+| file | what changed | why |
+| --- | --- | --- |
+| `dd-live` | `RESERVED_NAMES.has('dd')` → assert the family is registered | no extension registry here; nothing can shadow `dd` because it IS the binary |
+| `dd.test` | family read off `program` rather than a `dd` sub-command; `version`/`status` filtered out | same reason; those two are this package's own verbs |
+| `dd.test` | doctor sweep: `swept === 0` → `discovered > swept > 0` | upstream every dd doc under `harness/cli` is a fixture; THIS repo also holds real plan documents. The new form is stronger — it proves exclusion happened instead of inferring it from a zero a fixture-only repo gives for free |
+| `dd-graph-map-live` | `map.options` filtered to exclude `--json`/`--no-json` | consequence of tk-0005: the output flags are now declared on every command. The claim — what `map` declares FOR ITSELF — is unchanged |
+| `dd-validate-mechanical` | dropped the `runCli(['plan','validate',…])` half of one case | `plan validate` is a **harness-side** verb, not one of the ten. Driving a globally-installed `harness` would couple this suite to a binary the package does not own. The claim survives from the other side: the next case pins that `dd validate` never grows `findings`/`summary`/`mode` |
+
+### Two artifacts this repo now owns
+
+- **`assets/dd-surface.md`** — the frozen dd command surface, ported from upstream plan 065
+  so `dd-surface.test.ts` (21 tests) could come with it. Its signatures are spelled
+  `dd <verb> …`, which is exactly this binary, so the freeze transferred verbatim.
+- **Registration order is now the frozen order.** `dd.test.ts` pins the family as an ORDERED
+  list, which caught `build` being registered 8th (it was ported early in slice 2 for `link`).
+  `src/app.ts` now registers in the frozen order — it is what `--help` lists.
+
+### A flake found and fixed, not tolerated
+
+The drift test's real-repo case runs the generator against the working tree, **writing**
+`src/docs/docs-content.ts` — a tracked file other test files read, while vitest runs files in
+parallel. One full run failed on it. The case now snapshots and restores the file, so the
+suite never leaves or races a mutated tree. Four consecutive full runs green afterwards.
+
+### Depth corrections (the recurring papercut)
+
+Upstream sits at `harness/cli/test/…`, this repo at `test/…`, so every `REPO_ROOT`/`CLI_ROOT`
+computed by `../` counting is off by two. Corrected in `world.ts`, `builder-rels.test.ts`,
+`dd-live.test.ts`, `dd-corpus.ts` and `dd-docs-drift.test.ts`. Each one presents as a
+confusing failure far from its cause (`ENOENT /Users/jordanknight/docs/…`, or an empty schema
+resolution), so it is worth stating flatly: **when porting a test from upstream, fix the root
+depth first, then read the failure.**
+
+### Evidence (dw-0007)
+
+| assertion | result |
+| --- | --- |
+| all audit-ported phase-2 tests green under `just checks` | ✅ **exit 0** — 642 tests / 55 files |
+| biome override diff scope-limited to test dirs | ✅ one line: `test/services/dd/**` + **`test/acts/**`**; no `src/` |
+| zero stay-classified files present | ✅ all 11 absent |
+
+The biome override widened to `test/acts/**` for the same reason phase 1 scoped it to
+`test/services/dd/**`: 14 `noUnsafeOptionalChaining` errors in verbatim-ported act tests, and
+editing ported assertions is forbidden. It remains scoped to **ported test dirs** and never
+`src/**`. Worth noting: `test/acts/` also holds this phase's own new tests, which inherit the
+relaxation although none of them uses the idiom.
+
+Also: biome REJECTS a `$comment` key inside an `overrides` entry (unlike `package.json`, where
+the OQ-2 rationale lives that way) — the config fails to load entirely. The rationale is
+carried in this log instead.
+
+---
+
+## Phase 2 complete
+
+| gate | result |
+| --- | --- |
+| `just checks` | **exit 0** — 642 tests / 55 files |
+| `harness plan validate … --address …/phase-2/tasks.dd.json#tasks` | **exit 0**, `degraded`, **0 errors** (19 WARN, all cross-phase contradictions) |
+| `dd --json status` | **ok**, exit 0, `ported[10]`, `remaining[]` |
+| `dd status --json` (postfix) | **ok**, exit 0 — the E002 repro is closed |
+| `harness dd build --check` | exit 0 |
+
+### Discoveries
+
+| # | tag | discovery |
+| --- | --- | --- |
+| 1 | Noteworthy | The writer family registers `get/set/add/rm`, never `write`. Phase-1's ledger matched on the bare verb name and could NEVER have reached `ported[10]`. Fixed with a `PROVING_COMMANDS` map; a partial family stays unported. |
+| 2 | Noteworthy | `link` imports `build`'s `writeDocumentWithSibling`, a cross-slice dependency in o-prime's slicing. Resolved by porting the module in slice 2 and registering the verb in slice 3 — the ledger reads registrations, so it never overstated. |
+| 3 | Noteworthy | Three phase-1 stubs were narrower than upstream and had to reach parity: `Clock` (needed `sleep`), `ErrorCodes` (3 codes → 63), `CliIo` (needed `useColor`). Consistent pattern: phase 1 stubbed the seam, phase 2 lands the contract. |
+| 4 | **Deferred** | `harness dd …` is baked into user-facing strings — 43 in act `next_action`s, the renderer's generated banner, and the baked docs content. In a package whose binary is `dd`, those name a command that does not exist here. NOT changed: the banner is a wire format present in every generated `.dd.md` in this repo, and the docs content is drift-checked, so a coherent rename is a package-wide decision for phase 3/4. **Escalated.** |
+| 5 | Noteworthy | The docs drift gate found a real stale header on its first run (phase 1 had copied `docs-content.ts` with its upstream manifest path). |
+| 6 | Noteworthy | macOS `mkdtemp` vs `process.cwd()` symlink resolution makes ABSOLUTE temp paths fail dd verbs with E429; temp-repo CLI tests must use paths relative to `cwd`. Captured as `harness observe` DL-007. |
+| 7 | **Deferred** | `dd-validate-mechanical.test.ts` lost the `plan validate` half of one case — that verb is harness-side and not in this package. |
+| 8 | Noteworthy | A test-suite flake (the drift gate writing a tracked file under parallel workers) was fixed by snapshot/restore rather than retried. |

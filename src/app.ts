@@ -94,14 +94,17 @@ export function buildProgram(io: CliIo, deps: ActDeps): Command {
   // upstream nests them beneath `harness dd …`, but here the binary IS `dd`.
   // `status` derives its port ledger from exactly these registrations, so a verb
   // appearing below is a verb that works.
+  //
+  // The ORDER is the frozen surface (`assets/dd-surface.md`), not a preference:
+  // it is the order `--help` lists them in, and `dd.test.ts` pins it.
   registerValidateCommand(program, io, deps);
   registerSchemaCommands(program, io, deps);
   registerDocsCommands(program, io, deps);
+  registerBuildCommand(program, io, deps);
   registerAddressCommands(program, io, deps);
   registerLinkCommands(program, io, deps);
   registerLinksCommand(program, io, deps);
   registerGraphCommand(program, io, deps);
-  registerBuildCommand(program, io, deps);
   registerDoctorCommand(program, io, deps);
   registerWriterCommands(program, io, deps);
 

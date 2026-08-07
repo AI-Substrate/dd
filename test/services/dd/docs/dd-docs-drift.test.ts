@@ -116,11 +116,25 @@ describe('dw-0007 — the baked dd-docs drift gate is green both ways', () => {
     // The end-to-end twin: the actual script, the actual tree, no fixture. It is
     // the assertion `just checks` makes on every commit, held here too so a
     // failure is attributable to the docs rather than to a whole gate run.
-    const result = execFileSync(process.execPath, ['scripts/check-dd-docs.mjs'], {
-      cwd: REPO_ROOT,
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
-    expect(result).toBeDefined();
+    //
+    // ADAPTED: the generator WRITES `src/docs/docs-content.ts`, a tracked source
+    // file that other test files read, and vitest runs files in parallel. Left
+    // alone this suite mutates shared state mid-run — an observed flake. So the
+    // file is snapshotted and restored, and the suite never leaves or races a
+    // modified tree. What is being proven is unchanged: the real gate, run
+    // against the real repository, reports no drift.
+    const baked = join(REPO_ROOT, DOCS_DIR, 'docs-content.ts');
+    const before = readFileSync(baked, 'utf8');
+    try {
+      const result = execFileSync(process.execPath, ['scripts/check-dd-docs.mjs'], {
+        cwd: REPO_ROOT,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
+      expect(result).toBeDefined();
+      expect(readFileSync(baked, 'utf8')).toBe(before);
+    } finally {
+      if (readFileSync(baked, 'utf8') !== before) writeFileSync(baked, before, 'utf8');
+    }
   });
 });
