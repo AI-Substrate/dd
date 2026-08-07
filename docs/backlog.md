@@ -146,3 +146,62 @@ siblings and absent from one member**, invisible when reading any single member.
 Items 18–21 were opened during the extraction itself: 18 by the phase-3 exemplar-corpus
 escalation, 19 by the o-prime's review of the guardrail set, 20 by the phase-4 CI sweep,
 and 21 by koala's diagnosis of a wrong figure in its own pointer summary.
+
+---
+
+## 22 — Windows drive-letter paths are re-anchored under the repo root · **LIVE PRODUCT DEFECT** · UNASSIGNED
+
+**Added** 2026-08-07 after plan 001 delivery. **Found by** `pij-related-koala` reading this
+fork read-only during handover; **reproduced here before recording**, not accepted.
+
+Three sites test absoluteness with `startsWith('/')`, which a Windows drive-letter path
+does not satisfy — so an absolute path is treated as relative and re-anchored:
+
+| Site | Function | Surface |
+|---|---|---|
+| `src/acts/doctor.ts:129` | `resolveScope` | `dd doctor --path` — **shipped CLI** |
+| `src/acts/graph.ts:385` | `resolveScope` (identical copy) | `dd graph --path` — **shipped CLI** |
+| `src/core/validate.ts:88` | `resolveAddressFile` | address resolution — **library surface** |
+
+Demonstrated, not reasoned:
+
+```
+in : C:/Users/jordan/docs
+out: /Users/jordanknight/substrate/dd/C:/Users/jordan/docs     <- re-anchored
+in : /abs/posix/path
+out: /abs/posix/path                                            <- correct
+```
+
+**This is NOT a separator bug and `toPosix` does not fix it** — it fires on forward-slash
+drive-letter paths too. Upstream's fix (`cfa501a6`, PR #116) uses `resolveInRepo` /
+`ABSOLUTE_LOGICAL`, which already exist next door.
+
+**The two act sites are a product defect**, not an internal one: `dd` is the shipped
+surface here, so this reaches users directly rather than via a consumer.
+
+**`core/validate.ts:88` will NEVER arrive by forward port.** That file is byte-identical to
+upstream and upstream deliberately ruled its fix into a *later* PR, so waiting for the
+port inherits this defect late. The line is known; fix it here.
+
+**Do not fix as one change** — two distinct families, per upstream's own split:
+*identity-spelling* (a path used as a KEY, normalised at both the `buildPlanIndex`
+boundary and inside `itemKey`) versus *absoluteness-detection* (the three sites above).
+
+**Acceptance-test note carried from upstream:** `toPosix` upper-cases the drive letter and
+`normalizeFilePath` does not, so correctness depends on **which runs first** — a
+two-producer identity disagreement. Any fix needs a lowercase-drive case, and the
+"a moved file must ERROR rather than resolve to something plausible" assertion needs a
+drive-letter sibling.
+
+## 23 — Forward-port `cfa501a6` onto the consumed surface · UNASSIGNED · **blocked on OQ-1/OQ-2**
+
+First non-zero forward-port debt since the fork. Detected by koala's `dd-fork-divergence`
+chore firing, which is the instrument working rather than a surprise.
+
+- Commit `cfa501a6`, base `16360949`; patch prepared by koala (path in the plan-001 log).
+- **2 of 3 consumed files move**: `plan/index-plan.ts` (+89/−13 with `links/map.ts`) and
+  `links/map.ts`. `core/validate.ts` is **untouched** — verified by `git diff --quiet`, not
+  by reading a file list — so `DdIssue`, `resolveAddressFile` and `collectLinkCells` stay
+  byte-identical. Four symbols move, not seven.
+- Sequencing: item 22's act-site fix does **not** depend on this port and should not wait
+  for it.
