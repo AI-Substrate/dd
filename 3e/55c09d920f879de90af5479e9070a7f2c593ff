@@ -1,0 +1,24 @@
+test/docs-surface.test.ts
+  s_743eafe62757dd::t_a2ad53136dca02 362-429
+docs/backlog.md
+  s_743eafe62757dd::t_13df19da463caa 78
+  s_743eafe62757dd::t_766a7781f4c848 60-62
+  s_743eafe62757dd::t_bb10cddd1387d8 1-59,63-77,79-114,116-145
+  s_743eafe62757dd::t_af9963b79934f8 115
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "3e55c09d920f879de90af5479e9070a7f2c593ff",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
