@@ -217,6 +217,12 @@ describe('dd links traversal — reachability over a built edge list', () => {
     to,
     address: `${to ?? 'nowhere'}#entries`,
     location: '$.sections[citations].value[0].cite',
+    // `rel` is required by DdLinkEdge and was absent upstream — a latent type error
+    // upstream's tsconfig never saw, because it includes only `src`. `ref` is the
+    // default the type's own doc comment names, and `reachableFrom` reads only
+    // `from`/`to`, so this completes the fixture without touching what it proves.
+    // (plan 001, tk-0006)
+    rel: 'ref',
     sameDocument: false,
   });
 

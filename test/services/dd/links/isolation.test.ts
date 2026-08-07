@@ -1,5 +1,4 @@
 import { readdirSync, readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { dirname, join, normalize, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
@@ -7,7 +6,6 @@ import { describe, expect, it } from 'vitest';
 const CLI_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', '..');
 const SRC = join(CLI_ROOT, 'src');
 const LINKS = join(SRC, 'links');
-const require = createRequire(import.meta.url);
 
 function tsFiles(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -59,9 +57,7 @@ describe('architecture — the links layer stays independent of the render layer
     // family never needs the renderer — and a single import anywhere along its
     // dependency chain would silently undo that.
     const entries = [join(SRC, 'acts', 'dd', 'graph.ts'), join(SRC, 'acts', 'dd', 'links.ts')];
-    const render = reachable(entries, allSources()).filter((file) =>
-      file.startsWith('render/'),
-    );
+    const render = reachable(entries, allSources()).filter((file) => file.startsWith('render/'));
     expect(render).toEqual([]);
   });
 
@@ -69,9 +65,7 @@ describe('architecture — the links layer stays independent of the render layer
     const sources = allSources();
     const forbidden = reachable(tsFiles(LINKS), sources).filter(
       (file) =>
-        file.startsWith('render/') ||
-        file.startsWith('output/') ||
-        file.startsWith('acts/'),
+        file.startsWith('render/') || file.startsWith('output/') || file.startsWith('acts/'),
     );
     expect(forbidden).toEqual([]);
   });
@@ -85,9 +79,9 @@ describe('architecture — the links layer stays independent of the render layer
       [entry, `import '../../links/graph-violation.js';`],
       [middle, `import '../render/renderer.js';`],
     ]);
-    expect(
-      reachable([entry], sources).filter((file) => file.startsWith('render/')),
-    ).toEqual(['render/renderer.ts']);
+    expect(reachable([entry], sources).filter((file) => file.startsWith('render/'))).toEqual([
+      'render/renderer.ts',
+    ]);
   });
 
   // NOT PORTED (plan 001, tk-0004): the upstream sibling asserted the same rule in

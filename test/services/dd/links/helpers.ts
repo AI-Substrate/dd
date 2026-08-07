@@ -2,10 +2,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import type { DdDoc, ResolvedDdSchema } from '../../../../src/core/model.js';
 import { parse } from '../../../../src/core/parse.js';
-import type {
-  SchemaResolveResult,
-  SchemaResolver,
-} from '../../../../src/core/validate.js';
+import type { SchemaResolveResult, SchemaResolver } from '../../../../src/core/validate.js';
 import type { DocLoader, DocLoadResult } from '../../../../src/core/walk.js';
 import type { SchemaFs } from '../../../../src/schema/model.js';
 

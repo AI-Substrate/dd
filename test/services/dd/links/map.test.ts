@@ -1,10 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { DdDoc, ResolvedDdSchema } from '../../../../src/core/model.js';
-import type {
-  SchemaResolveResult,
-  SchemaResolver,
-} from '../../../../src/core/validate.js';
+import type { SchemaResolveResult, SchemaResolver } from '../../../../src/core/validate.js';
 import type { DocLoader, DocLoadResult } from '../../../../src/core/walk.js';
 import {
   addressableAt,
@@ -17,11 +14,7 @@ import {
   resolveMapSeed,
 } from '../../../../src/links/map.js';
 import type { DdLinkEdge } from '../../../../src/links/model.js';
-import {
-  cellWidth,
-  PLAIN_MAP_PALETTE,
-  renderMapTree,
-} from '../../../../src/links/report.js';
+import { cellWidth, PLAIN_MAP_PALETTE, renderMapTree } from '../../../../src/links/report.js';
 import { traverseCorpus } from '../../../../src/links/traverse.js';
 
 const REPO = '/repo';

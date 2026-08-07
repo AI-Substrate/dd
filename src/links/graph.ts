@@ -1,5 +1,5 @@
-import { posixRelative } from '../shared/posix-path.js';
 import { DEFAULT_REL } from '../core/constants.js';
+import { posixRelative } from '../shared/posix-path.js';
 import type { DdCorpusGraph, DdLinkEdge } from './model.js';
 
 interface MermaidNode {

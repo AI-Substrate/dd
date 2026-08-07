@@ -1,4 +1,3 @@
-import { posixRelative, resolveInRepo } from '../shared/posix-path.js';
 import { isAddressFailure, parseAddress } from '../core/address.js';
 import { DEFAULT_GATE_TERMINAL_STATES } from '../core/constants.js';
 import { deriveItems } from '../core/derive.js';
@@ -6,6 +5,7 @@ import type { DdDoc, DdShape, ResolvedDdSchema } from '../core/model.js';
 import { isPathWithinRepo, type SchemaResolver } from '../core/validate.js';
 import { isRecord } from '../core/value.js';
 import type { DocLoader } from '../core/walk.js';
+import { posixRelative, resolveInRepo } from '../shared/posix-path.js';
 import { type DdLinkEdge, type DdLinkIssue, linkIssue } from './model.js';
 import { resolveLink } from './resolver.js';
 import { boundedWalk, type DdWalkCut } from './traverse.js';

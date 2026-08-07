@@ -1,5 +1,4 @@
 import { readdirSync, readFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
 import { dirname, join, normalize, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
@@ -7,7 +6,6 @@ import { describe, expect, it } from 'vitest';
 const CLI_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', '..');
 const SRC = join(CLI_ROOT, 'src');
 const RENDER = join(SRC, 'render');
-const require = createRequire(import.meta.url);
 
 function tsFiles(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {

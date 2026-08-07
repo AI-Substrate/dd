@@ -10,8 +10,57 @@
   "bin": {
     "dd": "./bin/dd.js"
   },
+  "$comment": "exports — SKELETON, not frozen (plan 001 tk-0005; the freeze is phase 3, ac-0002). Every subpath below is an import specifier OBSERVED in a harness consumer (research dossier F-04), mapped explicitly rather than by wildcard so that what is public is a list somebody chose. './plan' is DELIBERATELY ABSENT pending Jordan's OQ-2 ruling — whether src/plan ships publicly, stays internal, or returns harness-side is unruled, and a wildcard would have decided it by accident. The plan barrel is proven importable internally only; see test/consumer-surface.test.ts and docs/plans/001-dd-extraction/plan.dd.md#open-questions.",
   "exports": {
-    ".": "./dist/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./core/address": {
+      "types": "./dist/core/address.d.ts",
+      "default": "./dist/core/address.js"
+    },
+    "./core/model": {
+      "types": "./dist/core/model.d.ts",
+      "default": "./dist/core/model.js"
+    },
+    "./core/parse": {
+      "types": "./dist/core/parse.d.ts",
+      "default": "./dist/core/parse.js"
+    },
+    "./core/validate": {
+      "types": "./dist/core/validate.d.ts",
+      "default": "./dist/core/validate.js"
+    },
+    "./core/walk": {
+      "types": "./dist/core/walk.d.ts",
+      "default": "./dist/core/walk.js"
+    },
+    "./links": {
+      "types": "./dist/links/index.d.ts",
+      "default": "./dist/links/index.js"
+    },
+    "./render/renderer": {
+      "types": "./dist/render/renderer.d.ts",
+      "default": "./dist/render/renderer.js"
+    },
+    "./schema": {
+      "types": "./dist/schema/index.d.ts",
+      "default": "./dist/schema/index.js"
+    },
+    "./schema/index": {
+      "types": "./dist/schema/index.d.ts",
+      "default": "./dist/schema/index.js"
+    },
+    "./schema/model": {
+      "types": "./dist/schema/model.d.ts",
+      "default": "./dist/schema/model.js"
+    },
+    "./schema/resolve": {
+      "types": "./dist/schema/resolve.d.ts",
+      "default": "./dist/schema/resolve.js"
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "bin",

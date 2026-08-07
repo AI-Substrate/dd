@@ -118,7 +118,9 @@ function externalImports(
       const target = importTarget(file, specifier);
       if (target === null) continue;
       if (!sdkRoots.some((root) => isInside(root, target))) {
-        escapes.push(`escapes SDK tree: ${label} -> ${relative(SRC, target).replaceAll('\\', '/')}`);
+        escapes.push(
+          `escapes SDK tree: ${label} -> ${relative(SRC, target).replaceAll('\\', '/')}`,
+        );
       }
     }
   }

@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { DdDoc, ResolvedDdSchema } from '../../../../src/core/model.js';
-import {
-  collectLinkCells,
-  type DdIssue,
-  validateDocument,
-} from '../../../../src/core/validate.js';
+import { collectLinkCells, type DdIssue, validateDocument } from '../../../../src/core/validate.js';
 import { EVIDENCE_SCHEMA, FixtureSchemaResolver, fixtureDoc, TEST_SCHEMA } from '../helpers.js';
 
 const resolver = new FixtureSchemaResolver();

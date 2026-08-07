@@ -1,4 +1,3 @@
-import { isWithin, resolveInRepo } from '../shared/posix-path.js';
 import { isAddressFailure, parseAddress } from '../core/address.js';
 import type { DdDoc } from '../core/model.js';
 import {
@@ -10,6 +9,7 @@ import {
 import { type DocLoader, validateWalk } from '../core/walk.js';
 import { resolveMapSeed, traverseCorpus } from '../links/index.js';
 import type { SchemaResolution } from '../schema/index.js';
+import { isWithin, resolveInRepo } from '../shared/posix-path.js';
 import { buildPlanIndex, itemKey, type PlanDocument } from './index-plan.js';
 import type { PlanFinding, PlanIndex, PlanSemanticResult } from './model.js';
 import { readPlanSemantics, scopeFrom } from './semantics.js';

@@ -1,7 +1,7 @@
-import { posixDirname, posixJoin, toPosix } from '../shared/posix-path.js';
 import { type DdDerivedState, deriveItems, deriveState } from '../core/derive.js';
 import type { DdSection } from '../core/model.js';
 import type { SchemaResolveResult, SchemaResolver } from '../core/validate.js';
+import { posixDirname, posixJoin, toPosix } from '../shared/posix-path.js';
 import { type DeclarationResult, parseSchemaDeclaration } from './declarations.js';
 import type { DdSchemaItem } from './model.js';
 import {

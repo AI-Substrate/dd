@@ -6,9 +6,7 @@ import { getDdDoc, listDdDocs } from '../../../../src/docs/dd-docs-service.js';
 import { DD_DOCS } from '../../../../src/docs/docs-content.js';
 
 const REPO_ROOT = fileURLToPath(new URL('../../../../', import.meta.url));
-const MANIFEST = JSON.parse(
-  readFileSync(`${REPO_ROOT}src/docs/dd-docs-manifest.json`, 'utf8'),
-) as {
+const MANIFEST = JSON.parse(readFileSync(`${REPO_ROOT}src/docs/dd-docs-manifest.json`, 'utf8')) as {
   docs: { id: string; title: string; summary: string; audience: string; sourcePath: string }[];
 };
 

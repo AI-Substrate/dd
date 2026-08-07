@@ -1,7 +1,7 @@
-import { resolveInRepo } from '../shared/posix-path.js';
 import { isAddressFailure, parseAddress } from '../core/address.js';
 import { DEFAULT_REL } from '../core/constants.js';
 import { resolveAddressFile } from '../core/validate.js';
+import { resolveInRepo } from '../shared/posix-path.js';
 import type { DdMapMark, DdMapNode, DdMapResult } from './map.js';
 import type { DdCorpusGraph, DdLinkEdge } from './model.js';
 

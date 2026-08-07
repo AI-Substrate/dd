@@ -39,8 +39,8 @@ Phase 1 — SDK core port. Copy services/dd (45 files, 7 subdirs) near-verbatim 
 | tk-0002 | Record the upstream basis SHA (git rev-parse in harness-engineering, read-only) into the context brief + execution log; copy harness/cli/src/services/dd/** (45 files, subdirs core/docs/links/mutate/plan/render/schema) into src/ preserving relative .js import specifiers; add src/shared/posix-path.ts shim (verbatim copy of services/shared/posix-path.ts) | — | ph-4c9d | [x] checked | — | — | — | — | — | [ac-0001](../../../plan.dd.md#acceptance-criteria) |
 | tk-0003 | Import-direction audit of ALL 60 upstream dd test files: classify port (imports only dd trees/fixtures) vs stay (imports flow/builder internals); commit the audit table to assets/test-audit.md BEFORE moving any test | — | ph-4c9d | [x] checked | — | — | — | — | — | [ac-0006](../../../plan.dd.md#acceptance-criteria) |
 | tk-0004 | Port the audit-classified SDK tests + the 4 fixture dirs into test/ (mirrored layout, adjust import paths only — no behavioural edits); vitest green | — | ph-4c9d | [x] checked | — | — | — | — | — | [ac-0006](../../../plan.dd.md#acceptance-criteria) |
-| tk-0005 | Subpath exports skeleton in package.json covering every OBSERVED F-04 specifier path (core/address, core/model, core/parse, core/validate, core/walk, links, schema/model, schema/resolve, schema/index, render/renderer — explicit or wildcard; ./plan EXCLUDED pending OQ-2) + a consumer-surface test importing one named symbol per exact subpath; plan barrel proven importable internally only | — | ph-4c9d | [ ] unchecked | — | — | — | — | — | [ac-0002](../../../plan.dd.md#acceptance-criteria) |
-| tk-0006 | Build lane whole: tsc emits the SDK into dist/, the external-import guard runs in the suite, and just checks passes end to end with the ported corpus | — | ph-4c9d | [ ] unchecked | — | — | — | — | — | [ac-0001](../../../plan.dd.md#acceptance-criteria), [ac-0006](../../../plan.dd.md#acceptance-criteria) |
+| tk-0005 | Subpath exports skeleton in package.json covering every OBSERVED F-04 specifier path (core/address, core/model, core/parse, core/validate, core/walk, links, schema/model, schema/resolve, schema/index, render/renderer — explicit or wildcard; ./plan EXCLUDED pending OQ-2) + a consumer-surface test importing one named symbol per exact subpath; plan barrel proven importable internally only | — | ph-4c9d | [x] checked | — | — | — | — | — | [ac-0002](../../../plan.dd.md#acceptance-criteria) |
+| tk-0006 | Build lane whole: tsc emits the SDK into dist/, the external-import guard runs in the suite, and just checks passes end to end with the ported corpus | — | ph-4c9d | [x] checked | — | — | — | — | — | [ac-0001](../../../plan.dd.md#acceptance-criteria), [ac-0006](../../../plan.dd.md#acceptance-criteria) |
 
 <a id="done-when"></a>
 
@@ -74,10 +74,10 @@ Phase 1 — SDK core port. Copy services/dd (45 files, 7 subdirs) near-verbatim 
 
 | id | assertion | state | pressure | note |
 | --- | --- | --- | --- | --- |
-| dw-0005 | npm pack --dry-run lists the exports map; the consumer-surface test imports one named symbol from each exact observed subpath (incl. core/validate and BOTH schema/resolve and schema/index) and passes typecheck + runtime; ./plan absent from the public map with an OQ-2 pointer comment | [ ] unchecked | not-applicable | instrument: vitest consumer-surface test exit 0 |
+| dw-0005 | npm pack --dry-run lists the exports map; the consumer-surface test imports one named symbol from each exact observed subpath (incl. core/validate and BOTH schema/resolve and schema/index) and passes typecheck + runtime; ./plan absent from the public map with an OQ-2 pointer comment | [x] checked | not-applicable | instrument: vitest consumer-surface test exit 0 |
 
 ### tk-0006
 
 | id | assertion | state | pressure | note |
 | --- | --- | --- | --- | --- |
-| dw-0006 | just checks exits 0 end-to-end (lint, build, typecheck, test) on the ported tree | [ ] unchecked | not-applicable | instrument: just checks exit code — the same lane CI runs |
+| dw-0006 | just checks exits 0 end-to-end (lint, build, typecheck, test) on the ported tree | [x] checked | not-applicable | instrument: just checks exit code — the same lane CI runs |

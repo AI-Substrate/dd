@@ -1,4 +1,3 @@
-import { resolveInRepo } from '../shared/posix-path.js';
 import {
   formatAddress,
   isAddressFailure,
@@ -9,6 +8,7 @@ import type { DdDoc, DdShape, ResolvedDdSchema } from '../core/model.js';
 import { isPathWithinRepo, resolveAddressFile, type SchemaResolver } from '../core/validate.js';
 import { isRecord } from '../core/value.js';
 import type { DocLoader } from '../core/walk.js';
+import { resolveInRepo } from '../shared/posix-path.js';
 import {
   type DdLinkIssue,
   type DdLinkResolution,

@@ -1,10 +1,7 @@
 import { readFileSync } from 'node:fs';
 import type { DdDoc, DdFailure, ResolvedDdSchema } from '../../../src/core/model.js';
 import { parse } from '../../../src/core/parse.js';
-import type {
-  SchemaResolveResult,
-  SchemaResolver,
-} from '../../../src/core/validate.js';
+import type { SchemaResolveResult, SchemaResolver } from '../../../src/core/validate.js';
 
 export function fixtureText(relative: string): string {
   return readFileSync(new URL(`./fixtures/${relative}`, import.meta.url), 'utf8');

@@ -59,7 +59,7 @@
           "id": "tk-0005",
           "title": "Subpath exports skeleton in package.json covering every OBSERVED F-04 specifier path (core/address, core/model, core/parse, core/validate, core/walk, links, schema/model, schema/resolve, schema/index, render/renderer — explicit or wildcard; ./plan EXCLUDED pending OQ-2) + a consumer-surface test importing one named symbol per exact subpath; plan barrel proven importable internally only",
           "phase": "ph-4c9d",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0002"
           ]
@@ -68,7 +68,7 @@
           "id": "tk-0006",
           "title": "Build lane whole: tsc emits the SDK into dist/, the external-import guard runs in the suite, and just checks passes end to end with the ported corpus",
           "phase": "ph-4c9d",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0001",
             "../../../plan.dd.json#acceptance_criteria/ac-0006"
@@ -119,7 +119,7 @@
           {
             "id": "dw-0005",
             "assertion": "npm pack --dry-run lists the exports map; the consumer-surface test imports one named symbol from each exact observed subpath (incl. core/validate and BOTH schema/resolve and schema/index) and passes typecheck + runtime; ./plan absent from the public map with an OQ-2 pointer comment",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: vitest consumer-surface test exit 0"
           }
@@ -128,7 +128,7 @@
           {
             "id": "dw-0006",
             "assertion": "just checks exits 0 end-to-end (lint, build, typecheck, test) on the ported tree",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: just checks exit code — the same lane CI runs"
           }
