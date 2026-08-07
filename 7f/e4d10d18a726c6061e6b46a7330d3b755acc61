@@ -1,0 +1,19 @@
+government/pending.md
+  s_db1eb6e388262a::t_f1de9c1a7025dc 51,53-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "7fe4d10d18a726c6061e6b46a7330d3b755acc61",
+  "prompts": {},
+  "sessions": {
+    "s_db1eb6e388262a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_db1eb6e388262a",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
