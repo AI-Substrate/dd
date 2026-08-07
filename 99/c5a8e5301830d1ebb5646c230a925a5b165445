@@ -1,0 +1,24 @@
+docs/plans/001-dd-extraction/execution-log.dd.json
+  h_9e71e8b09f7cf2 29-35
+docs/plans/001-dd-extraction/execution-log.dd.md
+  h_9e71e8b09f7cf2 25
+docs/plans/001-dd-extraction/plan.dd.json
+  h_9e71e8b09f7cf2 71-73,78-80,85-87,92-94,136
+docs/plans/001-dd-extraction/plan.dd.md
+  h_9e71e8b09f7cf2 66-69,82
+docs/plans/001-dd-extraction/the-flow.json
+  h_9e71e8b09f7cf2 6-7,752-897,1197,1202,1215-1225,1231,1236,1246-1255,1261,1266,1279-1288,1294,1299,1313-1322,1328,1333,1344-1353,1359,1364
+docs/plans/001-dd-extraction/the-flow.md
+  h_9e71e8b09f7cf2 4,6,14-16,27,49,81-92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "99c5a8e5301830d1ebb5646c230a925a5b165445",
+  "prompts": {},
+  "humans": {
+    "h_9e71e8b09f7cf2": {
+      "author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
