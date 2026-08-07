@@ -1,10 +1,24 @@
 name: Release
 
 on:
-  # Main: release-please maintains the Release PR; merging it cuts the release
-  # and (below) publishes to the public npm registry. canary/**: pre-merge proof.
+  # canary/**: pre-merge proof of the publish + anonymous-install path.
+  #
+  # `main` is DELIBERATELY ABSENT from this list. Release enablement — the
+  # RELEASE_PLEASE_TOKEN secret and the npm trusted-publisher entry — is Jordan's
+  # to do, and until it is done the standing brief for this repo is that these
+  # workflows sit INERT. A workflow that fires on every push to main and goes red
+  # on an empty token is not inert: it fails closed, which is safe, but it still
+  # produces a permanently-red run beside a green CI. So this line is not a new
+  # policy, it is this workflow finally meeting a constraint that predates it.
+  #
+  # RESTORE, when Jordan supplies the token and the trusted publisher — one line,
+  # add main back to the list below:
+  #     branches: [main, 'canary/**']
+  # Measured at 045f958: `gh secret list --repo AI-Substrate/dd` returns empty and
+  # `gh api repos/AI-Substrate/dd/actions/workflows` lists none registered, so
+  # nothing here has ever run. Re-derive with those two commands before restoring.
   push:
-    branches: [main, 'canary/**']
+    branches: ['canary/**']
   # workflow_dispatch is only registered once this workflow is on the DEFAULT
   # branch, so for a PRE-merge canary use a push to a `canary/**` branch (push
   # triggers run from the pushed branch's own copy — no default branch needed).
@@ -24,14 +38,16 @@ permissions:
 # NOTE: this workflow is NOT YET CONFIGURED — it needs the RELEASE_PLEASE_TOKEN
 # secret and an npm trusted-publisher entry for the package. Neither exists as of
 # plan 001 phase 4 (`gh secret list --repo AI-Substrate/dd` returns empty, measured
-# at 20e412c). It fails CLOSED — nothing can be published without the trusted
-# publisher — but "fails closed" is not the same as "inert", which is what this
-# note used to claim: a push to `main` DOES trigger the release-please job, and
-# with an empty token that job is expected to go red. That red is a missing
-# secret, not a defect in the pushed code. Configure the secret or disable this
-# workflow before treating a red Release run as signal. (Recorded by the tk-0001
-# CI sweep; the fix is a repo-configuration decision, not a code change, so it is
-# routed to the backlog rather than resolved here.)
+# at 045f958), so per the standing brief it stays INERT until Jordan enables it —
+# which is why `main` is off the push trigger above. It also fails CLOSED: nothing
+# can be published without the trusted publisher. Those are two different
+# properties and the distinction is the whole reason for the trigger change —
+# "fails closed" only promises nothing SHIPS, while "inert" promises nothing RUNS,
+# and this workflow used to claim the second while only delivering the first.
+#
+# The release-please job below still keeps `main` in its own `if:`, so restoring
+# the trigger is genuinely one line: the job's guard is already correct and does
+# not need to be touched.
 jobs:
   release-please:
     runs-on: ubuntu-latest

@@ -149,6 +149,50 @@ describe('CI asserts the packaged artifact', () => {
   });
 });
 
+describe('the release workflow stays inert until Jordan enables it', () => {
+  // Ruled by o-prime at e6e0b89 and relayed by the PM. NOT a new policy: the
+  // standing brief for this repo already says release enablement is Jordan's and
+  // these workflows sit INERT until then. A workflow that fires on every push to
+  // main and reds on an empty token is not inert — it fails CLOSED, which is
+  // safe, but "nothing ships" and "nothing runs" are different promises and only
+  // the first was ever true. This block holds the trigger to the second.
+  const releaseWorkflow = readFileSync(join(repoRoot, '.github/workflows/release.yml'), 'utf8');
+
+  /** The `push:` trigger's branch list, as written. Throws if the trigger moved. */
+  function pushBranches(source: string): string[] {
+    const match = /\n {2}push:\n {4}branches:\s*\[([^\]]*)\]/.exec(source);
+    if (!match) throw new Error('release.yml has no `push: branches: [...]` trigger to read');
+    return match[1]
+      .split(',')
+      .map((entry) => entry.trim().replace(/^['"]|['"]$/g, ''))
+      .filter((entry) => entry !== '');
+  }
+
+  it('does not fire on a push to main', () => {
+    expect(
+      pushBranches(releaseWorkflow),
+      'release.yml fires on main again — restoring it needs the RELEASE_PLEASE_TOKEN secret and an npm trusted publisher, or every push to main carries a red run',
+    ).not.toContain('main');
+  });
+
+  it('still fires on canary branches, so the release path stays exercisable', () => {
+    // The half of the ruling most likely to be lost to a tidy-up. Without this
+    // the publish path becomes unprovable before merge, and nobody finds out
+    // until the day it is needed.
+    expect(pushBranches(releaseWorkflow)).toContain('canary/**');
+    expect(releaseWorkflow).toMatch(/\n {2}workflow_dispatch:/);
+  });
+
+  it('documents the one-line restore', () => {
+    // A gate whose undo is undiscoverable is a trap for whoever enables release.
+    expect(releaseWorkflow).toContain("branches: [main, 'canary/**']");
+  });
+
+  it('throws rather than passing if the trigger is restructured', () => {
+    expect(() => pushBranches('on:\n  workflow_dispatch: {}\n')).toThrow(/no `push: branches/);
+  });
+});
+
 describe('the parity guard cannot silently skip', () => {
   // These rows are the guard's own mutation proof, kept permanently rather than
   // run once by hand: they prove the parsers FAIL when their target vanishes.
