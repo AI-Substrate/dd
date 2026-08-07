@@ -76,6 +76,9 @@ jobs:
       - name: Docs drift (baked `dd docs` corpus)
         run: npm run check:dd-docs
 
+      - name: Self-host (dd renders this repo's own documents)
+        run: ./scripts/self-host-check.sh
+
       - name: Test (vitest + coverage)
         run: npx vitest run --coverage
 

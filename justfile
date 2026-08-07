@@ -43,15 +43,28 @@ gen-docs:
 check-docs:
     npm run check:dd-docs
 
+# Prove dd on its OWN documents: every repo .dd.json must still render byte-for-byte
+# to its committed .dd.md, checked with the LOCAL bin. This is the self-hosting
+# proof (plan 001 tk-0003) — the plan folder is a real dd corpus, so a renderer
+# regression reddens here before it reaches a user. Test fixtures are excluded by
+# rule: they carry their own discovery roots and several drift on purpose.
+self-host:
+    ./scripts/self-host-check.sh
+
 # The canonical proof lane: what CI runs and what `harness checks` wraps. Build
 # before test — the smoke test spawns the compiled bin. The docs drift gate runs
 # here because `src/docs/content/*.md` is only reachable by the CLI once it has
 # been baked into `docs-content.ts`; without it, editing a chapter drifts silently.
+#
+# CI runs these same gates in this same order, and that is asserted rather than
+# promised: `test/ci-parity.test.ts` reads this recipe and the workflow and reds
+# if they diverge. Adding a gate here without adding it to ci.yml is a red test.
 checks:
     just lint
     just build
     just typecheck
     just check-docs
+    just self-host
     just test
 
 # Prove the PUBLISHED ARTIFACT works: clone HEAD clean, pack (prepack builds
