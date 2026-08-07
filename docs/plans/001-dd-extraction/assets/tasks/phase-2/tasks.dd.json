@@ -66,10 +66,11 @@
           "id": "tk-0005",
           "title": "--json postfix fix: every verb accepts postfix --json (dd status --json exits per status, not E002) AND prefix still works; AGENTS.md example corrected in the same commit",
           "phase": "ph-8bda",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0005"
-          ]
+          ],
+          "receipt": "dd status --json exits 0 (was E002/exit 1); postfix==prefix envelope+exit for all 12 invocations incl. nested subcommands; AGENTS.md corrected same commit; 435 tests"
         },
         {
           "id": "tk-0006",
@@ -135,7 +136,7 @@
           {
             "id": "dw-0005",
             "assertion": "for EVERY registered verb, <verb> --json postfix returns the same envelope+exit as prefix --json <verb>; the E002 repro from the plan (dd status --json) now exits 0; AGENTS.md shows the working form",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: parameterized postfix test over the verb list"
           }

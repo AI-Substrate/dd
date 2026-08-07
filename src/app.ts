@@ -45,6 +45,31 @@ export function jsonFlag(argv: string[]): boolean | undefined {
 /** Commander error codes that mean "the user asked for help/version", not a failure. */
 const INFORMATIONAL = new Set(['commander.help', 'commander.helpDisplayed', 'commander.version']);
 
+/**
+ * Let `--json` / `--no-json` be written AFTER the verb, at any depth.
+ *
+ * `--json` is a program-level option and `enablePositionalOptions()` hands every
+ * option after the verb to the verb — which does not declare it — so
+ * `dd status --json` died with `E002 unknown option`, while `dd --json status`
+ * worked. The postfix form is the one people actually type, and one that only
+ * works in one position is a wart, not a contract.
+ *
+ * The mode itself needs no repair: `jsonFlag()` reads the RAW argv, so it already
+ * sees the flag wherever it sits. The only thing missing was commander's
+ * permission to write it there. So the flags are declared on every command as
+ * accepted no-ops, recursively, from ONE place — no ported act is edited, and a
+ * verb added later inherits it for free.
+ */
+function acceptOutputFlagsEverywhere(command: Command): void {
+  for (const sub of command.commands) {
+    const declared = sub.options.some((option) => option.long === '--json');
+    if (!declared) {
+      sub.option('--json', 'force JSON output').option('--no-json', 'force human output');
+    }
+    acceptOutputFlagsEverywhere(sub);
+  }
+}
+
 export function buildProgram(io: CliIo, deps: ActDeps): Command {
   const program = new Command();
 
@@ -79,6 +104,8 @@ export function buildProgram(io: CliIo, deps: ActDeps): Command {
   registerBuildCommand(program, io, deps);
   registerDoctorCommand(program, io, deps);
   registerWriterCommands(program, io, deps);
+
+  acceptOutputFlagsEverywhere(program);
 
   return program;
 }

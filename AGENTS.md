@@ -6,16 +6,20 @@ This is the standalone home of **dd** (deterministic documents) — the tooling 
 validates, renders, addresses, and inspects structured documents, published as
 `@ai-substrate/dd` with a `dd` bin.
 
-**A port out of `AI-Substrate/harness-engineering` is in progress.** dd currently
-ships inside that repo as the `harness dd …` verb family
-(`harness/cli/src/acts/dd` + `harness/cli/src/services/dd`). What lives here today
-is the **scaffold**, not the port: the package, the build/test lane, CI, release
-plumbing, and a stub CLI that wires the envelope contract the ported verbs slot
-into. No dd logic has moved yet.
+**A port out of `AI-Substrate/harness-engineering` is in progress.** dd still ships
+inside that repo as the `harness dd …` verb family
+(`harness/cli/src/acts/dd` + `harness/cli/src/services/dd`), which remains the
+upstream basis. What lives here today is **the SDK and the CLI**: `src/{core,docs,
+links,mutate,plan,render,schema}` is the ported library, `src/acts` holds the ten
+verbs on the envelope seam, and `src/{output,adapters}` is the plumbing. Still
+ahead: package/release readiness (the exports freeze and the tarball gate) and
+self-hosting this repo's own document work on the local bin.
 
 Run `dd status --json` for the honest, self-updating port ledger — it diffs the
-verbs registered on the program against the ten planned and reports
-`unconfigured` (exit 2) until none remain, so this CLI cannot claim to be
+verbs registered on the program against the ten planned. It reported
+`unconfigured` (exit 2) while verbs were missing and now reports `ok` (exit 0)
+with `ported[10]`; because the list is DERIVED from the registered commands, it
+flips back on its own if a registration is ever lost. This CLI cannot claim to be
 finished while the port is still in flight.
 
 ### The contract every command honours
@@ -27,7 +31,9 @@ One envelope per command:
 - Exit codes: **0** = ok/degraded · **2** = unconfigured · **1** = error.
 - `next_action` is REQUIRED on any non-ok status — the constructors enforce it.
 - `--json` / `--no-json` beat `DD_JSON=1`, which beats TTY detection; piped output
-  auto-selects JSON.
+  auto-selects JSON. Either flag may be written **before or after** the verb —
+  `dd status --json` and `dd --json status` are equivalent, at any subcommand
+  depth.
 - **Never fake success.** `unconfigured` means "nothing is mapped here yet", not
   "it worked". A ported verb that cannot do its job says so.
 

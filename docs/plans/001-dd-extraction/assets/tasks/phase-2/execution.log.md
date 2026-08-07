@@ -301,3 +301,51 @@ Two fixture facts worth keeping (both cost a red run):
    (which is how a user invokes them anyway). Captured via `harness observe` (DL-007).
 
 Envelope table now covers **all ten verbs** — 64 assertions in that file, **419** repo-wide.
+
+---
+
+## tk-0005 — Postfix `--json`
+
+**The repro, before**: `dd status --json` → `error: unknown option '--json'`, **E002**, exit 1.
+`dd --json status` → fine.
+
+**Root cause**: `--json` is declared on the *program*, and `enablePositionalOptions()` hands
+every option written after the verb to the verb — which never declared it. Nothing was wrong
+with mode selection: `jsonFlag()` reads the RAW argv, so it already saw the flag wherever it
+sat. The only thing missing was commander's permission to write it there.
+
+**Fix**: one recursive pass, `acceptOutputFlagsEverywhere(program)`, declaring `--json` /
+`--no-json` as accepted no-ops on every command at every depth (skipping any command that
+already declares them). Called once in `buildProgram`, so **no ported act is edited** and any
+verb added later inherits the behaviour for free.
+
+| invocation | before | after |
+| --- | --- | --- |
+| `dd status --json` | E002, exit 1 | `ok`, exit 0 |
+| `dd --json status` | `ok`, exit 0 | unchanged |
+| `dd schema list --json` (nested) | E002 | `ok`, exit 0 |
+| `dd link resolve <addr> --json` (nested) | E002 | `ok`, exit 0 |
+| `dd status --no-json` | E002 | human `status: ok` |
+| `dd get <missing part> --json` | E002 | `error`, exit **1** preserved |
+
+### Evidence (dw-0005)
+
+`test/acts/postfix-json.test.ts` — **16 assertions**, bound to **ac-0005 only** (the envelope
+contract is ac-0004's file; the coverage map is not re-crossed).
+
+The claim is *sameness*, so each of the 12 ported-verb invocations runs **twice** — postfix and
+prefix — and compares the whole envelope (timestamp excluded, as it legitimately differs) plus
+the exit code. It re-proves nothing about the verbs themselves.
+
+Three guards beyond the table: the plan's exact E002 repro now exits per status; postfix
+`--no-json` still selects the human renderer (and the output is NOT parseable JSON); and a
+final case asserts **every verb the ledger reports as ported is covered here**, so a future
+verb cannot quietly skip the postfix contract.
+
+**AGENTS.md corrected in this same commit.** The `dd status --json` example was already the
+right thing to write — the CLI was what was wrong — so the correction is the surrounding
+prose, which claimed "the **scaffold**, not the port … No dd logic has moved yet". That is
+false as of phases 1–2: the SDK and all ten verbs are here. It now states what is present,
+what remains (package/release readiness, self-hosting), that the ledger reads `ok`/`ported[10]`
+and flips back on its own if a registration is lost, and that either flag may be written
+before or after the verb at any depth.
