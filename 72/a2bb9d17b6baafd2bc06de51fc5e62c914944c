@@ -1,0 +1,23 @@
+docs/plans/001-dd-extraction/assets/handover-packet.md
+  s_743eafe62757dd::t_e465896348a6eb 180-203
+test/docs-surface.test.ts
+  s_743eafe62757dd::t_656338dd2d5b51 589-598,605,609-632,634,636-638
+docs/plans/001-dd-extraction/assets/tasks/phase-4/execution.log.md
+  s_743eafe62757dd::t_78e3e3309b7aca 725-812
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "72a2bb9d17b6baafd2bc06de51fc5e62c914944c",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
