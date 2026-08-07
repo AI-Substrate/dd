@@ -89,3 +89,31 @@ stronger. A claim about **substitution** is provable; a claim about **possibilit
 your reader a technicality that discredits a correct recommendation. Prefer the form that
 puts a **cost** in front of the decision-maker over the form that puts a **barrier** there:
 the cost is true and is theirs to weigh, the barrier is usually false.
+
+## P-4 — a correct claim delivered at a cost the sender does not pay
+
+**Blocked on**: nothing structural — this is a conduct rule, so it lands wherever the
+packet's section 0 and the guardrail set land. **Named by**: the o-prime about its own
+conduct, 2026-08-07; shape sharpened by `pij-particular-scallop`.
+
+The o-prime sent the PM four findings in quick succession while its coder was mid-fix on
+the last blocking HIGH. Every finding was correct and two changed what shipped — but each
+arrived as an interrupt the PM had to absorb and route.
+
+**This is a distinct axis from the other three.** Nothing about the claim is wrong: not
+decayed, not overstated, not contradicted by adjacency. **The defect is entirely in the
+timing, and it is invisible to the sender**, who sees only that the finding was good. The
+receiver pays; the sender gets the evidence of value and none of the cost.
+
+**Self-demonstrating, like the falsified completeness claim:** the o-prime was appending
+instances to the packet's section 0 — the exact surface it had just told the PM to have
+re-checked for adjacency contradictions.
+
+**Rule**: when a loop is mid-fix on a blocking item, a non-blocking finding goes to a
+durable uncontested file that its owner drains on their own schedule — not into the loop.
+Route by *what the receiver is doing*, not by *how good the finding is*.
+
+**Counterweight, recorded because it is the PM's judgment and not the o-prime's:** *"None
+of the four cost me anything I would want back, and two changed what shipped. The cost you
+are naming is real but it was worth paying, and I would rather have the finding late than
+not at all."* The rule is about **routing**, never about withholding.
