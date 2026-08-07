@@ -1056,6 +1056,42 @@
           "comments"
         ]
       }
+    },
+    {
+      "id": "UPD-038",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-07T06:59:35.087Z",
+      "details": {
+        "node": "phase-4",
+        "fields": [
+          "comments"
+        ]
+      }
+    },
+    {
+      "id": "UPD-039",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-07T06:59:35.798Z",
+      "details": {
+        "node": "phase-4",
+        "fields": [
+          "comments"
+        ]
+      }
+    },
+    {
+      "id": "UPD-040",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-07T07:00:04.302Z",
+      "details": {
+        "node": "phase-4",
+        "fields": [
+          "comments"
+        ]
+      }
     }
   ],
   "nodes": [
@@ -1698,7 +1734,7 @@
         "review-4"
       ],
       "created_at": "2026-08-07T03:54:20.614Z",
-      "modified_at": "2026-08-07T06:49:59.625Z",
+      "modified_at": "2026-08-07T07:00:04.302Z",
       "instructions": [
         "Implement exactly ONE phase using the plan's testing approach and domain placement rules — keep the task table and execution.log.md live as you go.",
         "Run /builder 6 implement --plan \"<plan path>\"; log discoveries, tagging any Deferred/Noteworthy a human must see before ship.",
@@ -1719,6 +1755,24 @@
           "text": "o-prime rulings on the PM's two phase-4 gates, 2026-08-07. GATE 1 CONFIRMED: tk-0006 (first push of main) is held on review AND the PM's go, not merely on tk-0001. Jordan's 2026-08-07 authorization settles WHETHER we push, not the sequence; 34+ unreviewed commits landing on a shared main is the one act in this plan that is not cheaply reversible, so review precedes it. GATE 2 OVERRULED IN PART: tk-0005 prepares the handover packet and the PM does NOT send it — correct — but the send is taken by the o-prime, not the PM: pij-related-koala is a peer prime, so handover is prime-to-prime traffic. PM signals packet-ready post-review; o-prime sends. HONESTY ITEM ENDORSED: the packet must state plainly that the exports map is NOT frozen (tk-0002 held on Jordan OQ-1/OQ-2) rather than list 'frozen exports map' as a delivered artifact. This is the first time the claim-outran-implementation class (guardrail 11) has been caught BEFORE shipping rather than in review — and koala is precisely the reader a false completeness claim would mislead.",
           "source": "agent",
           "kind": "decision"
+        },
+        {
+          "at": "2026-08-07T06:59:35.087Z",
+          "text": "CORRECTION to my own gate-1 record (o-prime, append-only, 2026-08-07). The commit message at 20e412c and my phase-4 decision comment both described tk-0006 as the FIRST push of main and cited '34+ commits'. Both were wrong and the error was mine to carry: I repeated the PM's stale framing without measuring it. Measured independently at 20e412c: origin exists (https://github.com/AI-Substrate/dd.git), origin/main = b1b794db2133fb50eeee85f63a6bfb2a1a0ad2ea,  succeeds, 0\t46 = 0 behind / 46 ahead. It is a FAST-FORWARD of 46 commits onto an existing shared main — no rewrite, no force, not a virgin push. GATE 1 IS UNAFFECTED and stands on its real reason, which the correction does not touch: unreviewed work landing on a shared main is not cheaply reversible. Re-derive with the two git commands above. This is the measured-at-stamping guardrail applied to the o-prime's own artifact — the third time this class has been caught, and the first time in my own record.",
+          "source": "agent",
+          "kind": "validation"
+        },
+        {
+          "at": "2026-08-07T06:59:35.798Z",
+          "text": "RULING on ESC-1 (red Release run beside green CI). GATE THE WORKFLOW — do not accept the red, and this does NOT need Jordan. It is not a new decision: koala's standing brief already rules it, verbatim — 'Release enablement (RELEASE_PLEASE_TOKEN + npm trusted publisher) is Jordan's; the workflows sit inert until then.' A workflow that fires on push to main and goes red is not inert. The coder's own note draws the distinction correctly ('fails closed is not the same as inert'), so the implementation simply does not yet meet a constraint that predates this phase. MECHANISM (minimal + reversible): drop  from release.yml's push trigger, keeping  and workflow_dispatch, so the release path stays fully exercisable pre-merge and one line restores it when Jordan adds the token. Document the exact restore line in the workflow with a measured-at stamp. The PM's attention-cost argument is right and is the deciding one: a red everyone learns to ignore is worse than no signal, because the day it reds for a real reason nobody looks — and koala inherits this repo. tk-0006 done = the CI workflow green, unchanged. Verified for this ruling at 20e412c: 0 workflows registered on origin,  empty, repo PUBLIC.",
+          "source": "agent",
+          "kind": "decision"
+        },
+        {
+          "at": "2026-08-07T07:00:04.302Z",
+          "text": "TRANSCRIPTION REPAIR of the ESC-1 ruling comment immediately above (o-prime, append-only — comments are never edited). Backticks in that text were shell-evaluated on the way in, so two branch names were silently eaten and the MECHANISM sentence reads 'drop  from ... keeping  and workflow_dispatch'. The intended, ruling text is: drop the branch named main from release.yml's push trigger, KEEPING the canary branch pattern (canary/ followed by a double-star glob) and workflow_dispatch. Everything else in that comment stands as written. Restore, when Jordan supplies RELEASE_PLEASE_TOKEN, is re-adding main to that same push branches list — one line. Friction captured: composing a CLI comment through a shell is a transcription hazard for exactly the artifact class that must be verbatim.",
+          "source": "agent",
+          "kind": "validation"
         }
       ]
     },
