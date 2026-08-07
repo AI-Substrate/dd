@@ -497,7 +497,8 @@
         ".the-flow-state.json / the-flow.json / the-flow.md are builder-owned — no hand writes, either repo.",
         "src/app.ts registry is the convergence hot-spot: one phase in flight at a time lands registry edits; the PM serializes if pipelined phases both touch it.",
         ".dd/schemas exemplar VALUES stay verbatim (dd-next #8-11: running the generator first turns the gate green over undetermined values — do not resolve the vocabulary as a side effect).",
-        "Every phase ends just checks green locally before handing to review; the dd status ledger must never claim a verb that does not work."
+        "Every phase ends just checks green locally before handing to review; the dd status ledger must never claim a verb that does not work.",
+        "RENDERER AUTHORITY SPLIT (o-prime 2026-08-07, from the tk-0003 banner collision): from the tk-0003 landing commit onward, THIS repo documents are mutated/rendered ONLY by the LOCAL dd bin (set/add/rm/build) — upstream harness dd set/build on them is forbidden (its renderer silently regresses the banner). harness plan validate REMAINS the semantic authority (checks/gates/contradictions, per Jordan: plan checks stay harness-side); drift authority is LOCAL dd build --check. A harness-reported drift is adjudicated: local check green + banner-only diff = renderer skew (expected until koala swaps upstream), anything else = real. Window closes at handover."
       ]
     }
   ]

@@ -895,6 +895,18 @@
         "from": "known",
         "to": "in_progress"
       }
+    },
+    {
+      "id": "UPD-031",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-07T05:52:11.311Z",
+      "details": {
+        "node": "phase-3",
+        "fields": [
+          "comments"
+        ]
+      }
     }
   ],
   "nodes": [
@@ -1361,7 +1373,7 @@
         "review-3"
       ],
       "created_at": "2026-08-07T03:54:20.614Z",
-      "modified_at": "2026-08-07T05:46:30.932Z",
+      "modified_at": "2026-08-07T05:52:11.311Z",
       "instructions": [
         "Implement exactly ONE phase using the plan's testing approach and domain placement rules — keep the task table and execution.log.md live as you go.",
         "Run /builder 6 implement --plan \"<plan path>\"; log discoveries, tagging any Deferred/Noteworthy a human must see before ship.",
@@ -1375,7 +1387,15 @@
       "command": "/builder 6 implement",
       "dd_link": {
         "address": "docs/plans/001-dd-extraction/assets/tasks/phase-3/tasks.dd.json#tasks"
-      }
+      },
+      "comments": [
+        {
+          "at": "2026-08-07T05:52:11.311Z",
+          "text": "Rename-collision rulings (dlg-0003): (1) YES local-bin switch for document mutation at tk-0003 landing — prime declares a FLIP-FREEZE from now until it lands (no harness dd set from the prime; no flips are pending, next is at P3 verdict which follows tk-0003), so the coder regenerates ALL siblings incl. plan.dd.md + execution-log.dd.md with no concurrent writer and dw-0003 stays satisfiable as written; (2) authority SPLIT — harness plan validate keeps semantics, local dd build --check owns drift, banner-only-diff test adjudicates; (3) PARTIAL phase-4 pull-forward by consequence: the mutation-surface switch lands with tk-0003, phase-4 keeps full self-host proof + backlog migration + handover. Guardrail added to plan.",
+          "source": "agent",
+          "kind": "decision"
+        }
+      ]
     },
     {
       "id": "review-3",
