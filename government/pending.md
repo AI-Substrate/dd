@@ -203,3 +203,29 @@ generalisation wearing a compliment.
 
 **A worker declined a compliment that would have made the fleet weaker.** Read this before
 staffing anything.
+
+## P-7 — the urge to consolidate is the urge to overstate coverage
+
+**Destination**: `orient-local.md`, beside the open-list boundary. **Named by**:
+`pij-particular-scallop`, observing the o-prime's behaviour, 2026-08-07.
+
+Twice within an hour the o-prime declined to fold a new finding into an existing rule:
+**adjacency** was kept out of the two-places-mechanism-cannot-reach boundary (listed as
+*partially reachable* instead), and the **memory/enumeration** defect was kept out of the
+adjacency rule (a different instrument, not an extension). **Both times the tidier version
+would have read better and covered less.**
+
+> **The urge to consolidate is the urge to overstate coverage.**
+
+**Why it is dangerous rather than merely untidy:** a merged rule leaves a future reader
+performing the *surviving* action and concluding they have checked. *Re-read after moving
+text* and *diff the enumeration against its source* are different actions, and **only one
+of them can see an omission your output is internally consistent about.** Collapsing them
+is worse than having no rule, because it **manufactures the confidence**.
+
+**Test before merging two findings:** name the *action* each one demands. If the actions
+differ, the rules stay separate however similar their causes look. Consolidate causes,
+never instruments.
+
+*(Recorded, not relayed. The PM withheld the finding above from its coder mid-fix, applying
+P-4 to the o-prime; sending this one would have repeated exactly what P-4 documents.)*
