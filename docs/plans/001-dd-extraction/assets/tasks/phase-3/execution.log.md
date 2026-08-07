@@ -154,14 +154,14 @@ Per the **MEASURED-AT STAMPING** guardrail (`plan.dd.md`, o-prime `b479372`), ev
 carries the commit it was measured at and the command that re-derives it. A count without its SHA
 is an assertion, not a measurement.
 
-**Measured at `8a13e53`.**
+**Measured at `c0af550`** (the only later commit is this log entry itself).
 
 | Gate | Command | Result |
 |---|---|---|
-| Repo lane | `just checks` | **exit 0** — 677 tests, 58 files |
-| Artifact | `bash scripts/pack-gate.sh` | **exit 0** — PASSED against final HEAD |
+| Repo lane | `just checks` | **exit 0** — 680 tests, 58 files |
+| Artifact | `bash scripts/pack-gate.sh` | **exit 0** — PASSED |
 | Semantic authority | `harness plan validate docs/plans/001-dd-extraction/plan.dd.json --address "docs/plans/001-dd-extraction/assets/tasks/phase-3/tasks.dd.json#tasks"` | **exit 0**, `degraded`, **0 ERROR**, **15 WARN** |
-| Drift authority | local `node bin/dd.js build --check <doc>` × 6 documents | **exit 0** on all |
+| Drift authority | local `node bin/dd.js build --check <doc>` × 6 documents | **exit 0**, `drift: false` on all |
 
 The 15 WARNs are 0 errors and expected: **6 `contradiction`** rows (task `checked`, its AC still
 `unchecked` — **AC flips are o-prime's**, `plan.dd.json` is outside this scope) and **9
@@ -175,3 +175,80 @@ rather than merely corrected. Re-derive with the semantic-authority command abov
 
 **Tasks**: tk-0003 ✅ · tk-0004 ✅ · tk-0005 ✅ · tk-0006 ✅ · tk-0001 held · tk-0002 held.
 **Done-when**: dw-0003, dw-0004, dw-0005, dw-0006 all `checked`.
+
+---
+
+## Fix round — review dlg-0003 `FIX_REQUIRED` (4 items)
+
+Review: `pij-blind-deer`, `dlg-0003-review.md`. Four items, one HIGH. The exports-freeze hold was
+confirmed correct and is untouched — tk-0001/tk-0002 remain `unchecked`.
+
+### 1 · HIGH — the README anti-rot guard was vacuous (`8a13e53`)
+
+`test/docs-surface.test.ts` claimed to run the README's quick start through the shipped bin. It
+extracted the two JSON heredocs and then **retyped the four `dd` invocations as literal arrays**.
+The reviewer changed a quick-start verb to `dd nonexistent-verb` and the guard stayed **9/9
+green** — a README documenting a command the binary does not have passed the guard whose entire
+purpose is to catch that. My phase-3 receipt claimed the commands were extracted. The heredoc half
+was true; the command half was not.
+
+The quick start is now parsed into a transcript (`mkdir`, heredoc writes, `dd …` lines) and
+replayed step by step. The commands are the README's own bytes, and so are the expectations: the
+rendered sibling is checked against the title and claims of the README's own document, `dd get`
+against the state that document declares, `dd set` against the value the README's own command
+passes. Piped output auto-selects JSON, so the literal documented line answers an envelope — no
+flag is added to make it testable.
+
+The exit code is judged **before** any parsing, so a bad command fails **as a bad command**, and
+steps are recorded rather than thrown at, so one broken line yields one failure that names it
+instead of a cascade that buries its cause.
+
+**Mutation record — acceptance evidence, run at `c0af550`:**
+
+| # | Mutation | Result | Failing assertion |
+|---|---|---|---|
+| baseline | none | **GREEN** 12/12 | — |
+| M1 | quick-start verb → `dd nonexistent-verb` (the reviewer's exact mutation) | **RED**, 1 row | ``` `dd nonexistent-verb review.dd.json` exited 1: error: unknown command 'nonexistent-verb' ``` |
+| — | M1 restored | **GREEN** 12/12, README byte-identical to HEAD | — |
+| M2 | real verb, address the document does not contain (`dw-4e01` → `dw-9999`) | **RED** | ``` `dd get …#items/dw-9999/state` exited 1 ``` (E450) |
+| M3 | an `rm -rf` line added to the quick start | **RED at collection** | `README quick start has a line this guard cannot execute: rm -rf review.dd.json` |
+
+M1 is the reviewer's reproduction, and it now reds **on the command's exit code**. M2 shows the
+guard is not merely a spell-checker for verb names. M3 shows an unrecognised line is fatal rather
+than skipped — silently ignoring the unparseable would be the same vacuity in a new costume.
+
+### 2 · MEDIUM — the same-commit claim (`91b2103`)
+
+Corrected in the record, not by rewriting history. See the rename section above: 11 of 14 moved in
+`13d86f8`, 3 already carried the new banner from `1773470`, and the invariant that holds is zero
+stale banners repo-wide.
+
+### 3 · MEDIUM — stale count, and the recording pattern (`91b2103`)
+
+11 WARN → 15, and every count in this log now carries the SHA it was measured at plus the command
+that re-derives it, per **MEASURED-AT STAMPING** (`plan.dd.md`, o-prime `b479372`). Also folded in
+the `b479372` correction that `harness plan validate` is not drift-affected, so the
+harness-drift adjudication clause in `handover-notes.md` describes a case that cannot arise.
+
+### 4 · MEDIUM — the `dd-overview` exemplar pointer (`0a2f1c3`)
+
+Amended, not ported, per the ruling. The deeper reference pages and the `exemplar/` corpus are
+marked as living upstream; the paragraph names the three runnable equivalents that ship here. The
+refusal reason is recorded in `docs/how/dd/README.md` so it is not re-litigated: the corpus carries
+`meta.certainty: Partial`, the contested value of dd-next #10, and it is the file new authors copy.
+
+### Fix-round gate — measured at `c0af550`
+
+| Gate | Result |
+|---|---|
+| `just checks` | **exit 0** — 680 tests, 58 files |
+| `bash scripts/pack-gate.sh` | **exit 0** — PASSED |
+| `harness plan validate … #tasks` | **exit 0**, `degraded`, **0 ERROR**, 15 WARN |
+| local `dd build --check` × 6 | **exit 0**, `drift: false` on all |
+
+### Discovery
+
+| # | Tag | Finding |
+|---|---|---|
+| 8 | **Escaped defect class** | The vacuous guard and the stale CI ledger assertion are the same failure: a test whose *claim* outran its *implementation*, passing review because the claim was read instead of the code. Both were caught by someone re-deriving the claim. The counter is mutation, and the lesson is that a guard's docstring is a hypothesis until a mutation reds it. |
+| 9 | **Noteworthy** | `vitest` strips types, so the transcript runner was 12/12 green while `tsc -p tsconfig.test.json` failed on two bare `Envelope` annotations. The test lane alone does not typecheck the test lane — `just checks` does, and it caught this. |
