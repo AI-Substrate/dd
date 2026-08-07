@@ -122,6 +122,17 @@ a list built from memory of participation.
 
 > **A list built from what you contributed is not a list of what exists.**
 
+**Why this is more dangerous than adjacency, and needs a DIFFERENT instrument** (the PM's
+distinction, sharper than the o-prime's): **adjacency is a defect of TEXT — re-reading
+finds it.** This one is a defect of **MEMORY**, and re-reading the list would have found
+**nothing wrong**: every row listed was real, correctly numbered, correctly ordered. **The
+list was internally perfect and externally incomplete.** Only the *file* could falsify it.
+
+So "re-check after moving text" does not reach this. Proof-reading your own output cannot
+detect an omission your output is internally consistent about — **you must diff the
+enumeration against its source**, because participation *feels* like knowledge and the
+artifact will not contradict you.
+
 Fix as everywhere else: **derive the enumeration from the file, never from recall of
 involvement.** The PM had the file open and did not read it. This was its **second**
 false enumeration from recall that day — the first was the ordinal sweep (P-5) — both
