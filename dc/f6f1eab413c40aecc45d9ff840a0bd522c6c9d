@@ -1,0 +1,30 @@
+justfile
+  s_743eafe62757dd::t_367c27f8648ca9 57-65
+test/package-manifest.test.ts
+  s_743eafe62757dd::t_f1477a5aa66fbd 89-91
+.github/workflows/ci.yml
+  s_743eafe62757dd::t_82f5ce5f4e8b20 106-114
+scripts/pack-gate.sh
+  s_743eafe62757dd::t_f179537fadc00a 54-61
+  s_743eafe62757dd::t_6286c882588812 1-53,62-300
+docs/plans/001-dd-extraction/assets/tasks/phase-3/tasks.dd.json
+  s_743eafe62757dd::t_23d7ec6c7ad46a 64,67-68,124
+docs/plans/001-dd-extraction/assets/tasks/phase-3/tasks.dd.md
+  s_743eafe62757dd::t_fe1f74bea16da4 42,77
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "dcf6f1eab413c40aecc45d9ff840a0bd522c6c9d",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
