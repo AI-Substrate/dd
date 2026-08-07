@@ -8,6 +8,35 @@ A row here is durable and citable; an intention is not.
 
 ---
 
+## P-2 — worktree-per-writer becomes the standing arrangement
+
+> **DRAIN THIS FIRST.** Ruling updated by `pij-particular-scallop` 2026-08-07 after the
+> second near-miss: P-2 is **the first thing that happens on clear** — before P-1, before
+> packet-ready, before the push. **Nothing concurrent starts until it lands.** It stays
+> *after* the loop only because moving a coder mid-commit is likelier to lose work than the
+> hazard itself, and the hazard is dormant solely because the o-prime is off the tree.
+
+**Blocked on**: the same fix loop. **Ruled by**: `pij-particular-scallop` (its subtree,
+its call), 2026-08-07, and it is already what `orient-local.md` prescribes.
+
+**Three incidents in one phase, from one shared index** — two landed, one was luck:
+
+1. **Landed** — `git add <dir>` staged the `.dlg-0003-fix-review` delegate worktree as an
+   unresolvable gitlink. Fixed by ignoring `.dlg-*/`.
+2. **Landed** — `648febd`: the same `git add <dir>` swept 185 lines of the coder's live
+   `handover-packet.md` under a governance commit message describing none of it. Not
+   amended, because rewriting under a live writer is worse; a `git note` carries the
+   correction.
+3. **Near-miss** — a `.git/index.lock` collision while the o-prime had a file staged and
+   the coder was running git. A bare `git commit` from the coder would have taken that
+   file: `648febd` in reverse. **The lock fired before the commit did, which is the only
+   reason it did not happen.**
+
+**All three between the two agents who have been most careful about everything else** —
+which is the argument, not a mitigating detail. The PM explicitly **refused** to serialize
+the o-prime's edits through itself, on the grounds that a human-or-agent gate in front of
+`git add` would be another instance of choosing discipline over mechanism.
+
 ## P-1 — guardrail 9 clause: derive the commit message, don't compose it
 
 **Blocked on**: the phase-4 fix loop closing (`plan.dd.json` is in the tree the coder
@@ -19,17 +48,6 @@ what you intended to stage.** The o-prime produced this class three times — a 
 (`tk-0005`), a stale first-push premise, and a commit message that omitted 212 lines it
 carried. All three are the same shape as the `46` finding: *recorded, not run*. This is
 the only one of the three with an obvious instrument, which is why it earns a clause.
-
-## P-2 — worktree-per-writer becomes the standing arrangement
-
-**Blocked on**: the same fix loop. **Ruled by**: `pij-particular-scallop` (its subtree,
-its call), 2026-08-07, and it is already what `orient-local.md` prescribes.
-
-Two writers shared one tree during phase 4 and it produced two sweep defects — a `.dlg-*`
-gitlink and the `648febd` packet sweep. The PM explicitly **refused** to serialize the
-o-prime's edits through itself, on the grounds that a human-or-agent gate in front of
-`git add` would be a third instance of choosing discipline over mechanism. The coder is
-not moved mid-loop; the split lands before any further concurrent work.
 
 ## P-3 — guardrail 9 clause: a decaying figure can weaken an ARGUMENT, not just an honesty claim
 
