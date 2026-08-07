@@ -30,7 +30,7 @@
         },
         {
           "id": "tk-0002",
-          "title": "Exports freeze completion + dd-surface reconcile (INHERITS the P3 tk-0002 hold): when Jordan rules OQ-1/OQ-2, transcribe verbatim per doctrine, freeze the map, extend the consumer-surface test, reconcile docs dd-surface notes; until ruled this task is HELD, never guessed",
+          "title": "Exports freeze completion + dd-surface reconcile (INHERITS the P3 tk-0002 hold): when Jordan rules OQ-1/OQ-2, transcribe verbatim per doctrine, freeze the map, extend the consumer-surface test, reconcile docs dd-surface notes; until ruled this task is HELD, never guessed. SCOPE ADDED 2026-08-07 (o-prime, endorsed by the PM, measured at 89cac13): (a) OQ-2 is NOT 'should plan be public' — the runtime probe proves ./plan is ERR_PACKAGE_PATH_NOT_EXPORTED, a HARD ERROR, so harness cannot consume dd at all under today's map; (b) FIX THE ROOT EXPORT BEFORE FREEZING — '.' resolves to dist/index.js which IS the bin entry, so importing the package executes the CLI and yields zero named exports; a freeze is exactly when a latent defect becomes permanent; (c) re-run scripts/exports-reachability-probe.mjs after the freeze and wire it into just checks WITH its ci.yml twin in the same commit (ci-parity reds otherwise)",
           "phase": "ph-0a40",
           "state": "unchecked",
           "satisfies": [

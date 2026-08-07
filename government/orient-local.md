@@ -131,6 +131,15 @@ step — pointing harness at this package and deleting the old code — is koala
   internally consistent about its own contents. The gap was in the **task design, not the
   verifier's work**. A verifier can only be as complete as the scope it is handed, so a
   clean result is a statement about the question, and the question is the delegator's.
+- **PARTIAL STRENGTH-MARKING CERTIFIES EVERYTHING IT DOES NOT MENTION.** The sharpest
+  version of the evidence-strength rule, and it arrived from `pij-related-koala` after the
+  rule bit it. It relayed an upstream change as blocking, flagging its own uncertainty
+  precisely — *"I know WHICH files from my prime; I have NOT read the diff."* That reads as
+  rigour and **inverted on it**: naming the diff as the unverified part **implied the
+  reference's existence and status were verified**. They were not — the PR did not exist.
+  **Existence, status and content are three separate claims, and each needs its own label**;
+  hedging one certifies the rest by omission. The check was one command. *(The substance
+  survived: those files really do back seven consumed symbols. The reference did not.)*
 - **State the STRENGTH of your evidence, not just its result.** On receiving the handover
   packet, `pij-related-koala` re-derived every consumer claim and then volunteered that its
   own HEAD was the *same basis* as the packet's — so its confirmation was **not** a second
