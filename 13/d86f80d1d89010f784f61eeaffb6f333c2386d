@@ -1,0 +1,85 @@
+test/acts/binary-name.test.ts
+  s_743eafe62757dd::t_456ff7ddc04f57 7,74,77,91,94-95,97,107-108,111-120,123,126-128
+  s_743eafe62757dd::t_109d3a38791570 1,39-41
+  s_743eafe62757dd::t_7a7315926d6658 2-6,8-38,42-73,75-76,78-90,92-93,96,98-106,109-110,121-122,124-125,129-130
+src/acts/links.ts
+  s_743eafe62757dd::t_fed006b44ac55b 26,75
+src/acts/link.ts
+  s_743eafe62757dd::t_fed006b44ac55b 49
+src/acts/docs.ts
+  s_743eafe62757dd::t_fed006b44ac55b 13,18,36,54,62
+test/acts/dd-build.test.ts
+  s_743eafe62757dd::t_6440736fdbf675 118,217
+docs/plans/001-dd-extraction/execution-log.dd.md
+  s_743eafe62757dd::t_6367ba7d4d9565 1
+src/docs/content/how-to-add-a-schema.md
+  s_743eafe62757dd::t_fed006b44ac55b 78-79,111,172-173
+test/acts/dd-live.test.ts
+  s_743eafe62757dd::t_457f3c8c7ee148 210
+docs/plans/001-dd-extraction/assets/handover-notes.md
+  s_743eafe62757dd::t_d00889eeab8803 1-127
+src/docs/content/dd-overview.md
+  s_743eafe62757dd::t_fed006b44ac55b 85-89,101-102
+docs/plans/001-dd-extraction/assets/tasks/phase-3/tasks.dd.json
+  s_743eafe62757dd::t_b66fd3de246e3a 44,47-48,104
+src/render/renderer.ts
+  s_743eafe62757dd::t_fed006b44ac55b 23
+docs/plans/001-dd-extraction/plan.dd.md
+  s_743eafe62757dd::t_6367ba7d4d9565 1
+src/acts/doctor.ts
+  s_743eafe62757dd::t_fed006b44ac55b 82,102
+src/docs/dd-docs-manifest.json
+  s_743eafe62757dd::t_fed006b44ac55b 2
+docs/plans/001-dd-extraction/assets/tasks/phase-3/tasks.dd.md
+  s_743eafe62757dd::t_b66fd3de246e3a 40,65
+src/acts/build.ts
+  s_743eafe62757dd::t_fed006b44ac55b 89,99,110,128,454
+src/acts/graph.ts
+  s_743eafe62757dd::t_fed006b44ac55b 38,76,106,309
+  s_743eafe62757dd::t_07037cd501a217 243
+src/acts/write.ts
+  s_743eafe62757dd::t_fed006b44ac55b 47,49,53,56,58,138,280
+  s_743eafe62757dd::t_07037cd501a217 55
+src/acts/address.ts
+  s_743eafe62757dd::t_fed006b44ac55b 60,84,161
+src/acts/validate.ts
+  s_743eafe62757dd::t_fed006b44ac55b 58,74,118,136
+src/docs/docs-content.ts
+  s_743eafe62757dd::t_0fd39934af7ab5 14,23
+src/acts/shared.ts
+  s_743eafe62757dd::t_fed006b44ac55b 94,96
+src/acts/schema.ts
+  s_743eafe62757dd::t_fed006b44ac55b 103,187,200,208,232,253
+test/services/dd/render/fixtures/adapters/repo/docs/adapters.dd.md
+  s_743eafe62757dd::t_68a02de0fad94e 1
+test/services/dd/render/fixtures/chain/repo/docs/consumer.dd.md
+  s_743eafe62757dd::t_328bb881be8437 1
+test/services/dd/render/fixtures/chain/repo/docs/source.dd.md
+  s_743eafe62757dd::t_87e7e013a08dee 1
+test/services/dd/render/fixtures/drift/repo/docs/drift.dd.md
+  s_743eafe62757dd::t_68bcdb9e4b648c 1
+test/services/dd/render/fixtures/drift/repo/docs/drift.expected.md
+  s_743eafe62757dd::t_ad646fc28fedfd 1
+test/services/dd/render/fixtures/limits/repo/docs/limits.dd.md
+  s_743eafe62757dd::t_6cb1c57fa8d052 1
+test/services/dd/render/fixtures/showcase/repo/docs/other.dd.md
+  s_743eafe62757dd::t_83e3690a59a2ed 1
+test/services/dd/render/fixtures/showcase/repo/docs/showcase.dd.md
+  s_743eafe62757dd::t_5f358f0f7c6215 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "13d86f80d1d89010f784f61eeaffb6f333c2386d",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
