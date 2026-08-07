@@ -1,0 +1,31 @@
+src/app.ts
+  s_743eafe62757dd::t_0c8aaa33d788dc 108-109
+  s_743eafe62757dd::t_0c8917c1d12947 48-72
+AGENTS.md
+  s_743eafe62757dd::t_03bdeeef7d855a 9-16,19-22,34-36
+test/acts/postfix-json.test.ts
+  s_743eafe62757dd::t_abed71430ecd93 2
+  s_743eafe62757dd::t_54feffb4bb7511 1,3-84
+docs/plans/001-dd-extraction/assets/tasks/phase-2/execution.log.md
+  s_743eafe62757dd::t_814ce016e4a250 304-351
+docs/plans/001-dd-extraction/assets/tasks/phase-2/tasks.dd.json
+  s_743eafe62757dd::t_4bdafbec8ab9b6 69,72-73,139
+docs/plans/001-dd-extraction/assets/tasks/phase-2/tasks.dd.md
+  s_743eafe62757dd::t_c4c83e9e9090e9 42,78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "dc50383ea7538c7fdac43506a02c312d98c6cf7d",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
