@@ -1,0 +1,44 @@
+src/acts/doctor.ts
+  s_743eafe62757dd::t_de178a86ae2c25 1-130
+docs/plans/001-dd-extraction/assets/tasks/phase-2/tasks.dd.md
+  s_743eafe62757dd::t_eb996395fe0a88 41,72
+test/acts/jiti-custom-type.test.ts
+  s_743eafe62757dd::t_09e67a20d92db4 103-120
+  s_743eafe62757dd::t_0d006c680a70aa 2-64,73-77,81-84,86-92,94-102,121-122
+  s_743eafe62757dd::t_b06fce452fddda 78-80
+  s_743eafe62757dd::t_9fd535df61f923 65-72,85,93
+  s_743eafe62757dd::t_68fc70eb849530 1
+docs/plans/001-dd-extraction/assets/tasks/phase-2/tasks.dd.json
+  s_743eafe62757dd::t_eb996395fe0a88 58,62-63,129
+test/smoke.test.ts
+  s_743eafe62757dd::t_429765b243b9bf 70-72,75-78,80,82-85
+src/acts/status.ts
+  s_743eafe62757dd::t_ccb34950b479dc 26-51,58-61
+test/status.test.ts
+  s_743eafe62757dd::t_4990cc47636dcd 7-26,43,48-57
+  s_743eafe62757dd::t_19afb57b657377 58
+src/acts/write.ts
+  s_743eafe62757dd::t_de178a86ae2c25 1-324
+test/acts/envelope-contract.test.ts
+  s_743eafe62757dd::t_b6279f5ccb675d 104-133
+docs/plans/001-dd-extraction/assets/tasks/phase-2/execution.log.md
+  s_743eafe62757dd::t_eb996395fe0a88 231-303
+src/app.ts
+  s_743eafe62757dd::t_4adacf35863ef9 3,5,14,79-81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "713a43d784e12938eb5450bc34a315325de82ae7",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
