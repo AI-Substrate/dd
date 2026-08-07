@@ -1,0 +1,23 @@
+test/ci-parity.test.ts
+  s_743eafe62757dd::t_1efade624418f6 152-195
+.github/workflows/release.yml
+  s_743eafe62757dd::t_571c3986857ef9 21
+  s_743eafe62757dd::t_458acc96c4a928 4-19
+  s_743eafe62757dd::t_877913c8a97215 41-50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "f0c3a449cf5526625cf61740236655512d24ff90",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
