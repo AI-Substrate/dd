@@ -888,7 +888,7 @@ would have made the packet break its own headline rule (§0.1).
 
 <!-- BEGIN GENERATED: guardrails (scripts/gen-handover-embeds.mjs) -->
 
-**Reproduced verbatim as of `ee1ccb2`** — 15 rows, the commit that
+**Reproduced verbatim as of `aa06cb2`** — 15 rows, the commit that
 last changed the source. This is a stamped past-tense copy, not a claim to be current:
 these rows move as the o-prime amends them (row 9 was amended twice while this packet sat
 in review). Check whether yours is stale, and re-pull the live version, with:
