@@ -84,6 +84,26 @@ A present-tense measurement inside a document meant to stay current **has no exp
 no owner**. Nobody is wrong when it rots, so nobody fixes it. All six instances in §7
 have that shape.
 
+**So the test is not "is this figure wrong". It is "could this figure become wrong
+without anyone touching it".** Every instance in §7 was *correct when written* — a sweep
+that only removes the figures someone has already proved stale leaves behind every
+figure that is accurate today and rots next week, which is precisely how each of them
+got in. When the o-prime applied this to its own orientation file it derived two
+present-tense claims, found **both were still true, and rewrote them anyway**: being
+right today is luck rather than construction.
+
+Every figure in this packet was put through that test, and each one has exactly three
+honest destinations:
+
+| if the figure is… | make it a… | why it survives |
+|---|---|---|
+| a rule, or a thing to check | **contract or condition** | true whenever it is read, and it tells you what to *do* rather than what someone once saw |
+| a record of what was measured then | **past-tense claim stamped to a SHA** | correct forever, because it describes a moment and says so |
+| something that must read as current | **derived** — print the command, not the answer | the only form that survives the repo moving |
+
+**In every case the bare present-tense number is deleted.** Where you see a count in
+this packet it is one of those three, deliberately.
+
 ### The protective corollary: NEVER SWEEP STAMPED HISTORY
 
 **This is the half of the rule that protects you from the rule**, and it is not a
@@ -111,12 +131,17 @@ unsatisfied. Running the guard gave the right answer in one call — CI invokes 
 *script*, not the recipe name. Same principle from the other end: **the derived thing is
 the authority; the read is not.** Reach for the command before the grep.
 
-**The sweep result itself**, re-derived here rather than relayed, measured at `0fafbf2`:
+**The sweep result itself**, re-derived here rather than relayed. Written as a
+**condition you can re-run**, not as the numbers seen at `0fafbf2`:
 
 ```bash
-git grep -Iln 'ported: \[\]' -- '*.md'        # 0 — no markdown carries the stale reading
-git grep -In  'zero dd logic'                  # 0 — anywhere, any file type
-git grep -Il  'dd status' -- '*.md' | wc -l    # 19 files discuss the ledger; none assert a stale value
+# Expect ZERO hits for each. A non-zero hit means the stale reading propagated
+# beyond the one file, and is real — investigate rather than delete.
+git grep -Iln 'ported: \[\]' -- '*.md'
+git grep -In  'zero dd logic'
+# Files discussing the ledger: expect several, and expect NONE of them to assert
+# a value. A file that states what the ledger currently says is the defect.
+git grep -Il  'dd status' -- '*.md'
 ```
 
 The stale claim **did not propagate** — it was confined to the one file. Two non-markdown
@@ -206,28 +231,32 @@ substitute for the ruling.** Recorded as `lg-0005` (`df287bb`), computed by koal
 basis `d08f4942` and independently re-verified by the o-prime at upstream HEAD
 `ab1e7e75`; the census is stable across that drift.
 
-- Non-test consumers of `services/dd` outside `services/dd` are **16 files**. Twelve of
-  them (`acts/dd`) LEAVE with the port, so the surviving harness-to-dd dependency is
-  exactly **FOUR files**: `acts/flow.ts`, `acts/plan/index.ts`, `acts/plan/pr-body.ts`,
-  `acts/plan/fence.ts`.
-- **None of it is CLI-shaped.** `MemoizingDocLoader` and `ConventionSchemaResolver` are
+- Non-test consumers of `services/dd` outside `services/dd` **were 16 files at
+  `ab1e7e75`**. Twelve of them (`acts/dd`) LEAVE with the port, so the surviving
+  harness-to-dd dependency was exactly **FOUR files**: `acts/flow.ts`,
+  `acts/plan/index.ts`, `acts/plan/pr-body.ts`, `acts/plan/fence.ts`. **Re-run the
+  commands below before you rely on the totals** — upstream moves, and the file *names*
+  matter more than the count.
+- **None of it is CLI-shaped**, and this part is structural rather than a reading, so it
+  does not decay with the count. `MemoizingDocLoader` and `ConventionSchemaResolver` are
   injected objects — a process boundary destroys the memoization they exist for.
-  `validateWalk` / `traverseCorpus` / `resolveMapSeed` return in-memory graphs. And
-  **eight of the imported symbols are TYPES** (`DdDoc`, `DdIssue`, `SchemaIssue`,
+  `validateWalk` / `traverseCorpus` / `resolveMapSeed` return in-memory graphs. And a
+  set of the imported symbols are **TYPES** (`DdDoc`, `DdIssue`, `SchemaIssue`,
   `PlanDocument`, `ReadyReading`, `PlanEdge`, `PlanIndex`, `PlanItem`), which **cannot
-  cross a CLI boundary at all**.
+  cross a CLI boundary at all** — a type import has no runtime representation to shell
+  out to. That argument holds whatever the census totals do next.
 - That makes library consumption **forced, not preferred**.
-- `escapeCell` and `headingSlug` are imported only by `acts/plan/pr-body.ts` (5 call
-  sites, all table-cell and anchor composition), so a narrow public util subpath would
+- `escapeCell` and `headingSlug` were imported only by `acts/plan/pr-body.ts` (all
+  call sites table-cell and anchor composition), so a narrow public util subpath would
   satisfy harness without dragging the whole renderer API under semver.
 
-**Every figure above was re-derived here, not carried on the supplier's headline.**
-Measured independently at upstream `ab1e7e75`:
+**Every figure above was re-derived here, not carried on the supplier's headline**, and
+each is stamped to upstream `ab1e7e75` rather than stated as current:
 
 ```bash
-# 16 consumers, of which 12 under acts/dd leave with the port -> 4 survive
+# consumers; those under acts/dd leave with the port, the rest survive
 grep -rlE "from '.*services/dd" harness/cli/src --include=*.ts | grep -v '^harness/cli/src/services/dd/'
-# 5 call sites, and pr-body.ts is the only importer outside services/dd
+# pr-body.ts should be the only importer outside services/dd
 grep -c -E '\b(escapeCell|headingSlug)\(' harness/cli/src/acts/plan/pr-body.ts
 grep -rl 'escapeCell\|headingSlug' harness/cli/src --include=*.ts | grep -v services/dd
 ```
@@ -310,10 +339,12 @@ upstream write path plus upstream `dd build --check`.
 banner question is settled by construction. Until then: local bin writes, harness
 validates.
 
-## 5. The 11 stay-behind tests
+## 5. The stay-behind tests
 
-Eleven of the 60 upstream dd test files did **not** port. They are tests of *consumers
-of* dd, not tests *of* dd: they reach into `src/services/flow/**`, `src/services/builder/**`
+**Eleven upstream dd test files did NOT port**, as determined by the import-direction
+audit committed **before** any file moved (basis `d08f4942`, upstream `main`). The list
+below is the authority; the count is its length. They are tests of *consumers of* dd,
+not tests *of* dd: they reach into `src/services/flow/**`, `src/services/builder/**`
 or `src/services/telemetry/**`, which are harness-side internals dd will never own.
 
 ```
@@ -332,9 +363,11 @@ test/services/flow/flow-dd-untrusted-reading.test.ts
 
 **These must keep running in harness-engineering after you strip the old code** — they
 are the tests that will tell you the swap did not break the flow↔dd seam. The full
-import-direction audit of all 60, committed **before** any file moved, is at
-`docs/plans/001-dd-extraction/assets/test-audit.md`. Note the audit corrected the plan's
-own prediction: the stay set is 11, not the "~9" the plan estimated.
+import-direction audit, committed **before** any file moved, is at
+`docs/plans/001-dd-extraction/assets/test-audit.md` — a stamped past-tense record, so
+re-run the audit rather than trusting its totals if upstream has moved since. Note it
+corrected the plan's own prediction: the stay set came out at eleven, not the "~9" the
+plan estimated.
 
 ## 6. Proof you inherit
 

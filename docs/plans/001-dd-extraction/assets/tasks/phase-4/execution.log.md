@@ -386,3 +386,42 @@ Adding `check-handover` to `just checks` without adding it to `ci.yml` reddened
 `test/ci-parity.test.ts`, naming both the missing gate and the order mismatch — the same
 guard catching **me**, after catching the o-prime at `0fafbf2` and me at `045f958`. Three
 real omissions, none of them rehearsed mutations.
+
+### Housekeeping for whoever runs tk-0006 — telemetry is a SEPARATE remote push
+
+Recorded so it does not surprise the person at the gate. Not a blocker, and **not
+authorized here**. Written as a condition rather than a reading, because the segment
+count moves with every session:
+
+```bash
+harness doctor --json    # look for the telemetry-unpushed layer
+```
+
+If it reports unpushed telemetry segments, those flush to `refs/harness-telemetry/*` —
+a **non-hermetic push to a different ref namespace**, entirely separate from `tk-0006`'s
+push of `main`. Pushing `main` does not flush them, and flushing them is not part of
+`tk-0006`. Do not run `harness telemetry sync` to "tidy up" before or after the push:
+publishing from this repo is the maintainer's call, which is exactly why no `post-commit`
+flush hook is installed here (the second non-ok layer `harness doctor` reports, and the
+expected one).
+
+Confirmed present at the time of writing by running the command above; the count itself
+is deliberately not recorded, since it would be wrong by the time the gate opens.
+
+### The sweep test, corrected mid-round
+
+The PM sharpened the standard while this round was in flight, and it changed the sweep:
+**the test is not "is this figure wrong", it is "could this figure become wrong without
+anyone touching it".** Removing only the figures a reviewer has already proved stale
+leaves every figure that is accurate today and rots next week — which is how the 46 got
+in, since it was correct when written, as every instance in this class has been.
+
+Applied to the whole packet on the second pass, each figure landing in one of three
+places: a **contract or condition** if it is a rule, a **past-tense claim stamped to a
+SHA** if it is a record, or **derived** if it must read as current. The bare
+present-tense number is deleted in every case. That reached figures nothing had flagged:
+the upstream consumer census (stamped to `ab1e7e75` and re-phrased in the past tense,
+with the structural type-boundary argument separated out because it does *not* decay
+with the totals), the stay-behind test list (the list is the authority, its length is
+the count), the tarball size and file count, and the propagation-sweep block, which now
+states the **expected result** of each grep instead of the numbers seen once.
