@@ -35,7 +35,7 @@ Phase 2 — CLI acts + plumbing parity. Bring the stub to upstream plumbing pari
 
 | id | title | domain | phase | state | note | receipt | done | success | notes | satisfies |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| tk-0001 | Plumbing parity: port output/style.ts + adapters env/exec/fs/hash/process/loader (jiti-loader) from upstream with path adjustments only; add jiti 2.7.0 to dependencies (runtime deps land at exactly commander+jiti) | — | ph-8bda | [ ] unchecked | — | — | — | — | — | [ac-0004](../../../plan.dd.md#acceptance-criteria) |
+| tk-0001 | Plumbing parity: port output/style.ts + adapters env/exec/fs/hash/process/loader (jiti-loader) from upstream with path adjustments only; add jiti 2.7.0 to dependencies (runtime deps land at exactly commander+jiti) | — | ph-8bda | [x] checked | — | tsc exit 0; deps exactly {commander,jiti}; npm ls --omit=dev shows only those two; biome clean; 352 tests green | — | — | — | [ac-0004](../../../plan.dd.md#acceptance-criteria) |
 | tk-0002 | Acts infrastructure + first verb slice: port acts/dd/shared.ts + schema-fs.ts, then validate, schema, docs acts rewired to this repo output family; register each verb in src/app.ts ONLY in the commit where it works; envelope tests extended per verb | — | ph-8bda | [ ] unchecked | — | — | — | — | — | [ac-0003](../../../plan.dd.md#acceptance-criteria), [ac-0004](../../../plan.dd.md#acceptance-criteria) |
 | tk-0003 | Second verb slice: port address, link, links, graph acts; register + envelope tests per verb | — | ph-8bda | [ ] unchecked | — | — | — | — | — | [ac-0003](../../../plan.dd.md#acceptance-criteria), [ac-0004](../../../plan.dd.md#acceptance-criteria) |
 | tk-0004 | Third verb slice: port build, write, doctor acts (jiti custom-type loading path live); register + envelope tests per verb; dd status flips to ok/exit 0 ported[10] in the commit landing the last verb | — | ph-8bda | [ ] unchecked | — | — | — | — | — | [ac-0003](../../../plan.dd.md#acceptance-criteria), [ac-0004](../../../plan.dd.md#acceptance-criteria) |
@@ -51,7 +51,7 @@ Phase 2 — CLI acts + plumbing parity. Bring the stub to upstream plumbing pari
 
 | id | assertion | state | pressure | note |
 | --- | --- | --- | --- | --- |
-| dw-0001 | style.ts + all six adapter families present under src/; tsc clean; package.json dependencies == {commander, jiti} exactly; npm ls --omit=dev shows no other runtime dep | [ ] unchecked | not-applicable | instrument: tsc exit; jq over package.json; npm ls |
+| dw-0001 | style.ts + all six adapter families present under src/; tsc clean; package.json dependencies == {commander, jiti} exactly; npm ls --omit=dev shows no other runtime dep | [x] checked | not-applicable | instrument: tsc exit; jq over package.json; npm ls |
 
 ### tk-0002
 

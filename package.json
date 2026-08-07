@@ -83,7 +83,8 @@
     "fix": "biome check --write ."
   },
   "dependencies": {
-    "commander": "^15.0.0"
+    "commander": "^15.0.0",
+    "jiti": "2.7.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.0",

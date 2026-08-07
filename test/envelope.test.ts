@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Clock } from '../src/adapters/clock/clock-port.js';
+import { FakeClock } from '../src/adapters/clock/fake-clock.js';
 import {
   type Envelope,
   formatDegraded,
@@ -9,7 +9,7 @@ import {
 } from '../src/output/envelope.js';
 import { exitCodeFor } from '../src/output/exit.js';
 
-const clock: Clock = { nowIso: () => '2026-01-01T00:00:00.000Z' };
+const clock = new FakeClock('2026-01-01T00:00:00.000Z');
 
 describe('envelope constructors', () => {
   it('formatOk carries data and omits next_action by default', () => {

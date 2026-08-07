@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { buildStatusEnvelope, PLANNED_VERBS } from '../src/acts/status.js';
-import type { Clock } from '../src/adapters/clock/clock-port.js';
+import { FakeClock } from '../src/adapters/clock/fake-clock.js';
 
-const deps = { clock: { nowIso: () => '2026-01-01T00:00:00.000Z' } as Clock };
+const deps = { clock: new FakeClock('2026-01-01T00:00:00.000Z') };
 
 describe('buildStatusEnvelope', () => {
   it('is unconfigured while dd verbs are still unported', () => {
