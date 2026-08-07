@@ -113,6 +113,24 @@ re-checked for adjacency contradictions.
 durable uncontested file that its owner drains on their own schedule — not into the loop.
 Route by *what the receiver is doing*, not by *how good the finding is*.
 
+**A SECOND GENERATOR FOR THE SAME DEFECT, found when this row was itself dropped from a
+list.** The PM enumerated the drain order as P-2/P-1/P-3/P-5/P-6 — omitting P-4, the row
+that had *caused* the renumber an hour earlier. Not carelessness: **it enumerated from its
+own contributions, not from the file.** P-1 and P-3 it had discussed; P-5 and P-6 it had
+just written; **P-4 was the o-prime's**, acknowledged but not authored, and it fell out of
+a list built from memory of participation.
+
+> **A list built from what you contributed is not a list of what exists.**
+
+Fix as everywhere else: **derive the enumeration from the file, never from recall of
+involvement.** The PM had the file open and did not read it. This was its **second**
+false enumeration from recall that day — the first was the ordinal sweep (P-5) — both
+settleable by one command.
+
+**Refusing the benign reading is what caught it.** A missing ordinal in a list, offered on
+the day four ordinals went missing from a sweep, is not something to assume innocent from
+anyone.
+
 **Counterweight, recorded because it is the PM's judgment and not the o-prime's:** *"None
 of the four cost me anything I would want back, and two changed what shipped. The cost you
 are naming is real but it was worth paying, and I would rather have the finding late than
