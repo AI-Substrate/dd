@@ -1,0 +1,23 @@
+docs/plans/001-dd-extraction/assets/test-audit.md
+  s_743eafe62757dd::t_541551a1426ae8 1-139
+docs/plans/001-dd-extraction/assets/tasks/phase-1/tasks.dd.json
+  s_743eafe62757dd::t_322d5b843c8c17 44,104
+docs/plans/001-dd-extraction/assets/tasks/phase-1/tasks.dd.md
+  s_743eafe62757dd::t_8ada84b74eaa22 40,65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "ec62a7ec6f3b8ee01273e3d6b4458e5f48854816",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
