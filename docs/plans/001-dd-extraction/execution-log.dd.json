@@ -26,6 +26,13 @@
           "summary": "CORRECTION to lg-0001 context: phase-1 ledger had a latent structural defect",
           "text": "PLANNED_VERBS named 'write' but the writer family registers get/set/add/rm — name-matching could NEVER reach ported[10], so the ledger's honesty guarantee (cannot claim finished) was structurally sound but its success condition was unreachable. Found by the phase-2 coder, fixed via PROVING_COMMANDS map (status.ts:39-50, write -> all four sub-commands under .every()). ac-0001's own proof (tsc + import guard) is untouched; this corrects the surrounding phase-1 narrative that treated the ledger as complete-able as scaffolded. Append-only correction; lg-0001 stands as written.",
           "state": "checked"
+        },
+        {
+          "id": "lg-0003",
+          "at": "2026-08-07T05:45:44Z",
+          "summary": "Phase 2 complete + reviewed APPROVE, zero findings",
+          "text": "7 commits fd651ff..1e4633b, 83 files +11323/-70. just checks exit 0 (642 tests/55 files). dd status ok/exit 0/ported[10] — verified independently by PM and reviewer; postfix --json works on every verb. Verdict survived the PM red-flag test: three mutations with distinct RED signatures, 7-commit ledger table matched an independent rebuild. Structural finds this phase: top-level verb registration (binary IS dd), PROVING_COMMANDS map closing the lg-0002 ledger defect, background-* exec adapters dropped as dead weight, cross-slice build-module/verb split preserving ledger honesty. Reviewer pij-blind-deer, dispatch dlg-0002.",
+          "state": "checked"
         }
       ]
     }

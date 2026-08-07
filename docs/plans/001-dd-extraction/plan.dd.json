@@ -68,26 +68,30 @@
         {
           "id": "ac-0003",
           "claim": "Port ledger green: dd status exits 0 with ported[10] / remaining[0], and each verb registered only in the commit that made it actually work (ledger honesty preserved through history)",
-          "state": "unchecked",
-          "pressure": "not-applicable"
+          "state": "checked",
+          "pressure": "not-applicable",
+          "proven_by": "execution-log.dd.json#entries/lg-0003"
         },
         {
           "id": "ac-0004",
           "claim": "Envelope contract: every ported verb exits through exitWithEnvelope; exit map 0 ok/degraded, 2 unconfigured, 1 error holds — existing envelope tests extended to cover every ported verb",
-          "state": "unchecked",
-          "pressure": "not-applicable"
+          "state": "checked",
+          "pressure": "not-applicable",
+          "proven_by": "execution-log.dd.json#entries/lg-0003"
         },
         {
           "id": "ac-0005",
           "claim": "--json accepted postfix on every verb (dd status --json exits per its status, not E002) AND program-level prefix still works; AGENTS.md example corrected",
-          "state": "unchecked",
-          "pressure": "not-applicable"
+          "state": "checked",
+          "pressure": "not-applicable",
+          "proven_by": "execution-log.dd.json#entries/lg-0003"
         },
         {
           "id": "ac-0006",
           "claim": "Test parity: the audited port set (~51 of 60, classified by import direction before any move) runs green under just checks; zero flow-dd consumer tests ported; the audit table is committed",
-          "state": "unchecked",
-          "pressure": "not-applicable"
+          "state": "checked",
+          "pressure": "not-applicable",
+          "proven_by": "execution-log.dd.json#entries/lg-0003"
         },
         {
           "id": "ac-0007",
@@ -129,7 +133,7 @@
           "id": "ph-8bda",
           "title": "CLI acts + plumbing parity",
           "brief": "Bring the stub to plumbing parity (output/style.ts + adapters env/exec/fs/hash/process/loader; add jiti dep), then land all 13 acts on the envelope seam and register the ten verbs — dd status flips green verb-by-verb, honestly. Fix --json to postfix-tolerant and correct AGENTS.md. Extend envelope tests over every ported verb. Logical group: THE CLI — everything that is dd-the-binary.",
-          "state": "unchecked",
+          "state": "checked",
           "depends_on": [
             "ph-4c9d"
           ],
