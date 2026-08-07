@@ -40,6 +40,19 @@ contract. **Zero dd logic has moved.** Measured: `dd status` reports `ported: []
   the port is in flight. **Any stream porting a verb inherits a moving honesty gate.**
 - Conventional commits are load-bearing: release-please reads them to cut versions and the
   CHANGELOG.
+- **Prefer the fix that does not depend on anyone being diligent.** Named by the PM at the
+  end of plan 001, as the pattern behind every governance decision that stuck. Twice a
+  sincere, competent agent volunteered the disciplined version of a fix — *"ask me every
+  time"*, *"I'll carry this rule"* — and twice the mechanical version was chosen instead: a
+  constraints file citable by number, and a rule binding both ends of a channel. **Turning a
+  mechanical rule into someone's good intentions weakens it, even when the volunteer is
+  sincere and especially when they are reliable** — reliability is exactly what makes the
+  dependency invisible until it fails. When you have a choice, encode the version that holds
+  when the diligent party is absent, wrong, compacted, or replaced. Worked instances in this
+  repo: the schema refusing an `na` state without a written reason; `government/standing-constraints.md`
+  removing the o-prime from the recall path; a `.gitignore` rule instead of remembering not
+  to stage delegate worktrees; guardrail 12 making authority a SHA rather than a habit of
+  citing carefully.
 
 ## Harness surface
 
