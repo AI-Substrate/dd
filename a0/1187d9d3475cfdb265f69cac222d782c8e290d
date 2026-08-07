@@ -1,0 +1,43 @@
+test/docs-surface.test.ts
+  s_743eafe62757dd::t_518f272b24887e 448-451,512-515
+  s_743eafe62757dd::t_f0b3cc2fb3777c 477-484,488,490
+  s_743eafe62757dd::t_f3f21258e3ecef 485
+  s_743eafe62757dd::t_2f6d66233d158d 430-447,452-476,486-487,489,491-511,516-517
+docs/plans/001-dd-extraction/assets/handover-packet.md
+  s_743eafe62757dd::t_33b4a9b9fc42cc 136
+  s_743eafe62757dd::t_fc5fdab2d12efa 341,344-349,351-355
+  s_743eafe62757dd::t_10b4f07b05a1da 540-546
+  s_743eafe62757dd::t_446ca1adc655c0 87-107
+  s_743eafe62757dd::t_b89aac9b82f161 490-498
+  s_743eafe62757dd::t_b5aaeacb3b2ec3 459-463
+  s_743eafe62757dd::t_7bb5c6e2da4fa2 468-469,611-616,619-620,622-631
+  s_743eafe62757dd::t_12b74cc870e3bb 450,452
+scripts/gen-handover-embeds.mjs
+  s_743eafe62757dd::t_b3a194e168ed17 73
+  s_743eafe62757dd::t_1089f0d031cd24 42-60,79-87,112-118
+  s_743eafe62757dd::t_c2c50959e030ae 1-41,61-72,74-78,88-111,119-159
+justfile
+  s_743eafe62757dd::t_e77f983954dd44 50-62,93
+docs/plans/001-dd-extraction/assets/tasks/phase-4/execution.log.md
+  s_743eafe62757dd::t_2aa8b7723dc65b 313-388
+.github/workflows/ci.yml
+  s_743eafe62757dd::t_e2a2be2b0a5e6d 82-84
+docs/backlog.md
+  s_743eafe62757dd::t_8759c9d5252dc3 114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "a01187d9d3475cfdb265f69cac222d782c8e290d",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
