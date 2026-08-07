@@ -67,6 +67,18 @@ step — pointing harness at this package and deleting the old code — is koala
      same message.** Both times this nearly landed in plan 001, the person doing it had
      personally argued the opposing principle one cycle earlier.
 
+     **AND THE SOLO VARIANT, WHICH IS THE COMMON ONE:** a gate can be defeated with **no
+     second party at all** — you simply do not read it. The o-prime ran `just checks &&
+     echo GREEN`, the echo did not print because the gate exited non-zero, and it read the
+     line beside it instead of the exit code, then committed and pushed. **The gate was
+     working perfectly and said nothing, because nobody looked.** The supervisor version
+     needs someone to supply the note; this one needs only inattention, which is why it is
+     the more common failure in the wild. It is also why the standing form of every claim
+     in this repo is **run the check, do not cite the verdict** — and why CI is the layer
+     that catches this one: the red is in the public record at `ee1ccb2`, caught by the
+     twin-step requirement that was imposed for gate-parity consistency and turned out to
+     earn its keep as a **backstop against attention**.
+
   3. **A contradiction created by MOVING text, not writing it.** Two statements, each
      accurate where it was written, made to contradict by being placed adjacent — e.g. two
      paragraphs counting the same incidents differently after a reorder. Nothing decayed
