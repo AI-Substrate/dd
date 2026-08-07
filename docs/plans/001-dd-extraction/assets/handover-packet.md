@@ -389,6 +389,26 @@ unsatisfied. Running the guard gave the right answer in one call — CI invokes 
 *script*, not the recipe name. Same principle from the other end: **the derived thing is
 the authority; the read is not.** Reach for the command before the grep.
 
+**And the grep has its own blind spot, which bit three separate times in one day.** It is
+**line-based, and prose REFLOWS.** A phrase that wraps across a newline is invisible to
+`grep 'the other two'`, so the sweep returns clean while the document still holds the
+defect — and **a green sweep reads as an all-clear**, which is worse than a broken
+assertion, because nobody re-checks a clean sweep. It cost a false all-clear on this very
+packet, twice, and the third time it bit the tool being used to check a claim *about*
+reflow blindness.
+
+Flattening whitespace before matching is the fix, and on its own it is **not enough**:
+
+> **Flattening is not enough — you must PRESERVE the boundary you are flattening.**
+
+Joining lines with an **empty** separator glues `…the other` to `two…` and destroys the one
+occurrence you are hunting: a **false negative exactly where the wrapped phrase lives**.
+That is not hypothetical — it produced a count of 7 where the answer is 8, and the missing
+one was the wrapped occurrence. The symmetric hazard is the obvious over-correction:
+flattening **across** a boundary a reader actually sees — two paragraphs, two table cells —
+matches a phrase that exists nowhere on the page. **Join on the separator the source had,
+and flatten only within the unit you mean.**
+
 **The sweep result itself**, re-derived here rather than relayed. Written as a
 **condition you can re-run**, not as the numbers seen at `0fafbf2`:
 

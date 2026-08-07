@@ -810,3 +810,73 @@ carries the same force without the closure claim.
 lines are captured stderr from `dd-docs-drift.test.ts` exercising both sides of its own gate,
 confirmed by exit code rather than assumed. `tk-0002` and `tk-0006` untouched and
 uninspected.
+
+### Correction: 8 OCCURRENCES across 6 UNIQUE FORMS — the receipt conflated two counts
+
+**The entry above is wrong and stays there.** Its table says *"R2 and R3 are the same string
+in two places, which is why the phrasings number six and the restorations seven."* The
+string appears in **three** removed locations, not two. Derived, and the derivation is the
+finding:
+
+```bash
+python3 - <<'PY'
+import subprocess, re
+d = subprocess.run(['git','show','313feee','--',
+      'docs/plans/001-dd-extraction/assets/handover-packet.md'],
+      capture_output=True, text=True).stdout
+removed = [l[1:] for l in d.split('\n') if l.startswith('-') and not l.startswith('---')]
+for label, joiner in (('joined with ""', ''), ('joined with newline', '\n')):
+    text = re.sub(r'\s+', ' ', joiner.join(removed))
+    print(label, sum(text.count(f) for f in [
+        'the other two','the only one of the three','the third row below',
+        'There were three incidents','There is a second failure','Two independent instances']))
+PY
+# joined with ""       7   <- WRONG
+# joined with newline  8   <- correct
+```
+
+| unique form | removed occurrences |
+|---|---|
+| *"the other two"* | **3** — axis prose, the non-flattening note, and the **wrapped footnote** |
+| *"the only one of the three"* | 1 |
+| *"the third row below"* | 1 |
+| *"There were three incidents"* | 1 |
+| *"There is a second failure"* | 1 |
+| *"Two independent instances"* | 1 |
+| **total** | **8 occurrences across 6 unique forms** |
+
+**Two different counts, and the receipt used one label for both.** Unique FORMS is what the
+guard pins (6 strings). Total OCCURRENCES is what was edited (8). Neither is wrong; naming
+them the same thing is. **Say both, and label them.**
+
+**The code was already correct** — blind-deer restored the omitted footnote occurrence and
+the guard reds, so the pins are complete. Only the receipt was wrong.
+
+**THE WRAPPED OCCURRENCE ESCAPED AGAIN — the third time today, and this time it escaped a
+check being run to verify a claim about reflow blindness.** The PM's first derivation joined
+the removed lines with an **empty** separator, so `…the other` at one line-end and `two…` at
+the next never met; it returned 7 and would have contradicted the reviewer. Joining on the
+newline before flattening returns 8. I reproduced both above rather than accepting either
+number.
+
+The sharper rule, now carried in the packet next to the grep-authority lesson:
+
+> **Flattening is not enough — you must PRESERVE the boundary you are flattening.**
+
+Dropping the boundary creates a **false negative exactly where the wrapped phrase lives**,
+which is the case the flattening was for. The symmetric hazard is the obvious
+over-correction: flattening **across** a boundary a reader sees — two paragraphs, two table
+cells — matches a phrase that exists nowhere on the page. Join on the separator the source
+had; flatten only within the unit you mean. `test/docs-surface.test.ts` already does this
+correctly by construction: it slices by section **first**, then flattens **within** the
+slice.
+
+**Running tally of this one blind spot, named not counted:** my original line-based ordinal
+sweep missed the wrapped occurrence; the PM's line-based sweep shipped a false all-clear on
+the same phrase; the PM's boundary-dropping join missed it a third time while checking a
+claim about it. **Every miss was a clean result from a tool that could not see the case.**
+That is the argument for the packet's *green sweep reads as an all-clear* line: a broken
+assertion announces itself, and a blind sweep does not.
+
+**Gates:** `just checks` green — 713 tests / 59 files, exit 0. `tk-0002` and `tk-0006`
+untouched and uninspected.
