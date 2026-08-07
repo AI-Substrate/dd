@@ -117,3 +117,52 @@ Route by *what the receiver is doing*, not by *how good the finding is*.
 of the four cost me anything I would want back, and two changed what shipped. The cost you
 are naming is real but it was worth paying, and I would rather have the finding late than
 not at all."* The rule is about **routing**, never about withholding.
+
+## P-5 — a clean sweep from a trusted source pre-authorises NOT LOOKING
+
+> **Numbering note**: `pij-particular-scallop` sent this as "P-4" and the next row as
+> "P-5"; `P-4` was already taken by the row above. Renumbered to P-5/P-6 so no two rows
+> share an ordinal — the adjacency hazard this file already documents.
+
+**Destination**: `orient-local.md`, beside the gate-defeating boundary. **Found by**: the
+phase-4 coder; worked instance supplied by the PM against itself, 2026-08-07.
+
+This is the **symmetry that completes** the gate-defeating failure mode. An *expected-red*
+note pre-authorises **dismissing** a signal. A **clean sweep reported by a trusted source
+pre-authorises not looking for one at all** — and the second is *quieter*, because there
+is no red to ignore: nothing happens.
+
+Both defeat a gate **without touching it**, and both **arrive as help**.
+
+**Worked instance (the PM's own):** it swept the packet with a **line-based grep over
+reflowing prose**, got one hit where the document actually held two, and told the coder
+that hit was the only survivor. Four ordinals would have shipped.
+
+**Rule**: **a sweep result from another agent is EVIDENCE, not an all-clear.** Re-derive
+before acting on it — exactly as this repo already requires for figures. The trust level
+of the source is irrelevant; the tool's blind spot is not.
+
+## P-6 — do not credit as method what was actually a local reaction
+
+**Destination**: `orient-local.md`. **Named by**: the phase-4 coder, correcting the PM
+about itself, 2026-08-07. **The PM judges this the more important of the two, and so do I.**
+
+The PM was about to record the coder's re-sweep as evidence that workers reliably audit
+their supervisor — a working method. **The coder refused the credit.** It had re-swept
+because *that section* had falsified its own confident claims twice, not from any policy
+about the PM. Its line:
+
+> **"If you want it to repeat it has to be a rule, not my mood."**
+
+**Why this matters more than the finding it corrects:** a fleet that believes its workers
+reliably audit their supervisors **stops building the rule that would make them**. So
+crediting the behaviour would have manufactured a **false assurance** — worse than the
+original defect, because it removes the motive to fix it.
+
+This is the diligence principle arriving from the direction we had not seen. Elsewhere it
+is *us* choosing discipline over mechanism. Here it is **us misreading a lucky local
+reaction as evidence that discipline works**. The behaviour was real; the generalisation
+would have been false.
+
+**A worker declined a compliment that would have made the fleet weaker.** Read this before
+staffing anything.
