@@ -23,7 +23,7 @@
           "id": "tk-0001",
           "title": "Read the two upstream architecture tests (dd-core-isolation, dd-plan-semantics-frozen) in harness-engineering (READ-ONLY) and PORT BOTH as this repo guards: dd-core-isolation adapted to src/ layout; dd-plan-semantics-frozen re-pinned (digest of the PORTED plan/semantics source, rationale preserved, note that OQ-2 may later re-rule it). Record both boundary contracts in the context brief.",
           "phase": "ph-4c9d",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0001"
           ]
@@ -32,7 +32,7 @@
           "id": "tk-0002",
           "title": "Record the upstream basis SHA (git rev-parse in harness-engineering, read-only) into the context brief + execution log; copy harness/cli/src/services/dd/** (45 files, subdirs core/docs/links/mutate/plan/render/schema) into src/ preserving relative .js import specifiers; add src/shared/posix-path.ts shim (verbatim copy of services/shared/posix-path.ts)",
           "phase": "ph-4c9d",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0001"
           ]
@@ -83,7 +83,7 @@
           {
             "id": "dw-0001",
             "assertion": "BOTH ported guards exist in test/: the isolation guard FAILS on a synthetic non-allowed external import and PASSES clean; the frozen-semantics guard pins the ported plan/semantics source digest and FAILS on any byte change; both boundary contracts recorded in the context brief",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: vitest run of the guard, red-then-green demonstrated in the execution log"
           }
@@ -92,7 +92,7 @@
           {
             "id": "dw-0002",
             "assertion": "All 45 upstream SDK files + the posix-path shim are present under src/; tsc -p tsconfig.json exits 0; the recorded basis SHA appears in the execution log",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: file count vs upstream find; tsc exit code"
           }

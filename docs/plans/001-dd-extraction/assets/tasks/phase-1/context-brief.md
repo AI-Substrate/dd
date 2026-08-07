@@ -72,6 +72,51 @@ and each assertion via `#done_when/tk-XXXX/dw-XXXX/state`. The `.dd.md` sibling 
 GENERATED — editing it is drift. Gate rehearsal before leaving the phase:
 `harness plan validate docs/plans/001-dd-extraction/plan.dd.json --address "docs/plans/001-dd-extraction/assets/tasks/phase-1/tasks.dd.json#tasks"`.
 
+## Boundary contracts (tk-0001 — recorded from the upstream architecture tests)
+
+Both upstream guards were read at basis SHA `d08f4942d28b7e5181d5845a56a63b0cbb1d3402`
+and **both are ported** into `test/architecture/`.
+
+### Contract 1 — dd-core isolation (`test/architecture/dd-core-isolation.test.ts`)
+
+`src/core/**` must be transitively free of `output/`, `acts/`, `adapters/`, **and node
+builtins**. Purity is the contract: core is data-in/data-out, so it can be consumed as a
+library without dragging the CLI shell or a filesystem with it. The guard walks import
+specifiers from every core file, follows relative edges, and reports the full trace.
+
+Adaptations made for this repo (upstream layout was `src/services/dd/**`):
+
+| Upstream | Here | Why |
+|---|---|---|
+| `CORE = src/services/dd/core` | `CORE = src/core` | the SDK IS this repo |
+| test 2: `.dependency-cruiser.cjs` `reachable: true` assertion | **not ported** — replaced by the SDK-tree external-import gate | no dependency-cruiser in this repo; the transitive walk is the whole mechanism here |
+| — | NEW: `externalImports()` over `src/{core,docs,links,mutate,plan,render,schema,shared}` | plan 001 ac-0001 — every SDK import must be a `node:` builtin or a relative path **inside** the SDK tree; this is the mechanical KF-1 defect detector |
+
+Each detector carries a synthetic red case that proves it fires, alongside the production
+assertion that proves the tree is clean.
+
+### Contract 2 — dd/plan semantics frozen (`test/architecture/dd-plan-semantics-frozen.test.ts`)
+
+`plan/semantics.ts` is pinned by SHA-256 plus two rationale assertions. The pin does not
+forbid the edit — it forbids the **silent** edit. The decision protected: `CLAIMING_RELS`
+excludes `pressure` deliberately, because a backpressure row has no state to contradict
+and gates nothing.
+
+**Re-pinned outcome**: the ported digest is
+`3856153824f7fd3448aaf285197054a2f4a2524ed80c0fffe6dc9a3f8526f150` — **identical to the
+upstream pin**, which is itself the proof the copy is byte-verbatim. An OQ-2 caveat is
+written into the guard: a ruling that re-homes `plan/` may legitimately re-rule this guard.
+
+**KF-5 check — no conflict found.** Neither upstream guard contradicts this plan. The
+isolation guard's `output`/`acts`/`adapters` classification stays load-bearing because
+this repo's CLI stub owns exactly those three directories.
+
 ## Discoveries & learnings
 
-_Populated during implementation (execution.log.md)._
+| Tag | Discovery |
+|---|---|
+| Noteworthy | **48 upstream files vs the plan's "45"** — `find services/dd -type f` counts 48; 45 are `.ts` and 3 are docs assets (`docs/content/*.md` ×2, `docs/dd-docs-manifest.json`). The plan's 45 is the `.ts` count. Recorded, **not** resolved by changing scope; all 48 were copied. `docs/docs-content.ts` inlines the markdown at build time, so no runtime asset copy into `dist/` is needed. |
+| Noteworthy | **KF-1 measured, stronger than stated**: `services/dd` had exactly one external import (`shared/posix-path`, 8 call sites) **and zero bare/npm specifiers of any kind**. The port introduced no new external import; the ac-0001 gate now holds that line mechanically. |
+| Noteworthy | The copy needed one mechanical adjustment: the tree rose one directory (`services/dd/x` → `x`), so the 8 shim imports moved `../../shared/` → `../shared/`. No behavioural edit; every intra-dd relative `.js` specifier is untouched. |
+| Noteworthy | Upstream isolation test 2 asserts against `.dependency-cruiser.cjs`, which this repo does not have. Dropped deliberately and replaced with the ac-0001 SDK-tree gate (see Contract 1). |
+
