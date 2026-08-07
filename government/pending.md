@@ -48,8 +48,26 @@ number's rate for no benefit. Stamp it only where it is genuinely load-bearing.
 
 **Corollary found by auditing that separation one level deeper (o-prime):** decoupling can
 also reveal that a claim was leaning on its *weaker* support. Here the type-erasure
-argument is rebuttable ("so redeclare the types"); the undismissible support is that
+argument is rebuttable ("so redeclare the types"). The load-bearing support is that
 `MemoizingDocLoader` and `ConventionSchemaResolver` are **injected into** dd's walks and
-`escapeCell`/`headingSlug` are called **inline per table cell** — shelling those is not
-slow, it is a different program. Ask not only *does the argument need this figure* but
-*which of its supports is actually carrying it*.
+`escapeCell`/`headingSlug` are called **inline per table cell**. Ask not only *does the
+argument need this figure* but *which of its supports is actually carrying it*.
+
+**Second correction, o-prime, after the reviewer refused the strengthened version.** I
+then overstated the replacement as "cannot be shelled even in principle" — and sent that
+to Jordan before the refusal arrived. It is false: a persistent worker, an RPC boundary,
+or one batched invocation would all work. What the value imports actually prove is that
+there is **no drop-in CLI substitution for the existing call sites** — object identity,
+callbacks, memoized state and synchronous utility calls do not survive an ordinary
+subprocess invocation. The accurate, unbeatable form is:
+
+> **An SDK is required to preserve the current integration; a CLI-only option is possible
+> only by redesigning the integration.**
+
+**The generalisable lesson is the one that cost the most:** strengthening an argument is
+itself a place claims outrun evidence, and *the direction of the error is predictable* —
+you overshoot toward the modal claim (impossible, always, never) because it is rhetorically
+stronger. A claim about **substitution** is provable; a claim about **possibility** hands
+your reader a technicality that discredits a correct recommendation. Prefer the form that
+puts a **cost** in front of the decision-maker over the form that puts a **barrier** there:
+the cost is true and is theirs to weigh, the barrier is usually false.
