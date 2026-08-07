@@ -93,6 +93,16 @@
           "blocked_on": "Jordan — offered several times across plan 001, never ruled",
           "source": "o-prime standing offer, unanswered",
           "note": "One seeded-empty file (L0, TODO fields). Turns a permanently-uninformative boot verdict into a real one."
+        },
+        {
+          "id": "wl-0009",
+          "title": "Calculated columns and rows — derived tallies, recomputed on edit",
+          "why": "A total typed into a table is a claim that goes stale the moment any row it summarises changes, and nothing detects it — precisely the class plan 001 spent four phases cataloguing: a figure that was true when written. dd already renders .dd.md deterministically from .dd.json, so a tally computed at build time CANNOT rot: it is derived, never asserted, and `dd build --check` already fails on drift. This turns a whole category of stale-number defect into an impossibility rather than a discipline.",
+          "state": "idea",
+          "size": "m",
+          "blocked_on": "shape not settled — see the open questions in the note",
+          "source": "Jordan 2026-08-08, verbatim: \"next wishlist item is calculated columns (auto gens the total on edits, ato adds total column at bottom. cal tally cols and rows with setting.\"",
+          "note": "AS ASKED: totals regenerate on edit (any set/add/rm touching a tallied section), a total row is appended automatically, and both column and row tallies are configurable by a setting. OPEN SHAPE QUESTIONS, recorded rather than guessed: (1) does the setting live in the SCHEMA — a field declares itself summable, so every document of that type tallies alike — or in the DOCUMENT, per-instance? Schema-side is more deterministic and matches how dd resolves everything else; document-side is more flexible. (2) Which aggregates: sum only, or count/min/max/mean? (3) Do tallies MATERIALISE into the .dd.json, or exist only in the rendered .dd.md? Render-only keeps the source a single truth and avoids write amplification on every edit, which argues strongly for it — and it is the option that makes the total underivable-from-anything-but-the-data. (4) What happens to a non-numeric or empty cell in a tallied column — skip, zero, or refuse? Refusing fits this repo: a silently-skipped cell produces a wrong total that looks right, which is the exact failure mode the feature exists to remove."
         }
       ]
     }
