@@ -1,0 +1,33 @@
+government/orient-local.md
+  s_17d65f429c4464::t_788a1fe9e8c382 79-119
+docs/plans/001-dd-extraction/plan.dd.json
+  s_c0996f9cc5cd2d::t_7317ea255b3e46 508-510
+docs/plans/001-dd-extraction/plan.dd.md
+  s_c0996f9cc5cd2d::t_941c43a1eb74ab 243-244
+government/pending.md
+  s_c0996f9cc5cd2d::t_16669943a521d8 11-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "526290fed8d46e946142ac398bffc53c47949039",
+  "prompts": {},
+  "sessions": {
+    "s_17d65f429c4464": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "525f6cb0-27f0-4852-afe9-9b27a51e10d0",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_c0996f9cc5cd2d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "s_c0996f9cc5cd2d",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
