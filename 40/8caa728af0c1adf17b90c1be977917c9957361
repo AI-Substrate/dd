@@ -1,0 +1,25 @@
+.github/workflows/ci.yml
+  s_743eafe62757dd::t_cb41d8b861fba5 76-77
+  s_743eafe62757dd::t_6b1c8890ce6e27 58,60-66,78
+.github/workflows/release.yml
+  s_743eafe62757dd::t_e25576f8f81f33 24-34,100-107
+test/ci-parity.test.ts
+  s_743eafe62757dd::t_b9d8bd2098a746 1-89,91-99,101-175
+  s_743eafe62757dd::t_9b0df30fefe1ea 90,100
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "408caa728af0c1adf17b90c1be977917c9957361",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
