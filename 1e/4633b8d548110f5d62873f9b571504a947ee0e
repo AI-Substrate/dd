@@ -1,0 +1,106 @@
+docs/plans/001-dd-extraction/assets/tasks/phase-2/execution.log.md
+  s_743eafe62757dd::t_f6fb74d29be6f1 404-502
+biome.json
+  s_743eafe62757dd::t_5e6888246e1d9b 47
+test/services/dd/schema/helpers.ts
+  s_743eafe62757dd::t_c8eac2aa64779d 1-15
+test/services/dd/render/refresh.test.ts
+  s_743eafe62757dd::t_aafa6b860996c5 1-347
+test/services/dd/error-codes.test.ts
+  s_743eafe62757dd::t_aafa6b860996c5 1-63
+test/acts/dd-surface.test.ts
+  s_743eafe62757dd::t_826c67f9096b03 1-3,5-6,14,16-114,125-171
+  s_743eafe62757dd::t_42772d398618de 4,115-124
+  s_743eafe62757dd::t_43eb16038e001e 7-13,15
+test/support/run-cli.ts
+  s_743eafe62757dd::t_29874bdf87a5f8 15-21
+  s_743eafe62757dd::t_614f1b74ae724e 58-129
+test/acts/dd-issue-codes.test.ts
+  s_743eafe62757dd::t_826c67f9096b03 1-60
+docs/plans/001-dd-extraction/assets/dd-surface.md
+  s_743eafe62757dd::t_43eb16038e001e 1-212
+test/acts/dd-validate-mechanical.test.ts
+  s_743eafe62757dd::t_3d9993640a08c6 1-74,86-118
+  s_743eafe62757dd::t_624ed0ffe03ee6 75-85
+docs/plans/001-dd-extraction/assets/tasks/phase-2/tasks.dd.json
+  s_743eafe62757dd::t_871b66b6936f3b 90,93-94,159
+test/support/partial-write.ts
+  s_743eafe62757dd::t_4d3ba96b9068a6 1-41
+test/acts/dd-build.test.ts
+  s_743eafe62757dd::t_42772d398618de 51-55
+  s_743eafe62757dd::t_c430b5276c879f 1-50,56-275
+test/services/dd/schema/world.ts
+  s_743eafe62757dd::t_845cfb2a0e318d 59
+  s_743eafe62757dd::t_c8eac2aa64779d 1-58,60-74
+test/acts/dd-graph-map-live.test.ts
+  s_743eafe62757dd::t_f1f708ff82f825 266-270
+  s_743eafe62757dd::t_f0f18553028db8 283-292
+  s_743eafe62757dd::t_c430b5276c879f 1-8,11-64,66,69-265,271-282,293-698
+  s_743eafe62757dd::t_42772d398618de 9-10
+  s_743eafe62757dd::t_2654df735f5edb 67-68
+  s_743eafe62757dd::t_6b8317139088b8 65
+test/support/dd-corpus.ts
+  s_743eafe62757dd::t_83ce6f4e548839 1-6,8-250
+  s_743eafe62757dd::t_c00cad9026cc6a 7
+src/app.ts
+  s_743eafe62757dd::t_27a4752b1ea703 97-99,103
+test/acts/dd-graph-human.test.ts
+  s_743eafe62757dd::t_c430b5276c879f 1-65,67,70-339
+  s_743eafe62757dd::t_6b8317139088b8 66
+  s_743eafe62757dd::t_2654df735f5edb 68-69
+test/services/dd/render/fixture-corpus.test.ts
+  s_743eafe62757dd::t_aafa6b860996c5 1-87
+docs/plans/001-dd-extraction/assets/tasks/phase-2/tasks.dd.md
+  s_743eafe62757dd::t_871b66b6936f3b 44,90
+test/acts/dd-write-live.test.ts
+  s_743eafe62757dd::t_3d9993640a08c6 1-261
+test/services/dd/render/gaps.test.ts
+  s_743eafe62757dd::t_aafa6b860996c5 1-117
+test/services/dd/schema/builder-rels.test.ts
+  s_743eafe62757dd::t_aafa6b860996c5 1-8,10-170
+  s_743eafe62757dd::t_28621df618f6d4 9
+test/services/dd/docs/dd-docs-drift.test.ts
+  s_743eafe62757dd::t_98b414bc8cef69 119-138
+test/services/dd/render/adapters.test.ts
+  s_743eafe62757dd::t_aafa6b860996c5 1-15,17-244
+  s_743eafe62757dd::t_42772d398618de 16
+test/acts/dd-links-live.test.ts
+  s_743eafe62757dd::t_42772d398618de 48-52
+  s_743eafe62757dd::t_c430b5276c879f 1-47,53-641
+test/acts/dd-live.test.ts
+  s_743eafe62757dd::t_42772d398618de 51-55
+  s_743eafe62757dd::t_c430b5276c879f 1-50,56-156,158-170,184-275
+  s_743eafe62757dd::t_8a38f735fc8b0e 157
+  s_743eafe62757dd::t_189f6e60b40f3a 171-183
+test/acts/dd.test.ts
+  s_743eafe62757dd::t_b3907976bb9761 262,273-280,282-283
+  s_743eafe62757dd::t_3261561f824c1a 64-72,89,92,95,98,100-103
+  s_743eafe62757dd::t_394dd7be749ca4 1-29,35-63,73-88,90-91,93-94,96-97,99,104-261,263-272,281,284-286
+  s_743eafe62757dd::t_42772d398618de 30-34
+test/services/dd/schema/exemplar.test.ts
+  s_743eafe62757dd::t_42772d398618de 9,51-60
+  s_743eafe62757dd::t_661a3f9a528af5 1-2,10-50,61-174
+  s_743eafe62757dd::t_a5e01350d49c64 3-8
+test/services/dd/schema/resolve.test.ts
+  s_743eafe62757dd::t_a5e01350d49c64 2-3
+  s_743eafe62757dd::t_661a3f9a528af5 1,5-277
+  s_743eafe62757dd::t_42772d398618de 4
+test/acts/dd-schema-fs.test.ts
+  s_743eafe62757dd::t_826c67f9096b03 1-83
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "1e4633b8d548110f5d62873f9b571504a947ee0e",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
