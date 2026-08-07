@@ -1,0 +1,19 @@
+government/pending.md
+  s_62ae2013f851ba::t_8332723a8b5a23 120-168
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "1018238268f1a359963a3bf19dc326538c0c2c46",
+  "prompts": {},
+  "sessions": {
+    "s_62ae2013f851ba": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "c02794fe-689f-44a9-a7bf-2040d9a1d920",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
