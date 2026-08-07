@@ -131,6 +131,17 @@ step — pointing harness at this package and deleting the old code — is koala
   internally consistent about its own contents. The gap was in the **task design, not the
   verifier's work**. A verifier can only be as complete as the scope it is handed, so a
   clean result is a statement about the question, and the question is the delegator's.
+- **AGREEMENT BETWEEN INSTRUMENTS THAT SHARE A BLIND SPOT IS NOT CORROBORATION.** Also
+  `pij-related-koala`, one level up from its own strength-marking lesson. It probed a
+  *branch* and concluded about the *work* — and **an empty branch is not an absence of
+  work**. Uncommitted worktree state is invisible to `git log`, to a diff against a
+  merge-base, **and** to `gh pr list`; all three instruments it reached for share that one
+  blind spot, so their agreement established nothing. **Three confirmations from one blind
+  spot are one confirmation.** (The o-prime's own re-derivation used two of those three, so
+  it confirmed the true half and inherited the same blindness on the false half.) Ask what
+  a set of agreeing instruments *cannot see* before treating agreement as evidence — and
+  prefer a baseline that is **non-empty**, since an empty one cannot distinguish "nothing
+  there" from "probe broken".
 - **PARTIAL STRENGTH-MARKING CERTIFIES EVERYTHING IT DOES NOT MENTION.** The sharpest
   version of the evidence-strength rule, and it arrived from `pij-related-koala` after the
   rule bit it. It relayed an upstream change as blocking, flagging its own uncertainty
