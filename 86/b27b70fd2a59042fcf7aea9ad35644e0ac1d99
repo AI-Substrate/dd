@@ -1,0 +1,27 @@
+docs/plans/001-dd-extraction/execution-log.dd.json
+  s_743eafe62757dd::t_dc423b09a7af78 1-26
+docs/plans/001-dd-extraction/execution-log.dd.md
+  s_743eafe62757dd::t_06ba3d3c8dca41 1-23
+docs/plans/001-dd-extraction/plan.dd.md
+  s_743eafe62757dd::t_26046b2ff14253 64,81
+docs/plans/001-dd-extraction/the-flow.json
+  s_743eafe62757dd::t_a16e3d7baa6c4f 6-7,585-751,833,839-847,859-860,936,952-962,968,985-995,1001,1015-1025,1051,1056,1406,1411,1421-1430
+docs/plans/001-dd-extraction/the-flow.md
+  s_743eafe62757dd::t_83a52362794715 4,6,12-14,26,44,49,71-82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "86b27b70fd2a59042fcf7aea9ad35644e0ac1d99",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
