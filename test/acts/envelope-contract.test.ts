@@ -65,6 +65,42 @@ const VERB_CASES: VerbCase[] = [
     status: 'error',
     code: 'E419',
   },
+  // --- address ---
+  {
+    verb: 'address',
+    label: 'generating a qualified address',
+    argv: ['address', 'generate', 'tasks/tk-0001', '--path', GOOD_DOC],
+    status: 'ok',
+  },
+  {
+    verb: 'address',
+    label: 'validating a well-formed address',
+    argv: ['address', 'validate', `${GOOD_DOC}#tasks/tk-0001`],
+    status: 'ok',
+  },
+  // --- link ---
+  {
+    verb: 'link',
+    label: 'resolving a live address',
+    argv: ['link', 'resolve', `${GOOD_DOC}#tasks/tk-0001`],
+    status: 'ok',
+  },
+  {
+    verb: 'link',
+    label: 'resolving into a missing document',
+    argv: ['link', 'resolve', 'no/such.dd.json#tasks/tk-0001'],
+    status: 'error',
+    code: 'E430',
+  },
+  // --- links ---
+  {
+    verb: 'links',
+    label: 'both directions for a document',
+    argv: ['links', GOOD_DOC],
+    status: 'ok',
+  },
+  // --- graph ---
+  { verb: 'graph', label: 'a repo-wide mermaid sweep', argv: ['graph'], status: 'ok' },
 ];
 
 describe('envelope contract over every ported verb', () => {
@@ -109,5 +145,32 @@ describe('envelope contract over every ported verb', () => {
 describe('the exit map itself', () => {
   it('is 0 / 0 / 2 / 1 for ok / degraded / unconfigured / error', () => {
     expect(EXIT_BY_STATUS).toEqual({ ok: 0, degraded: 0, unconfigured: 2, error: 1 });
+  });
+});
+
+/**
+ * Ledger honesty, made mechanical (plan 001, ac-0003).
+ *
+ * `dd status` derives `data.ported` from the verbs registered on the program, so
+ * "registered" and "ported" cannot drift. What a registration alone does NOT
+ * prove is that the verb WORKS — which is the actual claim the ledger makes. So
+ * every verb the ledger reports as ported must also be exercised by the table
+ * above. Registering a verb without proving it fails here, in the same commit.
+ */
+describe('every ported verb is a proven verb', () => {
+  beforeAll(ensureBuilt);
+
+  it('exercises everything dd status calls ported', () => {
+    const status = parseEnvelope(runDd(['--json', 'status']).stdout);
+    const ported = (status.data as { ported: string[] }).ported;
+    const exercised = new Set(VERB_CASES.map((testCase) => testCase.verb));
+    expect([...ported].sort()).toEqual([...ported].filter((verb) => exercised.has(verb)).sort());
+  });
+
+  it('claims a verb only once it answers on the shipped bin', () => {
+    const status = parseEnvelope(runDd(['--json', 'status']).stdout);
+    for (const verb of (status.data as { ported: string[] }).ported) {
+      expect(runDd([verb, '--help']).code, `${verb} --help`).toBe(0);
+    }
   });
 });

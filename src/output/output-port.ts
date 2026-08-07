@@ -16,6 +16,12 @@ export type OutputMode = 'json' | 'human';
 export interface CliIo {
   mode: OutputMode;
   writers: Writers;
+  /**
+   * Whether human-mode renderers may emit ANSI colour. Resolved ONCE by the
+   * entrypoint (human mode + a TTY, minus NO_COLOR/FORCE_COLOR overrides), so no
+   * act re-derives it; optional so test call sites that omit it get plain text.
+   */
+  useColor?: boolean;
 }
 
 /** Where rendered text goes. Injected so renderers are unit-testable. */

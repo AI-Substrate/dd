@@ -164,3 +164,67 @@ New helper `test/support/run-cli.ts` is shared by the later slices.
 
 `just checks` inputs all green: build ✅ · typecheck ✅ · biome ✅ · **378 tests / 33 files**.
 The table grows with slices 2 and 3 rather than being rewritten.
+
+---
+
+## tk-0003 — Slice 2 (address, link, links, graph)
+
+Same four mechanical rewrite rules as slice 1; `grep "'\.\./\.\./"` over `src/acts/*.ts`
+is empty. Registered on `program` in `src/app.ts`, one slice, one commit.
+
+### DISCOVERY — a cross-slice dependency in o-prime's slicing (`link` → `build`)
+
+`src/acts/link.ts` imports `writeDocumentWithSibling` from `./build.js` — because
+`dd link verify-basis --update` regenerates the sibling markdown. But `build` is
+**slice 3** (tk-0004). Slice 2 therefore cannot compile without a slice-3 module.
+
+Resolved WITHOUT touching the ledger's honesty, and without re-cutting o-prime's slices:
+
+- `src/acts/build.ts` is **ported in this commit** (the module), because `link` genuinely
+  cannot work without it.
+- the `build` **verb is NOT registered** here. Registration is the only thing
+  `buildStatusEnvelope` reads, so the ledger is unmoved by a module's mere existence.
+
+Verified rather than asserted — with `build.ts` present and compiling, `dd status` reports
+`ported[validate,schema,docs,address,link,links,graph]` and `remaining[build,doctor,write]`,
+exit 2. The ledger claims exactly the seven verbs that answer, and `build` stays unclaimed
+until it is registered and proven in tk-0004.
+
+This is a genuine finding about the slice boundaries, not a scope change: dw-0003 asks for
+address/link/links/graph registered, and that is exactly what landed. **Reported to the PM.**
+
+### A third phase-1 plumbing stub: `CliIo.useColor`
+
+`graph.ts` reads `io.useColor` for its human-mode map palette; the phase-1 `CliIo` had only
+`{mode, writers}`. Added the optional `useColor` field (upstream's own shape) and wired it in
+`main()` through the **already-ported** `resolveUseColor` from `output/style.ts` — which is
+what style.ts was ported for in tk-0001. Resolved ONCE by the entrypoint (human + TTY, minus
+`NO_COLOR`/`FORCE_COLOR`), never re-derived by an act. Optional, so existing test call sites
+that omit it still get plain text.
+
+That is the third phase-1 stub the port has widened to parity (after `Clock` and
+`ErrorCodes`). The pattern is consistent: phase 1 stubbed the seam, phase 2 lands the real
+contract behind it.
+
+### Verbs proven working IN THIS COMMIT
+
+| command | result |
+| --- | --- |
+| `dd address generate tasks/tk-0001 --path <doc>` | `ok`, qualified address emitted |
+| `dd address validate <addr>` | `ok`, parsed + classified |
+| `dd link resolve <doc>#tasks/tk-0001` | `ok`, resolved to its instance target |
+| `dd link resolve no/such.dd.json#…` | `error` **E430**, exit 1 |
+| `dd links <doc>` | `ok`, outbound + inbound |
+| `dd graph` | `ok`, real mermaid graph of THIS repo |
+
+### Evidence (dw-0003)
+
+Envelope table extended to 13 cases; **47 assertions** in that file, **399** repo-wide.
+
+Two new mechanical ledger guards land with this slice (ac-0003):
+
+1. **every verb `dd status` calls ported is exercised by the table** — so registering a verb
+   without proving it fails in the same commit, which is precisely the per-commit honesty
+   clause. Future slices cannot register quietly.
+2. **every ported verb answers `--help` with exit 0 on the shipped bin** — registration is
+   proven against the real process, not the in-memory program object.

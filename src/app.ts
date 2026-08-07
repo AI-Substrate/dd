@@ -1,5 +1,9 @@
 import { Command, CommanderError } from 'commander';
+import { registerAddressCommands } from './acts/address.js';
 import { registerDocsCommands } from './acts/docs.js';
+import { registerGraphCommand } from './acts/graph.js';
+import { registerLinkCommands } from './acts/link.js';
+import { registerLinksCommand } from './acts/links.js';
 import { registerSchemaCommands } from './acts/schema.js';
 import type { ActDeps } from './acts/shared.js';
 import { registerStatusAct } from './acts/status.js';
@@ -17,6 +21,7 @@ import {
   selectMode,
   type Writers,
 } from './output/output-port.js';
+import { resolveUseColor } from './output/style.js';
 import { readVersion } from './version.js';
 
 /**
@@ -64,6 +69,10 @@ export function buildProgram(io: CliIo, deps: ActDeps): Command {
   registerValidateCommand(program, io, deps);
   registerSchemaCommands(program, io, deps);
   registerDocsCommands(program, io, deps);
+  registerAddressCommands(program, io, deps);
+  registerLinkCommands(program, io, deps);
+  registerLinksCommand(program, io, deps);
+  registerGraphCommand(program, io, deps);
 
   return program;
 }
@@ -89,7 +98,7 @@ export async function main(argv: string[] = process.argv, overrides: MainOverrid
   const env = overrides.env ?? process.env;
   const isTty = overrides.isTty ?? Boolean(process.stdout.isTTY);
   const mode = selectMode({ json: jsonFlag(argv) }, env, isTty);
-  const io: CliIo = { mode, writers };
+  const io: CliIo = { mode, writers, useColor: resolveUseColor({ mode, isTty, env }) };
   const deps: ActDeps = { clock: overrides.clock ?? new SystemClock() };
 
   const program = buildProgram(io, deps);
