@@ -71,10 +71,11 @@
           "id": "tk-0006",
           "title": "Docs: README standalone quick-start (install, dd --help tour, envelope contract, .dd resolution ladder) + docs/how carrying the two baked entries (dd-overview, how-to-add-a-schema) per OQ-3 default (verbatim port + minimal standalone header)",
           "phase": "ph-356b",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-000a"
-          ]
+          ],
+          "receipt": "README.md with install, quick start, dd --help tour, envelope contract + exit map, and the four-root .dd resolution ladder; docs/how/dd/ carries both baked entries byte-verbatim under a header, plus an index that names honestly what is NOT ported. test/docs-surface.test.ts extracts the README's OWN quick-start heredocs and runs them through the shipped bin (validate/build/get/set + a refused write), so the examples cannot rot. All 4 relative links resolve; drift gate green; README now ships in the tarball."
         }
       ]
     },
@@ -130,7 +131,7 @@
           {
             "id": "dw-0006",
             "assertion": "README present with install + quick-start + envelope contract + resolution ladder; docs/how/ carries both baked entries; links from README resolve; drift pipeline still green after any content touch",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: file existence + link check + drift test"
           }

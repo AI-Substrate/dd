@@ -1,0 +1,43 @@
+# dd — the repository reference
+
+The `dd` guidance that ships **inside** the binary, kept here as readable files too.
+
+```bash
+dd docs list          # the same corpus, baked into the CLI
+dd docs get <id>
+```
+
+Start with the README at the repository root for install and a quick start. This folder is the
+longer form.
+
+## What is here
+
+| Page | `dd docs get` | Covers |
+|---|---|---|
+| [dd-overview.md](dd-overview.md) | `dd-overview` | The envelope, ids and addresses, completion states and the gate, schema resolution, the CLI family, reading it with `jq`. |
+| [how-to-add-a-schema.md](how-to-add-a-schema.md) | `how-to-add-a-schema` | A worked schema package with custom enums and `gate_terminal`, the `human-skipped` receipt convention, and a custom-type adapter. |
+
+Both pages are **ported verbatim** from `src/docs/content/`, which is the source of truth. They
+carry a header saying so. Editing a copy here changes nothing the CLI serves — edit the source and
+run `npm run gen:dd-docs`; `npm run check:dd-docs` runs inside `just checks` and fails the build if
+the baked module drifts from its sources.
+
+## What is not here yet
+
+`dd-overview.md` describes this folder as a progressive reference and points at a worked corpus at
+`docs/how/dd/exemplar/`, including a self-contained example with its own schema and adapters. **That
+corpus has not been ported into this package yet.** The text came across verbatim from the
+upstream repository (`AI-Substrate/harness-engineering`), where those files live.
+
+Until it is ported, the runnable equivalents are:
+
+- the **README quick start** at the repository root — a complete schema, document, validate, build
+  and mutate cycle you can paste;
+- the **custom-type adapter** worked end to end in `test/acts/jiti-custom-type.test.ts` and again in
+  `scripts/pack-gate.sh`, both of which build a self-contained corpus from scratch and assert the
+  adapter's output actually reaches the rendered markdown;
+- the **render fixture corpus** in `test/services/dd/render/fixtures/`, which pairs every fixture
+  document with its committed golden render — including the adapter failure classes.
+
+This gap is recorded rather than papered over: a pointer that does not resolve is worse than an
+honest note saying where the thing actually is.
