@@ -1,0 +1,25 @@
+src/docs/docs-content.ts
+  s_743eafe62757dd::t_a10163744cca54 14
+docs/how/dd/dd-overview.md
+  s_743eafe62757dd::t_a996d5859f3b0f 114-121
+src/docs/content/dd-overview.md
+  s_743eafe62757dd::t_42da40a569ae06 110-117
+docs/how/dd/README.md
+  s_743eafe62757dd::t_26c01080d494e2 27-29,31-40,43-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "0a2f1c3d71f9dffa9bf4f1be40e66253935ab4b9",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
