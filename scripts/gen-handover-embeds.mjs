@@ -41,6 +41,23 @@ const BLOCKS = [
 
 /** The commit that last changed a source — the only honest thing to stamp a copy with. */
 function sourceStamp(path) {
+  // A SHALLOW clone cannot answer "which commit last changed this path". It does
+  // not error — `git log -1 -- <path>` just returns the one commit it has, so
+  // every source stamps to the checkout SHA and the check reds with a message
+  // blaming the packet. That is a tool returning a clean answer to a question it
+  // cannot see, which is the exact failure the stamps exist to prevent, so this
+  // refuses to compute rather than compute something wrong.
+  const shallow = execFileSync('git', ['rev-parse', '--is-shallow-repository'], {
+    encoding: 'utf8',
+  }).trim();
+  if (shallow === 'true') {
+    throw new Error(
+      'this is a SHALLOW clone, so the commit that last changed each source cannot be derived.\n' +
+        'Every path would stamp to the checkout SHA — a WRONG stamp, not a missing one.\n' +
+        'In CI: give the checkout full history (actions/checkout with `fetch-depth: 0`).\n' +
+        'Locally: `git fetch --unshallow`.',
+    );
+  }
   const dirty = execFileSync('git', ['status', '--porcelain', '--', path], { encoding: 'utf8' });
   if (dirty.trim() !== '') {
     throw new Error(

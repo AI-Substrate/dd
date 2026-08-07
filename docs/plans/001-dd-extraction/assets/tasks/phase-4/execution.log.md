@@ -880,3 +880,82 @@ assertion announces itself, and a blind sweep does not.
 
 **Gates:** `just checks` green — 713 tests / 59 files, exit 0. `tk-0002` and `tk-0006`
 untouched and uninspected.
+
+## tk-0006 — the push, and the first CI run this repo has ever had
+
+**Push authorized by the PM on Jordan's 2026-08-07 ruling; executed at `f54d572`.** Every
+precondition re-derived here rather than accepted from the dispatch:
+
+```bash
+git status --porcelain                          # clean
+git merge-base --is-ancestor origin/main HEAD   # true -> FAST-FORWARD, no force
+git rev-list --count HEAD..origin/main          # 0 behind
+git rev-list --count origin/main..HEAD          # 85 ahead
+```
+
+`git push origin main` → `b1b794d..f54d572`. Confirmed landed: `origin/main` and `HEAD`
+both `f54d572`, 0 ahead. **No tags, no publish, no force, no PR.**
+
+**The release gate HELD.** Only the CI workflow fired. `release.yml` has `main`
+commented out of its push branches and is live only for `canary/**`; `gh run list` shows
+one run, `CI`, and no release run. Verified before pushing by reading the trigger block,
+and after pushing by listing runs.
+
+**`harness telemetry sync` NOT run**, per dispatch. The 147 unpushed segments target
+`refs/harness-telemetry/*`, a different ref namespace; pushing `main` does not flush them
+and flushing is not authorized. `harness doctor` reporting `telemetry-flush-hook` as the
+only non-ok layer remains expected and must not be "fixed". **`tk-0002` untouched.**
+
+### The first run went RED, on the one check that is green locally
+
+Run `31164019662` — `static-gates` ✓, `build-test (22)` and `(24)` ✗ at **Handover-packet
+drift**, with the generator's own message: *"an embedded VERBATIM block no longer matches
+its source."*
+
+`node scripts/gen-handover-embeds.mjs --check` exits 0 locally at the same SHA. A check that
+disagrees with itself across environments is a defect in the check, not in the packet, so
+the message was **wrong about its own cause** — it blamed the artifact.
+
+**Root cause, derived by reproducing a shallow clone rather than by reasoning about one:**
+
+```bash
+git clone --depth 1 file:///path/to/dd /tmp/shallowtest
+cd /tmp/shallowtest && git rev-parse --is-shallow-repository   # true
+git log -1 --format=%h -- docs/plans/001-dd-extraction/plan.dd.json      # 8769c60
+git log -1 --format=%h -- government/standing-constraints.md            # 8769c60
+# full history gives 526290f and 3343a09 — two DIFFERENT commits
+```
+
+`actions/checkout` defaults to `fetch-depth: 1`. `sourceStamp()` derives *the commit that
+last changed this path* with `git log -1 -- <path>` — and **a shallow clone cannot answer
+that question. It does not fail: it returns the checkout SHA for every path.** So all
+sources stamped to one commit, the stamps disagreed with the committed ones, and the check
+reported drift.
+
+**This is the phase's own failure class, in the tool built to prevent it:** a clean-looking
+answer to a question the tool could not see. Same shape as the line-based grep returning a
+false all-clear, and as the boundary-dropping join returning 7.
+
+**Fixed forward, both halves, because either alone leaves the trap armed:**
+
+1. `.github/workflows/ci.yml` — `fetch-depth: 0` on the `build-test` checkout, with the
+   reason in a comment. The check was right and the environment lacked its input.
+2. `scripts/gen-handover-embeds.mjs` — **refuses to run on a shallow clone**, naming the
+   cause and both fixes. A wrong stamp is worse than no stamp, and the honest response to
+   *"I cannot compute this here"* is to say so rather than to compute something else.
+
+Part 2 is worth having even with part 1 in place: it is the part that survives someone
+copying this generator into a repo whose CI does a shallow checkout. **It is a real
+detector, not a pretend-gate — `git rev-parse --is-shallow-repository` answers exactly the
+question being asked.**
+
+**Proved against a real shallow clone**, not asserted:
+
+| state | expected | got |
+|---|---|---|
+| `--depth 1` clone | loud refusal naming shallowness | refused, exit 1 |
+| after `git fetch --unshallow` | check passes | *"blocks up to date"*, exit 0 |
+
+**`Upload coverage (lcov)` also shows red — cascade, not a second defect.** `Test` never
+ran, so no `lcov.info` existed to upload. Expect it to clear with the drift fix; if it
+survives, it is real and gets its own entry.
