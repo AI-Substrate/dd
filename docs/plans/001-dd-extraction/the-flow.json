@@ -907,6 +907,18 @@
           "comments"
         ]
       }
+    },
+    {
+      "id": "UPD-032",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-07T06:23:39.032Z",
+      "details": {
+        "node": "review-3",
+        "fields": [
+          "comments"
+        ]
+      }
     }
   ],
   "nodes": [
@@ -1406,7 +1418,7 @@
         "phase-4"
       ],
       "created_at": "2026-08-07T03:54:20.614Z",
-      "modified_at": "2026-08-07T03:54:20.614Z",
+      "modified_at": "2026-08-07T06:23:39.031Z",
       "instructions": [
         "Review exactly ONE phase's diff against its acceptance criteria — confirm the tests prove behaviour and nothing risky slipped in.",
         "Run /builder 7 review — it inspects the newest assets/reviews/*.md and surfaces a verdict; REQUEST_CHANGES loops back to fix, clean continues to the next phase or post-flight.",
@@ -1416,7 +1428,15 @@
         "If the gate refuses and departing anyway is the HUMAN's decision, they pass --force — it records a defended override. An agent may not force a dd gate on its own judgment."
       ],
       "zone": "flight",
-      "command": "/builder 7 review"
+      "command": "/builder 7 review",
+      "comments": [
+        {
+          "at": "2026-08-07T06:23:39.031Z",
+          "text": "Verdict FIX_REQUIRED (pij-blind-deer, rev-0003): 1 HIGH blocking — README anti-rot guard VACUOUS (extracts JSON heredocs only, dd commands hardcoded; reviewer proved it green on a nonexistent verb). 3 MEDIUM: same-commit sibling claim corrected (achieved invariant = zero stale banners, history not rewritten), WARN-count rot (fix = measured-at stamping, now a plan guardrail), esc-4 amendment folded. HELD FREEZE UPHELD — reviewer independently confirmed no exports expectation leaked anywhere. Fix loop with the coder; P4 held; ac-0007 flip HELD until clean re-review. time:2026-08-07T06:23:38Z",
+          "source": "agent",
+          "kind": "validation"
+        }
+      ]
     },
     {
       "id": "boot-3",
