@@ -16,6 +16,49 @@ code — is yours and has not been started (standing constraint 5).
 
 ---
 
+## 0. The principle worth inheriting
+
+Read this before the artifact. You are inheriting our guardrail rows, but **the rows are
+the output of this principle, not the principle**. Given the rows you can apply them;
+given the principle you can generate the next ones, including for failure modes we never
+hit.
+
+> **Prefer the fix that does not depend on anyone being diligent.**
+>
+> Turning a mechanical rule into someone's good intentions weakens it, **even when the
+> volunteer is sincere and especially when they are reliable** — reliability is exactly
+> what makes the dependency invisible until it fails. When you have a choice, encode the
+> version that holds when the diligent party is absent, wrong, compacted, or replaced.
+
+It was named at the end of plan 001 as the pattern behind every governance decision that
+stuck. Twice a competent agent volunteered the disciplined version of a fix — *"ask me
+every time"*, *"I'll carry this rule"* — and twice the mechanical version was chosen
+instead. Source: `government/orient-local.md`.
+
+Worked instances in this repo, each one chosen **over** a discipline:
+
+| instead of | we shipped |
+|---|---|
+| remembering to justify a state change | the schema **refuses** a `blocked`/`na` state with no written reason (`src/core/validate.ts`) |
+| asking the o-prime to recall the constraints | `government/standing-constraints.md`, citable **by number**, with the o-prime removed from the recall path |
+| remembering not to stage delegate worktrees | a `.gitignore` rule |
+| a habit of citing carefully | guardrail 13: **authority is a SHA**, never a working tree |
+| a comment promising CI matches `just checks` | `test/ci-parity.test.ts`, which reds when they diverge |
+| remembering to rebuild a document after editing it | `scripts/self-host-check.sh`, run by `just checks` and CI |
+| trusting a supplied figure | re-deriving it in the operation that produces its evidence (§2.1) |
+
+**So here is the honest frame for what you are receiving**, and we would rather say it
+plainly than imply competence: **this is a repo whose governance assumes its own agents
+will be wrong.** That is why artifacts are citable by SHA and constraints by number,
+why the guardrails below are reproduced verbatim rather than summarised, and why every
+count in this packet carries the command that re-derives it.
+
+A handover claiming careful agents would be the exact defect class we spent this plan
+catching — five times, including once from outside the fleet, and once in the document
+that argues for the rule.
+
+---
+
 ## 1. The artifact
 
 | | |
@@ -239,8 +282,8 @@ Measured at `99e4157`; re-derive with `just checks`, `just pack-gate`,
 | `harness plan validate` | 0 ERROR, 6 WARN | semantic gate; WARNs are open-item contradictions, not defects |
 | Coverage | 70.21% statements | report-only, not gated |
 
-**Three properties of this repo worth keeping**, offered as things that earned their
-place rather than as decoration:
+**Three properties of this repo worth keeping** — each one an instance of §0, offered as
+things that earned their place rather than as decoration:
 
 1. **The schema refuses a state change whose reason exists only in the author's head.**
    A `blocked` or `na` state without a non-empty note is an ERROR
@@ -305,6 +348,7 @@ You inherit both the guardrails and that ongoing cost.
 | Import-direction audit, all 60 tests | `docs/plans/001-dd-extraction/assets/test-audit.md` |
 | Frozen P1 CLI surface | `docs/plans/001-dd-extraction/assets/dd-surface.md` |
 | Research dossier (F-04 consumer surface) | `docs/plans/001-dd-extraction/assets/research-dossier.md` |
+| Local orientation (o-prime is sole writer) | `government/orient-local.md` |
 | The plan itself | `docs/plans/001-dd-extraction/plan.dd.md` |
 | Quick start (executed as a test) | `README.md` |
 
