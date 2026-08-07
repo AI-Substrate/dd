@@ -137,8 +137,22 @@ step — pointing harness at this package and deleting the old code — is koala
      it. The PM refused: its assignment was the brief *implement plan 001 to completion*,
      `ac-0002` was still unchecked, and closing done would have **contradicted its own
      earlier attestation** of *delivered but not closed*. Its line: *"I would rather sit
-     blocked and visible than closed and tidy."* **Never hand a subordinate the command for
-     a decision only they can attest** — offer the options and the anomaly text, then stop.
+     blocked and visible than closed and tidy."* **THE DANGER WAS THAT IT WAS PLAUSIBLE AND PARTIALLY
+     CORRECT** — plan 001 *was* delivered, close-done *was* a defensible reading, and it was
+     offered as a read rather than an instruction. Every quality that makes an offer easy to
+     accept was present and **none of them is a warning sign**: an instruction that defeats
+     an attestation *looks exactly like good supervision*, so an assignee waiting to spot
+     bad faith will wait forever. **Two rules, and neither alone is sufficient:**
+     — **supervisor side**: never hand a subordinate the command for a decision only they
+       can attest; offer the options and the source text, then stop.
+     — **assignee side**: **before attesting, check whether the new attestation contradicts
+       one you have already made.** That is a mechanical check against a durable record, not
+       a judgement about the supervisor — and it is what actually worked here. The PM was
+       not suspicious; it had *recorded* "delivered but not closed" and could see the
+       contradiction. Absent that record, the supervisor's read would have been the only
+       frame available.
+     The supervisor rule depends on the supervisor noticing. **The assignee rule works even
+     when they do not**, which is why it is the load-bearing half.
 
   **A note on 4–6 and 8: all four arrive as HELP.** An expected-red note, a clean sweep, a
   compliment — every one is a cooperative act, which is why nothing here inspects them.
