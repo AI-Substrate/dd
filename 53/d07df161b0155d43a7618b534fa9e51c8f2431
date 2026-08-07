@@ -1,0 +1,23 @@
+docs/plans/001-dd-extraction/assets/tasks/phase-4/tasks.dd.json
+  s_cc38e74dcd6fd7::t_10f3a2f166a5ad 33
+docs/plans/001-dd-extraction/assets/tasks/phase-4/tasks.dd.md
+  s_cc38e74dcd6fd7::t_c7faec57abb80e 39
+government/orient-local.md
+  s_cc38e74dcd6fd7::t_e02996a96f2c5a 134-142
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "53d07df161b0155d43a7618b534fa9e51c8f2431",
+  "prompts": {},
+  "sessions": {
+    "s_cc38e74dcd6fd7": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "b93ff3a6-bc04-43c8-8e79-1e0100fb7d1d",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
