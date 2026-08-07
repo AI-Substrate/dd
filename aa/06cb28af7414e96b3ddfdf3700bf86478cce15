@@ -1,0 +1,27 @@
+.dd/schemas/project/wishlist/schema.json
+  s_f5a59eaabcfb7d::t_1f3b9ccab4a6a2 1-43
+docs/plans/001-dd-extraction/plan.dd.json
+  s_f5a59eaabcfb7d::t_800fd4fbaeee06 198-199
+docs/plans/001-dd-extraction/plan.dd.md
+  s_f5a59eaabcfb7d::t_3971f6327a3b6f 125
+docs/plans/wishlist.dd.json
+  s_f5a59eaabcfb7d::t_f285b10f1dd7bd 1-100
+docs/plans/wishlist.dd.md
+  s_f5a59eaabcfb7d::t_e461edf76ba112 1-29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "aa06cb28af7414e96b3ddfdf3700bf86478cce15",
+  "prompts": {},
+  "sessions": {
+    "s_f5a59eaabcfb7d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c1a8ee5f-0c77-4a73-9109-a12db9cd18a8",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
