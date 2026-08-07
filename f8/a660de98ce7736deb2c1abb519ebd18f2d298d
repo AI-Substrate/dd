@@ -1,0 +1,23 @@
+scripts/gen-handover-embeds.mjs
+  s_743eafe62757dd::t_12b45d92220318 44-60
+.github/workflows/ci.yml
+  s_743eafe62757dd::t_4d47d23221c81c 48-55
+docs/plans/001-dd-extraction/assets/tasks/phase-4/execution.log.md
+  s_743eafe62757dd::t_82fca53ee1e94b 883-961
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "f8a660de98ce7736deb2c1abb519ebd18f2d298d",
+  "prompts": {},
+  "sessions": {
+    "s_743eafe62757dd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f79f32a8-e597-4265-aead-9369bb9a58db",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
