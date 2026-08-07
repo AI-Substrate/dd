@@ -33,11 +33,12 @@
           "id": "tk-0002",
           "title": "Acts infrastructure + first verb slice: port acts/dd/shared.ts + schema-fs.ts, then validate, schema, docs acts rewired to this repo output family; register each verb in src/app.ts ONLY in the commit where it works; envelope tests extended per verb",
           "phase": "ph-8bda",
-          "state": "unchecked",
+          "state": "checked",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0003",
             "../../../plan.dd.json#acceptance_criteria/ac-0004"
-          ]
+          ],
+          "receipt": "validate/schema/docs registered and exercised live; dd status ported[validate,schema,docs] exit 2; 26 envelope assertions incl. E400/E108/E410/E419; 378 tests green"
         },
         {
           "id": "tk-0003",
@@ -105,7 +106,7 @@
           {
             "id": "dw-0002",
             "assertion": "validate/schema/docs registered and working; dd status data.ported includes exactly the working verbs at every commit (ledger honesty); envelope tests cover each with exit map 0/0/2/1",
-            "state": "unchecked",
+            "state": "checked",
             "pressure": "not-applicable",
             "note": "instrument: vitest envelope suite; dd status --json parsed per commit"
           }

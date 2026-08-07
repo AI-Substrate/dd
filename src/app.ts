@@ -1,6 +1,9 @@
 import { Command, CommanderError } from 'commander';
+import { registerDocsCommands } from './acts/docs.js';
+import { registerSchemaCommands } from './acts/schema.js';
 import type { ActDeps } from './acts/shared.js';
 import { registerStatusAct } from './acts/status.js';
+import { registerValidateCommand } from './acts/validate.js';
 import { registerVersionAct } from './acts/version.js';
 import type { Clock } from './adapters/clock/clock-port.js';
 import { SystemClock } from './adapters/clock/system-clock.js';
@@ -53,6 +56,14 @@ export function buildProgram(io: CliIo, deps: ActDeps): Command {
 
   registerVersionAct(program, io, deps);
   registerStatusAct(program, io, deps);
+
+  // Ported dd verbs register at the TOP LEVEL, not under a `dd` sub-command:
+  // upstream nests them beneath `harness dd …`, but here the binary IS `dd`.
+  // `status` derives its port ledger from exactly these registrations, so a verb
+  // appearing below is a verb that works.
+  registerValidateCommand(program, io, deps);
+  registerSchemaCommands(program, io, deps);
+  registerDocsCommands(program, io, deps);
 
   return program;
 }

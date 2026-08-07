@@ -73,3 +73,94 @@ installed here but is not PROVEN until tk-0004's custom-type load test.
 
 **Ledger honesty**: this commit registers no verb, so `dd status` stays `unconfigured` /
 exit 2 / `ported[0]` — unchanged and truthful.
+
+---
+
+## tk-0002 — Acts infrastructure + slice 1 (validate, schema, docs)
+
+**Ported**: `acts/dd/{shared,schema-fs,validate,schema,docs}.ts` → `src/acts/`.
+
+### Layout: acts flatten, matching phase 1
+
+Upstream keeps dd acts at `src/acts/dd/**` because they nest under a `harness dd`
+sub-command. Phase 1 already established this repo's flattening — `services/dd/core` became
+`src/core` — because everything here IS dd. Acts follow the same rule: `acts/dd/validate.ts`
+→ `src/acts/validate.ts`, sitting beside the existing `acts/status.ts` and `acts/version.ts`.
+The alternative (an `acts/dd/` island next to `acts/status.ts`) would have split the verbs of
+one binary across two directories for no gain.
+
+Path rewrite is mechanical and total — four rules, zero hand-edits:
+
+| from | to |
+| --- | --- |
+| `../../output/` | `../output/` |
+| `../../adapters/` | `../adapters/` |
+| `../../services/dd/` | `../` |
+| `../../services/shared/` | `../shared/` |
+
+`grep "'\.\./\.\./"` over `src/acts/*.ts` returns nothing, so no rewrite was missed.
+
+### Registration: top level, not a sub-command
+
+Upstream's `acts/dd/index.ts` exists only to create the `dd` sub-command and hang the verbs
+off it. Here the binary IS `dd`, so that file is **not ported**; each registrar is called with
+`program` directly in `src/app.ts`. The registrar signatures take a `Command`, so they are
+used unchanged. This is also what makes the ledger work: `buildStatusEnvelope` reads
+`program.commands`, so a verb is "ported" precisely when it is registered.
+
+### `shared.ts` — the one real collision
+
+`src/acts/shared.ts` already existed (phase 1, defining `ActDeps { clock }`). Upstream's
+`acts/dd/shared.ts` defines `DdActDeps { clock }` — the same interface under another name —
+plus `DD_ISSUE_CODES`, `FsDocLoader`, `trackedPaths` and `createLinkContext`. Merged into one
+module: `ActDeps` stays the declared name, and `DdActDeps` is exported as an alias of it. That
+is what lets every ported act body stay byte-verbatim while `status`/`version`/`app` keep
+compiling untouched.
+
+`exitDdStub` + `DdOwningPhase` were **not** ported: they are upstream's own phased-rollout
+stub mechanism and have **zero callers** upstream (verified by grep). Their removal is
+self-proving — the only imports biome then flagged as unused were `formatUnconfigured` and
+`exitWithEnvelope`, precisely the two that function used.
+
+### Two plumbing gaps the acts exposed (both phase-1 stubs, same shape as the Clock)
+
+**1. `error-codes.ts` carried 3 codes; dd needs 63.** The acts reference 45 codes, but the
+ported `test/services/dd/error-codes.test.ts` (ph2) freezes **E400–E449 as exactly 50 codes in
+a fixed order** — so the used-only subset would fail the freeze. Ported the entire dd
+allocation verbatim, **E400–E462** (63 codes, comments included), plus `INVALID_ARGS: 'E108'`
+which the act bodies use. Porting the full block rather than the used subset keeps the code
+space enumerable and stops a future code from colliding with a skipped allocation.
+
+`E108` (INVALID_ARGS, raised inside a verb body) and `E002` (INVALID_USAGE, raised by
+commander's parser) now coexist — exactly as they do upstream.
+
+**2. `exit.ts` lacked `emitRawAndExit`**, which `dd docs get` uses to stream raw markdown.
+Ported verbatim. It sets `process.exitCode` and returns rather than calling `process.exit`
+(so a large piped payload is not truncated by a flush race), which keeps the repo's
+"`exitWithEnvelope` is the one place `process.exit` is called" contract exactly true.
+Upstream's `setBannerDecorator`/`BannerDecorator` is harness update-banner machinery with no
+dd caller and was not ported.
+
+### Verbs proven working IN THIS COMMIT (ledger honesty)
+
+Driven against real documents, not stubs:
+
+| command | result |
+| --- | --- |
+| `dd validate <this phase's tasks.dd.json>` | `ok`, exit 0, 0 errors / 0 warns |
+| `dd schema list` | `ok`, exit 0, real roots + resolved schemas |
+| `dd docs list` | `ok`, exit 0, both baked entries |
+| `dd docs get dd-overview` | `ok`, exit 0, full baked markdown |
+| `dd status` | `unconfigured`, exit 2, `ported[validate,schema,docs]` |
+
+### Evidence (dw-0002)
+
+New `test/acts/envelope-contract.test.ts` — one table over every ported verb, driven through
+the **shipped bin** (the exit code is half the contract, and only a real process has one).
+Each row asserts envelope shape, the status→exit map, `next_action` required on non-ok, and
+the error code where applicable. Live-confirmed codes this slice: **E400** (missing document),
+**E108** (non-integer `--depth`), **E410** (unknown schema), **E419** (unknown docs entry).
+New helper `test/support/run-cli.ts` is shared by the later slices.
+
+`just checks` inputs all green: build ✅ · typecheck ✅ · biome ✅ · **378 tests / 33 files**.
+The table grows with slices 2 and 3 rather than being rewritten.
