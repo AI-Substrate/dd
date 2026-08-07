@@ -165,3 +165,9 @@ vite.config.ts.timestamp-*
 # phases. Orchestrator scratch, not source: it is machine-local, regenerated per run,
 # and names local peer/pane ids.
 .flow-pair/
+
+# delegate worktrees — `.dlg-*` are throwaway git worktrees/clones created by the
+# PM's delegation flow (one per fix/review round). They are separate repositories:
+# staged with `git add -A` they land as a gitlink that no clone can resolve. Machine-
+# local orchestration scratch, never source.
+.dlg-*/
