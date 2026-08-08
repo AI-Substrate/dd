@@ -16,6 +16,7 @@ longer form.
 |---|---|---|
 | [dd-overview.md](dd-overview.md) | `dd-overview` | The envelope, ids and addresses, completion states and the gate, schema resolution, the CLI family, reading it with `jq`. |
 | [how-to-add-a-schema.md](how-to-add-a-schema.md) | `how-to-add-a-schema` | A worked schema package with custom enums and `gate_terminal`, the `human-skipped` receipt convention, and a custom-type adapter. |
+| [how-to-use-and-extend-the-sdk.md](how-to-use-and-extend-the-sdk.md) | `how-to-use-and-extend-the-sdk` | Consuming dd as a library — the three import tiers, wiring your own fs/hash ports, and the three steps plus gates for putting a new symbol on the public surface. |
 
 Both pages are **ported verbatim** from `src/docs/content/`, which is the source of truth. They
 carry a header saying so. Editing a copy here changes nothing the CLI serves — edit the source and

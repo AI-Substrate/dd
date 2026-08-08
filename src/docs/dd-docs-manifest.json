@@ -14,6 +14,13 @@
       "summary": "A worked schema package with custom enums and gate_terminal, the human-skipped receipt convention, and a custom-type adapter.",
       "audience": "both",
       "sourcePath": "src/docs/content/how-to-add-a-schema.md"
+    },
+    {
+      "id": "how-to-use-and-extend-the-sdk",
+      "title": "How to use dd as a library (and extend its surface)",
+      "summary": "Consuming the published surface with your own fs/hash ports, the three import tiers, and the three steps plus gates for putting a new symbol on the public API.",
+      "audience": "both",
+      "sourcePath": "src/docs/content/how-to-use-and-extend-the-sdk.md"
     }
   ]
 }
