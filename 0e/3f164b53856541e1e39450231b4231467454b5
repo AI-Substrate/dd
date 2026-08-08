@@ -1,0 +1,21 @@
+docs/plans/frictions.dd.json
+  s_3fcdc055efffb7::t_2a0a52df40fd0b 25-26,38-39,64-65,77-78,90-91,103-104,154-158
+docs/plans/frictions.dd.md
+  s_3fcdc055efffb7::t_9568aa94721f46 22-23,25-28,32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "0e3f164b53856541e1e39450231b4231467454b5",
+  "prompts": {},
+  "sessions": {
+    "s_3fcdc055efffb7": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f1575938-81cb-4506-9f3d-756db2229628",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
