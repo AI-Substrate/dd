@@ -337,6 +337,14 @@ o-prime concurring): exporting `./acts/shared` publishes CLI internals; harness 
 against the `DocLoader` interface creates a second answer to "what is a readable dd document",
 and two would drift — rejected *by the party it would have spared work*.
 
+**Scope of the ruling — DESTINATION RULED, LANDING DESIGNED** (o-prime, 2026-08-08, confirming
+the PM's reconciliation after a loose wire restatement): the ruling settles that `FsDocLoader`
+**belongs to the SDK half** and that alternatives (a) and (c) stay rejected — none of that
+reopens with Q-4. What waits for Q-4 is **where it lands**: subpath, promoted or wrapped,
+public name and form — that is offered-surface design under the R-1 boundary. A dispatcher
+must not dispatch the landing as settled work the moment design opens; the destination is the
+settled part.
+
 ---
 
 ## 8. Inputs already in hand
