@@ -4,6 +4,7 @@ import { NodeEnv } from '../adapters/env/node-env.js';
 import { NodeProcess } from '../adapters/process/node-process.js';
 import { BUILTIN_RELS } from '../core/constants.js';
 import { collectDeclaredRels } from '../core/rel.js';
+import { NodeSchemaFs } from '../node/index.js';
 import { type Envelope, formatDegraded, formatError, formatOk } from '../output/envelope.js';
 import { ErrorCodes } from '../output/error-codes.js';
 import { exitWithEnvelope } from '../output/exit.js';
@@ -12,7 +13,6 @@ import { BUILTIN_COMPLETION_ENUM } from '../schema/declarations.js';
 import type { SchemaIssue, SchemaIssueClass, SchemaRecord } from '../schema/model.js';
 import { ConventionSchemaResolver } from '../schema/resolve.js';
 import { toPosix } from '../shared/posix-path.js';
-import { NodeSchemaFs } from './schema-fs.js';
 import type { DdActDeps } from './shared.js';
 
 /** Schema-layer issue class → frozen E-code (P1 allocation; Phase 2 adds none). */

@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { NodeSchemaFs } from '../../src/acts/schema-fs.js';
+import { NodeSchemaFs } from '../../src/node/index.js';
 import type { SchemaRoot } from '../../src/schema/model.js';
 import { scanRoot } from '../../src/schema/scan.js';
 

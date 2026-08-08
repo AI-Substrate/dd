@@ -4,10 +4,10 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { autoRegenerateSibling } from '../../../../src/acts/build.js';
-import { NodeSchemaFs } from '../../../../src/acts/schema-fs.js';
 import { NodeHash } from '../../../../src/adapters/hash/node-hash.js';
 import type { DdDoc, ResolvedDdSchema } from '../../../../src/core/model.js';
 import { parse } from '../../../../src/core/parse.js';
+import { NodeSchemaFs } from '../../../../src/node/index.js';
 import {
   type DdRefreshFs,
   type DdRefreshHash,

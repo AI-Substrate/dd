@@ -7,6 +7,13 @@ import { NodeHash } from '../adapters/hash/node-hash.js';
 import { JitiLoader } from '../adapters/loader/jiti-loader.js';
 import { NodeProcess } from '../adapters/process/node-process.js';
 import { parse } from '../core/parse.js';
+import { NodeSchemaFs } from '../node/index.js';
+import {
+  type BuildResult,
+  type BuildSuccess,
+  renderDocument,
+  siblingPath,
+} from '../node/render-document.js';
 import { type Envelope, formatDegraded, formatError, formatOk } from '../output/envelope.js';
 import { ErrorCodes } from '../output/error-codes.js';
 import { exitWithEnvelope } from '../output/exit.js';
@@ -21,169 +28,15 @@ import {
 import { renderDd } from '../render/renderer.js';
 import { ConventionSchemaResolver } from '../schema/resolve.js';
 import { isWithin, posixDirname, resolveInRepo, toPosix } from '../shared/posix-path.js';
-import { NodeSchemaFs } from './schema-fs.js';
 import type { DdActDeps } from './shared.js';
 
-/**
- * Adapter issue class → frozen E-code (T006 ruling a). Like `dd validate`, the
- * mapping lives in the act: `services/dd/render` stays free of `output/`, which is
- * exactly what the renderer-purity rules enforce.
- */
-const ADAPTER_CODES: Record<DdAdapterIssue['class'], string> = {
-  'adapter-not-found': ErrorCodes.DD_ADAPTER_NOT_FOUND,
-  'adapter-load-failed': ErrorCodes.DD_ADAPTER_LOAD_FAILED,
-  'adapter-runtime-failed': ErrorCodes.DD_ADAPTER_RUNTIME_FAILED,
-  'adapter-output-invalid': ErrorCodes.DD_ADAPTER_OUTPUT_INVALID,
-};
-
-/** The sibling markdown for a dd document — always beside it, never elsewhere. */
-export function siblingPath(documentPath: string): string {
-  return `${documentPath.replace(/\.json$/, '')}.md`;
-}
-
-export interface BuildFailure {
-  ok: false;
-  code: string;
-  message: string;
-  next_action: string;
-  details?: unknown;
-}
-
-export interface BuildSuccess {
-  ok: true;
-  path: string;
-  sibling: string;
-  schema: string;
-  markdown: string;
-  warnings: Array<DdAdapterIssue & { code: string }>;
-  /** Live bases whose target has moved since the ledger recorded it. */
-  refreshed: DdRefreshedBasis[];
-  refreshIssues: Array<DdRefreshIssue & { code: string }>;
-}
-
-export type BuildResult = BuildSuccess | BuildFailure;
-
-/**
- * Everything up to (but not including) the write: read, parse, resolve the schema,
- * load adapters, render. Shared by the verb, by {@link autoRegenerateSibling} and
- * by {@link writeDocumentWithSibling}, so no caller's render can drift from what
- * `dd build` itself would have produced.
- *
- * `options.text` renders a document that is NOT (yet) the bytes on disk. That is
- * what lets a mutating verb stage its sibling before it commits anything: the
- * render is proven against the new content while the old content is still safe.
- */
-export async function renderDocument(
-  documentPath: string,
-  repoRoot: string,
-  options: { text?: string } = {},
-): Promise<BuildResult> {
-  const fs = new NodeSchemaFs();
-  const home = new NodeEnv().home();
-
-  if (!isWithin(repoRoot, documentPath)) {
-    return {
-      ok: false,
-      code: ErrorCodes.DD_BUILD_INPUT_INVALID,
-      message: `document is outside the repository root: ${documentPath}`,
-      next_action: 'Point `dd build` at a document inside this repository.',
-    };
-  }
-
-  const text = options.text ?? fs.readText(documentPath);
-  if (text === null) {
-    return {
-      ok: false,
-      code: ErrorCodes.DD_BUILD_INPUT_INVALID,
-      message: `document is missing or unreadable: ${documentPath}`,
-      next_action: 'Check the path, then re-run `dd build <path>`.',
-    };
-  }
-
-  const doc = parse(text);
-  if (Array.isArray(doc)) {
-    return {
-      ok: false,
-      code: ErrorCodes.DD_BUILD_INPUT_INVALID,
-      message: `${documentPath} is not a valid dd document`,
-      details: { path: documentPath, failures: doc },
-      next_action: 'Fix the reported location, then re-run `dd build <path>`.',
-    };
-  }
-
-  const resolver = new ConventionSchemaResolver({
-    fs,
-    repoRoot,
-    ...(home !== undefined && { home: toPosix(home) }),
-  });
-  const resolution = resolver.resolveDetailed(doc.dd.schema, documentPath);
-  const record = resolution.record;
-  if (!record) {
-    const blocking = resolution.issues.find((issue) => issue.severity === 'ERROR');
-    return {
-      ok: false,
-      code: ErrorCodes.DD_SCHEMA_UNRESOLVABLE,
-      message: blocking?.message ?? `schema not found: ${doc.dd.schema}`,
-      details: { path: documentPath, schema: doc.dd.schema, issues: resolution.issues },
-      next_action: 'Run `dd schema list` to see which schemas resolve from here.',
-    };
-  }
-
-  const adapters = await loadAdapters({
-    types: collectCustomTypes(doc, record.schema),
-    schemaPath: record.path,
-    fs,
-    loader: new JitiLoader(),
-  });
-
-  // Live-ledger refresh (plan 3.4): recompute what this document's `live` entries
-  // promise, so a cross-file row summary is current at render. It reads only —
-  // `dd build` must not dirty the document it renders, or `--check` could never
-  // be stable.
-  const refresh = refreshLiveReferences({
-    doc,
-    path: documentPath,
-    schema: record.schema,
-    gateTerminal: record.gateTerminal,
-    fs,
-    hash: new NodeHash(),
-  });
-
-  let markdown: string;
-  try {
-    markdown = renderDd(doc, {
-      path: documentPath,
-      schema: record.schema,
-      gateTerminal: record.gateTerminal,
-      adapters,
-      derived: refresh.derived,
-    });
-  } catch (error) {
-    return {
-      ok: false,
-      code: ErrorCodes.DD_RENDER_FAILED,
-      message: `render failed for ${documentPath}: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
-      next_action:
-        'Report this with the document — a render failure is a dd bug, not a data error.',
-    };
-  }
-
-  return {
-    ok: true,
-    path: documentPath,
-    sibling: siblingPath(documentPath),
-    schema: record.name,
-    markdown,
-    warnings: adapters.issues.map((issue) => ({ ...issue, code: ADAPTER_CODES[issue.class] })),
-    refreshed: refresh.refreshed,
-    refreshIssues: refresh.issues.map((issue) => ({
-      ...issue,
-      code: ErrorCodes.DD_LIVE_BASIS_REFRESH_FAILED,
-    })),
-  };
-}
+export {
+  type BuildFailure,
+  type BuildResult,
+  type BuildSuccess,
+  renderDocument,
+  siblingPath,
+} from '../node/render-document.js';
 
 /**
  * Best-effort sibling regeneration for a document whose SOURCE IS ALREADY

@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { NodeSchemaFs } from '../../../../src/acts/schema-fs.js';
 import { JitiLoader } from '../../../../src/adapters/loader/jiti-loader.js';
+import { NodeSchemaFs } from '../../../../src/node/index.js';
 import {
   adapterGapSource,
   collectAdapterGaps,

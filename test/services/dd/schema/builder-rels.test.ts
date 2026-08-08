@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
-import { NodeSchemaFs } from '../../../../src/acts/schema-fs.js';
 import { collectDeclaredRels } from '../../../../src/core/rel.js';
+import { NodeSchemaFs } from '../../../../src/node/index.js';
 import { ConventionSchemaResolver } from '../../../../src/schema/resolve.js';
 import { createSyntheticPlan, type SyntheticCorpus } from '../../../support/dd-corpus.js';
 import { runCli } from '../../../support/run-cli.js';

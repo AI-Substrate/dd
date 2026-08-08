@@ -25,9 +25,12 @@ const NOT_A_DIRECTORY = new Set(['ENOENT', 'ENOTDIR']);
  * propagates, and `scanRoot`'s `try/catch` turns it into one honest
  * `scan-failed` issue for that root. A wrong answer becomes a reported one.
  *
- * This lives in `acts/` rather than `services/dd/schema/` on purpose: acts are
- * this CLI's composition root (`acts/doctor.ts` sets the precedent), which keeps
- * the schema service itself free of `node:*` and testable with fakes only.
+ * This lives in the Node-bound adapter tier (`src/node/`) rather than in
+ * `src/schema/`: the schema service itself stays free of `node:*` and testable
+ * with fakes only, which is what the SDK-tree purity gate enforces
+ * (`test/architecture/dd-core-isolation.test.ts`, ac-0001). It was in `acts/`
+ * until the surface delta — same reasoning, one tier further out, now that a
+ * consumer is meant to reach it.
  */
 export class NodeSchemaFs implements SchemaFs {
   readdir(path: string): string[] {

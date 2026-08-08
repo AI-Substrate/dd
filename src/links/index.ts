@@ -30,7 +30,7 @@ export {
   runDoctor,
 } from './doctor.js';
 export { toMermaid } from './graph.js';
-export { MemoizingDocLoader } from './loader.js';
+export { FsDocLoader, MemoizingDocLoader } from './loader.js';
 export {
   addressableAt,
   anchorForLocation,
