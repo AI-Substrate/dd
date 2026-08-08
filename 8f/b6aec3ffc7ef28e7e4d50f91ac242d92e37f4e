@@ -1,0 +1,29 @@
+package.json
+  s_c05f2da2173927::t_024598823b313b 43-45
+  s_c05f2da2173927::t_3b6925a06bcefd 13,16-17
+  s_a6b77772852964::t_49e4332e8d4992 46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "8fb6aec3ffc7ef28e7e4d50f91ac242d92e37f4e",
+  "prompts": {},
+  "sessions": {
+    "s_a6b77772852964": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "c800c9ff-86e7-4a5f-bdc3-f63517243af6",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
