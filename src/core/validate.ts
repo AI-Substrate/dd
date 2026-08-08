@@ -104,6 +104,36 @@ function isRootAnchored(path: string): boolean {
 }
 
 /**
+ * ONE document, ONE spelling — the identity every path comparison in dd rests
+ * on (S-1 F1).
+ *
+ * A resolved path is not just a location here, it is an IDENTITY: compared with
+ * `===` (`core/walk.ts`, `render/refresh.ts`), keyed in `plan/index-plan.ts`,
+ * and used as the memoizing loader's cache key. dd has two producers of that
+ * identity and they disagreed about drive-letter case — `shared/posix-path.ts`
+ * upper-cases (so every path off the filesystem is `C:/…`), `normalizeFilePath`
+ * does not (so every path out of a parsed ADDRESS keeps what the author typed).
+ * `links/resolver.ts` picks between the two on nothing more than whether the
+ * address has a citing document, so one address text became two documents.
+ *
+ * Canonicalising HERE rather than at either call site is the point: the two
+ * producers converge, and every consumer is fixed at once. The rule is copied
+ * from `toPosix` deliberately — same grammar, so agreement is by construction
+ * rather than by coincidence. It cannot be imported: dd-core is transitively
+ * free of `node:` builtins and `shared/posix-path.ts` imports `node:path`.
+ *
+ * `normalizeFilePath` itself is deliberately left alone. It is exported from
+ * the public `./core/address` subpath, which makes its spelling SURFACE rather
+ * than detail, and this phase is surface-neutral by definition.
+ */
+function canonicalFilePath(raw: string): string {
+  return normalizeFilePath(raw).replace(
+    /^([a-z]):/,
+    (_, drive: string) => `${drive.toUpperCase()}:`,
+  );
+}
+
+/**
  * Resolve an address's `file` part against the CITING document, anchoring a
  * relative target on the citer's directory.
  *
@@ -114,13 +144,13 @@ function isRootAnchored(path: string): boolean {
  */
 export function resolveAddressFile(fromPath: string, target: string): string {
   const posixTarget = target.replaceAll('\\', '/');
-  if (isRootAnchored(posixTarget)) return normalizeFilePath(posixTarget);
-  return normalizeFilePath(`${dirname(fromPath)}/${posixTarget}`);
+  if (isRootAnchored(posixTarget)) return canonicalFilePath(posixTarget);
+  return canonicalFilePath(`${dirname(fromPath)}/${posixTarget}`);
 }
 
 export function isPathWithinRepo(path: string, root: string): boolean {
-  const normalizedPath = normalizeFilePath(path);
-  const normalizedRoot = normalizeFilePath(root).replace(/\/+$/, '');
+  const normalizedPath = canonicalFilePath(path);
+  const normalizedRoot = canonicalFilePath(root).replace(/\/+$/, '');
   return normalizedPath === normalizedRoot || normalizedPath.startsWith(`${normalizedRoot}/`);
 }
 
