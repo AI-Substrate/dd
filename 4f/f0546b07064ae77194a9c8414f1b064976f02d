@@ -1,0 +1,14 @@
+docs/plans/002-sdk-build/requirements.md
+  h_9e71e8b09f7cf2 39-50,246-291
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "4ff0546b07064ae77194a9c8414f1b064976f02d",
+  "prompts": {},
+  "humans": {
+    "h_9e71e8b09f7cf2": {
+      "author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
