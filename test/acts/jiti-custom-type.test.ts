@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { ensureBuilt, parseEnvelope, runDd } from '../support/run-cli.js';
+import { describeRun, ensureBuilt, parseEnvelope, runDd } from '../support/run-cli.js';
 
 /**
  * The jiti custom-type load path, proven end to end (plan 001, tk-0004 dw-0004).
@@ -90,9 +90,9 @@ describe('jiti loads a custom render type from untranspiled TypeScript', () => {
   });
 
   it('renders the adapter output rather than the raw value', () => {
-    const { code, stdout } = runDd(['--json', 'build', DOC], { cwd: repo });
-    expect(parseEnvelope(stdout).status).toBe('ok');
-    expect(code).toBe(0);
+    const cli = runDd(['--json', 'build', DOC], { cwd: repo });
+    expect(parseEnvelope(cli).status, describeRun(cli)).toBe('ok');
+    expect(cli.code, describeRun(cli)).toBe(0);
 
     const rendered = readFileSync(join(repo, 'timing.dd.md'), 'utf8');
     // 2610 minutes → "43h 30m", which only the TypeScript adapter can produce.

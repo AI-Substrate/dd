@@ -1,98 +1,22 @@
-import { execFileSync, spawnSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-
-const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
-const bin = join(repoRoot, 'bin', 'dd.js');
-
-type DdRun = {
-  readonly argv: readonly string[];
-  readonly code: number | null;
-  readonly signal: NodeJS.Signals | null;
-  readonly spawnError: Error | undefined;
-  readonly stdout: string;
-  readonly stderr: string;
-};
+import { describeRun, ensureBuilt, parseEnvelope, runDd } from './support/run-cli.js';
 
 /**
  * The real seam test: spawn the SHIPPED bin the way a consumer or CI would, and
  * assert the envelope contract and the status→exit-code mapping end to end.
  * Ported dd verbs slot in behind this same guarantee.
  *
- * EVERYTHING THE SPAWN REPORTS IS KEPT, deliberately. This helper used to return
- * `{code, stdout, stderr}` and the envelope parser took a bare string, so a run
- * that produced no parseable output failed as `SyntaxError: Unexpected end of
- * JSON input` and nothing else — a red that cannot say whether the bin crashed,
- * was killed by a signal, never spawned at all (`spawnSync` reports EAGAIN in
- * `error`, not in the exit code), or wrote output that was truncated in flight.
- * That happened for real in CI on the node-22 leg and the log could not
- * attribute it. Exit code, signal, spawn error and BOTH streams now travel with
- * the run and are printed on any parse failure, so the next instance names its
- * own cause instead of costing an investigation.
+ * THE SPAWN HELPERS ARE THE SHARED ONES, not a private copy. This file used to
+ * carry its own `runDd`/`parseEnvelope` pair, and the copies drifted: the shared
+ * one already stripped `DD_JSON` with an explicit `delete` while this one passed
+ * an `undefined`-valued key, whose handling differs across Node versions. Two
+ * implementations of "spawn the bin and read its envelope" means two different
+ * failure messages for the same defect, and the weaker one is the one that reds
+ * in CI. There is now one, and it reports everything the spawn knows.
  */
-function runDd(args: string[]): DdRun {
-  // Explicit delete rather than `DD_JSON: undefined`: an env object holding an
-  // `undefined` value is handled differently across Node versions, and the mode
-  // this test measures is exactly the one env can override.
-  const env = { ...process.env };
-  delete env.DD_JSON;
-  const result = spawnSync(process.execPath, [bin, ...args], {
-    cwd: repoRoot,
-    encoding: 'utf8',
-    env,
-  });
-  return {
-    argv: args,
-    code: result.status,
-    signal: result.signal,
-    spawnError: result.error,
-    stdout: result.stdout ?? '',
-    stderr: result.stderr ?? '',
-  };
-}
-
-/** Everything known about a spawn, in one line a CI log can be read from. */
-function describeRun(run: DdRun): string {
-  const spawnError =
-    run.spawnError === undefined
-      ? 'none'
-      : `${(run.spawnError as NodeJS.ErrnoException).code ?? 'Error'}: ${run.spawnError.message}`;
-  return [
-    `dd ${run.argv.join(' ')}`,
-    `exit=${run.code}`,
-    `signal=${run.signal ?? 'none'}`,
-    `spawnError=${spawnError}`,
-    `stdoutBytes=${Buffer.byteLength(run.stdout)}`,
-    `stderrBytes=${Buffer.byteLength(run.stderr)}`,
-    `stdout=${JSON.stringify(run.stdout.slice(0, 400))}`,
-    `stderr=${JSON.stringify(run.stderr.slice(0, 400))}`,
-  ].join(' | ');
-}
-
-function parseEnvelope(run: DdRun) {
-  const line = run.stdout.trim().split('\n').at(-1) ?? '';
-  try {
-    return JSON.parse(line) as {
-      command: string;
-      status: string;
-      timestamp: string;
-      data?: unknown;
-      error?: { code: string; message: string };
-      next_action?: string;
-    };
-  } catch (cause) {
-    throw new Error(`dd emitted no parseable envelope — ${describeRun(run)}`, { cause });
-  }
-}
 
 describe('dd bin smoke', () => {
-  beforeAll(() => {
-    if (!existsSync(join(repoRoot, 'dist', 'index.js'))) {
-      execFileSync('npm', ['run', 'build'], { cwd: repoRoot, stdio: 'inherit' });
-    }
-  });
+  beforeAll(ensureBuilt);
 
   it('--version prints the bare version and exits 0', () => {
     const run = runDd(['--version']);

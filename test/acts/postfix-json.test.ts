@@ -1,5 +1,11 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { type Envelope, ensureBuilt, parseEnvelope, runDd } from '../support/run-cli.js';
+import {
+  describeRun,
+  type Envelope,
+  ensureBuilt,
+  parseEnvelope,
+  runDd,
+} from '../support/run-cli.js';
 
 /**
  * Postfix `--json` on every verb (plan 001, ac-0005).
@@ -43,11 +49,11 @@ describe('postfix --json is accepted by every verb', () => {
   beforeAll(ensureBuilt);
 
   it('the plan’s E002 repro (`dd status --json`) now exits per status', () => {
-    const { code, stdout } = runDd(['status', '--json']);
-    const envelope = parseEnvelope(stdout);
-    expect(envelope.error?.code).toBeUndefined();
-    expect(envelope.status).toBe('ok');
-    expect(code).toBe(0);
+    const cli = runDd(['status', '--json']);
+    const envelope = parseEnvelope(cli);
+    expect(envelope.error?.code, describeRun(cli)).toBeUndefined();
+    expect(envelope.status, describeRun(cli)).toBe('ok');
+    expect(cli.code, describeRun(cli)).toBe(0);
   });
 
   for (const { verb, argv } of INVOCATIONS) {
@@ -56,9 +62,7 @@ describe('postfix --json is accepted by every verb', () => {
       const prefix = runDd(['--json', ...argv]);
 
       expect(postfix.code, `${verb} exit code`).toBe(prefix.code);
-      expect(comparable(parseEnvelope(postfix.stdout))).toEqual(
-        comparable(parseEnvelope(prefix.stdout)),
-      );
+      expect(comparable(parseEnvelope(postfix))).toEqual(comparable(parseEnvelope(prefix)));
     });
   }
 
@@ -70,13 +74,13 @@ describe('postfix --json is accepted by every verb', () => {
   });
 
   it('an error verb keeps exit 1 when the flag is written postfix', () => {
-    const { code, stdout } = runDd(['get', `${GOOD_DOC}#tasks/tk-9999/state`, '--json']);
-    expect(code).toBe(1);
-    expect(parseEnvelope(stdout).status).toBe('error');
+    const cli = runDd(['get', `${GOOD_DOC}#tasks/tk-9999/state`, '--json']);
+    expect(cli.code, describeRun(cli)).toBe(1);
+    expect(parseEnvelope(cli).status, describeRun(cli)).toBe('error');
   });
 
   it('covers every verb the ledger reports as ported', () => {
-    const status = parseEnvelope(runDd(['--json', 'status']).stdout);
+    const status = parseEnvelope(runDd(['--json', 'status']));
     const ported = (status.data as { ported: string[] }).ported;
     const covered = new Set(INVOCATIONS.map((invocation) => invocation.verb));
     expect(ported.filter((verb) => !covered.has(verb))).toEqual([]);

@@ -87,7 +87,7 @@ describe('a piped envelope is never truncated by the exit that follows it', () =
     // runs on (8 KB). If the corpus ever shrinks below it this row stops being
     // a truncation guard, so it says so here rather than passing quietly.
     expect(Buffer.byteLength(run.stdout), context).toBeGreaterThan(8_229);
-    expect(() => parseEnvelope(run.stdout), context).not.toThrow();
-    expect(parseEnvelope(run.stdout).status, context).toBe('ok');
+    expect(() => parseEnvelope(run), context).not.toThrow();
+    expect(parseEnvelope(run).status, context).toBe('ok');
   });
 });

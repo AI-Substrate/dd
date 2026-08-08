@@ -85,7 +85,7 @@ describe('docs/how/dd', () => {
   });
 
   it('serves the same ids the CLI does, so the two cannot diverge silently', () => {
-    const listed = parseEnvelope(runDd(['docs', 'list', '--json']).stdout);
+    const listed = parseEnvelope(runDd(['docs', 'list', '--json']));
     const ids = (listed.data as { docs: { id: string }[] }).docs.map((doc) => doc.id).sort();
     expect(ids).toEqual([...BAKED].sort());
     for (const id of ids) {
@@ -262,7 +262,7 @@ describe('the README quick start actually works', () => {
       }
       let envelope: Envelope;
       try {
-        envelope = parseEnvelope(run.stdout);
+        envelope = parseEnvelope(run);
       } catch {
         failures.push(`\`${what}\` exited 0 but answered no envelope: ${run.stdout.trim()}`);
         continue;
@@ -355,7 +355,7 @@ describe('the README quick start actually works', () => {
     const before = readFileSync(path, 'utf8');
     const refused = runDd(['set', address, 'nonsense', '--json'], { cwd: workspace });
     expect(refused.code).toBe(1);
-    expect(parseEnvelope(refused.stdout).status).toBe('error');
+    expect(parseEnvelope(refused).status).toBe('error');
     expect(readFileSync(path, 'utf8')).toBe(before);
   });
 });
@@ -500,7 +500,7 @@ describe('the handover packet carries the contracts it claims to carry', () => {
       'get',
       'docs/plans/001-dd-extraction/plan.dd.json#execution_guardrails',
     ]);
-    const guardrails = (parseEnvelope(run.stdout).data as { value?: string[] } | undefined)?.value;
+    const guardrails = (parseEnvelope(run).data as { value?: string[] } | undefined)?.value;
     expect(
       Array.isArray(guardrails) && guardrails.length > 0,
       'plan.dd.json#execution_guardrails did not read back as a non-empty list — that is a broken guard, not a clean repo',
