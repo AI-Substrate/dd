@@ -161,6 +161,17 @@ step — pointing harness at this package and deleting the old code — is koala
   that survive them are the ones that live in **what people say about artifacts** and in
   **how artifacts get rearranged**. Do not expect the gates to cover that, and do not build
   a gate that pretends to.
+- **THE WIRE IS UNVERSIONED — LATER DOES NOT MEAN BETTER, IT MEANS UNDIFFABLE.** Named by
+  `pij-certain-crab` after catching an o-prime wire message that contradicted a committed artifact.
+  **Between a committed artifact and a later message, disagreement is a QUESTION — never a silent
+  merge toward the newer text.** The reflex is to treat the most recent, most confident statement
+  as the current truth; here that statement was the wrong one, and reconciling toward it would have
+  corrupted a correct artifact. **Stop, cite both, ask which is wrong — never reconcile silently in
+  either direction.** This is the mirror of *a ledger is not a propagation mechanism*: that one is a
+  ruling failing to propagate **outward** to the surfaces it corrects; this is a later statement
+  failing to propagate **inward** to where the ruling lives. **The second is more dangerous,
+  because a wrong artifact can be diffed and a wrong sentence in a message can only ever be caught
+  by someone holding both.**
 - **A LEDGER IS NOT A PROPAGATION MECHANISM — acceptance is not application.** Named by
   `pij-certain-crab` after the o-prime ruled a finding in a plan's findings table and never edited
   the constraint that finding corrected. The document then contradicted itself, and a reader of the
