@@ -72,12 +72,23 @@ step "2/7  install build dependencies in the clone"
 ( cd "$CLONE" && npm ci --silent --no-audit --no-fund ) || fail "npm ci failed in the clean clone"
 
 # ---------------------------------------------------------------------------
-step "3/7  npm pack — prepack must build dist/ with no help from anyone"
+step "3/7  prepare built dist/ on install; prepack must rebuild it after we clear it"
 # ---------------------------------------------------------------------------
-# dist/ is deliberately still absent here. If `prepack` is not wired, the pack
-# below succeeds and produces a tarball with no runtime — which is exactly the
-# failure this gate exists to catch, so it is asserted rather than assumed.
-[ -d "$CLONE/dist" ] && fail "dist/ exists before pack — cannot prove prepack built it"
+# Both lifecycle hooks are proven here, in order, because Jordan's distribution
+# ruling made BOTH paths load-bearing: `prepare` serves the git-URL install and
+# `prepack` serves `npm pack`/publish. npm runs `prepare` on install, so the
+# `npm ci` above must ALREADY have produced dist/ — that is the git-URL path
+# working, and its absence is the failure a git consumer would hit as a bin that
+# throws ERR_MODULE_NOT_FOUND.
+[ -d "$CLONE/dist" ] || fail "npm ci did not build dist/ — prepare is not wired, so a git-URL install ships a broken package"
+echo "    prepare: npm ci built dist/ (the git-URL path)"
+
+# Now remove it, so `prepack` is still proven INDEPENDENTLY rather than passing on
+# prepare's output. If prepack is not wired, the pack below succeeds and produces a
+# tarball with no runtime — the failure this gate has always existed to catch, and
+# it stays asserted rather than assumed.
+rm -rf "$CLONE/dist"
+[ -d "$CLONE/dist" ] && fail "could not clear dist/ before the pack step"
 
 TARBALL_NAME="$( cd "$CLONE" && npm pack --json --silent 2>/dev/null | node -e '
   let s = ""; process.stdin.on("data", (d) => (s += d)).on("end", () => {
