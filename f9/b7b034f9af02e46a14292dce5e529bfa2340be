@@ -1,0 +1,24 @@
+docs/plans/002-sdk-build/assets/p4-notes.md
+  s_c05f2da2173927::t_a78e969802b97d 1-198
+test/services/dd/core/path-identity.test.ts
+  s_c05f2da2173927::t_782e3e5ead9bbd 1-151
+src/core/validate.ts
+  s_c05f2da2173927::t_7b7adca8b313da 107-135,147-148,152-153
+  s_c05f2da2173927::t_985157a8ba5077 106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "f9b7b034f9af02e46a14292dce5e529bfa2340be",
+  "prompts": {},
+  "sessions": {
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
