@@ -942,7 +942,7 @@ number instead of living in one agent's memory.
 
 <!-- BEGIN GENERATED: constraints (scripts/gen-handover-embeds.mjs) -->
 
-**Reproduced verbatim as of `3343a09`** — 8 constraints,
+**Reproduced verbatim as of `bc00210`** — 9 constraints,
 the commit that last changed the source. Cite them BY NUMBER. Stamped past-tense copy:
 check whether yours is stale, and re-pull, with:
 
@@ -1003,6 +1003,26 @@ into an implementation.
 OQ-1 (SDK-as-library vs CLI-shelled) and OQ-2 (does `plan/` ship public) gate the
 exports freeze — phase-4 `tk-0002` — and **nothing else**. Do not guess them, and do not
 let them stall independent work.
+
+## 9 — OQ-2 is HELD pending koala's trial verdict on primitive sufficiency
+
+**Ruled by Jordan, 2026-08-09**, verbatim. Asked: *"Do you want `plan/` stripped for good now that
+harness re-implements on the primitives, or held open until koala's trial says whether the
+primitives are sufficient?"* — Jordan: **"held please"**.
+
+**Settles**: `./plan` stays forbidden in the exports map and `src/plan` is **not** stripped. The
+question does not close on our judgement — it closes when **`pij-related-koala`'s trial reports
+whether the public primitives are sufficient** to re-implement plan semantics.
+
+**Consequences, not inferred beyond the ruling**:
+- `acts/plan/index.ts` and `acts/plan/pr-body.ts` remain **untrialable** until then. That is the
+  design working, not a blocker to route around.
+- **Nobody strips `src/plan`**, and `wl-0011` (it is dead code in our fork) stays deferred — the
+  same trial informs both.
+- Plan 002 can be complete with OQ-2 open. Its exit was *PR up and CI green*, which is met; OQ-2
+  was never in that exit condition.
+
+**Who closes it**: koala, by reporting sufficiency or a gap. Route prime-to-prime per §6.
 ```
 
 <!-- END GENERATED: constraints -->
