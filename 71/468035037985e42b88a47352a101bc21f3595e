@@ -1,0 +1,19 @@
+docs/plans/002-sdk-build/tasks/p1-skeleton-measurement.md
+  s_6e59036559203c::t_1a55c8d1c47b76 1-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "71468035037985e42b88a47352a101bc21f3595e",
+  "prompts": {},
+  "sessions": {
+    "s_6e59036559203c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06d3bbcf-6419-4a86-8e8c-7147b4e647ce",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
