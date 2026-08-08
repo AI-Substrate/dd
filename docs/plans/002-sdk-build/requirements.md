@@ -124,7 +124,30 @@ adjust the surface, repeat. Two consequences for this plan:
 it) and standing 6 (contact is prime-to-prime — the PM prepares, the o-prime sends). Iteration
 changes the *cadence* of that channel, not its altitude.
 
----
+### R-5 · THE GO — fleet spec, autonomy contract, and the exit condition
+
+> **Jordan, 2026-08-08**, in the PM's pane, as `/pij` args: *"copilot agent harness opus 5
+> coder high, terr high reviewer pelase. go"*
+>
+> **Jordan, 2026-08-08**, immediately after, mid-turn: *"iterate until complete unle syo have
+> questiosn (ask me on pij telegram) oterhwsie i expect to come back to PR UP and CI green. Use
+> your Pidgeboat Dog to make sure that the agents the coder isn't looping on silly things and
+> check in on it. But otherwise just go through the coda review a loop for each phase until the
+> work is complete unless you have a question."*
+
+**Settles** (PM inference, labelled):
+
+- **The go is given.** Plan 002 dispatch begins as of these words.
+- **Fleet spec**: coder `claude-opus-5` at **high** effort, reviewer `gpt-5.6-terra` at
+  **high** effort, both in the copilot harness. Cross-model review preserved.
+- **Autonomy contract**: iterate phase-by-phase through the code-review loop until the work is
+  complete, without waiting for further human input. Questions go to Jordan **via pij
+  telegram**, not by pausing in-pane.
+- **Exit condition: PR UP and CI GREEN.** For this plan this **supersedes** the 2026-08-07
+  landing policy (*push to main, no PR* — orient-local § Repo mechanics). A later ruling by
+  the same authority; the orient-local row stays correct for plan-001 history.
+- **Supervision duty**: the PM runs the watchdog ("Pidgeboat Dog") on the coder to catch
+  looping-on-silly-things, and checks in on it — supervision is the PM's, not delegated.
 
 ## 3. Constraints and cautions carried in
 
@@ -135,6 +158,7 @@ changes the *cadence* of that channel, not its altitude.
 | C-3 | Upstream `harness-engineering` stays **read-only reference**. The consume step is koala's. | plan 001 standing constraint 5 |
 | C-4 | No publish / tag / release from agents without Jordan. | plan 001 standing constraint 2 |
 | C-5 | Worktree-per-writer. This plan works in `s002-sdk-build`, not main. | plan 001 P-2 ruling |
+| C-6 | **A transient red is a finding, never a re-run.** `just checks` showed two transient reds on 2026-08-08 that greened on immediate re-run with no intervening change. "I saw a red, I re-ran, it was fine" is forbidden reasoning in this subtree: read the exit code; when non-zero, find out why before pushing. CI carried a red for three commits because this rule was broken once. | o-prime hazard notice, 2026-08-08 |
 
 ---
 
@@ -195,6 +219,15 @@ for an SDK, and **freezing the map would freeze it**.
 **Proven against a real GitHub install after the push**, not against a local simulation:
 `npm install github:AI-Substrate/dd` into a clean scratch project now yields `dist/index.js`
 and a working bin (`dd --json version` → `status: ok`). R-3's fast path is live.
+
+> **The fix was correct AND it was not cost-free** (o-prime, 2026-08-08): `prepare` runs on
+> `npm ci` too, so the pack gate's clean-clone assertion that `dist/` must be ABSENT before
+> pack began failing — CI was red from `2fe4079` for three commits before anyone looked.
+> The gate was right; the fix invalidated its precondition. Redesigned at `69b9e74` to prove
+> **both** hooks in order: after `npm ci`, `dist/` must EXIST (the git-URL path working),
+> then cleared so `prepack` is proven independently — strictly stronger, because R-3 made two
+> distribution paths load-bearing and the gate only ever proved one. Do not read this section
+> as "prepare was a settled, cost-free change."
 
 ### 4.5 The consumer census (koala's, verified twice)
 
