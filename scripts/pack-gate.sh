@@ -83,10 +83,21 @@ step "3/8  prepare built dist/ on install; prepack must rebuild it after we clea
 [ -d "$CLONE/dist" ] || fail "npm ci did not build dist/ — prepare is not wired, so a git-URL install ships a broken package"
 echo "    prepare: npm ci built dist/ (the git-URL path)"
 
-# Now remove it, so `prepack` is still proven INDEPENDENTLY rather than passing on
-# prepare's output. If prepack is not wired, the pack below succeeds and produces a
-# tarball with no runtime — the failure this gate has always existed to catch, and
-# it stays asserted rather than assumed.
+# Now remove it and pack, so the tarball's runtime is asserted rather than assumed:
+# if NEITHER hook is wired, the pack below succeeds and produces a tarball with no
+# runtime — the failure this gate has always existed to catch.
+#
+# MEASURED, and narrower than this comment used to claim. It said `prepack` was
+# proven INDEPENDENTLY of `prepare` here. It is not: a four-line probe package
+# whose `prepare` writes a marker file shows `prepare` FIRES on a plain `npm pack`
+# under both npm 10.9.2 (node 22, our engines floor and a CI leg) and npm 11
+# (node 24) — and the pack below passes no --ignore-scripts. So clearing dist/
+# proves "prepack OR prepare rebuilt it", not prepack alone. Nothing is left
+# unproven for a consumer, because both hooks are wired today and either one
+# rebuilding dist/ is the outcome both install paths need; the claim is simply
+# smaller than the sentence that stood here. Isolating prepack would mean packing
+# with `prepare` stripped from the manifest, which is a change to what this step
+# tests, not a comment fix.
 rm -rf "$CLONE/dist"
 [ -d "$CLONE/dist" ] && fail "could not clear dist/ before the pack step"
 
