@@ -1,0 +1,31 @@
+test/package-manifest.test.ts
+  s_c05f2da2173927::t_9fc90cff620f64 98-102
+  s_c05f2da2173927::t_9605df62cc4fc4 2-15,44-81,84-97,103-114,116,120-121,124-126
+  s_71573ba2cda996::t_3a4c9b64b0e939 127
+docs/plans/002-sdk-build/assets/mid-suite-rebuild-race.md
+  s_c05f2da2173927::t_62033f09619bcf 1-107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "24d12557d24767991c698dd359a07c3ab624789e",
+  "prompts": {},
+  "sessions": {
+    "s_71573ba2cda996": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "89c95400-311e-4dd0-bb92-887bdd22a76e",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
