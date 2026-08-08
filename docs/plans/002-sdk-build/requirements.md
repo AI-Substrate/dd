@@ -84,6 +84,26 @@ the registry**, so the quarantine does not apply to dd itself. Only its two runt
 any aging window. Evidence: `npm install github:AI-Substrate/dd` reported *"added 3 packages"* —
 dd from git, two from the registry.
 
+### R-4 · Integration is an iterative trial WITH koala, not a one-shot handover
+
+> **Jordan, 2026-08-08**, in the PM's pane, after confirming the PM's feature-list reading of
+> the SDK ask: *"yep and when its ready to trial we will work with pij-related-koala to iterate
+> on integrating it in to the harness."*
+
+**Settles**: the SDK's consume step is not a packet thrown over a wall. When the surface is
+**ready to trial** — not finished — we work *with* koala iteratively: integrate, hit friction,
+adjust the surface, repeat. Two consequences for this plan:
+
+- **The surface stays movable until the trial says otherwise.** Design decisions (Q-4 width,
+  Q-5 root shape) should expect at least one koala-driven revision, so nothing freezes the
+  `exports` map before trial feedback exists.
+- **"Ready to trial" is a milestone this plan must define** — presumably the F-2/F-3 fixture
+  green plus the R-1 research honoured — and it lands *before* the plan is done, not at its end.
+
+**Unchanged by this ruling**: standing 5 (the consume work itself is koala's, we never start
+it) and standing 6 (contact is prime-to-prime — the PM prepares, the o-prime sends). Iteration
+changes the *cadence* of that channel, not its altitude.
+
 ---
 
 ## 3. Constraints and cautions carried in
