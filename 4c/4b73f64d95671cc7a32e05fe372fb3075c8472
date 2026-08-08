@@ -1,0 +1,19 @@
+docs/plans/002-sdk-build/tasks/p7-surface-membership-gate.md
+  s_6e59036559203c::t_235cf5a803f060 1-72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "4c4b73f64d95671cc7a32e05fe372fb3075c8472",
+  "prompts": {},
+  "sessions": {
+    "s_6e59036559203c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06d3bbcf-6419-4a86-8e8c-7147b4e647ce",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
