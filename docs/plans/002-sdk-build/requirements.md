@@ -124,13 +124,16 @@ calls `main()`. So `import '@ai-substrate/dd'` **runs the CLI**, prints help to 
 yields **zero named exports**. Harmless to harness today (it imports subpaths only) but wrong
 for an SDK, and **freezing the map would freeze it**.
 
-### 4.4 A git-URL install is broken today
+### 4.4 A git-URL install was broken — FIXED at `114b2c1`
 
 `npm install github:AI-Substrate/dd` **reports success** and installs a broken package: no
 `dist/`, bin throws `ERR_MODULE_NOT_FOUND`. Cause: the package has `prepack` but **npm runs
-`prepare` on git installs**, and `dist/` is gitignored. A one-line `prepare` script fixes it —
-verified against a real git install (dist built, bin ran, envelope correct). **R-3 makes this
-load-bearing rather than latent.**
+`prepare` on git installs**, and `dist/` is gitignored.
+
+**Fixed on main at `114b2c1`** (Jordan, 2026-08-08) — one line, `"prepare": "npm run build"`.
+**Proven against a real GitHub install after the push**, not against a local simulation:
+`npm install github:AI-Substrate/dd` into a clean scratch project now yields `dist/index.js`
+and a working bin (`dd --json version` → `status: ok`). R-3's fast path is live.
 
 ### 4.5 The consumer census (koala's, verified twice)
 
@@ -177,7 +180,6 @@ an existing typed edge**, not a new concept — which suggests the rule vocabula
 
 | # | Question | Blocks |
 |---|---|---|
-| Q-1 | Land the `prepare` fix (§4.4) now, or inside this plan? | nothing — it is one line and already verified |
 | Q-2 | Windows drive-letter defect (backlog 22, three sites, live in the shipped CLI): hotfix now, or scope into this plan? | a shipped user-facing defect |
 | Q-3 | `harness init` — stamp the governance doc? Every pre-flight boot across plan 001 returned `UNAVAILABLE` over a healthy substrate. | boot verdicts stay uninformative |
 | Q-4 | Which primitives become public (§4.1) — the minimum five, or a deliberately wider designed surface? | **the central question of this plan** |
