@@ -158,7 +158,7 @@ changes the *cadence* of that channel, not its altitude.
 | C-3 | Upstream `harness-engineering` stays **read-only reference**. The consume step is koala's. | plan 001 standing constraint 5 |
 | C-4 | No publish / tag / release from agents without Jordan. | plan 001 standing constraint 2 |
 | C-5 | Worktree-per-writer. This plan works in `s002-sdk-build`, not main. | plan 001 P-2 ruling |
-| C-6 | **A transient red is a finding, never a re-run.** `just checks` showed two transient reds on 2026-08-08 that greened on immediate re-run with no intervening change. "I saw a red, I re-ran, it was fine" is forbidden reasoning in this subtree: read the exit code; when non-zero, find out why before pushing. CI carried a red for three commits because this rule was broken once. | o-prime hazard notice, 2026-08-08 |
+| C-6 | **A transient red is a finding, never a re-run — and the MECHANISM is now known** (o-prime, reproduced deliberately, recorded at `fceaab4` on main): the check-* gates REGENERATE the artifact they diff, so one pass detects drift, reports red, AND repairs it — **the second run cannot fail, and the red erases its own evidence**. The reds were never transient; they were real failures that self-destructed. Three compounding harms: the re-run habit gets trained, the re-run "proves" the red spurious, and nobody learns what drifted. **Operational rule, one command: ON ANY RED, `git status` BEFORE re-running.** Clean tree + red gate = the gate just repaired something and the evidence is already gone — capture the red output, report it, THEN proceed. (Real fix — check-* read-only / gen-* repairing — is a wishlist candidate, deliberately not in flight mid-pipeline.) | o-prime, 2026-08-08 · mechanism proven at `fceaab4` |
 
 ---
 
