@@ -32,15 +32,21 @@ export function exitCodeFor(env: Envelope): number {
  *
  * WHY NOT the `emitRawAndExit` treatment (set `process.exitCode` and return)?
  * Because it is not equivalent here. `exitWithEnvelope` is declared `never` and
- * 43 of its 59 call sites rely on that: they emit a terminal envelope as a bare
- * statement and let the guarantee of not-returning stop the act. Measured, with
- * the returning version built: `dd address validate` emitted TWO envelopes — an
- * `ok` one and then an `error` one — and `dd <unknown-verb>` printed its error
- * envelope followed by an unhandled `dd: unexpected error:` line. `tsc` catches
- * 34 of those sites; the rest compile clean and break the one-envelope contract
- * silently. Draining by returning is the right architecture, but it is a
- * 59-call-site change across `src/acts/**` and `src/app.ts`, not a change to
- * this file.
+ * 38 of its 59 call sites rely on that: they emit a terminal envelope as a bare
+ * statement and let the guarantee of not-returning stop the act. THE COUNT
+ * CARRIES ITS POPULATION, because an unscoped one is how this comment first
+ * claimed 43: 37 of the 38 are in `src/acts/**`, and the thirty-eighth is
+ * `src/app.ts:162`, where returning falls through to `throw err`. The other 21
+ * sites are terminal by position — 18 end their function, 1 is followed by a
+ * bare `return`, and 2 are the bodies of `never`-declared local `fail` helpers,
+ * which relocate the dependency to those helpers' callers rather than remove it.
+ * Measured, with the returning version built: `dd address validate` emitted TWO
+ * envelopes — an `ok` one and then an `error` one — and `dd <unknown-verb>`
+ * printed its error envelope followed by an unhandled `dd: unexpected error:`
+ * line. `tsc` catches 34 of those sites; the rest compile clean and break the
+ * one-envelope contract silently. Draining by returning is the right
+ * architecture, but it is a 59-call-site change across `src/acts/**` and
+ * `src/app.ts`, not a change to this file.
  *
  * Guarded rather than assumed: `_handle` is internal, so if it or `setBlocking`
  * ever disappears this quietly does nothing — and the regression test in
