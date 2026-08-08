@@ -1,0 +1,21 @@
+test/smoke.test.ts
+  s_c05f2da2173927::t_b5583204e6da12 10-18,23-33,35-40,44,46-53,56-87
+  s_c05f2da2173927::t_0def13ca5533f6 98-100,104-107,129-131
+  s_c05f2da2173927::t_b38d078508a7e8 111-113,120-125,138-140,148-150
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "e7c558f878a38909cf56023c7aa50ed8a853cd50",
+  "prompts": {},
+  "sessions": {
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
