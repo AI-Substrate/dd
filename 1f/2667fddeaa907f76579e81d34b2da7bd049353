@@ -1,0 +1,44 @@
+test/support/run-cli.ts
+  s_c05f2da2173927::t_860501c03cd928 69,73-78,80,88-91,93
+  s_c05f2da2173927::t_f209879b98979a 131
+  s_c05f2da2173927::t_151cf46675874d 10-11,13-15,38-46,56-63,66-68,70-72,79,81-87,92,94-123,125-130,132-133
+test/smoke.test.ts
+  s_c05f2da2173927::t_45721f24118adc 19
+  s_f99a0b9402b574::t_c00f5b5ad4df9d 2,9-15
+test/acts/binary-name.test.ts
+  s_c05f2da2173927::t_92ea527201114e 126
+test/acts/envelope-contract.test.ts
+  s_c05f2da2173927::t_0cfe21cd5c6061 3,145-148,152,161,169,195,202
+test/acts/envelope-flush.test.ts
+  s_c05f2da2173927::t_b17a479c48b230 90-91
+test/acts/jiti-custom-type.test.ts
+  s_c05f2da2173927::t_cd54b860d62789 5,93-95
+test/acts/postfix-json.test.ts
+  s_c05f2da2173927::t_a20eb72e331933 2-8,52-56,65,77-79,83
+test/docs-surface.test.ts
+  s_c05f2da2173927::t_ccacfb99b2d0e2 88,265,358,503
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "1f2667fddeaa907f76579e81d34b2da7bd049353",
+  "prompts": {},
+  "sessions": {
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_f99a0b9402b574": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "08cd3b5c-0389-44be-8a19-d7d6a4a730fa",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
