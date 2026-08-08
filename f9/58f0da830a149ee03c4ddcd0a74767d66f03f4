@@ -1,0 +1,31 @@
+package-lock.json
+  s_9739a1944e1e79::t_f1c31b9b52a318 18,22,30-101,325-342,405-414,447-462,724-736,934-985,1018-1121,1148-1174,1182-1191,1230-1236,1251-1260,1271-1280,1288-1297,1614-1623,1662-1731,1751-1776,1791-1821,1878-1909,1944-1956,1977-1989,2014-2051,2065-2104,2178-2197,2382-2438
+package.json
+  s_9739a1944e1e79::t_fa6530429c2e8f 98,102
+scripts/trial-fixture-run.mjs
+  s_c05f2da2173927::t_98016397c00edc 221-278
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "f958f0da830a149ee03c4ddcd0a74767d66f03f4",
+  "prompts": {},
+  "sessions": {
+    "s_9739a1944e1e79": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "49171d85-70d5-4fac-b53c-753db58d28c3",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
