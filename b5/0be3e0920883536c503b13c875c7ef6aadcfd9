@@ -1,0 +1,19 @@
+docs/plans/002-sdk-build/design-decision.md
+  s_71573ba2cda996::t_f44e4144901327 173-184
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "b50be3e0920883536c503b13c875c7ef6aadcfd9",
+  "prompts": {},
+  "sessions": {
+    "s_71573ba2cda996": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "89c95400-311e-4dd0-bb92-887bdd22a76e",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
