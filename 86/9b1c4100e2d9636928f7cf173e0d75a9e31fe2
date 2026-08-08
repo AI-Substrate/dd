@@ -1,0 +1,23 @@
+docs/plans/002-sdk-build/assets/exit-flush-callsite-census.md
+  s_c05f2da2173927::t_0e787f9771016e 1-133
+test/acts/envelope-flush.test.ts
+  s_c05f2da2173927::t_bd5c06178fb93f 2,7-14,27-37,39-44,47-75,79,103-118,123,126-144,148-154,156,159-160,164-167,170-178
+src/output/exit.ts
+  s_c05f2da2173927::t_a23d83e40c342c 35-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "869b1c4100e2d9636928f7cf173e0d75a9e31fe2",
+  "prompts": {},
+  "sessions": {
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
