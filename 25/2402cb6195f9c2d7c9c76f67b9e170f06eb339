@@ -1,0 +1,21 @@
+src/links/map.ts
+  s_c05f2da2173927::t_7672b18af0c062 8,352-369,371-372
+test/services/dd/links/map.test.ts
+  s_c05f2da2173927::t_c2895137541aef 1158-1353
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "252402cb6195f9c2d7c9c76f67b9e170f06eb339",
+  "prompts": {},
+  "sessions": {
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
