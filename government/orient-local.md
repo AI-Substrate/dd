@@ -221,11 +221,20 @@ step — pointing harness at this package and deleting the old code — is koala
 | Drain | `harness observe --list --json` → `harness record retro` → `harness observe --clear` | `.harness/records/` |
 | Encode | new `.harness/extensions/<verb>/` or a `justfile` recipe | committed substrate |
 
-**Expected harness baseline — a rule, not a reading.** Run `harness doctor`. If the **only**
-non-ok layer is `telemetry-flush-hook` (no `post-commit` hook installed), that is the
-**expected baseline, not a defect** — AGENTS.md records the omission as deliberate, and
-**a stream must not "fix" it without a ruling**. Any *other* non-ok layer is real and
-wants attention.
+**Expected harness baseline — a rule, not a reading.** Run `harness doctor`. **Three** layers
+are expected non-ok here; **anything else is real and wants attention**:
+
+| Layer | Why it is expected | Do not "fix" without a ruling |
+|---|---|---|
+| `telemetry-flush-hook` | no `post-commit` hook; the hook **pushes** to `refs/harness-telemetry/*` and publishing is the maintainer's call | correct — AGENTS.md records the omission as deliberate |
+| `capture-liveness` | reports *could-not-determine*: harness-side capture is off by default since the git-ai collector handover, so there is no lane to be live | correct — nothing to fix if that is intended |
+| `gitai-collector` | a `git-ai` binary exists on this machine that harness did not install, so provenance is unknown | **machine-global** (`~/.git-ai`), not repo state — Jordan's environment, not a stream's to change |
+
+**This list was wrong within an hour of being written**, which is the point of phrasing it as a
+condition rather than a stamped reading. It said *"the only non-ok layer is telemetry-flush-hook"*
+— true when written, and false the moment `harness init` activated layers that had never applied.
+One of the four it revealed (`commit-guidance`) was a **real defect**, fixed at `c210d3a`; the
+other two are the informational rows above. The rule fired correctly and found something.
 
 Written as a condition rather than a stamped verdict on purpose: a present-tense state
 claim in a standing document has no expiry and no owner, which is the exact defect that
