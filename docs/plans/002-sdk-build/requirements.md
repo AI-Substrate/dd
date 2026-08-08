@@ -180,10 +180,49 @@ an existing typed edge**, not a new concept — which suggests the rule vocabula
 
 | # | Question | Blocks |
 |---|---|---|
-| Q-2 | Windows drive-letter defect (backlog 22, three sites, live in the shipped CLI): hotfix now, or scope into this plan? | a shipped user-facing defect |
 | Q-3 | `harness init` — stamp the governance doc? Every pre-flight boot across plan 001 returned `UNAVAILABLE` over a healthy substrate. | boot verdicts stay uninformative |
 | Q-4 | Which primitives become public (§4.1) — the minimum five, or a deliberately wider designed surface? | **the central question of this plan** |
 | Q-5 | Does the root-export fix (§4.3) change `"."` to a real barrel, or drop the root export entirely? | SDK shape |
+
+---
+
+## 7a. Scoped INTO this plan
+
+### S-1 · Windows drive-letter re-anchoring (backlog 22) — **ruled into plan 002**
+
+> **Jordan, 2026-08-08**, on hotfix-now vs scope-into-002: *"na scope it to new plan"*
+
+Not hotfixed on main. Three sites test absoluteness with `startsWith('/')`, which a
+drive-letter path does not satisfy, so an absolute path is treated as relative and re-anchored
+under the repo root:
+
+| Site | Function | Surface |
+|---|---|---|
+| `src/acts/doctor.ts:129` | `resolveScope` | `dd doctor --path` — **shipped CLI** |
+| `src/acts/graph.ts:385` | `resolveScope` (identical copy) | `dd graph --path` — **shipped CLI** |
+| `src/core/validate.ts:88` | `resolveAddressFile` | address resolution — **library surface** |
+
+Reproduced here before recording: `C:/Users/jordan/docs` → `<repoRoot>/C:/Users/jordan/docs`;
+posix absolutes pass through correctly; genuinely relative paths re-anchor correctly. So the
+defect is precisely and only the drive-letter case.
+
+**Why it belongs in an SDK plan rather than sitting as a loose bug fix** — and this is the
+part that makes the scoping coherent rather than convenient:
+
+- `core/validate.ts:88` is on the **library** surface, and `resolveAddressFile` is one of the
+  symbols harness already imports. An SDK cannot ship a public address resolver that mis-resolves
+  a whole platform's absolute paths.
+- The two act sites are the same defect one layer up, and the fix upstream used `resolveInRepo` /
+  `ABSOLUTE_LOGICAL` — **primitives**, which is exactly what §4.1 is about. Deciding how paths
+  are represented and resolved *is* SDK surface design, not incidental cleanup.
+- `core/validate.ts:88` will **never arrive by forward port** — upstream deliberately deferred
+  that fix to a later PR — so waiting inherits it late regardless.
+
+**Carried constraints**: two distinct defect families per upstream's own split (identity-spelling
+vs absoluteness-detection) — do not fix as one change. `toPosix` does **not** fix it; it fires on
+forward-slash drive-letter paths too. Acceptance tests need a lowercase-drive case, because
+`toPosix` upper-cases the drive letter while `normalizeFilePath` does not, so correctness
+currently depends on which runs first.
 
 ---
 
