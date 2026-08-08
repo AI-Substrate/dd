@@ -62,7 +62,7 @@ git clone "${CLONE_ARGS[@]}" "$REPO_ROOT" "$CLONE"
 git -C "$CLONE" -c advice.detachedHead=false checkout --quiet "$HEAD_SHA"
 echo "    HEAD $HEAD_SHA"
 
-[ -d "$CLONE/dist" ] && fail "the clone already has dist/ — it is not clean, so prepack proves nothing"
+[ -d "$CLONE/dist" ] && fail "the clone already has dist/ — it is not clean, so the lifecycle-hook proof means nothing"
 [ -d "$CLONE/node_modules" ] && fail "the clone already has node_modules/ — it is not clean"
 echo "    clean: no dist/, no node_modules/"
 
@@ -72,7 +72,7 @@ step "2/8  install build dependencies in the clone"
 ( cd "$CLONE" && npm ci --silent --no-audit --no-fund ) || fail "npm ci failed in the clean clone"
 
 # ---------------------------------------------------------------------------
-step "3/8  prepare built dist/ on install; prepack must rebuild it after we clear it"
+step "3/8  prepare built dist/ on install; a lifecycle hook must rebuild it after we clear it"
 # ---------------------------------------------------------------------------
 # Both lifecycle hooks are proven here, in order, because Jordan's distribution
 # ruling made BOTH paths load-bearing: `prepare` serves the git-URL install and
@@ -113,8 +113,8 @@ case "$TARBALL_NAME" in
 esac
 TARBALL="$CLONE/$TARBALL_NAME"
 [ -f "$TARBALL" ] || fail "packed tarball not found at $TARBALL"
-[ -f "$CLONE/dist/index.js" ] || fail "prepack did not build dist/ — a clean clone does NOT self-build"
-echo "    packed $TARBALL_NAME (prepack built dist/)"
+[ -f "$CLONE/dist/index.js" ] || fail "neither prepack nor prepare rebuilt dist/ during pack — a clean clone does NOT self-build"
+echo "    packed $TARBALL_NAME (a lifecycle hook built dist/)"
 
 # ---------------------------------------------------------------------------
 step "4/8  file-list assertion — what is in the tarball, and what must not be"
