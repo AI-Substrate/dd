@@ -1,0 +1,21 @@
+.harness/engineering-harness.md
+  s_f5a59eaabcfb7d::t_46894415b2bdad 1-152
+AGENTS.md
+  s_f5a59eaabcfb7d::t_7e0fa128a8c5a7 89-110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "c210d3a6d20a1541f5517af4fa82ab45348f1c88",
+  "prompts": {},
+  "sessions": {
+    "s_f5a59eaabcfb7d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c1a8ee5f-0c77-4a73-9109-a12db9cd18a8",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
