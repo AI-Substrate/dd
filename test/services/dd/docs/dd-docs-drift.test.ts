@@ -28,7 +28,8 @@ const DOCS_DIR = 'src/docs';
 let root = '';
 
 afterEach(() => {
-  if (root.length > 0) rmSync(root, { recursive: true, force: true });
+  if (root.length > 0)
+    rmSync(root, { recursive: true, force: true, maxRetries: 3, retryDelay: 50 });
   root = '';
 });
 
