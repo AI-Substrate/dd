@@ -1,0 +1,62 @@
+test/services/dd/links/loader.test.ts
+  s_c05f2da2173927::t_8e69aeaf573824 1-121
+  s_c05f2da2173927::t_6cd1dba0cc1169 122-125
+src/node/deps.ts
+  s_c05f2da2173927::t_9999bacf49607b 1-23
+src/node/issue-codes.ts
+  s_c05f2da2173927::t_21bed109823b56 7-22,31
+  s_c05f2da2173927::t_64b13907502fde 4-6
+  s_c05f2da2173927::t_a9885095d519b6 23-25,28-30
+  s_c05f2da2173927::t_66625b82489597 32-34
+  s_c05f2da2173927::t_2174a93ae38de2 1-3,26-27,35-58
+test/node/index.test.ts
+  s_c05f2da2173927::t_24e0ced177573c 70-73,75-76,141
+  s_c05f2da2173927::t_00759b1e414f15 1-69,74,77-140,142-152
+src/links/loader.ts
+  s_c05f2da2173927::t_f077e87d7e0596 1,4-28
+  s_c05f2da2173927::t_f820e006909494 29,55-102
+src/node/tracked-paths.ts
+  s_c05f2da2173927::t_5855c2d8971a92 1-30
+src/links/index.ts
+  s_c05f2da2173927::t_45d97018b95058 33
+src/acts/build.ts
+  s_c05f2da2173927::t_8f54f1719ed8cd 10-16,33-39
+src/acts/schema.ts
+  s_c05f2da2173927::t_1c256d036bd975 7
+src/acts/shared.ts
+  s_c05f2da2173927::t_bad384dc14e65e 7-16,20,22,24-28,30-31
+src/acts/validate.ts
+  s_c05f2da2173927::t_349f446bc71ac8 10
+src/node/index.ts
+  s_c05f2da2173927::t_4aa4537ef316ed 1-37
+src/node/render-document.ts
+  s_c05f2da2173927::t_714ba0ca64f88a 1-185
+test/acts/dd-schema-fs.test.ts
+  s_c05f2da2173927::t_09d051479b20ae 5
+test/services/dd/render/adapters.test.ts
+  s_c05f2da2173927::t_b1a3d4e3a42b6f 7
+test/services/dd/render/gaps.test.ts
+  s_c05f2da2173927::t_ce6e4001dd007d 5
+test/services/dd/render/refresh.test.ts
+  s_c05f2da2173927::t_2a077b6b967e34 10
+test/services/dd/schema/builder-rels.test.ts
+  s_c05f2da2173927::t_e5d51bc31301a4 4
+src/node/schema-fs.ts
+  s_c05f2da2173927::t_5a8288f9fce4ba 28-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "39756c2c0b2156c40596af6ab43bf452839cc4de",
+  "prompts": {},
+  "sessions": {
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
