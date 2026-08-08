@@ -111,7 +111,7 @@ changes the *cadence* of that channel, not its altitude.
 | # | Constraint | Source |
 |---|---|---|
 | C-1 | **First-party repos only** for the git-URL path. The proxy exists to guard packages we do not control; dd is ours. The exception is well-scoped as long as it never generalises to third-party deps. | o-prime caution, accepted framing |
-| C-2 | **Pin to a tag or SHA, never a bare branch.** `github:AI-Substrate/dd` means "whatever `main` is right now" — two machines installing an hour apart get different code. | o-prime caution |
+| C-2 | **Pin to a SHA, never a bare branch — SHA-only for agents.** `github:AI-Substrate/dd` means "whatever `main` is right now" — two machines installing an hour apart get different code. Tags are Jordan's to cut (C-4), so no agent may satisfy this constraint with a tag. *Amended per F-6 ruling, §10.* | o-prime caution, amended by F-6 |
 | C-3 | Upstream `harness-engineering` stays **read-only reference**. The consume step is koala's. | plan 001 standing constraint 5 |
 | C-4 | No publish / tag / release from agents without Jordan. | plan 001 standing constraint 2 |
 | C-5 | Worktree-per-writer. This plan works in `s002-sdk-build`, not main. | plan 001 P-2 ruling |
