@@ -183,6 +183,27 @@ itself; review then inherited the code's frame. And on the census coincidence: *
 that produces a RIGHT answer is more dangerous than one producing a wrong one, because nothing
 prompts the recheck.*
 
+**A-2 rider (implementation, 172643e) — scope as landed, PM-blessed, prime pointer sent**:
+the ratified text named `DocLoadResult`; the type is declared in `core/walk.ts`, and tsc
+forced exactly two further public declarations (`DdLinkTarget.tracked`, `DdGraphNode.tracked`
+— public via the `./links` model re-export) whose values carry the same tracked semantics to
+consumers. All three widened `boolean → boolean|null`; **zero symbols added or removed**
+(measured d.ts delta). Coercing at the resolver/traverse boundary was rejected as the same
+lie one layer up — at the layer the consumer actually reads. Also fixed under the same
+commit: `validateWalk`'s guard `!loaded.tracked` → `=== false`, because the type-only change
+would have silently INVERTED the WARN policy A-2 promised to leave unchanged (`!null` is
+truthy) — negation-proven per site, and the trial gate reds `C4` BY NAME through the packed
+tarball when the defect is restored (the ratify-over-fix reasoning, discharged).
+
+**Fourth instrument, appended to the instrument note**: `loader.test.ts` carried a row
+**titled** *"treats a null tracked-set as 'no tracking concept', not as untracked"* whose
+assertion pinned `tracked === true`. The title stated the contract; the assertion pinned the
+lie. Four instruments touched this semantics, one had already written the correct sentence
+down, and the defect survived them all until an outside reader believed the words. (Also: the
+lying fixture assertion was in clause C4, not C9 as the packet said — C9's assertions were
+correct but cross-cited C4's old behavior as justification; a stale justification over true
+assertions is the C-6 family again, and the comment is corrected.)
+
 **The defect** (`links/loader.ts:99`, `FsDocLoader.load`):
 `tracked: this.tracked === null ? true : this.tracked.has(path)` — while the module's own doc
 comment (lines 59–63) defines `null` as *"this host has no tracking concept"* and **explicitly
