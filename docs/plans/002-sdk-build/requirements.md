@@ -97,8 +97,12 @@ adjust the surface, repeat. Two consequences for this plan:
 - **The surface stays movable until the trial says otherwise.** Design decisions (Q-4 width,
   Q-5 root shape) should expect at least one koala-driven revision, so nothing freezes the
   `exports` map before trial feedback exists.
-- **"Ready to trial" is a milestone this plan must define** — presumably the F-2/F-3 fixture
-  green plus the R-1 research honoured — and it lands *before* the plan is done, not at its end.
+- **"Ready to trial" is a milestone this plan must define** — and it now is: the corrected
+  trial bar in §5.1, plus the R-1 research honoured. It lands *before* the plan is done, not at
+  its end. The bar was sent to koala before being finalised — the consumer is the only party
+  who can judge it — and that consultation caught `fr-0010` before a line of the gate existed.
+  *(The first draft of this bullet pointed at the original F-2/F-3 fixture design, since
+  superseded — see §5.1 and §10 F-2.)*
 
 **Unchanged by this ruling**: standing 5 (the consume work itself is koala's, we never start
 it) and standing 6 (contact is prime-to-prime — the PM prepares, the o-prime sends). Iteration
@@ -182,7 +186,37 @@ Set by R-2, and deliberately **measurable rather than a taste question**:
 
 > **Harness re-implements `plan validate` using public exports only.**
 
-Today's answer is **no, by exactly five symbols** (§4.1). That number is the plan's progress bar.
+Today's answer is **no, by exactly five symbols** (§4.1 — count UNVERIFIED per F-4). That
+number is the plan's progress bar.
+
+### 5.1 The trial bar — corrected by the consumer before it was hit
+
+The first gate design (§10 F-2, as originally ruled) was a fixture **re-implementing**
+`plan validate` through public exports. koala corrected it before it was built, and the hole it
+found (`fr-0010`, banked at `2fe4079`) is the proof the correction was needed: **a clean-sheet
+re-implementation never constructs `FsDocLoader`**, because fresh code reaches for whatever the
+SDK offers — but the real integration **adapts four existing files whose construction shape is
+already fixed**, and that shape needs `FsDocLoader`, which lives in the CLI half and is not
+exported. The re-implementation fixture would have gone green over that hole.
+
+> Re-implementation tests *whether the SDK can do the job*. It does not test *whether **this
+> caller** can do its existing job through the SDK*. **Only the second is the trial.**
+
+**The corrected bar** (koala's, accepted in substance; o-prime ruling of 2026-08-08). A fixture
+that:
+
+1. runs against the **installed tarball**, not the working tree — riding the pack-gate, because
+   *correctly exported* and *present in the tarball* are two different failures;
+2. **reproduces the injection, not the feature**: constructs `ConventionSchemaResolver` and
+   `MemoizingDocLoader` with a **fixture-owned foreign fs port** — ownership running *inward*
+   is the property that cannot be shelled, so it is exactly what the trial must prove;
+3. drives a **real plan document** through `validate`;
+4. imports **every symbol the four surviving harness files import** — public subpaths only, no
+   deep paths, no self-repo relative imports.
+
+This bar **is** the "ready to trial" milestone R-4 requires, and it was sent to the consumer
+before being defined as final — which is why the hole was found now, at zero cost, instead of
+mid-trial.
 
 ---
 
@@ -253,6 +287,25 @@ forward-slash drive-letter paths too. Acceptance tests need a lowercase-drive ca
 `toPosix` upper-cases the drive letter while `normalizeFilePath` does not, so correctness
 currently depends on which runs first.
 
+### S-2 · Move `FsDocLoader` into the SDK half — **ruled, from `fr-0010`**
+
+> **o-prime, 2026-08-08**, adopting koala's recommendation after verifying it: *"Ruled: move
+> `FsDocLoader` into the SDK half — its deps are already public."*
+
+The hole (`fr-0010` at `2fe4079`, re-derived here before recording): harness's injection is
+`new MemoizingDocLoader(new FsDocLoader(deps.fs, new NodeHash(), null))`. `MemoizingDocLoader`
+is public (`links/index.ts:33`); **`FsDocLoader` is not** — it sits at `src/acts/shared.ts:108`,
+in the CLI half that leaves with the port, and the exports map has no `./acts` or `./shared`.
+The consumer can construct the memoizer but not the loader it memoizes — the injection pattern
+that made library consumption *forced* (OQ-1) is broken at its load-bearing joint.
+
+The move is small: `FsDocLoader`'s deps are `Pick<FsPort,'readText'>`, `HashPort`,
+`ReadonlySet<string> | null`, and it implements `DocLoader` (`core/walk.ts:17`, already public).
+Nothing about it is CLI except its current address. **Rejected alternatives** (koala's analysis,
+o-prime concurring): exporting `./acts/shared` publishes CLI internals; harness re-implementing
+against the `DocLoader` interface creates a second answer to "what is a readable dd document",
+and two would drift — rejected *by the party it would have spared work*.
+
 ---
 
 ## 8. Inputs already in hand
@@ -268,14 +321,25 @@ currently depends on which runs first.
 
 ## 9. Consumer frictions bearing on this plan
 
-Jordan routes dd frictions from other fleets to the o-prime. Six are banked in
-`docs/plans/frictions.dd.json` on `main` (`1ddde99`). Two are **design inputs to this plan**, not
-bugs to fix later:
+Jordan routes dd frictions from other fleets to the o-prime. Banked in
+`docs/plans/frictions.dd.json` on `main` (six at `1ddde99`; `fr-0010` added at `2fe4079`).
+Three are **design inputs to this plan**, not bugs to fix later:
 
 **`fr-0001` — the schemas do not travel.** The `builder/*` schema packages exist only in
 `harness-engineering`, so dd-native `/builder` works in exactly one repo. **An SDK that cannot
 resolve its own first-party schemas in a consuming repo is not consumable**, whichever
 distribution method ships it. This plan has to answer it, not inherit it.
+
+> **Ruled (o-prime, 2026-08-08)**: fr-0001 is **not a friction — it is the adoption story**,
+> and it is OQ-2's fault line on **data** rather than code: one definition or two. **It gets
+> ruled together with OQ-2, never separately** — ruling them apart would be the two-vocabularies
+> hazard already rejected in fr-0010's option (c).
+
+**`fr-0010` — `FsDocLoader` is load-bearing, lives in the half that leaves, and is not
+exported.** The injection joint that made library consumption mandatory is the one place the
+surface is broken — see S-2 (§7a) for the ruling and the corrected trial bar (§5.1) it forced.
+Found by the consumer *before* the trial, because the trial bar was sent to koala before being
+finalised.
 
 **`fr-0006` — the graph exists while the consumer still scrapes.** dd-rendered plans break every
 downstream consumer that extracts by per-phase heading, and it fails **silently**: a delegation
@@ -298,8 +362,8 @@ brief asked it to be willing to do. Eight findings; these are the rulings.
 | # | Finding | Ruling |
 |---|---|---|
 | **F-1** | Worktree forked at `1dbd233`, missing the `prepare` fix, the AGENTS.md commit block, and the corrected doctor baseline — so `requirements.md` §4.4 called something FIXED that was absent where the work happens | **FIXED.** Rebased onto `465d490`; `prepare` and the commit block verified present. Its diagnosis is kept: *the decay axis reproduced **structurally** rather than over time* — nothing wrong on main, everything wrong in the copy the work reads |
-| **F-2** | The acceptance test is not attestable by this subtree — "harness re-implements `plan validate`" is an event in koala's fleet, and standing 5 forbids the work while standing 6 forbids the channel | **ACCEPTED, and its fix adopted**: build an **in-repo fixture that re-implements `plan validate` through public entry points only**, wired into `just checks`. That converts a cross-fleet event into a gate this subtree owns. koala's eventual real re-implementation becomes confirmation, not the proof |
-| **F-3** | The progress bar has no gate — `check-exports` measures **subpaths** (11/12) while the progress bar is **symbols** (5), so the five-symbol figure is stamped prose with no owner | **ACCEPTED.** Same artifact as F-2 fixes it: the fixture fails while any needed symbol is unreachable, so the number becomes a gate reading rather than a claim. This is guardrail 9 applied to our own headline metric |
+| **F-2** | The acceptance test is not attestable by this subtree — "harness re-implements `plan validate`" is an event in koala's fleet, and standing 5 forbids the work while standing 6 forbids the channel | **ACCEPTED — and the fixture design as first ruled here is SUPERSEDED by §5.1** (o-prime, 2026-08-08, from `fr-0010`). The original ruling — *a fixture re-implementing `plan validate` through public entry points, wired into `just checks`* — kept the right insight (a gate this subtree owns) but aimed at the wrong target: a re-implementation tests whether the SDK *can* do the job, not whether **this caller** can do its *existing* job through it, and it would have gone green over the `FsDocLoader` hole. The corrected bar (§5.1) reproduces **the injection against the installed tarball** with a fixture-owned foreign fs port. Gate ownership, `just checks` wiring, and koala-as-confirmation all survive |
+| **F-3** | The progress bar has no gate — `check-exports` measures **subpaths** (11/12) while the progress bar is **symbols** (5), so the five-symbol figure is stamped prose with no owner | **ACCEPTED.** Same artifact as F-2 fixes it — now the §5.1 fixture, which imports every symbol the four surviving files import, so it fails while any needed symbol is unreachable and the number becomes a gate reading rather than a claim. This is guardrail 9 applied to our own headline metric; the correction to F-2's design strengthens this row rather than changing it |
 | **F-4** | §4.1 says six modules minus one reachable = five, but the table names four — an unaccounted module inside the number we call the progress bar | **OPEN — must be re-derived before the number is used again.** The PM correctly did not guess it. Treat the five as UNVERIFIED until someone re-runs it |
 | **F-5** | The brief dropped R-1's research precondition, so a PM working from the brief alone dispatches design first and breaks a ruling | **FIXED in both places** — §2 R-1 now carries a blocking callout, and the brief was corrected. **First dispatch is the research step** |
 | **F-6** | C-2 says "tag or SHA", but standing 2 forbids agents tagging | **ACCEPTED — C-2 is SHA-only for any agent.** A tag is Jordan's to cut |
