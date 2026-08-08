@@ -1,0 +1,21 @@
+docs/plans/frictions.dd.json
+  s_f5a59eaabcfb7d::t_fd62a3b744a4d2 146-158
+docs/plans/frictions.dd.md
+  s_f5a59eaabcfb7d::t_6c0170f6fb10b5 32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "b2462f4e5ba9840dec76b6ddb6765899f7cf411b",
+  "prompts": {},
+  "sessions": {
+    "s_f5a59eaabcfb7d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c1a8ee5f-0c77-4a73-9109-a12db9cd18a8",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
