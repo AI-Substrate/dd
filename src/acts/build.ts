@@ -1,33 +1,16 @@
 import type { Command } from 'commander';
 import type { Clock } from '../adapters/clock/clock-port.js';
 import { SystemClock } from '../adapters/clock/system-clock.js';
-import { NodeEnv } from '../adapters/env/node-env.js';
 import { NodeFs } from '../adapters/fs/node-fs.js';
-import { NodeHash } from '../adapters/hash/node-hash.js';
-import { JitiLoader } from '../adapters/loader/jiti-loader.js';
 import { NodeProcess } from '../adapters/process/node-process.js';
-import { parse } from '../core/parse.js';
 import { NodeSchemaFs } from '../node/index.js';
-import {
-  type BuildResult,
-  type BuildSuccess,
-  renderDocument,
-  siblingPath,
-} from '../node/render-document.js';
+import { type BuildSuccess, renderDocument } from '../node/render-document.js';
 import { type Envelope, formatDegraded, formatError, formatOk } from '../output/envelope.js';
 import { ErrorCodes } from '../output/error-codes.js';
 import { exitWithEnvelope } from '../output/exit.js';
 import { type CliIo, createOutputPort } from '../output/output-port.js';
-import { collectCustomTypes, loadAdapters } from '../render/adapters.js';
 import type { DdAdapterIssue } from '../render/contract.js';
-import {
-  type DdRefreshedBasis,
-  type DdRefreshIssue,
-  refreshLiveReferences,
-} from '../render/refresh.js';
-import { renderDd } from '../render/renderer.js';
-import { ConventionSchemaResolver } from '../schema/resolve.js';
-import { isWithin, posixDirname, resolveInRepo, toPosix } from '../shared/posix-path.js';
+import { posixDirname, resolveInRepo, toPosix } from '../shared/posix-path.js';
 import type { DdActDeps } from './shared.js';
 
 export {
