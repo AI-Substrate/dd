@@ -1,0 +1,31 @@
+justfile
+  s_c05f2da2173927::t_41c18747d5a8b3 88-97,110-112
+  s_c05f2da2173927::t_f20abe486e7e17 98-109
+scripts/pack-gate.sh
+  s_c05f2da2173927::t_e0233033046bd7 311-328
+  s_22e7aeb2d03d3d::t_8a22577080b573 51,70,75,109,143,164,299,329
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "b1e9cf5719a36a57f718aea9eff93a116e20cc18",
+  "prompts": {},
+  "sessions": {
+    "s_22e7aeb2d03d3d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "dfafd604-bfd6-4ebf-8198-80f38e2fea07",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
