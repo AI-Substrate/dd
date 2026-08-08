@@ -28,9 +28,15 @@
  * This directory is deliberately NOT part of `SDK_DIRS` in the architecture test.
  * It is an adapter tier, like `src/adapters/`, and adding it there would fail the
  * purity gate for precisely the right reason.
+ *
+ * EXACTLY FIVE SYMBOLS. `ActDeps` lives beside `DdActDeps` in `./deps.js` and is
+ * deliberately NOT re-exported here: A-1 ratifies five, and a barrel that ships a
+ * sixth has widened the published surface without a review. The CLI half reaches
+ * it directly (`src/acts/shared.ts` -> `../node/deps.js`), which is the honest
+ * shape — an internal name should travel by an internal path.
  */
 
-export type { ActDeps, DdActDeps } from './deps.js';
+export type { DdActDeps } from './deps.js';
 export { DD_ISSUE_CODES } from './issue-codes.js';
 export { renderDocument } from './render-document.js';
 export { NodeSchemaFs } from './schema-fs.js';

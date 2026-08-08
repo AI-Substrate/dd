@@ -7,13 +7,8 @@ import { NodeProcess } from '../adapters/process/node-process.js';
 import type { DocLoader } from '../core/walk.js';
 import { FsDocLoader, MemoizingDocLoader } from '../links/index.js';
 import type { DdLinkIssue } from '../links/model.js';
-import {
-  type ActDeps,
-  DD_ISSUE_CODES,
-  type DdActDeps,
-  NodeSchemaFs,
-  trackedPaths,
-} from '../node/index.js';
+import type { ActDeps } from '../node/deps.js';
+import { DD_ISSUE_CODES, type DdActDeps, NodeSchemaFs, trackedPaths } from '../node/index.js';
 import { ErrorCodes } from '../output/error-codes.js';
 import { type CliIo, createOutputPort, type OutputPort } from '../output/output-port.js';
 import { ConventionSchemaResolver } from '../schema/resolve.js';
@@ -27,7 +22,8 @@ export { FsDocLoader } from '../links/index.js';
  * existing import unchanged, and so the dependency direction stays one-way:
  * acts read from the library, never the reverse.
  */
-export type { ActDeps, DdActDeps } from '../node/index.js';
+export type { ActDeps } from '../node/deps.js';
+export type { DdActDeps } from '../node/index.js';
 export { DD_ISSUE_CODES, NodeSchemaFs, trackedPaths } from '../node/index.js';
 
 export function codedLinkIssues(issues: readonly DdLinkIssue[]) {

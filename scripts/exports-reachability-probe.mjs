@@ -19,7 +19,7 @@
 // forbidden" proves nothing if the probe itself is broken.
 
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, symlinkSync, writeFileSync, existsSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, symlinkSync, writeFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
@@ -76,6 +76,68 @@ const MOVED_SYMBOLS = [
   { spec: 'node', name: 'DD_ISSUE_CODES', from: 'src/acts/shared.ts (A-1)' },
   { spec: 'node', name: 'renderDocument', from: 'src/acts/build.ts (A-1)' },
 ];
+
+// The DECLARED surface of the two CURATED barrels — type-only exports INCLUDED.
+//
+// The runtime probe cannot see these. `import * as ns` yields runtime bindings
+// only, so a type-only surplus is structurally invisible to every other check in
+// this file. That is not hypothetical: the P3 review found `ActDeps` shipping
+// from `./node` beside `DdActDeps` — a sixth symbol on a tier A-1 ratifies at
+// five — plainly readable in `dist/node/index.d.ts` and unseen here. Reachable
+// but unasserted is the same as unmeasured.
+//
+// So this reads the EMITTED `.d.ts` and demands an EXACT set, failing in BOTH
+// directions. A missing symbol breaks a consumer; a surplus one is a published
+// symbol nobody reviewed, and it is far cheaper to refuse it now than to remove
+// it after someone imports it.
+const DECLARED_SURFACE = [
+  {
+    file: 'dist/lib.d.ts',
+    label: '@ai-substrate/dd',
+    authority: 'the D-1 allowlist',
+    names: [
+      'ConventionSchemaResolver', 'DdDoc', 'DdIssue', 'DocLoader', 'FsDocLoader',
+      'MemoizingDocLoader', 'SchemaResolver', 'collectLinkCells', 'isAddressFailure',
+      'parse', 'parseAddress', 'resolveAddressFile', 'validateWalk',
+    ],
+  },
+  {
+    file: 'dist/node/index.d.ts',
+    label: '…/node',
+    authority: 'A-1 (the five-symbol operational tier)',
+    names: ['DD_ISSUE_CODES', 'DdActDeps', 'NodeSchemaFs', 'renderDocument', 'trackedPaths'],
+  },
+];
+
+/**
+ * Every name a `.d.ts` publishes, or a REFUSAL.
+ *
+ * Exact for a curated barrel by construction: D-1 requires both of these files to
+ * list their exports one by one, so there is nothing here to infer. If one ever
+ * grows an `export *` the surface stops being enumerable by reading, and this
+ * refuses rather than reporting a set it cannot see — the shallow-clone rule
+ * again, applied to the probe's own instrument.
+ */
+function declaredNames(source) {
+  // Comments talk ABOUT exports; strip them rather than pattern-match around them.
+  const code = source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '');
+  if (/^\s*export\s+\*/m.test(code)) {
+    return { refused: 'the barrel uses `export *`, so its surface is no longer enumerable by reading' };
+  }
+  const names = new Set();
+  for (const match of code.matchAll(/export\s+(?:type\s+)?\{([\s\S]*?)\}/g)) {
+    for (const raw of match[1].split(',')) {
+      const part = raw.trim().replace(/^type\s+/, '');
+      if (part === '') continue;
+      const aliased = part.split(/\s+as\s+/);
+      names.add((aliased[1] ?? aliased[0]).trim());
+    }
+  }
+  // Declarations exported in place, not through a brace list.
+  const declared = /export\s+(?:declare\s+)?(?:abstract\s+)?(?:function|const|let|var|class|interface|enum|type)\s+([A-Za-z_$][\w$]*)/g;
+  for (const match of code.matchAll(declared)) names.add(match[1]);
+  return { names: [...names].sort() };
+}
 
 // Controls: one that MUST resolve, two that MUST fail — so a uniform result
 // (all-ok or all-forbidden) is detectable as a broken probe rather than a finding.
@@ -187,12 +249,46 @@ console.log('=== ROOT PURITY (§4.3 regression gate) ===');
   } else {
     console.log(`PASS  root barrel exports all ${ROOT_RUNTIME_EXPORTS.length} ratified runtime symbols`);
   }
-  // Extra symbols are NOT a failure — they are an API review that did not happen.
-  // Reported loudly rather than enforced, because the allowlist is a decision
-  // record and this script is not the place to overrule it.
+  // A surplus runtime symbol is now a FAILURE, not a note. It was a note in T4 on
+  // the reasoning that the allowlist is a decision record this script should not
+  // overrule — but the P3 review showed what that costs: an unratified symbol
+  // reached `dist/` and nothing went red. Reporting loudly is not asserting. The
+  // allowlist is still the decision record; this just stops it drifting silently.
   if (extra.length) {
-    console.log(`NOTE  root barrel exports ${extra.length} symbol(s) beyond the D-1 allowlist: ${extra.join(', ')}`);
+    failures.push(`root barrel exports ${extra.length} symbol(s) beyond the D-1 allowlist: ${extra.join(', ')}`);
+    console.log(`FAIL  root barrel exports ${extra.length} symbol(s) beyond the D-1 allowlist: ${extra.join(', ')}`);
     console.log('      Every addition to the root is an API review. If that review happened, update this list.');
+  }
+}
+
+console.log('\n=== DECLARED SURFACE (curated barrels, types included) ===');
+for (const { file, label, authority, names: ratified } of DECLARED_SURFACE) {
+  const declPath = join(REPO, file);
+  if (!existsSync(declPath)) {
+    failures.push(`${file} is missing — the declared surface cannot be read`);
+    console.log(`MISSING    ${file} — build first, or the barrel stopped emitting types`);
+    continue;
+  }
+  const parsed = declaredNames(readFileSync(declPath, 'utf8'));
+  if (parsed.refused) {
+    failures.push(`${file}: ${parsed.refused}`);
+    console.log(`REFUSED    ${file} — ${parsed.refused}`);
+    continue;
+  }
+  const absent = ratified.filter((name) => !parsed.names.includes(name));
+  const surplus = parsed.names.filter((name) => !ratified.includes(name));
+  if (absent.length === 0 && surplus.length === 0) {
+    console.log(`PASS  ${label.padEnd(18)} declares exactly ${ratified.length} symbols — ${authority}`);
+    continue;
+  }
+  if (absent.length) {
+    failures.push(`${label} no longer declares: ${absent.join(', ')}`);
+    console.log(`FAIL  ${label.padEnd(18)} missing ${absent.length}: ${absent.join(', ')}`);
+  }
+  if (surplus.length) {
+    failures.push(`${label} declares ${surplus.length} symbol(s) beyond ${authority}: ${surplus.join(', ')}`);
+    console.log(`FAIL  ${label.padEnd(18)} surplus ${surplus.length}: ${surplus.join(', ')}`);
+    console.log('      A symbol on a published barrel IS published, types included. Ratify it or drop it.');
   }
 }
 
