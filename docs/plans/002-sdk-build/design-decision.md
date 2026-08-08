@@ -168,6 +168,40 @@ in-tree precedent (`render/refresh.ts:9-18`, `schema/model.ts` `SchemaFs`). No n
 symbols (not exported from `links/index.ts`); call sites unchanged (structural typing); P1
 census group C already recorded these as foreign stand-in shapes.
 
+## A-2 · AMENDMENT (2026-08-08) — trial round 1: `tracked` lies on no-tracking hosts
+
+**Status**: PROPOSED — awaiting o-prime ratification. Source: koala trial round 1, verified by
+o-prime against both the code and its own doc comment before routing. R-4 working as designed:
+the surface moved to trial, the trial found what our gates did not, it returns as an amendment.
+
+**The defect** (`links/loader.ts:99`, `FsDocLoader.load`):
+`tracked: this.tracked === null ? true : this.tracked.has(path)` — while the module's own doc
+comment (lines 59–63) defines `null` as *"this host has no tracking concept"* and **explicitly
+rejects** calling-everything-tracked because it silently suppresses the untracked-target WARN.
+The code implements the alternative its own comment rejects, and the primary consumer passes
+`null` deliberately (`flow.ts:126`). One boolean carries two meanings — *tracked* and
+*unknowable* — so consumers get a confident wrong value instead of an absence. The defect is
+the VALUE lying, not the WARN policy (koala's own framing, kept).
+
+**Amended shape**: `DocLoadResult.tracked` becomes **`boolean | null`** — `null` = tracking
+unknowable on this host. Chosen over a tri-state enum because it adds **zero new exported
+symbols** (smallest surface delta), models absence as absence, and TypeScript forces every
+consumer that branches on it to face the third case. WARN-suppression behavior on null hosts
+is deliberately UNCHANGED (policy question, not this defect). The §5.1 fixture's C9 clause
+gets STRONGER: the null-host arm asserts `tracked === null` (it currently pins the lying
+`true` — see instrument note).
+
+**Instrument note, recorded on prime's instruction — do not let this pass as a happy ending**:
+three instruments touched this semantics and only the external one resolved it right. (1) Our
+P5 coder hit it building the fixture (its "fixture bug (a)"), asserted `false`, observed
+`true`, and **conformed the fixture to the implementation** — the comment was one screen up.
+(2) Our review verified the clause asserted what the code did, not what the contract said.
+(3) koala, reading as a consumer, believed the comment. Relatedly, koala disclosed its census
+was incomplete (31 symbols / 14 modules true surface, not 25/11) and that our `./node` tier
+covered its blind spot **by coincidence, not design** — the six floor symbols were right, and
+we did not know they were right for the reason we thought. Two agreeing instruments shared a
+blind spot; the floor held anyway; that is luck spent, not method proven.
+
 ## What ratification is being asked for
 
 1. D-1..D-6 as a set (or per-item overrides).
