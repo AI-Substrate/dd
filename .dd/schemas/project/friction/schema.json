@@ -1,0 +1,46 @@
+{
+  "dd_schema": 1,
+  "description": "A friction ledger: things that made dd harder to use than it should be, reported by real consumers. Each row carries what was hit, how blocking it was, where it was hit from, and what the reporter had to do instead. Deliberately NOT a backlog — a friction is evidence, and only some evidence becomes work.",
+  "sections": {
+    "meta": {
+      "required": true,
+      "shape": {
+        "type": "object",
+        "required": ["title"],
+        "fields": {
+          "title": { "type": "string" },
+          "owner": { "type": "string" },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "frictions": {
+      "shape": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["id", "title", "severity", "reported_by", "what_happened"],
+          "fields": {
+            "id": { "type": "string" },
+            "title": { "type": "string" },
+            "severity": {
+              "type": "enum",
+              "values": ["blocking", "hard-wall", "degrading", "annoying", "papercut"]
+            },
+            "reported_by": { "type": "string" },
+            "reported_from": { "type": "string" },
+            "what_happened": { "type": "string" },
+            "workaround": { "type": "string" },
+            "asked_for": { "type": "string" },
+            "state": {
+              "type": "enum",
+              "values": ["open", "confirmed", "planned", "fixed", "wontfix", "not-reproducible"]
+            },
+            "independently_hit_by": { "type": "string" },
+            "note": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}
