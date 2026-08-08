@@ -1,0 +1,26 @@
+scripts/exports-reachability-probe.mjs
+  s_c05f2da2173927::t_ae41a68f1341be 432-456
+  s_c05f2da2173927::t_112ee9f48a0683 473
+  s_c05f2da2173927::t_841d05576d22fc 24
+  s_c05f2da2173927::t_8a43e0e21254a8 464
+  s_c05f2da2173927::t_657a2ca50bda8e 80,82-90,92-94,100-113,117,128,133-251
+  s_c05f2da2173927::t_0b4f19d8877f2e 257-271,273-277,279-281,283-295
+docs/plans/002-sdk-build/assets/p7-notes.md
+  s_c05f2da2173927::t_9e314d5f5cb2dc 1-97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "2480a04f85ab05e5ea5992e54c58ec28b596b0ef",
+  "prompts": {},
+  "sessions": {
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
