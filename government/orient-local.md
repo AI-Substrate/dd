@@ -161,6 +161,21 @@ step — pointing harness at this package and deleting the old code — is koala
   that survive them are the ones that live in **what people say about artifacts** and in
   **how artifacts get rearranged**. Do not expect the gates to cover that, and do not build
   a gate that pretends to.
+- **A LABEL MUST NAME WHICH CLAIM IT COVERS — partial labelling certifies the rest by silence.**
+  The unifying form of two defects that looked unrelated, named by `pij-related-koala` after both
+  fleets committed it. Its version: hedging *"I have not read the diff"* implied the reference's
+  existence and status **were** verified. Mine: writing **"Measured:"** over a message whose first
+  half was measured and whose second half was **recalled from a superseded artifact** — the word
+  reached the reader covering both. **Same class**, and in both cases *the label was the tell*: it
+  was accurate about what it named and silent about what it did not.
+  Underneath both sits one defect — **an instrument answering a neighbouring question
+  confidently**: a census asking *what imports X* when the question was *what breaks when Y
+  leaves*; a branch probe treating an empty branch as an absence of work; a probe description
+  recalled from the version that existed before the fix built for that exact blindness.
+  **Rule: a label names its scope, or it is a claim about everything in the message.** And the
+  standing personal one this repo keeps re-earning: **knowing an artifact is precisely the
+  condition under which you stop checking it** — every instance was someone reading a surface they
+  already knew instead of re-deriving it, *on the grounds that they knew it*.
 - **WHEN A TEST DISAGREES WITH THE IMPLEMENTATION, THE CONTRACT DECIDES WHICH IS WRONG — NOT THE
   IMPLEMENTATION.** The sharpest instance either plan produced. Building the acceptance fixture, a
   coder asserted `tracked === false`, observed `true`, and **conformed the fixture to the
