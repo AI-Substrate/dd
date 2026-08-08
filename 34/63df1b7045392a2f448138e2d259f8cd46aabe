@@ -1,0 +1,20 @@
+test/services/dd/core/path-absoluteness.test.ts
+  s_c05f2da2173927::t_e9b4b19c813ab4 2-9,67-143
+  s_c05f2da2173927::t_65c0085dd7ae04 144
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "3463df1b7045392a2f448138e2d259f8cd46aabe",
+  "prompts": {},
+  "sessions": {
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
