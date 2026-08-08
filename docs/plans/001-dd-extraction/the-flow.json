@@ -3,8 +3,8 @@
   "kind": "flight-plan",
   "slug": "dd-extraction",
   "nav": {
-    "now": "phase-4",
-    "next": "review-4",
+    "now": "ship",
+    "next": "ship",
     "intent": "set up a new plan, get builder spine in and perform explore step based on our pre-amble. (dd standalone extraction out of harness-engineering)",
     "bag": {
       "mode": "unknown",
@@ -1092,6 +1092,214 @@
           "comments"
         ]
       }
+    },
+    {
+      "id": "UPD-041",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-08T00:26:37.319Z",
+      "details": {
+        "node": "boot-4",
+        "fields": [
+          "comments"
+        ]
+      }
+    },
+    {
+      "id": "UPD-042",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-08T00:26:37.437Z",
+      "details": {
+        "node": "observe-4",
+        "fields": [
+          "comments"
+        ]
+      }
+    },
+    {
+      "id": "UPD-043",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-08T00:27:06.959Z",
+      "details": {
+        "node": "retro-4",
+        "fields": [
+          "comments"
+        ]
+      }
+    },
+    {
+      "id": "STA-023",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-08T00:27:07.060Z",
+      "details": {
+        "node": "boot-4",
+        "from": "known",
+        "to": "done",
+        "chore": {
+          "kind": "command",
+          "importance": "recommended"
+        }
+      }
+    },
+    {
+      "id": "STA-024",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-08T00:27:07.161Z",
+      "details": {
+        "node": "observe-4",
+        "from": "known",
+        "to": "done",
+        "chore": {
+          "kind": "command",
+          "importance": "recommended"
+        }
+      }
+    },
+    {
+      "id": "STA-025",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-08T00:27:07.379Z",
+      "details": {
+        "node": "retro-4",
+        "from": "known",
+        "to": "done",
+        "chore": {
+          "kind": "command",
+          "importance": "recommended"
+        }
+      }
+    },
+    {
+      "id": "UPD-044",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-08T00:27:19.910Z",
+      "details": {
+        "node": "review-4",
+        "fields": [
+          "comments"
+        ]
+      }
+    },
+    {
+      "id": "UPD-045",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-08T00:27:20.014Z",
+      "details": {
+        "node": "phase-4",
+        "fields": [
+          "comments"
+        ]
+      }
+    },
+    {
+      "id": "STA-026",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-08T00:27:20.123Z",
+      "details": {
+        "node": "phase-4",
+        "from": "known",
+        "to": "done"
+      }
+    },
+    {
+      "id": "STA-027",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-08T00:27:20.241Z",
+      "details": {
+        "node": "review-4",
+        "from": "known",
+        "to": "done"
+      }
+    },
+    {
+      "id": "CUR-009",
+      "kind": "cursor-moved",
+      "origin": "engine",
+      "fired_at": "2026-08-08T00:27:34.483Z",
+      "details": {
+        "from": "phase-4",
+        "to": "post-flight"
+      }
+    },
+    {
+      "id": "UPD-046",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-08T00:28:01.509Z",
+      "details": {
+        "node": "retro-harvest",
+        "fields": [
+          "comments"
+        ]
+      }
+    },
+    {
+      "id": "STA-028",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-08T00:28:01.626Z",
+      "details": {
+        "node": "retro-harvest",
+        "from": "known",
+        "to": "done",
+        "chore": {
+          "kind": "command",
+          "importance": "recommended"
+        }
+      }
+    },
+    {
+      "id": "UPD-047",
+      "kind": "node-updated",
+      "origin": "engine",
+      "fired_at": "2026-08-08T00:28:01.744Z",
+      "details": {
+        "node": "post-flight",
+        "fields": [
+          "comments"
+        ]
+      }
+    },
+    {
+      "id": "STA-029",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-08T00:28:01.864Z",
+      "details": {
+        "node": "post-flight",
+        "from": "assumed",
+        "to": "done"
+      }
+    },
+    {
+      "id": "STA-030",
+      "kind": "status-changed",
+      "origin": "engine",
+      "fired_at": "2026-08-08T00:28:01.991Z",
+      "details": {
+        "node": "ship",
+        "from": "assumed",
+        "to": "done"
+      }
+    },
+    {
+      "id": "CUR-010",
+      "kind": "cursor-moved",
+      "origin": "engine",
+      "fired_at": "2026-08-08T00:28:06.810Z",
+      "details": {
+        "from": "post-flight",
+        "to": "ship"
+      }
     }
   ],
   "nodes": [
@@ -1206,7 +1414,7 @@
       "id": "post-flight",
       "type": "post-flight",
       "label": "Post-flight",
-      "status": "assumed",
+      "status": "done",
       "command": "/builder 7b post-flight",
       "next": [
         "ship"
@@ -1216,13 +1424,23 @@
         "Close out the flight BEFORE any ship: every phase and review is done; the terminal harness harvest fires at this edge, then the plan folder is archived — this stage runs whether or not the work ever ships.",
         "Run /builder 7b post-flight --plan \"<plan path>\" — it verifies completion, writes assets/post-flight.md (close-out note + open-items digest), then moves the WHOLE plan folder to docs/plans/archive/<ord>-<slug>/ (git mv, layout intact). Land every flight-plan receipt before the move — the flow file's path changes with the folder.",
         "Done when the close-out note exists and the plan folder lives under docs/plans/archive/ — ship (optional, later) resolves --plan from the archive path."
-      ]
+      ],
+      "comments": [
+        {
+          "at": "2026-08-08T00:28:01.744Z",
+          "text": "decision:done verdict:closed reason:plan 001 close-out complete. All 10 acceptance criteria terminal (9 checked, ac-0002 na by Jordan's OQ-2 supersession). All phase-4 tasks terminal (5 checked, tk-0002 na by the same ruling). harness plan validate: 0 errors, 0 warnings. just checks exit 0. CI green on main. release.yml never executed across five pushes; zero tags; nothing published. Handover packet delivered to pij-related-koala and confirmed. time:2026-08-08T00:28:00Z",
+          "source": "agent",
+          "kind": "validation"
+        }
+      ],
+      "modified_at": "2026-08-08T00:28:01.864Z",
+      "ran_at": "2026-08-08T00:28:01.864Z"
     },
     {
       "id": "ship",
       "type": "ship",
       "label": "Ship",
-      "status": "assumed",
+      "status": "done",
       "command": "/builder 8 ship",
       "next": [],
       "instructions": [
@@ -1238,7 +1456,8 @@
           "kind": "decision"
         }
       ],
-      "modified_at": "2026-08-07T03:40:26.998Z"
+      "modified_at": "2026-08-08T00:28:01.991Z",
+      "ran_at": "2026-08-08T00:28:01.991Z"
     },
     {
       "id": "backpressure",
@@ -1371,7 +1590,7 @@
       "id": "retro-harvest",
       "type": "harness-retro",
       "label": "Retro: post-flight (harvest)",
-      "status": "known",
+      "status": "done",
       "branch_of": "post-flight",
       "next": [
         "post-flight"
@@ -1385,7 +1604,17 @@
         "Post-flight seam: the terminal long-horizon harvest — fold this flight's learnings into durable memory at the pre-ship close-out, BEFORE the plan folder archives (so it runs even on work that never ships).",
         "Run /eng-harness-flow --hook post-flight --json — a REAL invocation; narrate its envelope verbatim.",
         "On done, receipt first, status second: harness flow comment --path <flow-path> --node retro-harvest --kind validation --source agent --text \"verdict:<…> time:<…>\" (router missing / envelope noop/UNAVAILABLE → text \"decision:unavailable reason:<…> time:<…>\" — a completed attempt, not a skip) THEN harness flow status --path <flow-path> --node retro-harvest --to done. Mandatory unless the human declines — a decline is: harness flow comment --path <flow-path> --node retro-harvest --kind decision --source user --text \"<their verbatim words>\" THEN harness flow status --path <flow-path> --node retro-harvest --to skipped."
-      ]
+      ],
+      "comments": [
+        {
+          "at": "2026-08-08T00:28:01.509Z",
+          "text": "decision:done verdict:harvested reason:real /eng-harness-flow --hook post-flight invocation; harness retro insights --json computed the view. 2 committed records, 21 entries, 20 open / 1 encoded, buffer_pending 0. Top clusters: difficulty untargeted n=12 proof_gap true; difficulty/tooling n=2 proof_gap true; insight n=2; insight/harness-itself n=2; difficulty/harness-itself n=1; improvement-suggestion/harness-itself n=1. IMPROVE STEP — highest-leverage remaining improvement, named not encoded: the two guardrails still on pure discipline (out-of-diff assertion sweep, measured-at stamping). Everything else this plan learned was already encoded as a gate — check-orient, check-handover, check-exports, just worktree, the ci.yml twin requirement — and those held. The two that were not mechanized are the two that kept re-firing. Recorded as wishlist wl-0006 rather than encoded now, because plan 001 is closing and a new gate belongs in a plan that can review it. Offered to Jordan at close-out. time:2026-08-08T00:28:00Z",
+          "source": "agent",
+          "kind": "validation"
+        }
+      ],
+      "modified_at": "2026-08-08T00:28:01.626Z",
+      "ran_at": "2026-08-08T00:28:01.626Z"
     },
     {
       "id": "phase-2",
@@ -1729,12 +1958,12 @@
       "id": "phase-4",
       "type": "phase",
       "label": "P4: Self-hosting + handover",
-      "status": "known",
+      "status": "done",
       "next": [
         "review-4"
       ],
       "created_at": "2026-08-07T03:54:20.614Z",
-      "modified_at": "2026-08-07T07:00:04.302Z",
+      "modified_at": "2026-08-08T00:27:20.123Z",
       "instructions": [
         "Implement exactly ONE phase using the plan's testing approach and domain placement rules — keep the task table and execution.log.md live as you go.",
         "Run /builder 6 implement --plan \"<plan path>\"; log discoveries, tagging any Deferred/Noteworthy a human must see before ship.",
@@ -1747,7 +1976,15 @@
       ],
       "command": "/builder 6 implement",
       "dd_link": {
-        "address": "docs/plans/001-dd-extraction/assets/tasks/phase-4/tasks.dd.json#tasks"
+        "address": "docs/plans/001-dd-extraction/assets/tasks/phase-4/tasks.dd.json#tasks",
+        "basis_sha": "914a6560ec4a49c5d486b29e1312b50b6012dac5ea2a605c935fcffda40b3e5d",
+        "reading": {
+          "status": "complete",
+          "terminal": 6,
+          "total": 6,
+          "incomplete": [],
+          "at": "2026-08-08T00:27:34.483Z"
+        }
       },
       "comments": [
         {
@@ -1773,19 +2010,26 @@
           "text": "TRANSCRIPTION REPAIR of the ESC-1 ruling comment immediately above (o-prime, append-only — comments are never edited). Backticks in that text were shell-evaluated on the way in, so two branch names were silently eaten and the MECHANISM sentence reads 'drop  from ... keeping  and workflow_dispatch'. The intended, ruling text is: drop the branch named main from release.yml's push trigger, KEEPING the canary branch pattern (canary/ followed by a double-star glob) and workflow_dispatch. Everything else in that comment stands as written. Restore, when Jordan supplies RELEASE_PLEASE_TOKEN, is re-adding main to that same push branches list — one line. Friction captured: composing a CLI comment through a shell is a transcription hazard for exactly the artifact class that must be verbatim.",
           "source": "agent",
           "kind": "validation"
+        },
+        {
+          "at": "2026-08-08T00:27:20.014Z",
+          "text": "PHASE 4 CLOSED with tk-0002 marked na, not checked. Jordan ruled OQ-2 superseded on 2026-08-08: plan/ is not shipped publicly, harness re-implements on top, and the public surface is designed in wl-0001 around the plan use case. The exports freeze was therefore never executed and must not be recorded as done — the question moved rather than being answered. ac-0002 na for the same reason. Measured before ruling (lg-000b): the SDK is NOT yet rich enough for that re-implementation — five symbols across four modules are unreachable publicly — so the ruling accepts an exchanged commitment rather than a removed one. Successor acceptance test recorded on wl-0001: harness re-implements plan validate using public exports only. time:2026-08-08T00:27:00Z",
+          "source": "agent",
+          "kind": "decision"
         }
-      ]
+      ],
+      "ran_at": "2026-08-08T00:27:20.123Z"
     },
     {
       "id": "review-4",
       "type": "review",
       "label": "Review: P4",
-      "status": "known",
+      "status": "done",
       "next": [
         "post-flight"
       ],
       "created_at": "2026-08-07T03:54:20.614Z",
-      "modified_at": "2026-08-07T03:54:20.614Z",
+      "modified_at": "2026-08-08T00:27:20.241Z",
       "instructions": [
         "Review exactly ONE phase's diff against its acceptance criteria — confirm the tests prove behaviour and nothing risky slipped in.",
         "Run /builder 7 review — it inspects the newest assets/reviews/*.md and surfaces a verdict; REQUEST_CHANGES loops back to fix, clean continues to the next phase or post-flight.",
@@ -1799,18 +2043,27 @@
       "dd_link": {
         "address": "docs/plans/001-dd-extraction/plan.dd.json",
         "check": "plan-validate"
-      }
+      },
+      "comments": [
+        {
+          "at": "2026-08-08T00:27:19.910Z",
+          "text": "decision:done verdict:APPROVE reason:phase-4 re-review landed clean at b5695ca (pij-blind-deer, report dlg-0004-fix-rereview.md, persisted rev-0004.json). All findings closed across five review rounds. End state reached and re-stamped: CI green at ef95fa5 and again at 463f963; release.yml has never executed across five pushes; zero tags; nothing published. time:2026-08-08T00:27:00Z",
+          "source": "agent",
+          "kind": "validation"
+        }
+      ],
+      "ran_at": "2026-08-08T00:27:20.241Z"
     },
     {
       "id": "boot-4",
       "type": "harness-boot",
       "label": "Boot check",
-      "status": "known",
+      "status": "done",
       "next": [
         "phase-4"
       ],
       "created_at": "2026-08-07T03:54:20.614Z",
-      "modified_at": "2026-08-07T03:54:20.614Z",
+      "modified_at": "2026-08-08T00:27:07.060Z",
       "branch_of": "phase-4",
       "instructions": [
         "Pre-flight seam: confirm the harness is healthy before you start coding this phase.",
@@ -1823,18 +2076,27 @@
       "chore": {
         "kind": "command",
         "importance": "recommended"
-      }
+      },
+      "comments": [
+        {
+          "at": "2026-08-08T00:26:37.319Z",
+          "text": "decision:done verdict:UNAVAILABLE reason:real /eng-harness-flow --hook pre-flight invocation, boot module Step 0b. Governance doc .harness/engineering-harness.md still ABSENT, so mode resolves UNAVAILABLE — boot degrades gracefully rather than blocking. Substrate exercised and HEALTHY: harness boot ran just boot, status ok, build clean, 7/7 smoke tests in 458ms. Unchanged from phase 3: the verdict describes a missing file, not the repo. Provisioning is the harness init writer's job and remains an unactioned standing offer to Jordan, now recorded as wishlist wl-0008. time:2026-08-08T00:26:27Z",
+          "source": "agent",
+          "kind": "validation"
+        }
+      ],
+      "ran_at": "2026-08-08T00:27:07.060Z"
     },
     {
       "id": "observe-4",
       "type": "observe",
       "label": "Observe: P4",
-      "status": "known",
+      "status": "done",
       "next": [
         "phase-4"
       ],
       "created_at": "2026-08-07T03:54:20.614Z",
-      "modified_at": "2026-08-07T03:54:20.614Z",
+      "modified_at": "2026-08-08T00:27:07.161Z",
       "branch_of": "phase-4",
       "instructions": [
         "Mid-phase capture: record observations (decisions, gotchas, surprises) AS you code, so they don't evaporate as remembered prose.",
@@ -1848,18 +2110,27 @@
       "chore": {
         "kind": "command",
         "importance": "recommended"
-      }
+      },
+      "comments": [
+        {
+          "at": "2026-08-08T00:26:37.437Z",
+          "text": "decision:done verdict:captured reason:real captures made during phase 4, not narrated. This session alone: DL-005 (dd add --mint rejects prefixes from newly authored schemas), plus the phase's earlier SUGG-001, INS-001 and INS-002. Buffer held 8 pending entries at drain time. Record pointer follows in the retro-4 receipt. time:2026-08-08T00:26:27Z",
+          "source": "agent",
+          "kind": "validation"
+        }
+      ],
+      "ran_at": "2026-08-08T00:27:07.161Z"
     },
     {
       "id": "retro-4",
       "type": "harness-retro",
       "label": "Retro: P4 (drain)",
-      "status": "known",
+      "status": "done",
       "next": [
         "phase-4"
       ],
       "created_at": "2026-08-07T03:54:20.614Z",
-      "modified_at": "2026-08-07T03:54:20.614Z",
+      "modified_at": "2026-08-08T00:27:07.379Z",
       "branch_of": "phase-4",
       "instructions": [
         "Post-coding seam: drain this phase's observe buffer into durable retro notes before moving on.",
@@ -1870,7 +2141,16 @@
       "chore": {
         "kind": "command",
         "importance": "recommended"
-      }
+      },
+      "comments": [
+        {
+          "at": "2026-08-08T00:27:06.959Z",
+          "text": "decision:done verdict:drained reason:real /eng-harness-flow --hook post-coding invocation. harness observe --list returned 8 pending; harness record retro placed .harness/records/retro/2026-08-08/001-001-dd-extraction-phase-4.md; all 8 written with dispositions; harness observe --clear reported cleared:8; re-list empty. Notable entries: DL-005 (dd add --mint rejects prefixes from newly authored schemas), SUGG-001 (two guardrails still unmechanized), INS-001 (pointer delivery makes a claim outrun its evidence by construction), INS-002 (PA structurally under-used all plan). time:2026-08-08T00:27:00Z",
+          "source": "agent",
+          "kind": "validation"
+        }
+      ],
+      "ran_at": "2026-08-08T00:27:07.379Z"
     },
     {
       "id": "review-1",

@@ -62,8 +62,9 @@
         {
           "id": "ac-0002",
           "claim": "Consumer surface importable: for EVERY import specifier observed in harness consumers (dossier F-04): core/address (parseAddress, isAddressFailure), core/model (DdDoc), core/parse (parse), core/validate (DdIssue, collectLinkCells), core/walk (validateWalk), links barrel (MemoizingDocLoader, resolveMapSeed, traverseCorpus), schema/model (SchemaIssue), schema/resolve AND schema/index (ConventionSchemaResolver via both), render/renderer (escapeCell, headingSlug) — a test imports one named symbol from each EXACT subpath and the exports map carries those exact paths (explicit or wildcard). The plan barrel (buildPlanIndex, itemKey, PlanEdge/PlanIndex/PlanItem) is EXCLUDED from the public map until OQ-2 is ruled (phase 3); until then it is proven importable internally only.",
-          "state": "unchecked",
-          "pressure": "not-applicable"
+          "state": "na",
+          "pressure": "not-applicable",
+          "note": "SUPERSEDED by Jordan's OQ-2 ruling of 2026-08-08, same reason as its only satisfying task tk-0002. This criterion asserted an exports map derived from observed harness imports; the ruling replaces that with a surface designed on purpose in wl-0001, with the plan use case as its driving case. Marked na rather than checked because it was NEVER PROVEN — the map was never frozen and ./plan is still ERR_PACKAGE_PATH_NOT_EXPORTED. Nothing here is laundered: the successor acceptance test lives on wl-0001 and is harder."
         },
         {
           "id": "ac-0003",
@@ -200,7 +201,8 @@
         },
         {
           "question": "OQ-2 (Jordan): does services/dd/plan (consumed by harness plan validate, guarded upstream by dd-plan-semantics-frozen) ship in the public SDK surface, stay internal, or stay harness-side? Not a clean either/or — part of the semantics is dd-side already.",
-          "state": "unchecked"
+          "state": "na",
+          "note": "SUPERSEDED, NOT ANSWERED — ruled by Jordan 2026-08-08, transcribed verbatim before acting, per standing constraint 7. His words across two turns: \"I think it should be re-impl in Harness TBH. I assume SDK will be rich enough for harnes to do this? we can commmunicate withthe harness pij agent when the time comes\" and \"We should design the SDK aroudn the plan usecase. SDK shoudl be super rich.\" RESOLUTION: plan/ is NOT shipped as a public module and harness re-implements plan semantics on top of dd. That is the FOURTH option — none of the three this question offered — and it dissolves the question rather than answering it: plan/ need not ship if the primitives beneath it are public and complete. MEASURED CONTEXT (lg-000b): Jordan's stated assumption that the SDK is already rich enough was TESTED AND FALSE — five symbols across four modules (DEFAULT_GATE_TERMINAL_STATES, deriveItems, effectiveRel, collectDeclaredRels, isRecord) are unreachable from any public entry point today. Re-implementing harness-side therefore EXCHANGES a public commitment rather than removing one: nine plan-level helpers for five-plus lower-level primitives. Jordan's ruling accepts that trade deliberately, on the grounds that the SDK should be rich. WHERE IT GOES: the surface is designed in wl-0001 around the PLAN USE CASE as the driving design case — the hardest known consumer, exercising typed links, cardinality, cross-document traversal, derived state and gate semantics at once. wl-0001 now carries the acceptance test this produces."
         },
         {
           "question": "OQ-3: do the two baked doc entries (dd-overview, how-to-add-a-schema) port verbatim or get rewritten for standalone context? Default verbatim; rewrite only on Jordan ask.",

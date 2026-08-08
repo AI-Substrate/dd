@@ -22,7 +22,7 @@
           "size": "l",
           "blocked_on": "plan 001 closing out first — Jordan: 'close out current work then creaet a new builder flow on the SDK'",
           "source": "Jordan 2026-08-08, verbatim in plan 001 open_questions OQ-1 note",
-          "note": "Jordan specified the research step explicitly: best-in-class SDK design guidelines via perplexity, BEFORE designing. Its own builder flow, not an extension of plan 001. Inputs already measured and waiting for it: the runtime exports probe (scripts/exports-reachability-probe.mjs), koala's consumer census (4 surviving files, 4 live symbols), and the root-export defect below."
+          "note": "Jordan specified the research step explicitly: best-in-class SDK design guidelines via perplexity, BEFORE designing. Its own builder flow, not an extension of plan 001. Inputs already measured and waiting for it: the runtime exports probe (scripts/exports-reachability-probe.mjs), koala's consumer census (4 surviving files, 4 live symbols), and the root-export defect below. ACCEPTANCE TEST, set by Jordan's OQ-2 ruling 2026-08-08 and measurable rather than a taste question: HARNESS RE-IMPLEMENTS `plan validate` USING PUBLIC EXPORTS ONLY. Today's answer is NO, by exactly five symbols (DEFAULT_GATE_TERMINAL_STATES, deriveItems, effectiveRel, collectDeclaredRels, isRecord — lg-000b). Design the surface around the PLAN USE CASE as the driving case: it is the hardest known consumer, exercising typed links, cardinality, cross-document traversal, derived state and gate semantics simultaneously, so a surface that expresses it expresses almost anything simpler. Jordan: \"SDK shoudl be super rich.\""
         },
         {
           "id": "wl-0002",

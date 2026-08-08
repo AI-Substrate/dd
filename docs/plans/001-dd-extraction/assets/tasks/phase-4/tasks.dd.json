@@ -32,10 +32,11 @@
           "id": "tk-0002",
           "title": "Exports freeze completion + dd-surface reconcile (INHERITS the P3 tk-0002 hold): when Jordan rules OQ-1/OQ-2, transcribe verbatim per doctrine, freeze the map, extend the consumer-surface test, reconcile docs dd-surface notes; until ruled this task is HELD, never guessed. SCOPE ADDED 2026-08-07 (o-prime, endorsed by the PM, measured at 89cac13): (a) OQ-2 is NOT 'should plan be public' — the runtime probe proves ./plan is ERR_PACKAGE_PATH_NOT_EXPORTED, a HARD ERROR, so harness cannot consume dd at all under today's map; (b) FIX THE ROOT EXPORT BEFORE FREEZING — '.' resolves to dist/index.js which IS the bin entry, so importing the package executes the CLI and yields zero named exports; a freeze is exactly when a latent defect becomes permanent; (c) re-run scripts/exports-reachability-probe.mjs after the freeze and wire it into just checks WITH its ci.yml twin in the same commit (ci-parity reds otherwise)",
           "phase": "ph-0a40",
-          "state": "unchecked",
+          "state": "na",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0002"
-          ]
+          ],
+          "note": "SUPERSEDED, NOT SKIPPED — Jordan ruled OQ-2 on 2026-08-08 (see plan open_questions). This task was the exports FREEZE, held all plan on a question that has now MOVED rather than been answered: plan/ stays internal, harness re-implements on top, and the public surface is designed in wl-0001 around the plan use case. Freezing a map derived from what one consumer happened to import is exactly what that flow exists to replace, so executing this task now would lock in the accidental API it is meant to fix. The three scope additions it accumulated are NOT lost: the root-export defect is wl-0005, the reachability probe is committed and gated in CI, and the exports decision itself is wl-0001. ac-0002 is marked na for the same reason and by the same ruling."
         },
         {
           "id": "tk-0003",
@@ -92,7 +93,7 @@
           {
             "id": "dw-0002",
             "assertion": "Jordan ruling transcribed verbatim in the exports-decision note; exports map frozen; consumer-surface test covers the frozen map incl. plan barrel per ruling; dd-surface notes reconciled — OR the task is explicitly HELD with the escalation on record",
-            "state": "unchecked",
+            "state": "na",
             "pressure": "not-applicable",
             "note": "instrument: note file + vitest + open_questions states"
           }
