@@ -1,0 +1,19 @@
+docs/plans/002-sdk-build/requirements.md
+  s_e3460fd42f286c::t_5e9ac61fe45694 127-150,161,223-231
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "1f30f3fabb242ae41dbded2227391fcca938fd80",
+  "prompts": {},
+  "sessions": {
+    "s_e3460fd42f286c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "b007eb76-365c-4da0-8164-519fdee51c00",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
