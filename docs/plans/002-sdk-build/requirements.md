@@ -149,6 +149,36 @@ changes the *cadence* of that channel, not its altitude.
 - **Supervision duty**: the PM runs the watchdog ("Pidgeboat Dog") on the coder to catch
   looping-on-silly-things, and checks in on it — supervision is the PM's, not delegated.
 
+### R-6 · OQ-2 stays OPEN — `plan/` is held, not stripped, until the trial rules
+
+> **Jordan, 2026-08-08**, answering the o-prime's question (strip `src/plan` for good now that
+> harness re-implements on the primitives, or hold it open until koala's trial says whether the
+> primitives are sufficient): *"held please"*
+>
+> **Evidence strength — read this before citing it**: the ruling was given in the **o-prime's**
+> pane, not the PM's. This entry is a **mirror of the o-prime's transcription**, authority
+> `bc00210` (standing constraint 9, on `main`). The PM did not witness it. Cite the SHA, not
+> this paragraph.
+
+**Settles**: `./plan` stays forbidden and **`src/plan` is NOT stripped**. The question closes on
+**koala's trial verdict** — whether the public primitives are sufficient — not on our judgement
+or on plan 002's timeline.
+
+**Consequences, all deliberate**:
+
+- `acts/plan/index.ts` and `acts/plan/pr-body.ts` stay **untrialable** until OQ-2 closes. That
+  is the design working (R-4 sequencing), **not a blocker for anyone to route around**.
+- `wl-0011` (does `src/plan` belong in this repo at all) stays deferred — **the same trial
+  informs both**, which is why neither was decided early.
+- **Plan 002 is COMPLETE with OQ-2 open.** Its exit condition was *PR up and CI green* (R-5),
+  met at `35bf639`. OQ-2 was never in that condition; holding it does not reopen the plan.
+- **OQ-2 is no longer the PM's to wait on — it is koala's to close.**
+
+**Why it lives in `government/standing-constraints.md` primarily**: it **outlives plan 002** and
+binds anyone who later reaches for `src/plan`. A plan-local record would go stale the moment 002
+closes — the same defect as a landing-policy row that names one plan's rule and reads as
+universal forever.
+
 ## 3. Constraints and cautions carried in
 
 | # | Constraint | Source |
