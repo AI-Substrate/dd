@@ -1,0 +1,19 @@
+docs/plans/002-sdk-build/assets/p5-review-terra.md
+  s_22e7aeb2d03d3d::t_7913b2da574772 1-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "6b985fef6e5f15b2ac7fe423f16b7dcc7abca3af",
+  "prompts": {},
+  "sessions": {
+    "s_22e7aeb2d03d3d": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "dfafd604-bfd6-4ebf-8198-80f38e2fea07",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
