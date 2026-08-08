@@ -228,6 +228,21 @@ and a working bin (`dd --json version` → `status: ok`). R-3's fast path is liv
 > then cleared so `prepack` is proven independently — strictly stronger, because R-3 made two
 > distribution paths load-bearing and the gate only ever proved one. Do not read this section
 > as "prepare was a settled, cost-free change."
+>
+> **Second consequence, o-prime's own accounting (2026-08-08, on its instruction)**: npm 10
+> (node 22's bundled npm — the engines floor) runs `prepare` DESPITE `--ignore-scripts`, which
+> only bites a package that HAS a `prepare` script — which this one did not before `114b2c1`.
+> So the fix also created a four-rebuilds-per-suite race under node 22 (`package-manifest`
+> tests repacking → dist rewritten under running tests → half-written modules), the probable
+> source of PR #1's first CI red (identity mechanism-consistent, not claimed proven —
+> `assets/mid-suite-rebuild-race.md`). Killed at `24d1255` (pack from a hook-stripped
+> throwaway copy). Not recanted — R-3 makes the git-URL path load-bearing and `prepare` is
+> what makes it work; both consequences were caught by gates and both fixes left the substrate
+> stronger. The honest accounting: **a correct minimal fix had two downstream effects nobody
+> predicted**, and "one line, verified against a real install" was true and undersold it.
+> *(The pack gate's own step-3 independence claim was also narrower than written — it proves
+> "prepack OR prepare built it"; corrected with the measured npm behavior table at
+> `179afd9`/`d505fb0`.)*
 
 ### 4.5 The consumer census (koala's, verified twice)
 
