@@ -1,0 +1,20 @@
+docs/plans/002-sdk-build/assets/p3-rereview-terra.md
+  h_9e71e8b09f7cf2 1-32
+docs/plans/002-sdk-build/assets/p3-review-terra.md
+  h_9e71e8b09f7cf2 1-80
+docs/plans/002-sdk-build/assets/p4b-review-terra.md
+  h_9e71e8b09f7cf2 1-62
+docs/plans/002-sdk-build/tasks/p5-trial-fixture.md
+  h_9e71e8b09f7cf2 1-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "e7d74e336bcd7631f7d4809f0b843d4c4c3f1bd7",
+  "prompts": {},
+  "humans": {
+    "h_9e71e8b09f7cf2": {
+      "author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
