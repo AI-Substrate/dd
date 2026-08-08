@@ -1,0 +1,21 @@
+src/output/exit.ts
+  s_c05f2da2173927::t_c0f49b977cd73a 16-55,58
+test/acts/envelope-flush.test.ts
+  s_c05f2da2173927::t_1d488eb51a0cc9 1-93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "0133bb88dbb5fd0212c604b750a4810b232222b6",
+  "prompts": {},
+  "sessions": {
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
