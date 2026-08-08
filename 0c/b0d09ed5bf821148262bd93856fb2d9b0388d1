@@ -1,0 +1,33 @@
+src/node/schema-fs.ts
+  s_c05f2da2173927::t_5865f1f6e6f1e2 28-33
+docs/plans/002-sdk-build/assets/p4-review-terra-full.md
+  s_c05f2da2173927::t_b26bca064c6360 1-49
+docs/plans/002-sdk-build/assets/p4-review-terra.md
+  s_c05f2da2173927::t_e9163d8f9bbc80 1-28
+docs/plans/002-sdk-build/design-decision.md
+  s_6e59036559203c::t_8418945dcb9656 122-159
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "0cb0d09ed5bf821148262bd93856fb2d9b0388d1",
+  "prompts": {},
+  "sessions": {
+    "s_6e59036559203c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06d3bbcf-6419-4a86-8e8c-7147b4e647ce",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
