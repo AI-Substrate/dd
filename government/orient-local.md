@@ -161,6 +161,21 @@ step — pointing harness at this package and deleting the old code — is koala
   that survive them are the ones that live in **what people say about artifacts** and in
   **how artifacts get rearranged**. Do not expect the gates to cover that, and do not build
   a gate that pretends to.
+- **WHEN AN ALARM IS SATISFIABLE BY NOTHING, STOP RELAYING IT — AND SAY WHAT YOU DO INSTEAD.**
+  Measured, not assumed: a pij session has **three** state surfaces and only **two** are settable —
+  assignment state (`pij report state`), status card (`pij report now`), and an **activity axis**
+  derived from pane silence that **no command sets**. The watchdog stall alarm reads the third.
+  A PM between subordinate reports set `waiting` *before* the alarm fired and it fired anyway,
+  while `pij anomalies` stayed silent — so *"parked states never flag"* is **true of one detector
+  and false of the other**, and **the only surface a seat can declare is not the surface the
+  supervisor chase reads**.
+  **This is one step from "expect a red here" and must not become that.** The difference is
+  three-fold and all three are required: the exemption is **measured**, it is **scoped to one
+  instrument and one condition**, and **the supervisor keeps verifying by other means** —
+  liveness, pid, and whether the branch tip moved — rather than dropping the check. Relaying an
+  unsatisfiable alarm asks a subordinate to fix what it cannot, and it already cost one a turn
+  defending a correct record. **Never generalise the exemption, never stop looking, and write down
+  what you check instead.**
 - **A GATE THAT REPAIRS WHAT IT DETECTS CANNOT BE FAILED TWICE — and therefore cannot be trusted
   once.** `just checks` reported three "transient" reds that greened on immediate re-run with no
   change. They were **not** flakes. **Reproduced deliberately**: append a line to a generated file,
