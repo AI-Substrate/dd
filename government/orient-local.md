@@ -161,6 +161,17 @@ step — pointing harness at this package and deleting the old code — is koala
   that survive them are the ones that live in **what people say about artifacts** and in
   **how artifacts get rearranged**. Do not expect the gates to cover that, and do not build
   a gate that pretends to.
+- **A LEDGER IS NOT A PROPAGATION MECHANISM — acceptance is not application.** Named by
+  `pij-certain-crab` after the o-prime ruled a finding in a plan's findings table and never edited
+  the constraint that finding corrected. The document then contradicted itself, and a reader of the
+  constraints table never reached the ruling. **A ruling recorded only where it was DECIDED has not
+  landed until every surface it corrects is edited.** Findings tables, execution logs and review
+  records are ledgers *of decisions*; none of them propagates. Same shape as a branch that forked
+  before a fix: nothing wrong where the ruling lives, **wrong in the copy a reader actually
+  reaches**. The instrument is the out-of-diff sweep pointed at yourself — after accepting a
+  ruling, grep the whole document for the term it changes and classify every hit as
+  *fixed / already-consistent / correctly-historical*. The PM did exactly that here before touching
+  the line it was handed, and found three.
 - **A clean verification is evidence about its SCOPE as much as about the artifact.** When
   you delegate a check, ask the clean result **"what did I not ask it to look at"**, never
   "is this right". Plan 001: a PA verified a 7-row drain table against its destinations and
