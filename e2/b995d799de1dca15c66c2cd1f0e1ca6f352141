@@ -1,0 +1,26 @@
+docs/plans/002-sdk-build/assets/p1-import-census.md
+  s_c05f2da2173927::t_56eb8c79959f9c 1-53,55-249,252-262
+  s_c05f2da2173927::t_9cf4688855f98a 54,250-251
+test/trial-fixture/skeleton.ts
+  s_c05f2da2173927::t_ab7fa4e891b244 1-259
+  s_c05f2da2173927::t_a2a3972f52a085 260-263
+docs/plans/002-sdk-build/assets/p1-f4-rederivation.md
+  s_c05f2da2173927::t_83bb5b9663c68f 1-150
+  s_c05f2da2173927::t_2de27d98e1a5c8 151-177
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "e2b995d799de1dca15c66c2cd1f0e1ca6f352141",
+  "prompts": {},
+  "sessions": {
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
