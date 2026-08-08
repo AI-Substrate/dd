@@ -21,7 +21,7 @@
 import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, readFileSync, symlinkSync, writeFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { dirname, join, relative, resolve } from 'node:path';
 
 const REPO = resolve(import.meta.dirname, '..');
 
@@ -77,22 +77,44 @@ const MOVED_SYMBOLS = [
   { spec: 'node', name: 'renderDocument', from: 'src/acts/build.ts (A-1)' },
 ];
 
-// The DECLARED surface of the two CURATED barrels — type-only exports INCLUDED.
+// The DECLARED surface of EVERY published subpath — type-only exports INCLUDED.
 //
-// The runtime probe cannot see these. `import * as ns` yields runtime bindings
+// MEMBERSHIP IS A COMMITMENT; REACHABILITY IS NOT THE SAME CLAIM. The section
+// below this one proves a consumer CAN import each subpath. That says nothing
+// about WHAT they get. Eleven of the thirteen subpaths re-export their modules
+// wholesale, so before this table `export function foo()` added to
+// `src/core/validate.ts` was instantly public API with no gate, no review and no
+// record — the `ActDeps` leak class (a sixth symbol shipping from `./node` on a
+// tier ratified at five), but at module scope where nothing was watching.
+//
+// The runtime probe cannot close it. `import * as ns` yields runtime bindings
 // only, so a type-only surplus is structurally invisible to every other check in
-// this file. That is not hypothetical: the P3 review found `ActDeps` shipping
-// from `./node` beside `DdActDeps` — a sixth symbol on a tier A-1 ratifies at
-// five — plainly readable in `dist/node/index.d.ts` and unseen here. Reachable
-// but unasserted is the same as unmeasured.
+// this file. That is measured, not feared: `ActDeps` was plainly readable in
+// `dist/node/index.d.ts` and unseen here. Reachable but unasserted is the same
+// as unmeasured.
 //
 // So this reads the EMITTED `.d.ts` and demands an EXACT set, failing in BOTH
 // directions. A missing symbol breaks a consumer; a surplus one is a published
 // symbol nobody reviewed, and it is far cheaper to refuse it now than to remove
 // it after someone imports it.
+//
+// THE LISTS ARE LITERAL ON PURPOSE. Deriving them at runtime from the same
+// `.d.ts` they are checked against would produce a list that agrees with any
+// surface — a guard that can never fail, which is worse than no guard because it
+// reports safety. These are values a reviewer reads in a diff, so WIDENING THE
+// SURFACE IS AN EDIT SOMEONE SEES. The eleven wholesale subpaths were seeded
+// from the surface already shipping at HEAD (`npm run build`, then the emitted
+// `.d.ts` read with this file's own parser): that freezes what shipped so the
+// NEXT addition is a decision, and ratifies no new choices.
+//
+// Keyed by EMITTED FILE, not by subpath, because `./schema` and `./schema/index`
+// are two exports-map keys onto one `.d.ts`. One list per file cannot disagree
+// with itself the way two copies would; `subpaths` records which keys it serves,
+// and the coverage check below makes the table's own completeness a gate.
 const DECLARED_SURFACE = [
   {
     file: 'dist/lib.d.ts',
+    subpaths: ['.'],
     label: '@ai-substrate/dd',
     authority: 'the D-1 allowlist',
     names: [
@@ -103,28 +125,174 @@ const DECLARED_SURFACE = [
   },
   {
     file: 'dist/node/index.d.ts',
+    subpaths: ['./node'],
     label: '…/node',
     authority: 'A-1 (the five-symbol operational tier)',
     names: ['DD_ISSUE_CODES', 'DdActDeps', 'NodeSchemaFs', 'renderDocument', 'trackedPaths'],
+  },
+  {
+    file: 'dist/core/address.d.ts',
+    subpaths: ['./core/address'],
+    label: '…/core/address',
+    authority: 'the P7 baseline',
+    names: [
+      'DdAddress', 'DdAddressFailure', 'DdAddressSegment', 'formatAddress', 'isAddressFailure',
+      'normalizeAddress', 'normalizeFilePath', 'parseAddress',
+    ],
+  },
+  {
+    file: 'dist/core/model.d.ts',
+    subpaths: ['./core/model'],
+    label: '…/core/model',
+    authority: 'the P7 baseline',
+    names: [
+      'DdDoc', 'DdEnumSchema', 'DdFailure', 'DdFailureClass', 'DdHeader', 'DdInstance',
+      'DdPrimitiveType', 'DdReference', 'DdReferenceMode', 'DdSection', 'DdSectionSchema',
+      'DdShape', 'DdStateEntry', 'ResolvedDdSchema',
+    ],
+  },
+  {
+    file: 'dist/core/parse.d.ts',
+    subpaths: ['./core/parse'],
+    label: '…/core/parse',
+    authority: 'the P7 baseline',
+    names: ['parse'],
+  },
+  {
+    file: 'dist/core/validate.d.ts',
+    subpaths: ['./core/validate'],
+    label: '…/core/validate',
+    authority: 'the P7 baseline',
+    names: [
+      'DdIssue', 'DdIssueClass', 'DdLinkCell', 'DdSeverity', 'SchemaResolveResult',
+      'SchemaResolver', 'collectLinkCells', 'isPathWithinRepo', 'resolveAddressFile',
+      'validateDocument',
+    ],
+  },
+  {
+    file: 'dist/core/walk.d.ts',
+    subpaths: ['./core/walk'],
+    label: '…/core/walk',
+    authority: 'the P7 baseline',
+    names: [
+      'DocLoadResult', 'DocLoader', 'ValidateWalkDeps', 'ValidateWalkOptions',
+      'shouldExcludeFromSweep', 'validateWalk',
+    ],
+  },
+  {
+    file: 'dist/links/index.d.ts',
+    subpaths: ['./links'],
+    label: '…/links',
+    authority: 'the P7 baseline',
+    names: [
+      'DD_SUFFIX', 'DdAdapterGap', 'DdAdapterGapSource', 'DdAddressable', 'DdAddressableKind',
+      'DdBasisResult', 'DdBasisState', 'DdBasisVerdict', 'DdCorpusGraph', 'DdCorpusScan',
+      'DdDoctorDeps', 'DdDoctorFinding', 'DdDoctorOptions', 'DdDoctorReport', 'DdDocumentIndex',
+      'DdGraphNode', 'DdLedgerUpdate', 'DdLinkEdge', 'DdLinkIssue', 'DdLinkIssueClass',
+      'DdLinkResolution', 'DdLinkResolveOptions', 'DdLinkResolverDeps', 'DdLinkTarget',
+      'DdLinkUnresolvedReason', 'DdLinksReport', 'DdMapArm', 'DdMapCut', 'DdMapDeps',
+      'DdMapDirection', 'DdMapEdge', 'DdMapMark', 'DdMapNode', 'DdMapOptions', 'DdMapPalette',
+      'DdMapResult', 'DdResolvedSegment', 'DdSegmentKind', 'DdTraverseDeps', 'DdTraverseOptions',
+      'DdWalkBounds', 'DdWalkCut', 'DdWalkResult', 'DdWalkStep', 'DdWalkVisit', 'DocLoader',
+      'FsDocLoader', 'MAP_WIDTH', 'MemoizingDocLoader', 'PLAIN_MAP_PALETTE', 'SchemaResolver',
+      'UNBOUNDED', 'addressableAt', 'anchorForLocation', 'boundedWalk', 'findLedgerEntry',
+      'indexDocument', 'isWithinLocation', 'linkIssue', 'linksFor', 'mapAddress',
+      'reachableFrom', 'renderMapTree', 'resolveLink', 'resolveLinksTarget', 'resolveMapSeed',
+      'runDoctor', 'scanCorpus', 'toMermaid', 'traverseCorpus', 'updateLedgerEntry',
+      'verifyBasis', 'wrapPlain',
+    ],
+  },
+  {
+    file: 'dist/render/renderer.d.ts',
+    subpaths: ['./render/renderer'],
+    label: '…/render/renderer',
+    authority: 'the P7 baseline',
+    names: [
+      'MAX_CELL_DEPTH', 'RENDER_BANNER', 'escapeCell', 'headingSlug', 'renderDd',
+      'sectionForAddress', 'sectionTitle',
+    ],
+  },
+  {
+    file: 'dist/schema/index.d.ts',
+    subpaths: ['./schema', './schema/index'],
+    label: '…/schema(/index)',
+    authority: 'the P7 baseline',
+    names: [
+      'BUILTIN_COMPLETION_ENUM', 'ConventionSchemaResolver', 'DdDerivedState', 'DdSchemaItem',
+      'DdSection', 'DeclarationResult', 'RootScan', 'SCAN_SKIP_DIRS', 'SCAN_SKIP_PATHS',
+      'SCHEMAS_DIR', 'SCHEMA_FILE', 'SUPPORTED_SCHEMA_VERSION', 'SchemaDeclaration', 'SchemaFs',
+      'SchemaHit', 'SchemaIssue', 'SchemaIssueClass', 'SchemaListEntry', 'SchemaListing',
+      'SchemaRecord', 'SchemaResolution', 'SchemaResolverOptions', 'SchemaRoot',
+      'SchemaRootKind', 'SchemaSeverity', 'deriveSchemaItems', 'deriveSchemaState',
+      'isQualifiedName', 'parseSchemaDeclaration', 'scanRoot', 'schemaIssue',
+    ],
+  },
+  {
+    file: 'dist/schema/model.d.ts',
+    subpaths: ['./schema/model'],
+    label: '…/schema/model',
+    authority: 'the P7 baseline',
+    names: [
+      'DdSchemaItem', 'SCAN_SKIP_DIRS', 'SCAN_SKIP_PATHS', 'SCHEMAS_DIR', 'SCHEMA_FILE',
+      'SUPPORTED_SCHEMA_VERSION', 'SchemaFs', 'SchemaHit', 'SchemaIssue', 'SchemaIssueClass',
+      'SchemaListEntry', 'SchemaListing', 'SchemaRecord', 'SchemaResolution', 'SchemaRoot',
+      'SchemaRootKind', 'SchemaSeverity', 'schemaIssue',
+    ],
+  },
+  {
+    file: 'dist/schema/resolve.d.ts',
+    subpaths: ['./schema/resolve'],
+    label: '…/schema/resolve',
+    authority: 'the P7 baseline',
+    names: [
+      'ConventionSchemaResolver', 'SchemaResolverOptions', 'deriveSchemaItems',
+      'deriveSchemaState',
+    ],
   },
 ];
 
 /**
  * Every name a `.d.ts` publishes, or a REFUSAL.
  *
- * Exact for a curated barrel by construction: D-1 requires both of these files to
- * list their exports one by one, so there is nothing here to infer. If one ever
- * grows an `export *` the surface stops being enumerable by reading, and this
- * refuses rather than reporting a set it cannot see — the shallow-clone rule
- * again, applied to the probe's own instrument.
+ * `export *` used to be an automatic refusal, on the reasoning that it makes a
+ * surface unenumerable by reading. Measured at HEAD that was too broad: the two
+ * wholesale barrels (`links/index`, `schema/index`) BOTH star-re-export a
+ * sibling `./model.js`, and a relative star IS enumerable — it just takes one
+ * more file. Refusing there would mean the two largest surfaces on the map could
+ * never be pinned, which is the hole this section exists to close.
+ *
+ * So a relative star is FOLLOWED, recursively, and its names join this file's.
+ * What still refuses is what genuinely cannot be read: a star from a bare
+ * specifier (whose names live in a package this script does not resolve), a star
+ * whose target is missing, or a cycle. Refuse rather than guess — the
+ * shallow-clone rule applied to the probe's own instrument.
+ *
+ * `export * as ns` is a different statement: it publishes ONE name, the
+ * namespace, and is recorded as that name rather than followed.
  */
-function declaredNames(source) {
+function declaredNames(declPath, seen = new Set()) {
+  const shown = relative(REPO, declPath);
+  if (seen.has(declPath)) return { refused: `\`export *\` cycles back through ${shown}` };
+  seen.add(declPath);
+  if (!existsSync(declPath)) return { refused: `${shown} does not exist` };
   // Comments talk ABOUT exports; strip them rather than pattern-match around them.
-  const code = source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^[ \t]*\/\/.*$/gm, '');
-  if (/^\s*export\s+\*/m.test(code)) {
-    return { refused: 'the barrel uses `export *`, so its surface is no longer enumerable by reading' };
-  }
+  const code = readFileSync(declPath, 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/^[ \t]*\/\/.*$/gm, '');
   const names = new Set();
+  // `export * as ns from '…'` publishes the namespace name, not the target's names.
+  for (const match of code.matchAll(/export\s+\*\s+as\s+([A-Za-z_$][\w$]*)\s+from/g)) {
+    names.add(match[1]);
+  }
+  for (const match of code.matchAll(/export\s+\*\s+from\s+['"]([^'"]+)['"]/g)) {
+    const spec = match[1];
+    if (!spec.startsWith('.')) {
+      return { refused: `\`export * from '${spec}'\` — a bare specifier's names are not readable from here` };
+    }
+    const nested = declaredNames(join(dirname(declPath), spec.replace(/\.js$/, '.d.ts')), seen);
+    if (nested.refused) return { refused: `via \`export * from '${spec}'\` in ${shown}: ${nested.refused}` };
+    for (const name of nested.names) names.add(name);
+  }
   for (const match of code.matchAll(/export\s+(?:type\s+)?\{([\s\S]*?)\}/g)) {
     for (const raw of match[1].split(',')) {
       const part = raw.trim().replace(/^type\s+/, '');
@@ -261,7 +429,31 @@ console.log('=== ROOT PURITY (§4.3 regression gate) ===');
   }
 }
 
-console.log('\n=== DECLARED SURFACE (curated barrels, types included) ===');
+console.log('\n=== DECLARED SURFACE (exact membership, types included) ===');
+// The table's own completeness is a gate. Without this, adding a subpath to the
+// exports map and no entry here would publish a whole module unwatched — the
+// same hole one level up, and invisible for exactly the same reason: nothing
+// asked whether the list was complete. Both sides are hand-maintained, so this
+// compares two records rather than deriving one from the other.
+{
+  const pkg = JSON.parse(readFileSync(join(REPO, 'package.json'), 'utf8'));
+  const published = Object.keys(pkg.exports).filter((key) => key !== './package.json');
+  const pinned = DECLARED_SURFACE.flatMap((entry) => entry.subpaths);
+  const unpinned = published.filter((key) => !pinned.includes(key));
+  const stale = pinned.filter((key) => !published.includes(key));
+  if (unpinned.length) {
+    failures.push(`exports map publishes ${unpinned.length} subpath(s) with no ratified member list: ${unpinned.join(', ')}`);
+    console.log(`FAIL  ${unpinned.length} published subpath(s) NOT pinned: ${unpinned.join(', ')}`);
+    console.log('      A new subpath publishes its whole module. Add its ratified list below.');
+  }
+  if (stale.length) {
+    failures.push(`DECLARED_SURFACE pins ${stale.length} subpath(s) the exports map no longer publishes: ${stale.join(', ')}`);
+    console.log(`FAIL  ${stale.length} pinned subpath(s) no longer published: ${stale.join(', ')}`);
+  }
+  if (!unpinned.length && !stale.length) {
+    console.log(`PASS  all ${published.length} published subpaths have a ratified member list (${DECLARED_SURFACE.length} emitted targets)`);
+  }
+}
 for (const { file, label, authority, names: ratified } of DECLARED_SURFACE) {
   const declPath = join(REPO, file);
   if (!existsSync(declPath)) {
@@ -269,7 +461,7 @@ for (const { file, label, authority, names: ratified } of DECLARED_SURFACE) {
     console.log(`MISSING    ${file} — build first, or the barrel stopped emitting types`);
     continue;
   }
-  const parsed = declaredNames(readFileSync(declPath, 'utf8'));
+  const parsed = declaredNames(declPath);
   if (parsed.refused) {
     failures.push(`${file}: ${parsed.refused}`);
     console.log(`REFUSED    ${file} — ${parsed.refused}`);
@@ -278,7 +470,7 @@ for (const { file, label, authority, names: ratified } of DECLARED_SURFACE) {
   const absent = ratified.filter((name) => !parsed.names.includes(name));
   const surplus = parsed.names.filter((name) => !ratified.includes(name));
   if (absent.length === 0 && surplus.length === 0) {
-    console.log(`PASS  ${label.padEnd(18)} declares exactly ${ratified.length} symbols — ${authority}`);
+    console.log(`PASS  ${label.padEnd(18)} declares exactly ${ratified.length} symbol${ratified.length === 1 ? '' : 's'} — ${authority}`);
     continue;
   }
   if (absent.length) {
