@@ -1,0 +1,21 @@
+docs/plans/001-dd-extraction/execution-log.dd.json
+  s_f5a59eaabcfb7d::t_8c6bd82bbcb19d 71-75
+docs/plans/001-dd-extraction/execution-log.dd.md
+  s_f5a59eaabcfb7d::t_e1c7d76a870389 33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "dcd1babdd916d6282982d5f876602d59baed0b45",
+  "prompts": {},
+  "sessions": {
+    "s_f5a59eaabcfb7d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c1a8ee5f-0c77-4a73-9109-a12db9cd18a8",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
