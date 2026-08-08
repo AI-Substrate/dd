@@ -249,9 +249,21 @@ Set by R-2, and deliberately **measurable rather than a taste question**:
 
 Today's answer is **no** — first estimated as five symbols (§4.1), but that census measures the
 re-implementation population, not the trial population (§4.1 header ruling). **The progress bar
-is the §5.1 fixture's import list going from unsatisfiable to green**, and the true symbol gap
-is whatever that fixture's imports reveal — known so far to exceed the census by at least
-`FsDocLoader` (fr-0010).
+is the §5.1 fixture's import list going from unsatisfiable to green.**
+
+**MEASURED at P1** (`assets/p1-import-census.md`, commit `e2b995d`; independently verified by
+cross-model review, `assets/p1-review-terra.md`, `44fa439`; PM re-enumerated the population a
+third way — three instrument sets, one conclusion). **Two populations, two numbers, both now
+exact — never conflate them again**:
+
+- **Trial population** (the four adapting harness files — what THIS plan must satisfy):
+  30 symbols consumed; 15 reachable; **floor = 6 unreachable** (`FsDocLoader`, `trackedPaths`,
+  `DD_ISSUE_CODES`, `DdActDeps`, `NodeSchemaFs`, `renderDocument`), excluding 9 `src/plan/`
+  rows R-2 already rules out.
+- **Re-implementation population** (§4.1's — what a from-scratch `plan/` rebuild would need):
+  **7 modules absent, 2 barrel-rescued, 7 symbols across 5 modules** — §4.1's five-across-four
+  understated it on every axis; its conclusion survives, stronger (F-4 closed,
+  `assets/p1-f4-rederivation.md`).
 
 ### 5.1 The trial bar — corrected by the consumer before it was hit
 
@@ -437,7 +449,7 @@ brief asked it to be willing to do. Eight findings; these are the rulings.
 | **F-1** | Worktree forked at `1dbd233`, missing the `prepare` fix, the AGENTS.md commit block, and the corrected doctor baseline — so `requirements.md` §4.4 called something FIXED that was absent where the work happens | **FIXED.** Rebased onto `465d490`; `prepare` and the commit block verified present. Its diagnosis is kept: *the decay axis reproduced **structurally** rather than over time* — nothing wrong on main, everything wrong in the copy the work reads |
 | **F-2** | The acceptance test is not attestable by this subtree — "harness re-implements `plan validate`" is an event in koala's fleet, and standing 5 forbids the work while standing 6 forbids the channel | **ACCEPTED — and the fixture design as first ruled here is SUPERSEDED by §5.1** (o-prime, 2026-08-08, from `fr-0010`). The original ruling — *a fixture re-implementing `plan validate` through public entry points, wired into `just checks`* — kept the right insight (a gate this subtree owns) but aimed at the wrong target: a re-implementation tests whether the SDK *can* do the job, not whether **this caller** can do its *existing* job through it, and it would have gone green over the `FsDocLoader` hole. The corrected bar (§5.1) reproduces **the injection against the installed tarball** with a fixture-owned foreign fs port. Gate ownership, `just checks` wiring, and koala-as-confirmation all survive |
 | **F-3** | The progress bar has no gate — `check-exports` measures **subpaths** (11/12) while the progress bar is **symbols** (5), so the five-symbol figure is stamped prose with no owner | **ACCEPTED.** Same artifact as F-2 fixes it — now the §5.1 fixture, which imports every symbol the four surviving files import, so it fails while any needed symbol is unreachable and the number becomes a gate reading rather than a claim. This is guardrail 9 applied to our own headline metric; the correction to F-2's design strengthens this row rather than changing it |
-| **F-4** | §4.1 says six modules minus one reachable = five, but the table names four — an unaccounted module inside the number we call the progress bar | **RECLASSIFIED (o-prime, 2026-08-08) — the original ruling was too generous.** UNVERIFIED framed it as a counting problem; the PM's Q-4 observation showed it is a **measurement-target problem**: the census measures the re-implementation population, not the trial population, so *re-deriving it carefully would have produced a carefully wrong answer that looked like diligence*. The count stays open as a documentation inconsistency, but resolving it no longer matters to Q-4 — the requirement now derives from the §5.1 fixture's import list (§4.1 header ruling) |
+| **F-4** | §4.1 says six modules minus one reachable = five, but the table names four — an unaccounted module inside the number we call the progress bar | **RECLASSIFIED (o-prime, 2026-08-08) — the original ruling was too generous.** UNVERIFIED framed it as a counting problem; the PM's Q-4 observation showed it is a **measurement-target problem**: the census measures the re-implementation population, not the trial population, so *re-deriving it carefully would have produced a carefully wrong answer that looked like diligence*. **CLOSED at P1** (coder T3 re-derivation `e2b995d`, review-verified `44fa439`): true numbers are **7 modules absent, 2 barrel-rescued (both mechanisms — `export *` AND named re-export lists), 7 symbols across 5 modules**. §4.1's prose compared symbols to table-modules — two different units — and missed `shared/posix-path`, the `links/map` named-list rescue, and the `isWithin`/`resolveInRepo` pair. Wrong in the safe direction on all three axes; conclusion survives, stronger. And per the reclassification: this number is historical only — Q-4 derived from the trial population (§5), where the floor is SIX |
 | **F-5** | The brief dropped R-1's research precondition, so a PM working from the brief alone dispatches design first and breaks a ruling | **FIXED in both places** — §2 R-1 now carries a blocking callout, and the brief was corrected. **First dispatch is the research step** |
 | **F-6** | C-2 says "tag or SHA", but standing 2 forbids agents tagging | **ACCEPTED — C-2 is SHA-only for any agent.** A tag is Jordan's to cut |
 | **F-7** | Brief §6 says "two failure modes" over three bullets | **FIXED in the brief** |

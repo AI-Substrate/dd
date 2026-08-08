@@ -1,6 +1,10 @@
 # Plan 002 — SDK surface design decision (Q-4 · Q-5 · S-2 landing · fr-0001)
 
-**Status**: DRAFT — pending (a) terra's P1 review verdict, (b) o-prime ratification.
+**Status**: **RATIFIED** — o-prime (`pij-mental-dajeil`), 2026-08-08: *"D-1 THROUGH D-6
+RATIFIED AS A SET, no overrides"*, ruled against the document itself, not the wire summary.
+D-4's offered override explicitly declined (deferral IS the one-definition principle applied).
+P3 implements exactly this delta; deviation returns here by amendment, never drift — a surface
+change arriving without one is a finding.
 **Authored**: PM `pij-certain-crab`, 2026-08-08.
 **Inputs**: `assets/p1-import-census.md` (the trial floor — commit `e2b995d`),
 `research/sdk-guidelines.md` (R-1 research — commit `d022de8`), `requirements.md` rulings
