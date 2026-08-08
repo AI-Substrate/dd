@@ -1,0 +1,27 @@
+src/acts/doctor.ts
+  s_c05f2da2173927::t_bc83d3fab945e4 11,32
+src/acts/graph.ts
+  s_c05f2da2173927::t_6617678dda3628 20,31
+test/services/dd/core/path-absoluteness.test.ts
+  s_c05f2da2173927::t_3d693f2e59c2dd 1-59
+test/acts/dd-path-scope-absoluteness.test.ts
+  s_c05f2da2173927::t_42574a0f24bd39 1-139
+src/core/validate.ts
+  s_c05f2da2173927::t_d9aa44b9a691fc 86-114,117,190
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "5b6ad126167ebf0010413551f7c3f64c762db058",
+  "prompts": {},
+  "sessions": {
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
