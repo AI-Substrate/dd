@@ -161,6 +161,21 @@ step — pointing harness at this package and deleting the old code — is koala
   that survive them are the ones that live in **what people say about artifacts** and in
   **how artifacts get rearranged**. Do not expect the gates to cover that, and do not build
   a gate that pretends to.
+- **WHEN A TEST DISAGREES WITH THE IMPLEMENTATION, THE CONTRACT DECIDES WHICH IS WRONG — NOT THE
+  IMPLEMENTATION.** The sharpest instance either plan produced. Building the acceptance fixture, a
+  coder asserted `tracked === false`, observed `true`, and **conformed the fixture to the
+  implementation** — with the doc comment defining the correct behaviour **one screen up in the
+  same file**. The review then verified the clause asserted what the **code** did rather than what
+  the **contract** said. Three instruments touched that semantics; **only the external consumer,
+  reading the comment, resolved it right.**
+  **A fixture conformed to the implementation cannot fail.** This is the vacuous-guard family
+  reached from a new direction — not a weak test written weakly, but a **correct test fixed in the
+  wrong direction** the moment it did its job. The failing assertion *was* the finding, and it was
+  spent closing itself. **On any test-vs-code disagreement, go read the contract before you touch
+  either.**
+  Recorded with it: two of our instruments agreed on a floor and shared a blind spot; the floor
+  held anyway. **That is luck spent, not method proven** — and a coincidence that produces a right
+  answer is more dangerous than one that produces a wrong one, because nothing prompts the recheck.
 - **WHEN AN ALARM IS SATISFIABLE BY NOTHING, STOP RELAYING IT — AND SAY WHAT YOU DO INSTEAD.**
   Measured, not assumed: a pij session has **three** state surfaces and only **two** are settable —
   assignment state (`pij report state`), status card (`pij report now`), and an **activity axis**
