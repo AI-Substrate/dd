@@ -363,6 +363,24 @@ forward-slash drive-letter paths too. Acceptance tests need a lowercase-drive ca
 `toPosix` upper-cases the drive letter while `normalizeFilePath` does not, so correctness
 currently depends on which runs first.
 
+### S-1a · The cfa501a6 F1 residue — SPLIT ruling (o-prime, 2026-08-08), measurement PM's
+
+Upstream's own F1 (identity-spelling) sites, found unfixed in this fork during P4:
+
+- **`src/plan/` sites (`index-plan.ts` itemKey/displayAddress) — DEFERRED.** Measured by
+  o-prime: nothing outside `src/plan` imports it in this fork (grep across `src/` excluding
+  `src/plan` → empty), so the fix is zero-risk AND zero-value — and it brushes R-2 for no
+  gain. The larger question it exposes (does `src/plan` belong in this repo at all) is
+  **`wl-0011`**, deliberately not plan 002's to answer.
+- **`links/map.ts` `nodeId` (line 352) — SCOPED IN.** Prime ruled the shape (private symbol ≠
+  private behavior; if nodeId output reaches public returns, it is surface); PM ran the trace
+  (2026-08-08, against pinned `f9b7b03`): `nodeId` output feeds (a) `linkIssue(...)` addresses
+  in the `issues` array returned by `mapAddress` — re-exported by `links/index.ts:51` — and
+  (b) the `keyFor(arm, nodeId(...))` strings that become `DdMapNode.key`/`parent` in returned
+  nodes. **A consumer observes the spelling in returned data → same argument that put
+  `core/validate.ts:88` into S-1.** Fix dispatches as a P4 addendum (`p4b`), same F1 family
+  discipline, after P3 completes.
+
 ### S-2 · Move `FsDocLoader` into the SDK half — **ruled, from `fr-0010`**
 
 > **o-prime, 2026-08-08**, adopting koala's recommendation after verifying it: *"Ruled: move
