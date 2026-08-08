@@ -1,0 +1,19 @@
+docs/plans/002-sdk-build/research/sdk-guidelines.md
+  s_6e59036559203c::t_3c6500b300d3d0 1-250
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "d022de8bf2cc7f2aee5cbcf3ee45a1fde2c0ed3b",
+  "prompts": {},
+  "sessions": {
+    "s_6e59036559203c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06d3bbcf-6419-4a86-8e8c-7147b4e647ce",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
