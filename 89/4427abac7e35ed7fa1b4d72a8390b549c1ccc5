@@ -1,0 +1,20 @@
+scripts/trial-fixture-run.mjs
+  s_c05f2da2173927::t_e3786c2e147b57 146
+  s_c05f2da2173927::t_94c0f5e8392d82 1-145,147-221
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "894427abac7e35ed7fa1b4d72a8390b549c1ccc5",
+  "prompts": {},
+  "sessions": {
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
