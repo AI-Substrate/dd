@@ -49,6 +49,22 @@ surviving harness files consume dd as a library and are **not** rewritten to she
 working from the brief alone would have dispatched design first and broken a ruling without ever
 seeing it. Brief fixed too; the condition now lives in both places.)*
 
+**Scope of the precondition — ruled by Jordan, 2026-08-08** (in the PM's pane, put as a direct
+question with prime's boundary stated). Asked: *"Can the fixture skeleton (imports +
+construction shape, derived from harness's four existing files) be drafted in parallel with the
+R-1 perplexity research, or does R-1 mean nothing is touched before the research lands?"*
+Jordan selected: **"Parallel is fine (prime's reading)"** — skeleton = measurement of what
+already exists, runs alongside research; design decisions (Q-4 width, Q-5 root shape, exports
+map) still wait for the research.
+
+The boundary that reading carries (o-prime, 2026-08-08, now Jordan-confirmed): **the skeleton
+may establish WHAT IS REQUIRED; it may not decide WHAT IS OFFERED.** Import statements and
+construction shape derived from the four files is measurement and is permitted. Any judgement
+about surface width, root shape, or whether a symbol is promoted or wrapped is Q-4/Q-5 design
+and waits for the research. **If drafting the skeleton starts producing opinions about the
+exports map, the drafter has crossed from measuring the floor to choosing the ceiling and must
+stop and say so.**
+
 ### R-2 · `plan/` is not shipped; harness re-implements on top (OQ-2, superseded)
 
 > **Jordan, 2026-08-08**: *"I think it should be re-impl in Harness TBH. I assume SDK will be
