@@ -119,6 +119,44 @@ design — listed here because the research motivated it and P5 implements it.)
 }
 ```
 
+## A-1 · AMENDMENT (2026-08-08) — two D-2 landings collide with the SDK-purity gate
+
+**Status**: PROPOSED — awaiting o-prime ratification. Raised by the coder mid-P3 via the
+amendment path (measured against `test/architecture/dd-core-isolation.test.ts`'s own
+algorithm, not reasoned); the other three moves + T2/T3/T4 proceed unaffected.
+
+**The collision**: `dd-core-isolation` keeps the whole SDK tree
+(core/docs/links/mutate/plan/render/schema/shared) free of `output/` and `adapters/` imports —
+absolute today (measured: zero escapes), and documented as intent (*"an act is where a
+structured finding becomes the CLI's error vocabulary"*). The ratified delta put two E-code /
+adapter-coupled symbols INSIDE that tree:
+
+- `DD_ISSUE_CODES` → `./core/validate`: irreducible runtime import of `output/error-codes`
+  (it IS that map's values), plus a core↔links type cycle any variant inherits.
+- `renderDocument` → `./render/renderer`: five escapes, four runtime — it is a **composition
+  root** constructing four Node adapters; keeping its ratified signature means keeping that
+  construction.
+
+**Amended landings** (the only change — floor still exactly six, all reachable):
+
+| Symbol | Was (D-2) | Now | Why this option |
+|---|---|---|---|
+| `DD_ISSUE_CODES` | `./core/validate` | **`./node`** | The E-code vocabulary is CLI vocabulary — the gate's docblock says so in its own words. Landing it in core would invert the boundary (rejected opts: moving error-codes into the SDK tree, duplicating the literals — two exhaustive Records that drift, amending the gate). `./node` already can import `output/`; the consumer imports it alongside `DdActDeps`/`trackedPaths` today, so the cluster stays together |
+| `renderDocument` | `./render/renderer` | **`./node`** | It is Node-bound **by construction**, not by accident of address — the D-2 rationale ("nothing CLI about its signature") was true of the signature and false of the body. Injection (signature change) and pure/wiring split (new symbol beyond delta) both deviate more |
+
+**Consequences**: `./core/validate` and `./render/renderer` rows revert to UNCHANGED (their
+targets never needed edits). `./node` becomes the five-symbol operational tier: `NodeSchemaFs`,
+`trackedPaths`, `DdActDeps` (@experimental), `DD_ISSUE_CODES`, `renderDocument`. The purity
+gate stays absolute and becomes a design FEATURE: the SDK tree emits structured findings;
+`./node` is where findings meet the CLI vocabulary and Node adapters. D-5 stability unchanged.
+
+**Also recorded, PM-accepted as NOT a surface deviation** (coder's implementation note):
+`FsDocLoader`'s ctor port types (`Pick<FsPort,'readText'>`, `HashPort` — both from `adapters/`,
+both non-public) are re-declared structurally in `links/loader.ts`, following the existing
+in-tree precedent (`render/refresh.ts:9-18`, `schema/model.ts` `SchemaFs`). No new public
+symbols (not exported from `links/index.ts`); call sites unchanged (structural typing); P1
+census group C already recorded these as foreign stand-in shapes.
+
 ## What ratification is being asked for
 
 1. D-1..D-6 as a set (or per-item overrides).
