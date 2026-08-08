@@ -170,9 +170,18 @@ census group C already recorded these as foreign stand-in shapes.
 
 ## A-2 · AMENDMENT (2026-08-08) — trial round 1: `tracked` lies on no-tracking hosts
 
-**Status**: PROPOSED — awaiting o-prime ratification. Source: koala trial round 1, verified by
-o-prime against both the code and its own doc comment before routing. R-4 working as designed:
-the surface moved to trial, the trial found what our gates did not, it returns as an amendment.
+**Status**: **RATIFIED** — o-prime, 2026-08-08, as proposed, read from the amendment. Source:
+koala trial round 1, o-prime-verified before routing. R-4 working as designed. The ratification
+names the fixture-clause strengthening as *"the whole reason to ratify rather than just fix"* —
+C9 currently pins the lie, and fixing the loader without the clause would leave a fixture that
+passes on correct behavior by accident and passes again if the defect returns.
+
+**Standing rule extracted** (o-prime, recorded at `de5a7a1` on main): **when a test disagrees
+with the implementation, the CONTRACT decides which is wrong — not the implementation.** The
+P5 assertion that observed `true` from a null set WAS the finding, and it was spent closing
+itself; review then inherited the code's frame. And on the census coincidence: *a coincidence
+that produces a RIGHT answer is more dangerous than one producing a wrong one, because nothing
+prompts the recheck.*
 
 **The defect** (`links/loader.ts:99`, `FsDocLoader.load`):
 `tracked: this.tracked === null ? true : this.tracked.has(path)` — while the module's own doc
