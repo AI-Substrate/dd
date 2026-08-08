@@ -161,6 +161,19 @@ step — pointing harness at this package and deleting the old code — is koala
   that survive them are the ones that live in **what people say about artifacts** and in
   **how artifacts get rearranged**. Do not expect the gates to cover that, and do not build
   a gate that pretends to.
+- **A GATE THAT REPAIRS WHAT IT DETECTS CANNOT BE FAILED TWICE — and therefore cannot be trusted
+  once.** `just checks` reported three "transient" reds that greened on immediate re-run with no
+  change. They were **not** flakes. **Reproduced deliberately**: append a line to a generated file,
+  run `just checks` → exit 1; run it again → exit 0, the appended line gone, git clean. The check
+  **regenerates the artifact it diffs**, so it detects drift, reports red, *and repairs it in the
+  same pass*. Every one of those reds was a **real failure that erased its own evidence**.
+  **Worse than a flake, for three compounding reasons**: it *trains the re-run habit*, and the
+  re-run then "proves" the red was spurious; the actual drift is silently corrected so nobody
+  learns **what** drifted; and it makes *a transient red is a finding, never a re-run* feel like
+  superstition to anyone who tests it, because re-running genuinely does green.
+  **On any red: `git status` BEFORE re-running.** A clean tree plus a red gate means the gate just
+  repaired something and the evidence is already gone. **The fix is separation — `check-*` must be
+  read-only and fail without repairing; `gen-*` repairs.**
 - **THE WIRE IS UNVERSIONED — LATER DOES NOT MEAN BETTER, IT MEANS UNDIFFABLE.** Named by
   `pij-certain-crab` after catching an o-prime wire message that contradicted a committed artifact.
   **Between a committed artifact and a later message, disagreement is a QUESTION — never a silent
