@@ -1,0 +1,31 @@
+docs/plans/002-sdk-build/assets/exit-flush-rereview-terra.md
+  s_13e213c1c0636b::t_5d657cfb77c63a 1-37
+docs/plans/002-sdk-build/assets/exit-flush-review-terra.md
+  s_13e213c1c0636b::t_854da49f265ebe 1-85
+docs/plans/002-sdk-build/assets/rebuild-race-review-terra.md
+  s_6e59036559203c::t_1e4e09772fe908 1-81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "509b23c0a55c87e7cd4c01c7df9e5dd51c397332",
+  "prompts": {},
+  "sessions": {
+    "s_13e213c1c0636b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "e55f0d74-97d7-495c-bb9a-0badfdfb787a",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_6e59036559203c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06d3bbcf-6419-4a86-8e8c-7147b4e647ce",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
