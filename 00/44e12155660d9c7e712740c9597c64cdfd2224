@@ -1,0 +1,21 @@
+docs/plans/wishlist.dd.json
+  s_96ea85fc19fb5c::t_fdcc8ba6ebea00 31,33,35,41,43,45,51,53,55
+docs/plans/wishlist.dd.md
+  s_96ea85fc19fb5c::t_7cb976b116b5fa 23-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "0044e12155660d9c7e712740c9597c64cdfd2224",
+  "prompts": {},
+  "sessions": {
+    "s_96ea85fc19fb5c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "06f5348e-6d18-496b-ad51-45708f9233df",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
