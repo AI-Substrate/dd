@@ -1,0 +1,14 @@
+docs/plans/002-sdk-build/assets/p1-review-terra.md
+  h_9e71e8b09f7cf2 1-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "44fa439147e556037403c540cc4dee42438fff11",
+  "prompts": {},
+  "humans": {
+    "h_9e71e8b09f7cf2": {
+      "author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
