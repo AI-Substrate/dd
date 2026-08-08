@@ -83,9 +83,38 @@ function dirname(path: string): string {
   return boundary <= 0 ? (normalized.startsWith('/') ? '/' : '.') : normalized.slice(0, boundary);
 }
 
+/**
+ * A file path is already root-anchored: a POSIX root (`/`, including UNC `//`)
+ * or a Windows DRIVE root (`C:/`). Deliberately the same grammar as
+ * `shared/posix-path.ts`'s `ABSOLUTE_LOGICAL` — mirrored rather than imported,
+ * because dd-core is transitively free of `node:` builtins (enforced by
+ * `test/architecture/dd-core-isolation.test.ts`) and `shared/posix-path.ts`
+ * imports `node:path`. Callers slash-normalise before testing, so the pattern
+ * only ever sees forward slashes.
+ *
+ * One const, used by BOTH of this module's absoluteness questions
+ * (`resolveAddressFile` and the `address-path-absolute` finding) — those were
+ * two different hand-rolled tests of one fact, which is how the drive-letter
+ * case came to be absolute for the WARN and relative for the resolver.
+ */
+const ABSOLUTE_FILE_PATH = /^([A-Za-z]:)?\//;
+
+function isRootAnchored(path: string): boolean {
+  return ABSOLUTE_FILE_PATH.test(path.replaceAll('\\', '/'));
+}
+
+/**
+ * Resolve an address's `file` part against the CITING document, anchoring a
+ * relative target on the citer's directory.
+ *
+ * S-1 F2: absoluteness was tested with `startsWith('/')`, which a drive-letter
+ * path does not satisfy — so `C:/other/e.dd.json` cited from `/repo/docs/plan
+ * .dd.json` resolved to `/repo/docs/C:/other/e.dd.json`. Not a separator bug:
+ * it fired on forward slashes exactly as hard as on backslashes.
+ */
 export function resolveAddressFile(fromPath: string, target: string): string {
   const posixTarget = target.replaceAll('\\', '/');
-  if (posixTarget.startsWith('/')) return normalizeFilePath(posixTarget);
+  if (isRootAnchored(posixTarget)) return normalizeFilePath(posixTarget);
   return normalizeFilePath(`${dirname(fromPath)}/${posixTarget}`);
 }
 
@@ -158,7 +187,7 @@ function validateLink(raw: string, shape: DdShape, location: string, ctx: Valida
         'address paths should use POSIX separators',
       );
     }
-    if (address.file.startsWith('/') || /^[A-Za-z]:[\\/]/.test(address.file)) {
+    if (isRootAnchored(address.file)) {
       addIssue(
         ctx,
         'address-path-absolute',
