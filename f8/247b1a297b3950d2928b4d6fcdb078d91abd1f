@@ -1,0 +1,29 @@
+docs/plans/002-sdk-build/assets/a2-review-terra.md
+  s_2a2451d95e064e::t_3c088615f475f6 1-36
+docs/plans/002-sdk-build/requirements.md
+  s_2e71ba852f97eb::t_deace0256dceee 268-280
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "f8247b1a297b3950d2928b4d6fcdb078d91abd1f",
+  "prompts": {},
+  "sessions": {
+    "s_2a2451d95e064e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "587f8924-3447-4784-b872-2fb1c784af82",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_2e71ba852f97eb": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "c0dbbeab-f85e-4819-9d6d-a10bd3a81eb5",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
