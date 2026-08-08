@@ -121,9 +121,20 @@ design — listed here because the research motivated it and P5 implements it.)
 
 ## A-1 · AMENDMENT (2026-08-08) — two D-2 landings collide with the SDK-purity gate
 
-**Status**: PROPOSED — awaiting o-prime ratification. Raised by the coder mid-P3 via the
-amendment path (measured against `test/architecture/dd-core-isolation.test.ts`'s own
-algorithm, not reasoned); the other three moves + T2/T3/T4 proceed unaffected.
+**Status**: **RATIFIED** — o-prime, 2026-08-08, *"as proposed, no amendments"*, read from the
+amendment itself. Prime's own words on why: it corrects the ratified D-2 rationale
+("nothing CLI about its signature" — *true of the signature and false of the body*), the
+rejected options are why the accepted one is trusted (amending the gate was available and
+refused), and the reframe makes the purity boundary an architectural statement. Raised by the
+coder mid-P3 via the amendment path (measured against `dd-core-isolation`'s own algorithm,
+coder took no position); three moves + T2/T3/T4 proceeded unblocked throughout.
+
+**Post-implementation residuals** (P3 report, recorded — deferred to the koala trial per R-4,
+candidate A-2 material): (a) `renderDocument`'s return types (`BuildResult` family) are not
+exported from `./node` — callable but unnameable except via `Awaited<ReturnType<...>>`; adding
+them would exceed the ratified delta. (b) typecheck now depends on `dist/` existing (the
+fixture skeleton resolves `@ai-substrate/dd/*` through the real exports map) — pre-existing
+gate ordering, newly load-bearing.
 
 **The collision**: `dd-core-isolation` keeps the whole SDK tree
 (core/docs/links/mutate/plan/render/schema/shared) free of `output/` and `adapters/` imports —
