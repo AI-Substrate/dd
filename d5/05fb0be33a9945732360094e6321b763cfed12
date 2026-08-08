@@ -1,0 +1,20 @@
+scripts/pack-gate.sh
+  s_c05f2da2173927::t_c9eb71e8a0983f 65
+  s_c05f2da2173927::t_2b0f74719babc5 75,116-117
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "d505fb0be33a9945732360094e6321b763cfed12",
+  "prompts": {},
+  "sessions": {
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
