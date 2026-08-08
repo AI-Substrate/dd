@@ -1,0 +1,19 @@
+test/services/dd/docs/dd-docs-drift.test.ts
+  s_c05f2da2173927::t_6793b72bfc5ef7 31-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "4236b3de1720543cfc2f2470aa882a5c98dd67f9",
+  "prompts": {},
+  "sessions": {
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
