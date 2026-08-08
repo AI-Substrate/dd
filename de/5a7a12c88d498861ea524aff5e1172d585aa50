@@ -1,0 +1,14 @@
+government/orient-local.md
+  h_9e71e8b09f7cf2 164-178
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "de5a7a12c88d498861ea524aff5e1172d585aa50",
+  "prompts": {},
+  "humans": {
+    "h_9e71e8b09f7cf2": {
+      "author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
