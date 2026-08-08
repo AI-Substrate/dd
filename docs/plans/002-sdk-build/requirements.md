@@ -265,6 +265,19 @@ exact — never conflate them again**:
   understated it on every axis; its conclusion survives, stronger (F-4 closed,
   `assets/p1-f4-rederivation.md`).
 
+### 5.0 Trial evidence — OQ-1 demonstrated, no longer argued
+
+**koala trial rounds 1–2** (2026-08-08, o-prime-verified, recorded on the o-prime's
+instruction as superseding the reasoning previously cited): harness rewired `acts/flow.ts`
+and `acts/plan/fence.ts` against the **packaged** SDK — registry-free install,
+`tsc --noEmit` exit 0 with zero output, **423 tests across 21 files green** — and passed its
+**own `FsPort`** into our **packaged** `ConventionSchemaResolver`, type-checking across the
+package boundary with structural typing carrying the injection intact. That is R-1/OQ-1's
+library-surface argument demonstrated through the published artifact. The remaining two files
+(`acts/plan/index.ts`, `pr-body.ts`) cannot complete trial until OQ-2 is ruled — sequencing
+by design, not failure. Trial round 1 also produced A-2 (`design-decision.md`), the first
+consumer-driven amendment — R-4's iterate-with-koala loop working as ruled.
+
 ### 5.1 The trial bar — corrected by the consumer before it was hit
 
 The first gate design (§10 F-2, as originally ruled) was a fixture **re-implementing**
