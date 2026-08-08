@@ -1,0 +1,31 @@
+government/briefs/brief-dd-canonical-doc.md
+  s_e3460fd42f286c::t_865e21679f3176 1-101
+docs/plans/frictions.dd.json
+  s_f5a59eaabcfb7d::t_1e15997d989be4 149,151,153-155,157-158
+docs/plans/frictions.dd.md
+  s_f5a59eaabcfb7d::t_36b4ef3b57cb10 32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "8c811b0319caf7e059b1787e81b473663208733f",
+  "prompts": {},
+  "sessions": {
+    "s_e3460fd42f286c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "b007eb76-365c-4da0-8164-519fdee51c00",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_f5a59eaabcfb7d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c1a8ee5f-0c77-4a73-9109-a12db9cd18a8",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
