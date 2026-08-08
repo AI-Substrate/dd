@@ -171,3 +171,7 @@ vite.config.ts.timestamp-*
 # staged with `git add -A` they land as a gitlink that no clone can resolve. Machine-
 # local orchestration scratch, never source.
 .dlg-*/
+
+# o-prime continuity notes — session scratch, deliberately NOT source. Kept out of
+# git so a pre-compaction note never becomes an artifact someone later cites as truth.
+scratch/

@@ -52,6 +52,45 @@
           "state": "confirmed",
           "independently_hit_by": "Proven directly rather than reported: `git init` in an empty dir, then `dd schema list --json` from this repo's bin. Re-derive with exactly that.",
           "note": "THIS IS OUR OWN HEADLINE RULE BROKEN BY OUR OWN CLI. AGENTS.md and orient-local both state it: 'unconfigured means nothing is mapped here yet, never it worked — the repo's green-but-wrong defence, enforced in code, not prose.' Zero schemas resolving IS nothing-mapped-here-yet, and the verb returns ok. Same family as a probe that cannot detect and a gate that cannot fail: an instrument that answers confidently about a question it did not actually examine. Found by following ox's lead on a point it explicitly said it had under-sold — worth noting, because the sharpest finding in a report is not always the one the reporter leads with."
+        },
+        {
+          "id": "fr-0004",
+          "title": "The backpressure seam is not dd-aware — the survey and the plan cannot link to each other",
+          "severity": "hard-wall",
+          "reported_by": "pij-disturbing-ox",
+          "reported_from": "chainglass, dd-builder dogfood",
+          "what_happened": "eng-harness-flow's backpressure verb module declares Consumes: docs/plans/<ord>-<slug>/<slug>-plan.md and Produces: assets/backpressure-coverage.md. In a dd-native plan folder that consumed file DOES NOT EXIST — the plan is plan.dd.json plus a generated plan.dd.md — and the module's PHASE 0 step 1 says 'If neither exists, there is nothing to survey against; say so and STOP.' So an agent following the module literally STOPS on every dd-native plan. Worse, the artifact it is told to produce is MARKDOWN, while builder/plan's `pressure` fields target builder/backpressure/section/rows — so a markdown survey can never be linked from an acceptance criterion or a done_when assertion.",
+          "workaround": "Authored BOTH: assets/backpressure.dd.json (authoritative, 11 rows, pressure-linked from all 8 ACs and all 16 done_when assertions) plus the markdown the module contractually requires. Two artifacts, one truth, maintained by hand.",
+          "asked_for": "The verb should consume plan.dd.json and emit backpressure.dd.json, with the markdown as its GENERATED sibling.",
+          "state": "open",
+          "independently_hit_by": "Not yet — this repo's plan 001 never ran the backpressure seam against a dd-native plan, so the wall was never reached here.",
+          "note": "ox's own closing line is the finding: two artifacts, one truth, maintained by hand — EXACTLY THE DRIFT dd EXISTS TO KILL. The seam that is supposed to establish how done-ness will be proved is itself unproved against the document format the same toolchain produces. Note the shape it shares with fr-0002: a skill and a tool that ship together disagree about what exists, and the agent is left to bridge them by hand. That is now twice, which makes it a pattern rather than an incident — the dd-native and markdown-native halves of the builder toolchain were specified against different realities."
+        },
+        {
+          "id": "fr-0005",
+          "title": "builder/backpressure schema and the backpressure module disagree on vocabulary, silently",
+          "severity": "degrading",
+          "reported_by": "pij-disturbing-ox",
+          "reported_from": "chainglass, dd-builder dogfood — filed because the o-prime asked for the one nearly not filed",
+          "what_happened": "builder/backpressure/schema.json declares certainty enum [Partial, Confident, Proven] and proof_tier enum [computational, human-judgement]. The backpressure verb module specifies certainty Strong|Partial|Weak (STEP 4 — three named rungs with explicit definitions) and three tiers computational|inferential|human-judgement. So 'Strong' and 'Weak' — two of the module's three verdicts — are UNREPRESENTABLE in the dd document, and 'inferential', which the module names as its own middle tier and uses throughout, does not exist in the schema.",
+          "workaround": "Landed on Partial, which validated only BY COINCIDENCE — it is the one value both vocabularies happen to share.",
+          "asked_for": "Reconcile the two, and pick a direction deliberately. The module's three-rung certainty is load-bearing prose (it drives the closing verdict's four-rung ladder); the schema's Confident/Proven have no definition anywhere ox could find.",
+          "state": "open",
+          "independently_hit_by": "Not yet.",
+          "note": "THE FAILURE MODE IS THE TIMING, and it is why this outranks its severity label: a survey reaching a STRONG verdict would have been refused by the schema AFTER the analysis was already done, with no way to record the conclusion it had reached. The tool does not prevent the wrong answer — it prevents recording the right one, and only at the end. That is worse than a validation error at the start, because the cost is paid in work already completed. Two vocabularies for one concept, in a toolchain whose entire premise is single-definition — the same two-vocabularies hazard this repo used to argue plan/ should not be split across two codebases. ox nearly did not file this one; it is the sharpest of the four."
+        },
+        {
+          "id": "fr-0006",
+          "title": "dd-rendered plans break every downstream consumer that scrapes per-phase headings — SILENTLY",
+          "severity": "blocking",
+          "reported_by": "pij-disturbing-ox",
+          "reported_from": "chainglass, dd-builder dogfood",
+          "what_happened": "The legacy markdown plan contract emits '#### Phase Index' plus a '#### Phase N: <Title>' block per phase, and downstream tooling extracts by that heading. builder/plan's renderer instead emits ONE '## Phases' section containing a TABLE — no per-phase heading exists at any level. flow-pair's ContextPackCompiler.extractSection matches a heading by exact / prefix-colon / prefix-space and captures to the next same-or-higher heading; with --phase 'Phase 1: Implementation' it returns {ok:false, section not found} against a dd plan. So a delegation packet COMPILES WITH THE PLAN SECTION MISSING, and the miss is recorded only as an exclusion. The same assumption sits in builder's own 20-plan and 50-phase-tasks modules, which describe per-phase blocks as the output contract.",
+          "workaround": "--phase 'Phases' (matches the table section) plus --tasks-dir, since tasks.dd.md DOES render per-task '### tk-NNNN' headings under '## Done when'.",
+          "asked_for": "Either the plan renderer emits a per-phase heading block alongside the index table, or the consumers move to ADDRESSING ROWS (plan.dd.json#phases/ph-0001) instead of scraping headings. ox's own read, and it is right: the second is the whole point of dd.",
+          "state": "open",
+          "independently_hit_by": "Adjacent hit here, plan 001, DL-005 (2026-08-07): flow-pair's context-pack compiler reported '(no tasks found)' for a dd-format plan because it globs tasks.md while dd repos render tasks.dd.md — same compiler, same class, different file. So the compiler has now missed dd content twice by scraping for markdown shapes dd does not emit.",
+          "note": "THE SEVERITY IS THE SILENCE, NOT THE MISS. It does not error loudly — the worker simply gets less context than the orchestrator believes it sent, and the only trace is an exclusion line nobody reads. An orchestrator cannot tell a well-briefed worker from a starved one, so a bad outcome downstream looks like a bad worker. That is the reports-success-while-broken family, and it is the third instance in this ledger (fr-0003 returns ok on zero schemas; fr-0005 refuses the right answer only at the end). ox's closing line is the sharpest thing in the whole ledger and it names what plan 002 is for: THE GRAPH EXISTS WHILE THE CONSUMER STILL SCRAPES. dd's entire premise is that structure is addressable — plan.dd.json#phases/ph-0001 is exact, stable and typed, while a heading match is a guess about layout. Every consumer still scraping is a consumer that has not been given a reason to stop, and giving them that reason IS the SDK. This row is therefore a plan-002 design input, not merely a bug."
         }
       ]
     }
