@@ -36,9 +36,18 @@ purpose.
 still leave with the port and become the CLI — that half was never in question. The four
 surviving harness files consume dd as a library and are **not** rewritten to shell out.
 
-**Attached conditions** (Jordan's, not inferred): close out plan 001 first (done); SDK design
-is **its own builder flow**; that flow **researches best-in-class SDK design guidelines via
-perplexity BEFORE designing**.
+**Attached conditions** (Jordan's, not inferred):
+
+1. Close out plan 001 first. **Done.**
+2. SDK design is **its own builder flow**.
+3. > ⛔ **PRECONDITION — RESEARCH BEFORE DESIGN.** That flow **researches best-in-class SDK
+   > design guidelines (via perplexity) BEFORE designing anything.** This is a Jordan ruling,
+   > not a suggestion. **The first dispatch of this plan is the research step, not design.**
+   > Dispatching design first breaks R-1.
+
+*(Raised to a blocking callout after `pij-certain-crab` found the PM brief had dropped it — a PM
+working from the brief alone would have dispatched design first and broken a ruling without ever
+seeing it. Brief fixed too; the condition now lives in both places.)*
 
 ### R-2 · `plan/` is not shipped; harness re-implements on top (OQ-2, superseded)
 
@@ -234,3 +243,49 @@ currently depends on which runs first.
 - koala's consumer census and its patch for `cfa501a6`.
 - `government/orient-local.md` — the repo contract, and § *where mechanism cannot reach*.
 - **Not yet gathered**: best-in-class SDK design guidelines (Jordan's required research step, R-1).
+
+---
+
+## 9. Consumer frictions bearing on this plan
+
+Jordan routes dd frictions from other fleets to the o-prime. Six are banked in
+`docs/plans/frictions.dd.json` on `main` (`1ddde99`). Two are **design inputs to this plan**, not
+bugs to fix later:
+
+**`fr-0001` — the schemas do not travel.** The `builder/*` schema packages exist only in
+`harness-engineering`, so dd-native `/builder` works in exactly one repo. **An SDK that cannot
+resolve its own first-party schemas in a consuming repo is not consumable**, whichever
+distribution method ships it. This plan has to answer it, not inherit it.
+
+**`fr-0006` — the graph exists while the consumer still scrapes.** dd-rendered plans break every
+downstream consumer that extracts by per-phase heading, and it fails **silently**: a delegation
+packet compiles with the plan section missing and logs it as an exclusion, so the worker gets less
+context than the orchestrator believes it sent. `pij-disturbing-ox`'s framing is the design brief
+for this whole plan in one line: **`plan.dd.json#phases/ph-0001` is exact, stable and typed; a
+heading match is a guess about layout.** Every consumer still scraping is one nobody has given a
+reason to stop — **and giving them that reason is what the SDK is for.**
+
+Three of the six share one family — **reports-success-while-broken**: `fr-0003` returns `status:
+ok` on zero schemas, `fr-0005` refuses the right answer only after the analysis is done, `fr-0006`
+degrades in silence. dd's own headline rule is *`unconfigured` never means "it worked"*, and the
+SDK surface should make that rule hard to break rather than merely stated.
+
+## 10. Intake findings — `pij-certain-crab`, and the rulings on them
+
+The PM's first act was to **refuse the line-1 text the brief pre-wrote for it**, which is what the
+brief asked it to be willing to do. Eight findings; these are the rulings.
+
+| # | Finding | Ruling |
+|---|---|---|
+| **F-1** | Worktree forked at `1dbd233`, missing the `prepare` fix, the AGENTS.md commit block, and the corrected doctor baseline — so `requirements.md` §4.4 called something FIXED that was absent where the work happens | **FIXED.** Rebased onto `465d490`; `prepare` and the commit block verified present. Its diagnosis is kept: *the decay axis reproduced **structurally** rather than over time* — nothing wrong on main, everything wrong in the copy the work reads |
+| **F-2** | The acceptance test is not attestable by this subtree — "harness re-implements `plan validate`" is an event in koala's fleet, and standing 5 forbids the work while standing 6 forbids the channel | **ACCEPTED, and its fix adopted**: build an **in-repo fixture that re-implements `plan validate` through public entry points only**, wired into `just checks`. That converts a cross-fleet event into a gate this subtree owns. koala's eventual real re-implementation becomes confirmation, not the proof |
+| **F-3** | The progress bar has no gate — `check-exports` measures **subpaths** (11/12) while the progress bar is **symbols** (5), so the five-symbol figure is stamped prose with no owner | **ACCEPTED.** Same artifact as F-2 fixes it: the fixture fails while any needed symbol is unreachable, so the number becomes a gate reading rather than a claim. This is guardrail 9 applied to our own headline metric |
+| **F-4** | §4.1 says six modules minus one reachable = five, but the table names four — an unaccounted module inside the number we call the progress bar | **OPEN — must be re-derived before the number is used again.** The PM correctly did not guess it. Treat the five as UNVERIFIED until someone re-runs it |
+| **F-5** | The brief dropped R-1's research precondition, so a PM working from the brief alone dispatches design first and breaks a ruling | **FIXED in both places** — §2 R-1 now carries a blocking callout, and the brief was corrected. **First dispatch is the research step** |
+| **F-6** | C-2 says "tag or SHA", but standing 2 forbids agents tagging | **ACCEPTED — C-2 is SHA-only for any agent.** A tag is Jordan's to cut |
+| **F-7** | Brief §6 says "two failure modes" over three bullets | **FIXED in the brief** |
+| **F-8** | R-1 wants its own builder flow, but standing 3 makes flow files forbidden to read *and* write, with builder guided mode the sole writer | **CONFIRMED: plan 002 runs through `/builder` guided**, so the flight plan has a lawful writer. No seat hand-writes or reads `the-flow.*`; the CLI is its only writer |
+
+**F-2 and F-3 together are the most valuable thing in the intake.** They caught that this plan's
+headline metric was unowned prose — the exact defect plan 001 spent four phases cataloguing,
+sitting in the first paragraph of its successor.
