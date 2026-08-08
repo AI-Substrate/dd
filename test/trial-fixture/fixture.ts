@@ -374,8 +374,25 @@ async function main(): Promise<void> {
       () => `${first.sha} vs ${second.sha}`,
     );
     check(
-      first.tracked === true,
-      'with `tracked: null` a document is reported tracked — "no tracking concept" must not fire the untracked WARN',
+      first.tracked === null,
+      'with `tracked: null` the result reports tracking as UNKNOWABLE (null), not as tracked',
+      () => String(first.tracked),
+    );
+    // The strengthening A-2 called for, and the reason it was ratified rather than
+    // just fixed: this clause used to assert `tracked === true`. It was written
+    // against observed behaviour after the assertion it was FIRST written with
+    // (`false`) failed — so the fixture was conformed to the implementation while
+    // the contract sat one screen up in the same module. Pinning `null` alone
+    // would still pass if the value silently became `false`, so the two arms below
+    // close the third case explicitly.
+    check(
+      first.tracked !== true,
+      'the unknowable answer is not the confident `true` this clause used to pin',
+      () => String(first.tracked),
+    );
+    check(
+      first.tracked !== false,
+      'nor is it `false` — "no tracking concept" is not "this file is untracked"',
       () => String(first.tracked),
     );
     // The decorator must DECORATE. Two loads, one read — proven by counting the
@@ -529,9 +546,10 @@ async function main(): Promise<void> {
     );
 
     // S3b/S3c — feed the set into the loader and prove it is CONSULTED. Both arms
-    // are needed: a loader that ignored the set entirely would still answer `true`
-    // for the tracked document (C4 shows `null` reports `true`), so only the
-    // absent-from-the-set arm can tell "consulted" from "hard-coded".
+    // are needed to tell "consulted" from "hard-coded": a loader that answered a
+    // constant `true` would pass the in-set arm alone. Since A-2 the no-set answer
+    // is `null` (C4), so a loader ignoring the set is now caught by either arm —
+    // but the pair is kept because it pins the two real answers, not the absence.
     if (tracked === null) return;
     const loader = buildLoader(tracked);
     const inSet = loader.load(planPath);

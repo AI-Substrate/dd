@@ -62,6 +62,14 @@ export class MemoizingDocLoader implements DocLoader {
  * yields null, meaning "this host has no tracking concept", not "everything
  * happens to be tracked".
  *
+ * That distinction is carried in the RESULT as well as the input: a null snapshot
+ * produces `tracked: null`, not `tracked: true` (A-2). Until then this class
+ * implemented the alternative the paragraph above rejects — one boolean carrying
+ * both "tracked" and "unknowable", so a consumer on a non-repo host was handed a
+ * confident wrong answer instead of an absence. Suppressing the WARN on a null
+ * host is unchanged and deliberate; that is a policy about what to REPORT, and it
+ * is no longer paid for by a value that lies.
+ *
  * It lives HERE, beside the decorator that wraps it, rather than in `acts/`.
  * `MemoizingDocLoader(new FsDocLoader(...))` is one expression at every call site
  * in this repo and in every measured consumer (P1 census C1/C3), and having the
@@ -96,7 +104,7 @@ export class FsDocLoader implements DocLoader {
       path,
       doc,
       sha: this.hash.sha256Hex(text),
-      tracked: this.tracked === null ? true : this.tracked.has(path),
+      tracked: this.tracked === null ? null : this.tracked.has(path),
     };
   }
 }

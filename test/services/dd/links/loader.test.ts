@@ -93,11 +93,23 @@ describe('FsDocLoader — reachable from the ./links barrel', () => {
    * judgement rather than plumbing: null means "this host has no tracking
    * concept", NOT "everything is tracked". Reading null as false would suppress
    * every untracked-target WARN silently.
+   *
+   * A-2: the RESULT now carries that distinction too. Until A-2 this row asserted
+   * `tracked === true` — the title said "not as untracked" while the assertion
+   * pinned the loader's lie, so the test agreed with the code against the contract
+   * one screen above it in the source. That is why the row below asserts the
+   * absence itself, and why the `false` arm is kept beside it: `null` and `false`
+   * are different answers and a single row cannot tell them apart.
    */
-  it('treats a null tracked-set as "no tracking concept", not as untracked', () => {
+  it('answers null — "no tracking concept" — rather than claiming the file is tracked', () => {
     const loader = new FsDocLoader(fsWith({ '/repo/a.dd.json': DOC }), countingHash, null);
     const result = loader.load('/repo/a.dd.json');
-    expect(result.ok && result.tracked).toBe(true);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.tracked).toBeNull();
+    // The distinction the type now carries: not `true`, and not `false` either.
+    expect(result.tracked).not.toBe(true);
+    expect(result.tracked).not.toBe(false);
   });
 
   it('honours a real tracked-set in both directions', () => {
