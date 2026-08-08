@@ -1,0 +1,43 @@
+test/trial-fixture/fixture.ts
+  s_c05f2da2173927::t_3cc8b011ca8f5e 3,8,18,30,35,122,161,166,204,209-224
+  s_c05f2da2173927::t_5b0827a7be00c5 464-468
+  s_c05f2da2173927::t_e924adf910b885 282,296,300,303,307,314,318-319,323,326,330,339,360,371,375-376,380,383,387,390,394,403,407,411,415,419,423,428,432,440,445,447,451,458,462-463,471,480,485,488,492-493,497,503-548,556,560-561,565-566,570,575,579-580,584-585,589,595,599,603-604,608,618,622,626,630,648,656
+  s_c05f2da2173927::t_a03380dd2256fe 377-378
+  s_c05f2da2173927::t_45cdd84352588f 36-43
+  s_c05f2da2173927::t_07cab242e2f757 343-358
+  s_ec57eb3a1b8a01::t_3f81be86314ab7 1-2,4-7,9-17,19-29,31-34,44-52,57-60,62-66,84,98-103,110,112-118,121,123-125,127-129,132-142,145-158,160,162-165,167-168,170-171,173-179,181-200,203,205-208,225-226,230-243,245-247,249,252,257-259,268-281,283-284,288,291-292,294-295,297-299,301-302,304-306,308,310-313,315-317,320-322,324-325,327-329,331,333-338,340-341,359,361,363-370,372-374,379,381-382,384-386,388-389,391-393,395,397-400,402,404-406,409-410,412-414,416-418,420-422,424-427,429-431,433-439,441-444,446,448-450,452-457,459-461,469-470,472-479,481-484,486-487,489-491,494-496,498-502,549-555,557-559,562-564,567-569,571-574,576-578,581-583,586-588,590-594,596-598,600-602,605-607,609-617,619-621,623-625,627-629,631-647,649-655,657-662,665-669
+test/trial-fixture/fixtures/corpus/.dd/schemas/builder/execution-log/schema.json
+  s_c05f2da2173927::t_a79af7a1fd8fdd 1-59
+test/trial-fixture/fixtures/corpus/.dd/schemas/builder/plan/schema.json
+  s_c05f2da2173927::t_acc3beedcd6cdb 1-607
+test/trial-fixture/fixtures/corpus/docs/plans/001-dd-extraction/assets/tasks/phase-1/tasks.dd.json
+  s_c05f2da2173927::t_bfae218ba8cc6f 1-139
+test/trial-fixture/fixtures/corpus/docs/plans/001-dd-extraction/execution-log.dd.json
+  s_c05f2da2173927::t_aba54ee9a45a4a 1-80
+test/trial-fixture/fixtures/corpus/docs/plans/001-dd-extraction/plan.dd.json
+  s_c05f2da2173927::t_e9574dc91cd521 1-520
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "61183f3bfff12a493402a59e10ca6b0befd73f11",
+  "prompts": {},
+  "sessions": {
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_ec57eb3a1b8a01": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "fd26236f-849e-49bb-9e54-cd9450f13f13",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
