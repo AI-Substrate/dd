@@ -218,4 +218,62 @@ try {
   fail('T2.3 run', `the fixture exited ${error.status} — the failing clause is named above`);
 }
 
+// ---------------------------------------------------------------------------
+step('T3  publint + attw on the same tarball');
+// ---------------------------------------------------------------------------
+// D-6, ratified. These two read the PACKAGE rather than the code: publint checks
+// the manifest a registry consumer gets, attw checks that every `exports` entry
+// resolves to types under each module system a consumer might use. Both are
+// exact-pinned devDependencies so the gate cannot change meaning under us.
+//
+// They run against the TARBALL, not the working tree, for the same reason the
+// fixture does: the working tree contains files the tarball does not ship.
+run(
+  'T3 publint',
+  process.execPath,
+  [join(REPO_ROOT, 'node_modules/publint/src/cli.js'), '--strict', tarball],
+  { cwd: REPO_ROOT, stdio: 'inherit' },
+);
+console.log('    publint --strict: clean');
+
+/**
+ * `--profile esm-only`, CHOSEN BY MEASUREMENT rather than to make a red go away.
+ *
+ * attw's default `strict` profile scores four resolution modes. Measured against
+ * this tarball it refuses on exactly two, and both are this package's DESIGN
+ * rather than defects in it:
+ *
+ *   - `node10` 💀 — the pre-`exports` resolution algorithm. This package declares
+ *     `engines.node: ">=22"`; a resolver that predates `exports` by a decade is
+ *     not a consumer it has, and "fixing" it would mean publishing the flat
+ *     `dist/` layout the curated barrel (D-1) exists to replace.
+ *   - `node16 (from CJS)` ⚠️ — `require()` of ESM. The manifest says
+ *     `"type": "module"` and NO `exports` entry declares a `require` condition;
+ *     `.` and `./node` name only `types` + `import`. A CJS consumer using
+ *     `await import()` is the intended and only path.
+ *
+ * `esm-only` ignores exactly those two and scores the rest. What remains is not
+ * a weaker claim — it is the true one: EVERY subpath must resolve to types and
+ * JavaScript under `node16 (from ESM)` and `bundler`, which is what this
+ * package's consumers actually use.
+ *
+ * The profile is non-vacuous, and that was verified rather than assumed: pointing
+ * `exports["./links"].types` at a file that does not exist and re-running under
+ * `esm-only` still exits 1 and names `./links`. A gate that could not fail would
+ * be worse than no gate.
+ */
+run(
+  'T3 attw',
+  process.execPath,
+  [
+    join(REPO_ROOT, 'node_modules/@arethetypeswrong/cli/dist/index.js'),
+    '--pack',
+    tarball,
+    '--profile',
+    'esm-only',
+  ],
+  { cwd: REPO_ROOT, stdio: 'inherit' },
+);
+console.log('    @arethetypeswrong/cli --pack --profile esm-only: clean');
+
 console.log('\ntrial-fixture-run PASSED — the published surface is consumable and behaves.');

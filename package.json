@@ -95,9 +95,11 @@
     "jiti": "2.7.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
     "@biomejs/biome": "^2.5.0",
     "@types/node": "^26",
     "@vitest/coverage-v8": "^4.1.8",
+    "publint": "0.3.22",
     "typescript": "^6.0.3",
     "vitest": "^4.1.8"
   }
