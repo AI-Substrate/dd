@@ -1,0 +1,21 @@
+docs/plans/002-sdk-build/design-decision.md
+  s_6e59036559203c::t_0e8edf9cb13197 3-7
+docs/plans/002-sdk-build/requirements.md
+  s_6e59036559203c::t_31d6c9191666a3 252-266,452
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "10a1bc5dc134299abef76fc628a5ddbcea6dd83c",
+  "prompts": {},
+  "sessions": {
+    "s_6e59036559203c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06d3bbcf-6419-4a86-8e8c-7147b4e647ce",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
