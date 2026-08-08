@@ -1,0 +1,24 @@
+test/architecture/dd-core-isolation.test.ts
+  s_c05f2da2173927::t_7cf9865d5311a4 148,164,167
+  s_c05f2da2173927::t_c9fd84d2b0e454 31-39,53-70,75-127,131-135
+  s_c05f2da2173927::t_c26e5fc9253b39 71-74
+  s_c05f2da2173927::t_9558d94ba1408b 189-203,208,216-217,219-223
+  s_c05f2da2173927::t_e475d5992a776b 285-332
+  s_c05f2da2173927::t_db1f753f9de4cd 136
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "506b13eedbc2903345f7c02a9e2731caec527072",
+  "prompts": {},
+  "sessions": {
+    "s_c05f2da2173927": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "79ade151-0112-43ff-abf8-81bd059263ef",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
