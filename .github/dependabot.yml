@@ -1,0 +1,70 @@
+# Dependency version updates.
+#
+# WHAT THIS FILE DOES AND — MORE IMPORTANTLY — WHAT IT DOES NOT.
+#
+# It opens PRs that RAISE VERSIONS. It does not enable vulnerability alerts and
+# it does not enable automated security fixes: those are REPOSITORY SETTINGS,
+# not file config, and they are the owner's to toggle. As measured on
+# 2026-08-09 alerts are ON and automated security fixes are OFF, so advisories
+# fire and nothing opens a PR for them. That gap is not closed by this file, and
+# a config that appeared to cover it would be a claim we cannot keep.
+#
+# TWO ECOSYSTEMS, and the second is the one that gets forgotten:
+#
+#   npm             — package-lock.json at the root.
+#   github-actions  — the workflows. THIS IS THE SUPPLY-CHAIN SURFACE THAT
+#                     MATTERS MOST HERE: a compromised action runs with our
+#                     token, `npm audit` structurally cannot see it, and nothing
+#                     else in this repository watches those versions.
+#
+# NOTE ON PINNING, recorded rather than acted on: the four actions in use
+# (actions/checkout@v7, actions/setup-node@v6, actions/upload-artifact@v7,
+# googleapis/release-please-action@v5) are pinned to TAGS, which are mutable —
+# a tag can be re-pointed at new code. SHA pinning is the hardening step and
+# dependabot updates either form. It is a real change in how the workflows read
+# and has not been asked for, so it is named here and left alone.
+#
+# NO `ignore:` RULES, DELIBERATELY. Six high advisories sit in the dev tree today
+# (vitest/vite transitives) with no fix published. An `ignore` entry for them
+# would be a limitation record with no expiry — and this repository has spent a
+# day proving those go stale silently. A dependabot PR arriving the day one
+# becomes fixable is the signal we want, and it pairs with `scripts/audit-gate.mjs`,
+# which reds on exactly that transition. An ignore rule would break the pair.
+# Within hours of writing this, that set changed: `nanoid` became fixable on the
+# public registry. The "unfixable" set is not stable even over a single day.
+version: 2
+
+updates:
+  # GROUPED ON PURPOSE. Ungrouped, this tree's vitest/vite transitive cluster
+  # produces a PR per package, and a reviewer who dismisses six PRs a week stops
+  # reading the seventh. That is how a security tool becomes ignored — the same
+  # failure as `npm audit … || true`, arriving through attention rather than
+  # through an exit code. Production and development are separated because they
+  # carry different risk: one reaches users, the other reaches us.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      # Weekly, not daily. Daily against this tree is noise.
+      interval: weekly
+      day: monday
+    # Set deliberately rather than taken from the default, so the ceiling on
+    # review load is a decision someone made.
+    open-pull-requests-limit: 5
+    groups:
+      production-dependencies:
+        dependency-type: production
+      development-dependencies:
+        dependency-type: development
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    groups:
+      # One PR for all actions: there are four, they move rarely, and separate
+      # PRs for each would reintroduce exactly the noise the npm grouping avoids.
+      github-actions:
+        patterns:
+          - '*'
