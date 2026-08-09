@@ -1,0 +1,23 @@
+docs/how/dd/deterministic-documents.md
+  s_7d1ed3ebb46419::t_eba0c0c3122d2c 217-221,257-261
+src/docs/content/deterministic-documents.md
+  s_7d1ed3ebb46419::t_0da2a4a2a04eb0 213-217,253-257
+src/docs/docs-content.ts
+  s_7d1ed3ebb46419::t_0d4277c46eb5e0 41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "9d09f41c9f075957b79a9e650d8db264c83f83d6",
+  "prompts": {},
+  "sessions": {
+    "s_7d1ed3ebb46419": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "aa8368ab-f0c2-4a94-a993-60bdc2bb52cf",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
