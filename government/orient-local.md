@@ -219,6 +219,96 @@ step — pointing harness at this package and deleting the old code — is koala
   **On any red: `git status` BEFORE re-running.** A clean tree plus a red gate means the gate just
   repaired something and the evidence is already gone. **The fix is separation — `check-*` must be
   read-only and fail without repairing; `gen-*` repairs.**
+- **A COMPLETE SET OF ACCURATE ROWS CAN OMIT THE FACT THAT DECIDES THE ANSWER.** Named by
+  `pij-certain-crab`. Three rows described dd's install routes — `wl-0014` (never published),
+  backlog 24 (global git route fails), `wl-0015` (SHA-pinned `github:` works and packs). **Every
+  one accurate. None of them said WHICH ROUTE IS ACTUALLY IN USE**, and that was the only fact
+  that answered the question in front of the human. It lived nowhere until it was written into a
+  standing constraint, and it arrived buried inside a comms permission — Jordan's *"we will source
+  sdk from its branch to get this done fast"*, read by both seats as context for the channel rather
+  than as the ruling it was.
+  **The damage is not a wrong claim, it is a true one carrying false urgency**: *"no one-line
+  global install exists on any route today"* was correct and invited a decision the facts did not
+  support, because the route in use is neither global nor blocked. **Same family as the population
+  error — every figure right, the reader still misled, because the deciding fact is not on any of
+  the surfaces that describe the subject.**
+  **The check is to ask of any complete-looking set: which row would change the decision, and is
+  that row here at all?** Coverage of a subject is not the same as the operative fact about it, and
+  a set of rows reads as exhaustive precisely when each one is correct.
+- **THE PARENT CAUSE UNDER MOST OF WHAT FOLLOWS: AN INSTRUMENT WHOSE OUTPUT CANNOT DISTINGUISH TWO
+  STATES IS NOT EVIDENCE FOR EITHER — until you add the instrument that can.** Named by
+  `pij-certain-crab`, and it consolidates **three separate near-misses from one day** that were
+  each nearly filed as their own incident: **the empty diff with no direction** (97 files, 10081
+  deletions, read as "main lost plan 001" — a diff has no arrow, and main was intact); **the count
+  with no denominator** (`check-runs total_count` grows as checks register, so a 5/5 green is
+  indistinguishable from 5-of-6 with one unregistered); **the green with no scope** (a parity test
+  proving a copy is faithful, read as proving it is true). *Consolidate causes, never instruments*
+  — these are three instruments and one cause.
+  **AND THE GUARD THAT CAUGHT THE FIRST OF THEM ALMOST DIED WITH THE SESSION.** The PM's
+  "empty is NOT-GREEN" rule **lived only in command strings**: it worked twice, it stopped a false
+  green reaching the human through two seats, and it would have vanished with the transcript,
+  leaving the next seat the *behaviour* without the *caveat* — a half-guard inherited as a whole
+  one. **A rule that survives only in a transcript survives exactly as long as the transcript.**
+  It is now written down (`docs/plans/002-sdk-build/assets/ci-verdict-guard.md`), including the
+  half it does NOT solve and the three costed candidates for the completeness side. **Recording
+  what a guard does not cover is part of building it**, not an admission against it.
+- **EVERY DISCIPLINE HERE FIRES ON A RED. THE PASSING SIDE HAS EXACTLY ONE INSTRUMENT, AND IT IS
+  SOMEBODY CHOOSING TO ASK.** Named by `pij-certain-crab` at the close of the day that produced
+  most of the rules above it, and it is the reason they are not sufficient. *Capture before
+  re-running · attribute before fixing · negate before trusting · a transient red is a finding* —
+  **every one is triggered by failure.** Nothing in this document, and nothing in the repository,
+  fires when a check passes. **A green does not prompt an audit.**
+  The question that closes the gap is **"what did I actually measure?"**, asked about a PASSING
+  result. It was asked here, unprompted, by `pij-handsome-shrew` about its own 25/25 — which had
+  run against another seat's *uncommitted* copy of the guard, so the number was real and measured a
+  guard the repository did not contain. **It flagged the asterisk itself rather than being caught.**
+  The PM then settled it by structure rather than by inheriting the reassurance: it confirmed the
+  new lines were prose and not fenced, so the two changes were independent **by construction**, and
+  noted that had the note landed inside the fence its helper would have stripped it and the
+  interaction would have been real.
+  **Generalises the red-side rule** *(a probe that finds the expected failure is the one least
+  likely to be followed up)* **to its worse half**: an expected red at least ends in an
+  investigation. An expected green ends in nothing at all.
+- **A TEST PINS THE SENTENCE, NOT THE TRUTH — AND UNIFORMITY IS NOT CORRECTNESS.** Both halves
+  named by `pij-certain-crab`, hours apart, from one guard.
+  **First**: `docs-surface` asserts the literal string `npm install -g @ai-substrate/dd`, and the
+  package **has never been published** — so our own guard was pinning a claim that answers 404.
+  Its words: *"the guard does not check the claim is TRUE; it checks the sentence is still
+  WRITTEN — a test can pin a falsehood as firmly as a fact."* A green assertion over a
+  documentation promise proves the promise is still **present**, never that it is still **kept**.
+  Same family as the drift-guard-reading-as-a-coverage-guard trap (`wl-0012`): both are honest
+  about something adjacent to what a reader assumes.
+  **Second**, and it corrects a frame *I* supplied: I flagged that two scanners in one file treated
+  fenced blocks differently and called it an asymmetry worth removing. **The fix failed twice
+  before it worked, and both failures were the symmetry frame.** Stripping fences at the source
+  broke five tests — the quick-start row *executes* a transcript extracted from those very fences,
+  so the strip removed the evidence a neighbouring assertion consumes. Narrowing to the assertion
+  was still wrong, because `npm install -g …` **legitimately lives in a fence**: it is a command,
+  and a fence is where commands belong. The frame that survived is **per-claim**: a HEADING is the
+  page's own structure and must appear in prose; a COMMAND belongs inside a fence — same file, same
+  helper, **opposite treatment**, with a comment saying why so nobody "fixes" it back.
+  **Two scanners SHOULD differ when their claims differ; what must never differ is whether anyone
+  reasoned about it.** Consistency applied without reading the claim is a defect that looks like
+  tidiness.
+  **And the arm that caught both was the one usually treated as ceremony**: *unchanged input must
+  still pass*. Negation arms that prove a guard REDS on bad input are the interesting ones and get
+  the attention; the control arm is what stops a five-test regression shipping dressed as a
+  hardening.
+- **NEVER LET AN EMPTY RESULT SHARE AN EXIT CODE WITH A PASSING ONE.** Named by
+  `pij-certain-crab`, and it is the strongest form of the family below it. `gh pr checks` returned
+  *"no checks reported"* **and exit 0**, which collapses **THREE** states into one output:
+  **fired-and-green**, **has-not-fired-yet**, and **cannot-fire-at-all**. The third was live — PR #1
+  was `CONFLICTING`, so GitHub could not compute the merge ref, so a `pull_request` run could never
+  execute; a seat parked on "waiting for green" was waiting on a verdict that was structurally
+  impossible. **A gate that cannot fire is indistinguishable from one that has not fired yet — and
+  from one that fired green, if absence reports as success.** The PM had guarded this two pushes
+  earlier, after an identical empty result, and **that self-written guard is the only thing that
+  stopped a false green reaching the human through two seats** — the o-prime had no independent
+  reason to doubt a green from a PM it trusted. **The fix is mechanical and costs three lines:
+  treat an empty result as NOT-GREEN and say so.** Do not fix it by remembering to look twice.
+  Corollary for any waiting seat: **silence from an instrument is a fact about the instrument until
+  proven otherwise, never a fact about the work** — and waiting is the failure mode that looks most
+  like diligence.
 - **A DECISION THE OTHER SEAT CANNOT SEE IS INDISTINGUISHABLE FROM A DECISION NOT TAKEN.** Three
   instances in one morning, all mine, all the same root — **state I held that the other seat had no
   way to observe**: (1) I fenced a second writer out of the PM's files and never sent it the fence
