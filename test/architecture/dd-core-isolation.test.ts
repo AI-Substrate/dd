@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, normalize, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 
 /**
@@ -44,10 +45,54 @@ function tsFiles(dir: string): string[] {
   });
 }
 
-function importSpecifiers(source: string): string[] {
-  return [...source.matchAll(/(?:from\s+|import\s*\(\s*|import\s+)['"]([^'"]+)['"]/g)].flatMap(
-    (match) => (typeof match[1] === 'string' ? [match[1]] : []),
-  );
+/**
+ * Every module specifier this file IMPORTS — read from the parsed syntax tree,
+ * never matched out of the text.
+ *
+ * This used to be a regex over the raw source, and it counted specifier-shaped
+ * TEXT: `src/docs/docs-content.ts` inlines each shipped doc as a string literal,
+ * so the SDK how-to's worked example (`import { … } from '@ai-substrate/dd'`)
+ * was read as an import and reported as a self-reference. Documentation that
+ * cannot show an import is not documentation, so the instrument was wrong, not
+ * the doc.
+ *
+ * The narrower repair — skip string and template literals — was measured and
+ * REFUSED: the same regex matches inside comments, where `/** Example: import
+ * '../output/envelope.js' *\/` reads as an SDK-tree escape. A JSDoc example in
+ * any SDK file would have tripped it. Parsing removes the whole class instead of
+ * the instance that happened to bite: the compiler decides what an import is.
+ *
+ * Measured against the old regex over all of `src/` at the time of the change:
+ * identical output on every file except `docs/docs-content.ts`, where the regex
+ * additionally claimed `@ai-substrate/dd` and `./model.js` — the second one green
+ * only by luck, because `src/docs/model.ts` would have landed inside the SDK tree.
+ *
+ * `require()` is not collected, as it was not before: this repo is ESM-only and
+ * the manifest has no `require` condition.
+ */
+function importSpecifiers(file: string, source: string): string[] {
+  const tree = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
+  const specifiers: string[] = [];
+
+  const collect = (node: ts.Node): void => {
+    if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
+      const moduleSpecifier = node.moduleSpecifier;
+      if (moduleSpecifier !== undefined && ts.isStringLiteralLike(moduleSpecifier)) {
+        specifiers.push(moduleSpecifier.text);
+      }
+    } else if (
+      ts.isCallExpression(node) &&
+      node.expression.kind === ts.SyntaxKind.ImportKeyword &&
+      node.arguments[0] !== undefined &&
+      ts.isStringLiteralLike(node.arguments[0])
+    ) {
+      specifiers.push(node.arguments[0].text);
+    }
+    ts.forEachChild(node, collect);
+  };
+
+  collect(tree);
+  return specifiers;
 }
 
 /** Every string leaf of an exports/imports value, conditions flattened. */
@@ -156,7 +201,7 @@ function isolationViolations(
     const source = sources.get(file);
     if (source === undefined) return;
 
-    for (const specifier of importSpecifiers(source)) {
+    for (const specifier of importSpecifiers(file, source)) {
       if (specifier.startsWith('node:')) {
         violations.push(`node builtin: ${[...trace, specifier].join(' -> ')}`);
         continue;
@@ -212,7 +257,7 @@ function externalImports(
 
   for (const file of files) {
     const label = relative(SRC, file).replaceAll('\\', '/');
-    for (const specifier of importSpecifiers(read(file))) {
+    for (const specifier of importSpecifiers(file, read(file))) {
       if (specifier.startsWith('node:')) continue;
       const target = importTarget(file, specifier, manifest);
       if (!specifier.startsWith('.')) {
@@ -327,6 +372,39 @@ describe('architecture — dd-core isolation', () => {
     ).toEqual([
       'adapters: core/bare-violation.ts -> node/index.ts (via @ai-substrate/dd/node) -> adapters/fs/node-fs.ts',
       'output: core/alias-violation.ts -> links/synthetic-intermediary.ts (via #internal/synthetic-intermediary.js) -> output/envelope.ts',
+    ]);
+  });
+
+  it('reads imports from syntax, not from specifier-shaped text in strings or comments', () => {
+    const offender = join(SRC, 'links', 'synthetic-doc-example.ts');
+    const source = [
+      `// A doc example in a line comment: import { Command } from 'commander';`,
+      '/**',
+      ' * And one in a block comment:',
+      ` *   import { envelope } from '../output/envelope.js';`,
+      ' */',
+      "const inTemplate = `import { validateWalk } from '@ai-substrate/dd';`;",
+      `const inBakedDoc = "import { parse } from '@ai-substrate/dd/core/parse';";`,
+      `const dynamic = "await import('../acts/status.js')";`,
+      `import { posixJoin } from '../shared/posix-path.js';`,
+      `import { load } from '#internal/loader.js';`,
+      `import { Command } from 'commander';`,
+    ].join('\n');
+
+    // Only the three real statements are imports. The five specifier-shaped
+    // strings above them are the shapes that actually occur: `docs-content.ts`
+    // bakes every shipped doc as a double-quoted literal, and any SDK file may
+    // carry a usage example in a comment. Both arms are asserted here on ONE
+    // file, so the fix cannot become a way to hide a real import inside a
+    // template literal — the two live imports below still red by name.
+    expect(
+      externalImports([offender], () => source, {
+        ...MANIFEST,
+        imports: { '#internal/*.js': './dist/links/*.js' },
+      }),
+    ).toEqual([
+      'self-reference: links/synthetic-doc-example.ts -> links/loader.ts (via #internal/loader.js)',
+      'bare: links/synthetic-doc-example.ts -> commander',
     ]);
   });
 
