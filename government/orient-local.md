@@ -250,6 +250,25 @@ step — pointing harness at this package and deleting the old code — is koala
   **The uncomfortable general form**: we write down limitations far more readily than we revisit
   them, and **nothing in a repository ages a note**. Every "not supported", "cannot currently",
   "known gap" is a claim with an expiry date that nothing enforces.
+- **A REMEDY IS A CLAIM AND NEEDS THE SAME VERIFICATION AS THE DEFECT — AND A CHEAP OBVIOUS FIX IS
+  THE SHAPE THAT ESCAPES THE CHECK.** Worked instance, 2026-08-09, three seats deep. The defect: a
+  generated banner prescribing `dd build`, which on every Unix resolves to **coreutils**. Two
+  proposed remedies, each endorsed by a seat that had verified the DEFECT one command earlier and
+  did not extend the same command to the FIX:
+  **`npx dd build`** — a package named `dd` **exists on npm** (`0.26.0`, someone else's), so in a
+  project without ours installed it **downloads and executes third-party code**. **`npx
+  @ai-substrate/dd build`** — our package **has never been published**, so it prescribes a 404.
+  **The correct answer was CHANGE NOTHING**: the status quo fails **loud and inert** (`unknown
+  operand`, exit non-zero, nothing can happen) where remedy one fails **silent and active**.
+  **A REMEDY MORE DANGEROUS THAN THE DEFECT IT REMOVES is a real class, and no amount of care about
+  the DEFECT surfaces it** — the checking reflex points at the problem, never at the answer.
+  meadowlark's diagnosis of why: **a fix does not feel like an assertion, it feels like the END of
+  one.** And crab's: **a fix that is obviously right and cheap is exactly the shape that ships
+  without the check that would have stopped it.** Two seats improved each other's answer in
+  sequence and the correct answer was to leave it alone.
+  **The structural remedy, not a resolution to be careful: COUPLE THE FIX TO THE FACT THAT MAKES IT
+  TRUE.** The banner becomes correct the moment the package is published, so it belongs **in the
+  release commit** — where it cannot land before its own precondition.
 - **NEVER HAND-RESOLVE A GENERATED FILE — TAKE EITHER SIDE AND RE-RUN THE GENERATOR.** A hand-merged
   `.dd.md` sibling produces a file that does not match its source, and the parity gate catches it
   **later**, somewhere else, as a drift error whose cause is two merges back. The generator is the
