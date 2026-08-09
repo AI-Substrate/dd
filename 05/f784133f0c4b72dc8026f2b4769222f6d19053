@@ -1,0 +1,19 @@
+docs/how/dd/deterministic-documents.md
+  s_3fcdc055efffb7::t_77392e14db41cb 1-274
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "05f784133f0c4b72dc8026f2b4769222f6d19053",
+  "prompts": {},
+  "sessions": {
+    "s_3fcdc055efffb7": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f1575938-81cb-4506-9f3d-756db2229628",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
