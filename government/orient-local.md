@@ -219,6 +219,23 @@ step — pointing harness at this package and deleting the old code — is koala
   **On any red: `git status` BEFORE re-running.** A clean tree plus a red gate means the gate just
   repaired something and the evidence is already gone. **The fix is separation — `check-*` must be
   read-only and fail without repairing; `gen-*` repairs.**
+- **A RECORD OF A LIMITATION IS A DEFECT RECORD — IT GOES STALE WHEN THE LIMITATION IS FIXED,
+  AND IT READS AS CURRENT.** Three instances on 2026-08-09, all in documents that were accurate
+  when written. A `requirements.md` table described a Windows-path defect in **present tense with
+  no outcome**, and our first external consumer filed it as live. `docs/backlog.md` row 22 carried
+  an accurate present-tense description under a **status that was false on every head**
+  (`UNASSIGNED` for work that was assigned, fixed, and awaiting merge) — so the correct response to
+  the record was to go and re-fix it, colliding with the open PR in the same file. And a port table
+  stating `SchemaFs` was **not importable** became false **the hour it was ratified**, in the same
+  document written to stop consumers guessing that port.
+  **The repair is head-qualified in BOTH fields, because prose and status go stale
+  independently**: `DONE AT <sha>, ON <ref>` — a bare `DONE` is the same ambiguity as the present
+  tense it replaces, since a reader on `main` and a reader on the branch each take it as speaking
+  about theirs. A record can be **simultaneously accurate on one head and stale on another**, which
+  is why the sweep rule *"present tense means unfixed"* is itself unsafe.
+  **The uncomfortable general form**: we write down limitations far more readily than we revisit
+  them, and **nothing in a repository ages a note**. Every "not supported", "cannot currently",
+  "known gap" is a claim with an expiry date that nothing enforces.
 - **A COMPLETE SET OF ACCURATE ROWS CAN OMIT THE FACT THAT DECIDES THE ANSWER.** Named by
   `pij-certain-crab`. Three rows described dd's install routes — `wl-0014` (never published),
   backlog 24 (global git route fails), `wl-0015` (SHA-pinned `github:` works and packs). **Every
