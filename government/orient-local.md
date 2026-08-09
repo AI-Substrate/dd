@@ -489,6 +489,18 @@ step — pointing harness at this package and deleting the old code — is koala
   single seat is not evidence about everyone, and the operational tally stays in that seat's own
   guard until it recurs elsewhere. What justifies writing it HERE is structural: the rule as
   written covered one arm and was silent about the other.
+  **CAVEAT, named by the seat whose instances they were, and it belongs next to the claim:
+  "structural, not empirical" is true of the JUSTIFICATION and false of the DISCOVERY.** The
+  fourth instance is what made anyone re-read the rule's text; the gap would not have been found
+  that morning. **Noticing a gap because something fell through it does not make the gap
+  imaginary** — but the honest statement is *"an instance drew attention to a gap that existed
+  independently"*, never *"the instance was irrelevant"*. The first survives a later reader; the
+  second invites the accusation it was meant to pre-empt.
+  **The test that separates the two acts**: would the rule read as COMPLETE to someone who had
+  seen NONE of the instances? A structural rule does — it says what to check and why, and nothing
+  in it depends on how often it has happened. An empirical claim (*"this happens to people
+  generally"*) fails that test by construction and needs sightings from other seats. **Land the
+  part that needs no instances; withhold the part that does.**
   **AND THE PROPERTY THAT DECIDES THE BLAST RADIUS IS NOT THE DEFECT — IT IS WHETHER THE FAILURE
   HAS A VOICE.** Shell quoting silently no-op'd work THREE times on 2026-08-09. Once it cost
   nothing: the script died with a glob error, loudly, and the operator retried. Once it cost a
