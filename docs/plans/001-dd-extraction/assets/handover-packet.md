@@ -942,7 +942,7 @@ number instead of living in one agent's memory.
 
 <!-- BEGIN GENERATED: constraints (scripts/gen-handover-embeds.mjs) -->
 
-**Reproduced verbatim as of `f84903e`** — 9 constraints,
+**Reproduced verbatim as of `8bfd2c9`** — 9 constraints,
 the commit that last changed the source. Cite them BY NUMBER. Stamped past-tense copy:
 check whether yours is stale, and re-pull, with:
 
@@ -1055,7 +1055,28 @@ whether the public primitives are sufficient** to re-implement plan semantics.
 - Plan 002 can be complete with OQ-2 open. Its exit was *PR up and CI green*, which is met; OQ-2
   was never in that exit condition.
 
-**Who closes it**: koala, by reporting sufficiency or a gap. Route prime-to-prime per §6.
+**Who closes it**: koala, by reporting sufficiency or a gap. Routing is now **direct PM↔koala**
+for the duration of plan 080 — see §6 as amended; that supersedes the prime-to-prime line here.
+
+### R-4a — what an INSUFFICIENCY verdict actually means (Jordan, plan-080 workshop D-3)
+
+**Relayed via koala, verbatim:**
+
+> "this is dogfooding and we will make sure dd is what it needs to be for folks to use it welll"
+
+**Settles the branch this constraint left open.** If round 3 finds the primitives **insufficient**,
+**dd exports the missing primitives** and koala's plan-semantics phase **waits on our cycle**.
+Harness keeps **no fork and no private copies**.
+
+**Two consequences that change how this seat should read a verdict:**
+
+1. **An insufficiency verdict is INBOUND WORK FOR THIS REPO, not a deferral.** The hold on OQ-2 is
+   not a way of parking the question — either verdict produces work here, and the insufficient
+   branch produces *more*. Nobody should read "held" as "quiet".
+2. **It makes the branch-sourced consume route LOAD-BEARING rather than convenient.** koala waiting
+   on our cycle only works if it can consume our fixes as we ship them, which today means the
+   SHA-pinned `github:` install off `s002/sdk-build` (§6's distribution note). A merge or release
+   decision that disrupts that route now has a dependency it did not have this morning.
 ```
 
 <!-- END GENERATED: constraints -->
