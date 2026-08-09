@@ -476,6 +476,19 @@ step — pointing harness at this package and deleting the old code — is koala
   window, and two refusals sharing a reason code. The negation arm is the thing we reach for when a
   green looks too easy; **it has the failure mode it was invented to catch.** Applies to every
   planted-defect proof in this repo: assert the plant, not just the outcome.
+  **AND THE OTHER ARM IS A PRECONDITION, NOT A FORMALITY: A CONTROL THAT DOES NOT PASS MEANS THE
+  NEGATION CANNOT BE READ AT ALL.** This entry originally addressed only the planted arm, which
+  was a gap in it rather than a missing instance: **a fixture that cannot express the failure
+  reports its absence as evidence.** Both arms run clean, both report something false, and nothing
+  in either output says the fixture was never capable of going red. Distinct from a failed plant —
+  that is *"did the mutation apply"*; this is *"could this fixture have shown the thing I am
+  claiming is absent"*. Observed four times in one day on one seat, always as a SETUP error and
+  never a logic error (a wrapper object passed for an array; a missing `claim: true`; two
+  key-mapping slips), and **the control arm was the only thing that caught it every time.**
+  **Recorded as a gap in this rule, not as a graduated instance count** — four sightings from a
+  single seat is not evidence about everyone, and the operational tally stays in that seat's own
+  guard until it recurs elsewhere. What justifies writing it HERE is structural: the rule as
+  written covered one arm and was silent about the other.
   **AND THE PROPERTY THAT DECIDES THE BLAST RADIUS IS NOT THE DEFECT — IT IS WHETHER THE FAILURE
   HAS A VOICE.** Shell quoting silently no-op'd work THREE times on 2026-08-09. Once it cost
   nothing: the script died with a glob error, loudly, and the operator retried. Once it cost a
