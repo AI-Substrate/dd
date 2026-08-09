@@ -438,6 +438,22 @@ step — pointing harness at this package and deleting the old code — is koala
   independent basis, and the cross-drift check was ours at a different SHA. Nobody asked;
   it refused to let a correct confirmation read as stronger than it was. **Two agreeing
   checks on one basis are one check.**
+- **PROVE THE MUTATION BEFORE TRUSTING THE NEGATION — A FAILED PLANT IS INDISTINGUISHABLE FROM A
+  PASSING TEST.** Named by `pij-certain-crab` inside its own verification harness, which is the
+  worst place to find it and the best place to have found it. It reverted `locate.ts` to prove a new
+  test actually fires; **the suite passed**, which should have meant the test pinned nothing. It did
+  not mean that — **the revert never applied**, single quotes nested inside a single-quoted shell
+  string, silently a no-op. So the "negation arm" re-ran the CONTROL and reported the control's
+  result as evidence the test was worthless.
+  **A negation arm that does not verify its own plant landed IS a control arm**, and it reports the
+  same outcome either way. It caught it by counting occurrences across the mutation (`1 → 0 → 1`)
+  and re-running: reverted → 1 failed / 26 passed, restored → 27 passed. **Only then was the test
+  proven.**
+  **This is the day's parent cause arriving inside the instrument built to enforce it** — two states
+  sharing one observable, alongside the empty verdict read as a pass, the count taken from its
+  window, and two refusals sharing a reason code. The negation arm is the thing we reach for when a
+  green looks too easy; **it has the failure mode it was invented to catch.** Applies to every
+  planted-defect proof in this repo: assert the plant, not just the outcome.
 - **A RED ON AN UNWATCHED BRANCH IS INDISTINGUISHABLE FROM A GREEN — AND `main` IS THE UNWATCHED
   BRANCH.** Found by `pij-certain-crab`, on `main`, which is the o-prime's own tree. **`main` was
   RED for SIX consecutive commits** (`8a34a09` → `1cdfa19`), every one a governance commit by the
