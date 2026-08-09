@@ -1,0 +1,19 @@
+docs/plans/002-sdk-build/assets/ci-verdict-guard.md
+  s_6e59036559203c::t_d0501ce2bcf1f5 198-222
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "a837b9401f002bd0de52717a9f3980f73218b7de",
+  "prompts": {},
+  "sessions": {
+    "s_6e59036559203c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06d3bbcf-6419-4a86-8e8c-7147b4e647ce",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
