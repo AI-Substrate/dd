@@ -124,6 +124,36 @@ adjust the surface, repeat. Two consequences for this plan:
 it) and standing 6 (contact is prime-to-prime — the PM prepares, the o-prime sends). Iteration
 changes the *cadence* of that channel, not its altitude.
 
+> ⚠️ **The standing-6 half of that sentence was SUPERSEDED later the same week.** Jordan opened
+> a **direct PM↔koala channel** for SDK-iteration traffic for the duration of koala's plan 080
+> (*"go direct, i allow it"*; *"you may comms direct with crab btw throughout your work to
+> iterate on the SDK"*). **Handover packets and prime-altitude traffic remain the o-prime's** —
+> the altitude claim above still holds for those. Authority is
+> `government/standing-constraints.md` § 6: **cite the path, never a SHA**, because that file is
+> single-writer and always current, and an earlier draft of this note pinned a SHA that recorded
+> the ruling in its narrower one-off form. *(Found by the sweep on 2026-08-09 — a seventh stale
+> record, in the section opened to record an unrelated ruling.)*
+
+#### R-4a · Insufficiency policy — dd exports the missing primitives; harness does not fork
+
+> **Jordan, 2026-08-09**, ratified as D-3 of koala's plan-080 workshop 001 and relayed verbatim
+> by `pij-related-koala`: *"this is dogfooding and we will make sure dd is what it needs to be
+> for folks to use it welll."*
+
+**Settles what happens if the round-3 trial finds the public primitives insufficient**: dd
+**exports the missing primitives**, and koala's plan-semantics phase **waits on our cycle**.
+Harness will **not** keep a local fork or private copies of what dd should expose.
+
+**Consequences for this plan, and they are ours not koala's**:
+
+- **An insufficiency verdict is inbound work for this seat**, not a deferral. It arrives as a
+  defect-report-shaped packet — the exact missing primitives, the falsifier case each one
+  failed, measured at a named sha — on the direct channel.
+- **Iteration speed is now explicitly ratified**, which is what makes the branch-sourced consume
+  route (`github:AI-Substrate/dd#<full-sha>`, `wl-0015`) load-bearing rather than a convenience.
+- It closes the workaround-shaped escape hatch: a consumer shim is a finding that got absorbed,
+  and this ruling says the finding comes back to us instead.
+
 ### R-5 · THE GO — fleet spec, autonomy contract, and the exit condition
 
 > **Jordan, 2026-08-08**, in the PM's pane, as `/pij` args: *"copilot agent harness opus 5
