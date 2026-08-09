@@ -220,6 +220,37 @@ Correlation is 1.0 on n=8, which is small — but it is not a coincidence to be 
 **an output that names the plant cannot be produced without the plant.** Prefer negations whose
 failure is specific, and reach for the count when it is not.
 
+### The sixth — weakening a gate in response to its own red needs a second seat
+
+**Added 2026-08-09, from the one that happened rather than the one we theorised.**
+
+The audit gate shipped and reddened the branch on its first CI run. The rule it enforced —
+*block on what someone can act on* — turned out to rest on `fixAvailable`, which is
+**registry-relative**: the same commit and lockfile gave "0 fixable" locally and "1 fixable" in
+CI, because the two runners talk to different registries and one of them cannot serve the fix.
+
+Refining the gate was correct. **But the person who proposed it was the person it had just
+reddened**, and that is the one position from which the question *"would I have specified this
+up front, knowing what I know now?"* cannot be answered credibly. A motivated answerer gets it
+wrong while feeling rigorous.
+
+> **Correcting a mis-specification and softening a finding look identical from the inside.**
+
+So the rule, which is about who decides rather than what is decided:
+
+- a gate-weakening proposed in response to that gate's own red goes to a **second seat**;
+- the argument is **written down at the time**, not reconstructed later;
+- the adjudicating test is *"would this have been specified up front?"* — asked by someone with
+  no stake in the red.
+
+**And it binds the adjudicator too.** Hours later the same gate blocked again, on a real
+advisory nobody in the fleet could fix, with a merge waiting behind it. The temptation was a
+second refinement — and it was refused on exactly this rule: *same seat proposing, same seat
+approving, under merge pressure, on the same day.* **A rule that only ever licenses the change
+you wanted is not a rule.** The second red was escalated to the human instead, with the costs
+attached, because merging past a red gate is a human override and not a maintainer's to grant
+itself.
+
 ## The general form
 
 Both halves are one shape: **an instrument whose output cannot distinguish two states is not
