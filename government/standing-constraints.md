@@ -65,12 +65,27 @@ packet makes our defects their problem.
 
 > "go direct, i allow it"
 
-**Scope, as the o-prime reads it and as the PM independently inferred**: this opens the
-**PM↔koala TRIAL channel** — install routes, surface measurements, re-pin coordination,
-the iteration loop. It is **not** a general collapse of prime-to-prime routing, and
-**handover packets remain the o-prime's to send**. The narrower reading is chosen
-deliberately: a ruling given about one exchange should not be stretched to cover traffic
-Jordan was not asked about, and the wider form is one message away if he wants it.
+**WIDENED WITHIN THE HOUR — Jordan again, verbatim, relayed via koala:**
+
+> "you may comms direct with crab btw throughout your work to iterate on the SDK. i can
+> make fixes rapidly. we will source sdk from its branch to get this done fast."
+
+**So the exception is STANDING FOR THE DURATION OF KOALA'S PLAN 080**, not the one-off
+exchange the first ruling covered. The o-prime's narrow reading of the first ruling was
+correct when written and was overtaken by the second within the hour; **the shape holds and
+only the duration changed.**
+
+**Scope now in force**: **PM↔koala SDK-iteration traffic is DIRECT** for the duration of
+koala plan 080 — install routes, surface measurements, re-pin coordination, defect reports
+and fixes. **Handover packets and anything at prime altitude remain the o-prime's.** It is
+**not** a general collapse of prime-to-prime routing.
+
+**AND THE RULING CARRIES A DISTRIBUTION DECISION, which is easy to miss inside a comms
+permission**: *"we will source sdk from its branch to get this done fast."* Harness consumes
+dd **from the branch**, by SHA-pinned `github:` install, **for this period** — so cutting the
+first npm release is **NOT a blocker for koala's work** and should be decided on its own
+merits, not as an unblocking step. `wl-0014`, backlog 24 and `wl-0015` all describe install
+routes; this ruling says which one is in use meanwhile.
 
 **Why this is written down within the minute**: the PM went direct and told the o-prime
 inside the same minute so the change would not be discovered as a breach. A constraint
