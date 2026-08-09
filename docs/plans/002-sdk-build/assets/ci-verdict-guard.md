@@ -4,9 +4,10 @@
 proven in use, one half NOT built and named here so it is not inherited as complete — plus a
 **third** added the same day, after the first two both fired and neither caught it.
 
-> **The document is called "the half that is missing" and there were three.** Read that as the
+> **The document is called "the half that is missing" and there are now four.** Read that as the
 > standing warning it is: an enumeration of an instrument's blind spots is itself an instrument,
-> and it has the same blind spot — it can only list the failures already suffered.
+> and it has the same blind spot — it can only list the failures already suffered. The count in
+> this sentence has been wrong twice; assume it is wrong now.
 
 This exists because the guard it describes lived only in ad-hoc command strings. A rule that
 survives in a transcript survives exactly as long as the transcript, and the next person
@@ -125,6 +126,30 @@ So a green count is only comparable to a green count: **`5 registered` where one
 not the same instrument as `5 registered` where all five ran.** Read the conclusions, not just
 the total — and treat a `skipped` row as a gate whose findings you do not have, because the
 failure that skipped it was hiding whatever it would have found.
+
+### The fourth — a count taken from a limited window is not a count, it is the window
+
+**Added 2026-08-09, the same day as the three above, and it caught both seats inside ten
+minutes.** Main went red. The PM reported **four** consecutive failures, read off
+`gh run list --limit 4`. The o-prime corrected it to **six** and *named all six*. A 30-row
+window shows **eight** — `8a34a09` → `6807cac`, last green `a29b58a`.
+
+Nobody misread anything. Both numbers were accurate *about the window they came from*, and
+neither number carried its window. **`--limit N` silently becomes the denominator**, and a
+truncated listing is indistinguishable from a complete one — the partial-versus-complete gap
+from earlier in this document, arriving through the query instead of through the clock.
+
+The o-prime's version is worse than the PM's and it is worth saying why: **naming the six read
+as completeness.** A bare count invites "of how many?"; an enumeration answers a question nobody
+then asks.
+
+**Rule**: state the window with the count — *"8 consecutive failures in the last 30 runs"* — or
+widen until you see the boundary you are claiming. A red run whose start you have not seen is a
+red run of unknown length.
+
+**Corollary, from the same incident**: `--check` passing proved the embed drift was gone and
+**proved nothing about CI**. Repairing a cause and inferring the branch state from it is the
+stale-green error in a new costume — you verified the thing you fixed, not the thing you claimed.
 
 ## The general form
 
