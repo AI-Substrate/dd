@@ -219,6 +219,31 @@ step — pointing harness at this package and deleting the old code — is koala
   **On any red: `git status` BEFORE re-running.** A clean tree plus a red gate means the gate just
   repaired something and the evidence is already gone. **The fix is separation — `check-*` must be
   read-only and fail without repairing; `gen-*` repairs.**
+- **A TEST PINS THE SENTENCE, NOT THE TRUTH — AND UNIFORMITY IS NOT CORRECTNESS.** Both halves
+  named by `pij-certain-crab`, hours apart, from one guard.
+  **First**: `docs-surface` asserts the literal string `npm install -g @ai-substrate/dd`, and the
+  package **has never been published** — so our own guard was pinning a claim that answers 404.
+  Its words: *"the guard does not check the claim is TRUE; it checks the sentence is still
+  WRITTEN — a test can pin a falsehood as firmly as a fact."* A green assertion over a
+  documentation promise proves the promise is still **present**, never that it is still **kept**.
+  Same family as the drift-guard-reading-as-a-coverage-guard trap (`wl-0012`): both are honest
+  about something adjacent to what a reader assumes.
+  **Second**, and it corrects a frame *I* supplied: I flagged that two scanners in one file treated
+  fenced blocks differently and called it an asymmetry worth removing. **The fix failed twice
+  before it worked, and both failures were the symmetry frame.** Stripping fences at the source
+  broke five tests — the quick-start row *executes* a transcript extracted from those very fences,
+  so the strip removed the evidence a neighbouring assertion consumes. Narrowing to the assertion
+  was still wrong, because `npm install -g …` **legitimately lives in a fence**: it is a command,
+  and a fence is where commands belong. The frame that survived is **per-claim**: a HEADING is the
+  page's own structure and must appear in prose; a COMMAND belongs inside a fence — same file, same
+  helper, **opposite treatment**, with a comment saying why so nobody "fixes" it back.
+  **Two scanners SHOULD differ when their claims differ; what must never differ is whether anyone
+  reasoned about it.** Consistency applied without reading the claim is a defect that looks like
+  tidiness.
+  **And the arm that caught both was the one usually treated as ceremony**: *unchanged input must
+  still pass*. Negation arms that prove a guard REDS on bad input are the interesting ones and get
+  the attention; the control arm is what stops a five-test regression shipping dressed as a
+  hardening.
 - **NEVER LET AN EMPTY RESULT SHARE AN EXIT CODE WITH A PASSING ONE.** Named by
   `pij-certain-crab`, and it is the strongest form of the family below it. `gh pr checks` returned
   *"no checks reported"* **and exit 0**, which collapses **THREE** states into one output:
