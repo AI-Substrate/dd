@@ -14,7 +14,7 @@ import { type Envelope, ensureBuilt, parseEnvelope, repoRoot, runDd } from './su
  */
 
 const README = readFileSync(join(repoRoot, 'README.md'), 'utf8');
-const BAKED = ['dd-overview', 'how-to-add-a-schema'] as const;
+const BAKED = ['dd-overview', 'how-to-add-a-schema', 'how-to-use-and-extend-the-sdk'] as const;
 
 describe('README', () => {
   it('covers the four things a standalone reader needs', () => {

@@ -159,7 +159,11 @@ describe('harness dd act surface', () => {
     expect(result.code).toBe(0);
     expect(result.envelope.status).toBe('ok');
     const data = result.envelope.data as { docs: { id: string; summary: string }[] };
-    expect(data.docs.map((doc) => doc.id)).toEqual(['dd-overview', 'how-to-add-a-schema']);
+    expect(data.docs.map((doc) => doc.id)).toEqual([
+      'dd-overview',
+      'how-to-add-a-schema',
+      'how-to-use-and-extend-the-sdk',
+    ]);
     for (const doc of data.docs) expect(doc.summary.length).toBeGreaterThan(20);
   });
 

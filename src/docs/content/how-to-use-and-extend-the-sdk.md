@@ -106,12 +106,25 @@ nothing here. Work out which case you are in first:
 ### The three steps
 
 1. **Export it from its module** — ordinary `export`.
-2. **Add it to the barrel** it belongs to: `src/lib.ts` (root) or `src/node/index.ts`. The
-   root barrel is an allowlist, and *every addition is an API review* — that is not ceremony,
-   it is the point.
+2. **Add it to the barrel**, *if the surface you are targeting has one*: `src/lib.ts` (root) or
+   `src/node/index.ts`. Those two are allowlists, and *every addition is an API review*.
+   **But read the next paragraph before assuming this step applies to you.**
 3. **Add it to the ratified list** in `scripts/exports-reachability-probe.mjs`. The gate holds
-   an exact set per surface and fails **both** directions: a symbol you export without listing
-   is a surplus (red), a symbol you list without exporting is missing (red).
+   an exact set per published surface and fails **both** directions: a symbol you export
+   without listing is a surplus (red), a symbol you list without exporting is missing (red).
+
+> **The trap: some surfaces have no barrel to edit.** `./links` and `./schema` re-export their
+> model modules wholesale (`export * from './model.js'`). So adding an export to
+> `src/links/model.ts` makes it **public API without touching any barrel file** — step 2 never
+> comes up, and nothing about the edit looks like an API change. Step 3 is the only control on
+> that path, which is exactly why it is not optional. The membership gate follows those stars
+> and will red by name.
+>
+> Two more shapes worth knowing before the gate surprises you: **`./schema` and `./schema/index`
+> resolve to one emitted file and share one list** — pin the file, not the subpath. And **adding
+> a whole new subpath to `exports` without a matching table entry is itself a red**: an unpinned
+> published surface is the original hole one level up, so the gate checks that every published
+> subpath is pinned.
 
 Then:
 
