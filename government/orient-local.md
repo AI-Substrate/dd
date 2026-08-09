@@ -154,6 +154,20 @@ step — pointing harness at this package and deleting the old code — is koala
      The supervisor rule depends on the supervisor noticing. **The assignee rule works even
      when they do not**, which is why it is the load-bearing half.
 
+  9. **A record that goes stale in what it IMPLIES, never in what it SAYS.** Constraint 9 read
+     *"OQ-2 is HELD pending koala's trial verdict"* — **every word of which stayed true.** What
+     went stale was the reading: "held" implied *parked*, and a later ruling made an
+     insufficiency verdict **inbound work for this seat**. The sentence never needed correcting;
+     the inference a reader drew from it did. **No anchor check, no line number, no SHA
+     comparison and no diff touches this class** — the text is unchanged and correct, so every
+     instrument that compares text to text reports clean. It is the shape `wl-0016` explicitly
+     **cannot** cover, and it was found only because someone opened the section for an unrelated
+     reason. **Instrument: after any ruling, re-read what the OLD records now IMPLY**, not
+     whether they are still accurate. Accuracy survives; implication does not.
+     **And the sweep that found it establishes a FLOOR, never a ceiling** — two of eight finds
+     that day were accidents, and an accident rate above zero against an unknown denominator
+     means the deliberate search and the lucky one were drawing from the same pool.
+
   **A note on 4–6 and 8: all four arrive as HELP.** An expected-red note, a clean sweep, a
   compliment — every one is a cooperative act, which is why nothing here inspects them.
 
