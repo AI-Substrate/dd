@@ -10,6 +10,24 @@
 // this path" of a shallow clone, which cannot answer and does not say so. An
 // instrument must either work where it runs or refuse — never answer a question it
 // cannot see.
+//
+// ⚠️ AND HERE IS THE QUESTION THIS PROBE CANNOT SEE, stated because this is the
+// gate people reach for when they think "is the exports map right".
+//
+// IT SYMLINKS THE REPO (see `symlinkSync` below), so it resolves against the
+// WORKING TREE and is structurally blind to the `files` allowlist. An `exports`
+// entry pointing at a path that `files` does not pack — reachable here, ABSENT
+// from the tarball a consumer installs — passes this probe every time.
+//
+// The gate that catches that coupling is `scripts/pack-gate.sh`, whose
+// `attw --pack <tarball>` resolves every exports entry against the REAL packed
+// artifact (negation-proved there by pointing `exports["./links"].types` at a
+// missing file). TWO GATES THAT DISAGREE BY CONSTRUCTION, and only one of them
+// can see `files` at all.
+//
+// Live example, not hypothetical: `dist/plan` is packed (18 files, 71KB) and not
+// exported. Un-packing it is under consideration — and if `./plan` were ever
+// exported without restoring it to `files`, THIS PROBE WOULD STILL PASS.
 // Answers the question a barrel-file reading cannot: can a CONSUMER import this
 // subpath? An exports map does not merely fail to list a path, it FORBIDS it
 // (ERR_PACKAGE_PATH_NOT_EXPORTED), so "the module exports it" and "a consumer can
