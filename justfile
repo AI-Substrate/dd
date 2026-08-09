@@ -69,6 +69,16 @@ check-handover:
 check-exports:
     node scripts/exports-reachability-probe.mjs
 
+# Dependency advisories, blocking on what someone can ACT on. Production high or
+# critical always reds — that is what a user installs. A DEV advisory reds only
+# once a fix exists, because a gate that fails for a reason nobody can fix trains
+# everyone to skip the line. Crucially the fixable/unfixable split is re-derived
+# every run rather than baked as an exemption list: the day vitest ships a patched
+# line, this goes red by itself. Replaces `npm audit --audit-level=high || true`,
+# which had been printing six high advisories under a green tick.
+audit:
+    node scripts/audit-gate.mjs
+
 # Fail if orient-local's repo-state block no longer matches `dd --json status`.
 # orient-local is the mandatory first read for a new seat; it once carried a
 # hand-written "Measured:" line claiming the port had not happened, long after it
@@ -126,6 +136,7 @@ checks:
     just check-orient
     just check-handover
     just check-exports
+    just audit
     just self-host
     just test
 
