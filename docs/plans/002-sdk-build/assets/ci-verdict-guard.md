@@ -206,6 +206,35 @@ trusting a green. It is the appeal court. **And it has the exact failure mode it
 catch** — a silent absence wearing the appearance of a pass. Every planted-defect proof in this
 plan rests on the plant having landed, and until this one, none checked.
 
+#### One layer earlier — a fixture that CANNOT express the failure reports its absence as evidence
+
+**Not yet doctrine — held here at three instances, all from one seat, pending a fourth from
+another.** The o-prime declined to generalise it for everyone until it recurs elsewhere, which is
+the same discipline it applied to refusing a sixth builtin relation the same day.
+
+The entry above asks *did the mutation apply?* This asks the prior question: **could this fixture
+have gone red at all?** A plant that lands in a fixture incapable of expressing the defect
+produces two agreeing arms and looks exactly like proof.
+
+Three instances on 2026-08-09, every one caught by the **control** arm rather than the negation:
+
+| Probe | Setup defect | What both arms said |
+|---|---|---|
+| plan-semantics relation | wrote `fromKey`/`toKey`; engine reads `from`/`to` | 0 contradictions — every edge silently skipped |
+| plan-semantics orphan | omitted `claim: true`; predicate is `item.claim && …` | no orphan finding, in either arm |
+| links-bucket relation | passed the wrapper object, not the bucket array | *"must be an array of {rel, ref}"* — including the control |
+
+**In every case the logic was right and the fixture was mute.** Had I run only the arm whose
+result I expected, each would have shipped as a measurement.
+
+> **Both arms green proves nothing if the fixture was never capable of going red.**
+
+**Operational form**: a negation is only readable after its control **passes for the right
+reason** — the control must produce the very finding you are claiming the negation removes. Treat
+a passing control as the *precondition for reading the negation at all*, not as a formality. Where
+the control cannot produce the finding, you have not built an experiment; you have built two
+copies of the same silence.
+
 #### The refinement — when the count is redundant, and when it is the only thing holding you up
 
 Auditing the eight negation proofs run in this plan on 2026-08-09 gives a cleaner rule than
