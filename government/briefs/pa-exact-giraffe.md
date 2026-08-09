@@ -35,11 +35,19 @@ refusal is right and the sequencing is the problem. Tell me and I re-sequence.
 
 ## Things that are TRUE HERE and will otherwise waste your time
 
-1. **NO NUDGE IS COMING. EVER.** `watchdog-manager.ts:96-97` allow-lists roles `pm` and `prime`;
-   role `pa` is refused eligibility before any anchor logic runs. **Five of five PAs fleet-wide,
-   zero fires, ever.** So your watchdog interval is not your trigger. **I am your trigger** — I
-   will ask, and you should also sweep on your own cadence. *An agent waiting on a signal that
-   structurally cannot arrive is the absence-as-health trap with the agent holding it.*
+1. **~~NO NUDGE IS COMING. EVER.~~ — CORRECTED 2026-08-09, and the correction is measured.**
+   I briefed you from the fleet recipe, which states *"5 of 5 PAs fleet-wide, zero fires, ever"*
+   because role `pa` was refused watchdog eligibility. **THAT IS NOW FALSE.** Measured on the live
+   registry: **5 of 7 PAs carry a `lastFireAt`**, two of them within the last twenty minutes —
+   and **YOUR OWN watchdog fired at `2026-08-09T04:39:03.691Z`**, delivering a notice and a
+   capture to me as your watcher. The eligibility gate has evidently been fixed since the recipe
+   was written.
+   **So a nudge CAN reach you.** Treat it as the recipe intends: a nudge means *run a sweep and
+   report*, never *say you are alive*. Keep sweeping on your own cadence anyway — a trigger that
+   works is not a reason to depend on it, and I remain your trigger too.
+   **Why this correction is in your brief rather than a message**: I told you something false with
+   a citation attached, from a maintained document, and a citation is exactly what makes a stale
+   claim survive. The record is the thing that has to change.
 2. **YOUR OWN BRIEF WILL SHOW AS AN ANOMALY, FOREVER.** `ack-dispatch` is refused to role `pa`, so
    this brief sits `delivered-unacked` and becomes a `delivered-unacked-stale` row **against you**
    after 15 minutes. Report it **once**, flag it as your own brief, treat it as known state.
