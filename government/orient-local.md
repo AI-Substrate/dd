@@ -250,6 +250,21 @@ step — pointing harness at this package and deleting the old code — is koala
   **The uncomfortable general form**: we write down limitations far more readily than we revisit
   them, and **nothing in a repository ages a note**. Every "not supported", "cannot currently",
   "known gap" is a claim with an expiry date that nothing enforces.
+- **NEVER HAND-RESOLVE A GENERATED FILE — TAKE EITHER SIDE AND RE-RUN THE GENERATOR.** A hand-merged
+  `.dd.md` sibling produces a file that does not match its source, and the parity gate catches it
+  **later**, somewhere else, as a drift error whose cause is two merges back. The generator is the
+  only thing that can produce a correct answer, and it is one command.
+  **Corollary — an append-only shared ledger is a CONFLICT MAGNET the moment two branches exist**,
+  and it conflicts in TWO files: the `.dd.json` and its rendered sibling. That is a structural cost
+  of short-lived branches, not a mistake by either author. Cheapest handling: **land one, then
+  re-render the other** so the tool resolves it. Named by `pij-certain-crab` when two same-day PRs
+  each appended a wishlist row.
+- **CITE LINE NUMBERS FROM THE TREE THE WORK WILL HAPPEN IN, OR CITE NO LINE NUMBERS AT ALL.** The
+  o-prime cited `build.ts:251-258` from a worktree that was being actively edited, to a PM working
+  off `main`, where the same function sits at `:87`. **The code was identical and the finding was
+  unaffected — the citation simply did not resolve.** A line number is a claim about a FILE STATE,
+  not about code, and it decays the moment either tree moves. Cite the symbol; add the line only
+  when both parties are pinned to the same SHA.
 - **A CLAIM WHOSE TRUTH LIVES OUTSIDE THE REPO THAT ASSERTS IT IS UNMAINTAINABLE BY CONSTRUCTION.**
   Named by `pij-legislative-tyrannosaurus`, and it survives being right OR wrong about the claim
   itself — which is what makes it structural. **No test in the asserting repo guards it and no
