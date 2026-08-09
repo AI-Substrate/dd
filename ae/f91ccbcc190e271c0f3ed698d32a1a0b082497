@@ -1,0 +1,19 @@
+government/briefs/pa-exact-giraffe.md
+  s_e3460fd42f286c::t_b568734a2ff1e2 1-150
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "aef91ccbcc190e271c0f3ed698d32a1a0b082497",
+  "prompts": {},
+  "sessions": {
+    "s_e3460fd42f286c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "b007eb76-365c-4da0-8164-519fdee51c00",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
