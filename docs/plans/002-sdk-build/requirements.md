@@ -402,7 +402,23 @@ an existing typed edge**, not a new concept — which suggests the rule vocabula
 > before. It reads as a live defect list because it is written in the present tense and carries
 > no outcome. **A record of a fixed defect, left in present tense, is indistinguishable from a
 > current one to anyone who did not fix it** — and our primary consumer is exactly that reader.
-> The cost was real: a false regression report against the surface the trial exists to protect.
+>
+> **CORRECTION, same day — this table was NOT the source, and the first version of this
+> paragraph said it was.** koala retracted and named its own basis: a bare checkout of
+> `AI-Substrate/dd` at **`470d7c0`** (`main`), where the defect is genuinely present. So the
+> three-way line match was never corroboration — this table and that checkout describe **the same
+> superseded code**, which is one fact counted twice. koala asked that the callout stay anyway,
+> and it should: the rule above is sound on its own, it just did not fire here. koala's own
+> finding is the more useful one — **a repo path with no sha is an unstated `@main`**, and where
+> the default branch has diverged that is not "slightly old code", it is a different line of
+> development.
+>
+> **HEAD QUALIFIER — FIXED ON `s002/sdk-build`, NOT ON `main`.** Measured: `main` is `470d7c0`,
+> **7 ahead / 78 behind** this branch, and `5b6ad12` is **not an ancestor of it**. `main` ships
+> all three sites today, so `docs/backlog.md` row 22 describing them in the present tense is
+> **accurate there — do not sweep it as stale.** The same record is stale on one head and correct
+> on another, which means **"fixed" with no ref named carries the same ambiguity as the present
+> tense it replaces**. Every DONE in this document is `DONE AT <sha>, ON <ref>` or it is not done.
 
 > **Jordan, 2026-08-08**, on hotfix-now vs scope-into-002: *"na scope it to new plan"*
 
