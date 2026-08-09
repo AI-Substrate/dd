@@ -351,6 +351,17 @@ step — pointing harness at this package and deleting the old code — is koala
   Corollary for any waiting seat: **silence from an instrument is a fact about the instrument until
   proven otherwise, never a fact about the work** — and waiting is the failure mode that looks most
   like diligence.
+  **AMENDED the same day, by the seat that wrote it, after its own rule misfired: "empty is a
+  FINDING" is TOO STRONG. Zero runs means only "no run exists", and the QUESTION IS WHY.** There
+  are FOUR causes and the count cannot separate them: **(a)** the commit was never a head — pushed
+  in a batch, so GitHub scheduled on the tip and no run was ever going to exist (benign, and this
+  is what actually happened at `6f41d5d`); **(b)** not registered yet (wait); **(c)** cannot run at
+  all — the PR conflicts, so no merge ref (finding); **(d)** absence rendered as success by a
+  tool's exit code (the original defect). **Only (c) and (d) are findings**, and only context —
+  never the number — tells you which you have. **Six entries in that guard, and the FIRST one
+  needed amending by the very defect it describes.** Treat that as the expected outcome for any
+  document of this kind rather than an embarrassment: an enumeration of blind spots is written
+  from inside the blind spot.
 - **A DECISION THE OTHER SEAT CANNOT SEE IS INDISTINGUISHABLE FROM A DECISION NOT TAKEN.** Three
   instances in one morning, all mine, all the same root — **state I held that the other seat had no
   way to observe**: (1) I fenced a second writer out of the PM's files and never sent it the fence
