@@ -13,10 +13,33 @@ a schema that says what the states mean and a gate that reads them.
 
 ## Install
 
+Two routes, both supported. From the registry:
+
 ```bash
 npm install -g @ai-substrate/dd     # the `dd` binary on your PATH
 npm install @ai-substrate/dd        # or as a library
 ```
+
+And straight from git — the route that matters when a registry proxy screens new versions for
+days at a time, or when you want a branch the registry has not seen. As a library dependency it
+is one line; the package builds itself on install:
+
+```bash
+npm install git+https://github.com/AI-Substrate/dd.git
+```
+
+For the global binary from git, install from a clone:
+
+```bash
+git clone https://github.com/AI-Substrate/dd.git
+cd dd
+npm install
+npm install -g .
+```
+
+`npm install -g git+<url>` in one step does not work today — npm's staging of a global git
+install breaks the TypeScript build that `prepare` runs (`TS2688`, the dev types are not
+visible). The clone route above is the supported path to a git-fresh binary.
 
 Requires Node **>= 22**. The only runtime dependencies are `commander` and `jiti`.
 
@@ -227,13 +250,20 @@ a boring document forever.
 
 ## Going deeper
 
-The same guidance is baked **into the binary**, so an agent can read it with no checkout and no
-network:
+The canonical explainer is
+[`docs/how/dd/deterministic-documents.md`](docs/how/dd/deterministic-documents.md): what a
+deterministic document is, why it exists, and worked examples — addressing down to one field,
+typed links and the `E406` refusal, writer refusals, render drift, the doctor, and the link
+graph — every one run against this repository's own binary.
+
+The same reference corpus is baked **into the binary**, so an agent can read it with no
+checkout and no network:
 
 ```bash
 dd docs list
 dd docs get dd-overview
 dd docs get how-to-add-a-schema
+dd docs get how-to-use-and-extend-the-sdk
 ```
 
 The repository copies live in [`docs/how/dd/`](docs/how/dd/README.md).
