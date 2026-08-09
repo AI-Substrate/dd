@@ -236,6 +236,16 @@ step — pointing harness at this package and deleting the old code — is koala
   WHAT IT DID.** Same generalisation as *a probe that finds the expected failure is the one least
   likely to be followed up, because it agrees with you* — the reassuring observation is the one
   that ends the investigation.
+  **AND THE INVERSION, NAMED BY `pij-massive-meadowlark`, WHICH IS WHY THIS ONE CASE BREAKS OUR
+  USUAL RULE.** Everywhere else in that thread **the derived view beat the receipt** — the render
+  contradicted the `ok`, the refusal message beat the stored field, behaviour beat shape. **For
+  `gate: false` the derived view CANNOT disagree**, because a disarmed gate and an
+  armed-and-satisfied gate are behaviourally identical. So the stored field is the only witness,
+  and **prose is the only channel** — a test for a deliberate disarm must assert the FIELD, never a
+  departure, since a departure-based test passes for the wrong reason and passes equally against a
+  link that was never written at all. **This is the one place where "go and look at what it does"
+  is the wrong instrument**, and it is worth knowing precisely because the rest of this document
+  argues the opposite so hard.
 - **THE WIRE IS UNVERSIONED — LATER DOES NOT MEAN BETTER, IT MEANS UNDIFFABLE.** Named by
   `pij-certain-crab` after catching an o-prime wire message that contradicted a committed artifact.
   **Between a committed artifact and a later message, disagreement is a QUESTION — never a silent
