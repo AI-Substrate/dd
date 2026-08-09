@@ -1,0 +1,37 @@
+docs/how/dd/how-to-use-and-extend-the-sdk.md
+  s_19f7e253dcd61b::t_57f91b95cd9574 52,58-61,63-78
+src/docs/content/how-to-use-and-extend-the-sdk.md
+  s_19f7e253dcd61b::t_e8ad58a5adfcc1 48,54-57,59-74
+src/lib.ts
+  s_19f7e253dcd61b::t_58cf82b426da1e 47-56
+test/services/dd/docs/dd-docs-drift.test.ts
+  s_19f7e253dcd61b::t_5ad870d462d9ea 27-30,42,51-52
+scripts/exports-reachability-probe.mjs
+  s_6e59036559203c::t_2d29549280a376 122-123
+scripts/gen-dd-docs.mjs
+  s_6e59036559203c::t_06d0764eb5623a 107-143,147-149,154-160,163,165,167-180
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "f712dedaac36a65aa219f0804a00a914fd7c4b09",
+  "prompts": {},
+  "sessions": {
+    "s_19f7e253dcd61b": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "df4fe8c9-c893-434b-8f2c-b08b4eb337d3",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_6e59036559203c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06d3bbcf-6419-4a86-8e8c-7147b4e647ce",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
