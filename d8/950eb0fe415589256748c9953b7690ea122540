@@ -1,0 +1,19 @@
+government/rulings/2026-08-09-semantic-ontology-leaves-dd.md
+  s_397a51e23fc2cd::t_fe072eb83b3b73 1-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "d8950eb0fe415589256748c9953b7690ea122540",
+  "prompts": {},
+  "sessions": {
+    "s_397a51e23fc2cd": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "3fe3c47b-5424-4214-892e-81ef19c49d45",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
