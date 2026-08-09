@@ -62,6 +62,14 @@ const NEXT_ACTIONS: Record<DdMutationFailure['reason'], string> = {
   // declare the section, so the command sent as the remedy displays the very
   // declaration the refusal appears to deny, and the caller learns nothing.
   // That dead end is what our first real consumer reported (wl-0017).
+  //
+  // ⚠️ EXPIRY ANCHOR — the clause "the writer verbs cannot create a section
+  // today" is a LIMITATION RECORD, and implicit create is already RATIFIED
+  // (wl-0017, o-prime 2026-08-09) and merely unscheduled. The day it lands,
+  // this string becomes confidently wrong while remaining grammatical, and it
+  // ships INSIDE the product where a consumer reads it as current. Whoever
+  // implements implicit create edits this line in the same commit.
+  // Written while both parties still knew, which is the only moment it is cheap.
   'section-absent':
     'The schema declares this section; the document has not created it yet. Seed the section in the document, then write into it — the writer verbs cannot create a section today.',
   'section-unknown': 'Run `dd schema show <name>` to see the sections this schema declares.',

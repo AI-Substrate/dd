@@ -4,10 +4,16 @@
 proven in use, one half NOT built and named here so it is not inherited as complete — plus a
 **third** added the same day, after the first two both fired and neither caught it.
 
-> **The document is called "the half that is missing" and there are now four.** Read that as the
+> **The document is called "the half that is missing" and there are now five.** Read that as the
 > standing warning it is: an enumeration of an instrument's blind spots is itself an instrument,
 > and it has the same blind spot — it can only list the failures already suffered. The count in
-> this sentence has been wrong twice; assume it is wrong now.
+> this sentence has been wrong three times; assume it is wrong now.
+>
+> **All five are one shape**: two states sharing one observable. An empty verdict wearing a
+> pass's exit code · a partial listing indistinguishable from a complete one · a green that
+> expired when the head moved · a count wearing its query window as a denominator · a plant that
+> failed wearing a negation's result. **The shape recurs because nothing about a reading tells
+> you what it could not have distinguished** — that has to be supplied from outside, every time.
 
 This exists because the guard it describes lived only in ad-hoc command strings. A rule that
 survives in a transcript survives exactly as long as the transcript, and the next person
@@ -150,6 +156,44 @@ red run of unknown length.
 **Corollary, from the same incident**: `--check` passing proved the embed drift was gone and
 **proved nothing about CI**. Repairing a cause and inferring the branch state from it is the
 stale-green error in a new costume — you verified the thing you fixed, not the thing you claimed.
+
+### The fifth — a negation arm that does not verify its own plant is a control arm
+
+**Added 2026-08-09. This one is about the instrument of last resort, which is why it is the
+worst of the five.** Doctrine form on main at `9bf70fd`; the operational form belongs here,
+because here is where someone about to run a negation is actually looking.
+
+The pattern this repository reaches for whenever a green looks too easy: **plant the defect, prove
+the test fails, restore, prove it passes.** Both arms ran. The negation **passed**, which should
+have meant the new test pinned nothing.
+
+It meant something else. **The plant never applied** — single quotes nested inside a
+single-quoted shell string, silently a no-op — so the "negation" re-ran the control and reported
+the control's result. Exit code, output, everything identical.
+
+> **A negation arm that does not verify its own plant landed IS a control arm, and it reports the
+> same outcome either way.**
+
+**The only instrument that can tell them apart is a count across the mutation**, because both
+arms produce identical output when the plant silently fails:
+
+```bash
+grep -c 'section-absent' src/mutate/locate.ts   # 1   before
+<mutate>
+grep -c 'section-absent' src/mutate/locate.ts   # 0   PLANT LANDED — now the arm means something
+<run: 1 failed / 26 passed>
+<restore>
+grep -c 'section-absent' src/mutate/locate.ts   # 1   restored
+<run: 27 passed>
+```
+
+**Rule**: *observe the mutation, not just the outcome.* A negation is two claims — "the defect is
+present" and "the suite noticed" — and only the second is ever reported.
+
+**Why this is worse than the other four**: the negation arm is what we fall back to when we stop
+trusting a green. It is the appeal court. **And it has the exact failure mode it was invented to
+catch** — a silent absence wearing the appearance of a pass. Every planted-defect proof in this
+plan rests on the plant having landed, and until this one, none checked.
 
 ## The general form
 
