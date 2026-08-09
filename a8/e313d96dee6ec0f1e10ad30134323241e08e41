@@ -1,0 +1,19 @@
+government/orient-local.md
+  s_6e59036559203c::t_f2afc6925241b8 253-267
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "a8e313d96dee6ec0f1e10ad30134323241e08e41",
+  "prompts": {},
+  "sessions": {
+    "s_6e59036559203c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06d3bbcf-6419-4a86-8e8c-7147b4e647ce",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
