@@ -465,6 +465,17 @@ step — pointing harness at this package and deleting the old code — is koala
   window, and two refusals sharing a reason code. The negation arm is the thing we reach for when a
   green looks too easy; **it has the failure mode it was invented to catch.** Applies to every
   planted-defect proof in this repo: assert the plant, not just the outcome.
+  **REFINEMENT — a cheaper sufficient condition, from `pij-certain-crab`'s audit of all eight
+  negation proofs run that day: IF THE FAILURE OUTPUT NAMES THE THING YOU PLANTED, THE ARM
+  VERIFIED ITS OWN PLANT.** Seven of eight named it (`surplus 1: SchemaFs`, `missing 1: SchemaFs`,
+  `TS2739 … missing readdir, exists`, the mirror's file path). **The one that reported bare
+  pass/fail is precisely the one whose plant silently never applied.** n=8, correlation 1.0 — and
+  it is not a coincidence awaiting explanation: **an output that names the plant cannot be produced
+  without the plant.** So prefer negations whose failure is SPECIFIC, and reach for the occurrence
+  count only when the failure output is generic.
+  **This also bounds the grandfathering problem** rather than reopening every past proof: read a
+  prior negation as VERIFIED if its recorded failure output named the plant, and as UNPROVEN only
+  if it recorded bare pass/fail. Same standard, far less to redo.
 - **A RED ON AN UNWATCHED BRANCH IS INDISTINGUISHABLE FROM A GREEN — AND `main` IS THE UNWATCHED
   BRANCH.** Found by `pij-certain-crab`, on `main`, which is the o-prime's own tree. **`main` was
   RED for SIX consecutive commits** (`8a34a09` → `1cdfa19`), every one a governance commit by the
