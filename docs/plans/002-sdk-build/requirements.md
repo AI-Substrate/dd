@@ -385,12 +385,29 @@ an existing typed edge**, not a new concept — which suggests the rule vocabula
 
 ## 7a. Scoped INTO this plan
 
-### S-1 · Windows drive-letter re-anchoring (backlog 22) — **ruled into plan 002**
+### S-1 · Windows drive-letter re-anchoring (backlog 22) — **FIXED, 2026-08-08**
+
+> ✅ **DONE — do not read the present tense below as current state.** Fixed at **`5b6ad12`**
+> (F2, absoluteness detection) and **`f9b7b03`** (F1, identity spelling), with the disclosed
+> widening pinned at **`3463df1`**; cross-model reviewed (`assets/p4-review-terra.md`). All
+> three sites now use `isRootAnchored`; `startsWith('/')` is gone from every one of them.
+> **Verified behaviourally at HEAD**, not by reading:
+> `resolveAddressFile('C:/repo/docs/plan.dd.json','C:/repo/docs/other.dd.json')`
+> → `C:/repo/docs/other.dd.json` (was: `C:/repo/docs/C:/repo/docs/other.dd.json`).
+> **Line numbers in the table are the ORIGINAL ones and no longer resolve** — `resolveAddressFile`
+> is now at `core/validate.ts:145`.
+>
+> **Why this callout exists**: on 2026-08-09 `pij-related-koala` filed a defect report against
+> dd naming exactly these three sites at exactly these line numbers, for a bug fixed the day
+> before. It reads as a live defect list because it is written in the present tense and carries
+> no outcome. **A record of a fixed defect, left in present tense, is indistinguishable from a
+> current one to anyone who did not fix it** — and our primary consumer is exactly that reader.
+> The cost was real: a false regression report against the surface the trial exists to protect.
 
 > **Jordan, 2026-08-08**, on hotfix-now vs scope-into-002: *"na scope it to new plan"*
 
-Not hotfixed on main. Three sites test absoluteness with `startsWith('/')`, which a
-drive-letter path does not satisfy, so an absolute path is treated as relative and re-anchored
+Not hotfixed on main. Three sites tested absoluteness with `startsWith('/')`, which a
+drive-letter path does not satisfy, so an absolute path was treated as relative and re-anchored
 under the repo root:
 
 | Site | Function | Surface |
