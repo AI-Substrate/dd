@@ -90,6 +90,12 @@ export function traverseCorpus(
     }
     visited.add(path);
 
+    // BEFORE the load, on purpose. The path-only half of the exclusion has to be
+    // asked here or an unparseable fixture never reaches it: the loader fails,
+    // the branch below reports `link-scan-incomplete`, and the envelope degrades
+    // for a document this sweep was supposed to skip entirely.
+    if (options.mode === 'sweep' && shouldExcludeFromSweep(path)) continue;
+
     const result = deps.docLoader.load(path);
     if (!result.ok) {
       if (seedSet.has(path)) {
@@ -97,6 +103,7 @@ export function traverseCorpus(
       }
       continue;
     }
+    // The `sweep_exclude` half needs the parsed document, so it stays here.
     if (options.mode === 'sweep' && shouldExcludeFromSweep(path, result.doc)) continue;
 
     const resolved = deps.schemaResolver.resolve(result.doc.dd.schema, path);
