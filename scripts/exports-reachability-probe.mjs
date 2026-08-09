@@ -52,7 +52,15 @@ const CONSUMED = [
 // CONSUMED and was reported as "UNREACHABLE BY A CONSUMER" — true, but it read as
 // a defect when it is a ruling.
 const RULED_OUT = [
-  { spec: 'plan', why: 'R-2: plan/ does not ship; harness re-implements on primitives' },
+  // "does not ship" was WRONG and this label said it for the life of the branch.
+  // Measured 2026-08-09: `dist/plan` IS in the tarball — 18 files, 71KB, 7.1% of
+  // the package — because `files` is `["bin","dist","LICENSE"]`. It ships and is
+  // UNREACHABLE, which is a different fact and the one that matters: a consumer
+  // installs the compiled plan layer and cannot import a symbol of it. The
+  // imprecision was not free — it framed a consumer's investigation around
+  // "can this be rebuilt from primitives" when the finished layer was already
+  // in their node_modules.
+  { spec: 'plan', why: 'R-2/OQ-2: plan/ ships in dist but is NOT EXPORTED — held, not stripped' },
   { spec: 'acts/shared', why: 'the CLI half is never exported (fr-0010 option (a), rejected)' },
   { spec: 'acts/build', why: 'ditto — renderDocument is reachable at ./node instead' },
 ];
