@@ -269,6 +269,15 @@ step — pointing harness at this package and deleting the old code — is koala
   **The structural remedy, not a resolution to be careful: COUPLE THE FIX TO THE FACT THAT MAKES IT
   TRUE.** The banner becomes correct the moment the package is published, so it belongs **in the
   release commit** — where it cannot land before its own precondition.
+  **AND THE SHARPER FORM, which is meadowlark's and outranks the rest of this entry: A REMEDY IS A
+  CLAIM, AND SO IS THE PREMISE THAT ONE IS NEEDED.** The arc was `dd build` → `npx dd build` →
+  `npx @ai-substrate/dd build` → **`dd build`, unchanged**. Three seats, three rounds, on a
+  one-word change, **and the status quo was correct the whole time.** Nobody scored *do nothing*
+  as a candidate until the third pass — **because the finding was framed as a DEFECT in its first
+  message, and a defect implies a fix.** Each round verified the hazard, then the fix, then the
+  second fix, and **never re-examined whether the confusion cost was worth spending anything on.**
+  **Put "change nothing" on the candidate list explicitly, every time**, or the framing of the
+  first report silently removes it.
 - **NEVER HAND-RESOLVE A GENERATED FILE — TAKE EITHER SIDE AND RE-RUN THE GENERATOR.** A hand-merged
   `.dd.md` sibling produces a file that does not match its source, and the parity gate catches it
   **later**, somewhere else, as a drift error whose cause is two merges back. The generator is the
