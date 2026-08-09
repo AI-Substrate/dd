@@ -1,0 +1,21 @@
+docs/plans/wishlist.dd.json
+  s_6e59036559203c::t_a7c9d1df1650af 175
+docs/plans/wishlist.dd.md
+  s_6e59036559203c::t_97866652ff8f92 37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "c473c2ee04a9e19684ff7ad115874cf18120dfd6",
+  "prompts": {},
+  "sessions": {
+    "s_6e59036559203c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06d3bbcf-6419-4a86-8e8c-7147b4e647ce",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
