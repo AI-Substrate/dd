@@ -13,6 +13,15 @@ export type DdMutationRefusal =
   | 'id-exhausted'
   | 'mint-prefix-unregistered'
   | 'schema-refused'
+  /**
+   * The schema DECLARES the section and the document has not instantiated it —
+   * distinct from `section-unknown`, which means the schema does not declare it
+   * at all. Split on 2026-08-09 (wl-0017, ruled): the two states used to share
+   * `section-unknown`, differing only in free-text prose, so a machine consumer
+   * had to string-match the message to tell "does not exist" from "not created
+   * yet". Our first real consumer hit exactly that and could not branch on it.
+   */
+  | 'section-absent'
   | 'section-unknown'
   | 'target-exists'
   | 'target-unknown'

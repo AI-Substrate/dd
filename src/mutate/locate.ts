@@ -33,7 +33,9 @@ export function locate(
     return refuse('section-unknown', `schema "${schema.name}" declares no section "${first}"`);
   }
   const section = doc.sections.find((candidate) => candidate.name === first);
-  if (!section) return refuse('section-unknown', `the document has no section "${first}"`);
+  // DECLARED (we got past the check above) but not instantiated — a different
+  // state from `section-unknown`, and the declaration is already in hand here.
+  if (!section) return refuse('section-absent', `the document has no section "${first}"`);
 
   const trail: string[] = [first];
   let parent: unknown[] | Record<string, unknown> | null = null;

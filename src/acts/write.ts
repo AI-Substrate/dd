@@ -36,6 +36,12 @@ const MUTATION_CODES: Record<DdMutationFailure['reason'], string> = {
   'id-exhausted': ErrorCodes.DD_ID_MINT_FAILED,
   'mint-prefix-unregistered': ErrorCodes.DD_ID_MINT_FAILED,
   'schema-refused': ErrorCodes.DD_MUTATION_SCHEMA_REFUSED,
+  // Same E450 as `section-unknown` — both are an invalid target at the code
+  // level, and E450-E459 is a complete allocation. The DISCRIMINATOR is the
+  // machine-readable `reason`, which is what a consumer branches on; splitting
+  // the code would have required a new range for no gain the reason does not
+  // already give.
+  'section-absent': ErrorCodes.DD_MUTATION_TARGET_INVALID,
   'section-unknown': ErrorCodes.DD_MUTATION_TARGET_INVALID,
   'target-exists': ErrorCodes.DD_MUTATION_TARGET_INVALID,
   'target-unknown': ErrorCodes.DD_MUTATION_TARGET_INVALID,
@@ -52,6 +58,12 @@ const NEXT_ACTIONS: Record<DdMutationFailure['reason'], string> = {
   'mint-prefix-unregistered':
     'Mint under a registered prefix — run `dd schema show <name>` to see the shapes that carry ids.',
   'schema-refused': 'Fix the reported location in the value you supplied, then re-run.',
+  // NOT `dd schema show` — for this state that is a CIRCLE. The schema does
+  // declare the section, so the command sent as the remedy displays the very
+  // declaration the refusal appears to deny, and the caller learns nothing.
+  // That dead end is what our first real consumer reported (wl-0017).
+  'section-absent':
+    'The schema declares this section; the document has not created it yet. Seed the section in the document, then write into it — the writer verbs cannot create a section today.',
   'section-unknown': 'Run `dd schema show <name>` to see the sections this schema declares.',
   'target-exists': 'Use `dd set` to replace a value that is not a list.',
   'target-unknown':
