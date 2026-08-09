@@ -1,0 +1,23 @@
+src/acts/write.ts
+  s_6e59036559203c::t_1817456d04791b 39-44,61-66
+src/mutate/model.ts
+  s_6e59036559203c::t_f08d6e3b69e791 16-24
+src/mutate/mutate.ts
+  s_6e59036559203c::t_c563ddcf096bc7 162,274
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "012b6bda585e4a7bc4de1c0d7df69977c0c84644",
+  "prompts": {},
+  "sessions": {
+    "s_6e59036559203c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06d3bbcf-6419-4a86-8e8c-7147b4e647ce",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
