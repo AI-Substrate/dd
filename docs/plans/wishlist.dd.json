@@ -1,150 +1,160 @@
 {
-  "dd": {
-    "schema": "project/wishlist"
+ "dd": {
+  "schema": "project/wishlist"
+ },
+ "sections": [
+  {
+   "name": "meta",
+   "value": {
+    "title": "dd — build wishlist",
+    "owner": "pij-mental-dajeil (o-prime, dd)",
+    "note": "Candidate work, NOT a plan. Nothing here is scheduled, allocated or attested — a row graduates by becoming a builder plan, at which point it flips to `planned` and the plan owns it. Opened 2026-08-08 on Jordan's ask, immediately after his OQ-1 ruling that dd ships a supported LIBRARY surface and not merely a CLI. Kept as a dd document rather than prose so the rows are queryable and the render is deterministic."
+   }
   },
-  "sections": [
+  {
+   "name": "items",
+   "value": [
     {
-      "name": "meta",
-      "value": {
-        "title": "dd \u2014 build wishlist",
-        "owner": "pij-mental-dajeil (o-prime, dd)",
-        "note": "Candidate work, NOT a plan. Nothing here is scheduled, allocated or attested \u2014 a row graduates by becoming a builder plan, at which point it flips to `planned` and the plan owns it. Opened 2026-08-08 on Jordan's ask, immediately after his OQ-1 ruling that dd ships a supported LIBRARY surface and not merely a CLI. Kept as a dd document rather than prose so the rows are queryable and the render is deterministic."
-      }
+     "id": "wl-0001",
+     "title": "SDK design flow — research best-in-class SDK design guidelines, then design dd's public surface against them",
+     "why": "Jordan's OQ-1 ruling (2026-08-08) makes dd an SDK, not a CLI with an accidental import surface. The current exports map was derived from what harness happened to import (dossier F-04), which is a description of one consumer rather than a designed API. An SDK that ships under semver needs a surface chosen on purpose.",
+     "state": "shaped",
+     "size": "l",
+     "blocked_on": "plan 001 closing out first — Jordan: 'close out current work then creaet a new builder flow on the SDK'",
+     "source": "Jordan 2026-08-08, verbatim in plan 001 open_questions OQ-1 note",
+     "note": "Jordan specified the research step explicitly: best-in-class SDK design guidelines via perplexity, BEFORE designing. Its own builder flow, not an extension of plan 001. Inputs already measured and waiting for it: the runtime exports probe (scripts/exports-reachability-probe.mjs), koala's consumer census (4 surviving files, 4 live symbols), and the root-export defect below. ACCEPTANCE TEST, set by Jordan's OQ-2 ruling 2026-08-08 and measurable rather than a taste question: HARNESS RE-IMPLEMENTS `plan validate` USING PUBLIC EXPORTS ONLY. Today's answer is NO, by exactly five symbols (DEFAULT_GATE_TERMINAL_STATES, deriveItems, effectiveRel, collectDeclaredRels, isRecord — lg-000b). Design the surface around the PLAN USE CASE as the driving case: it is the hardest known consumer, exercising typed links, cardinality, cross-document traversal, derived state and gate semantics simultaneously, so a surface that expresses it expresses almost anything simpler. Jordan: \"SDK shoudl be super rich.\""
     },
     {
-      "name": "items",
-      "value": [
-        {
-          "id": "wl-0001",
-          "title": "SDK design flow \u2014 research best-in-class SDK design guidelines, then design dd's public surface against them",
-          "why": "Jordan's OQ-1 ruling (2026-08-08) makes dd an SDK, not a CLI with an accidental import surface. The current exports map was derived from what harness happened to import (dossier F-04), which is a description of one consumer rather than a designed API. An SDK that ships under semver needs a surface chosen on purpose.",
-          "state": "shaped",
-          "size": "l",
-          "blocked_on": "plan 001 closing out first \u2014 Jordan: 'close out current work then creaet a new builder flow on the SDK'",
-          "source": "Jordan 2026-08-08, verbatim in plan 001 open_questions OQ-1 note",
-          "note": "Jordan specified the research step explicitly: best-in-class SDK design guidelines via perplexity, BEFORE designing. Its own builder flow, not an extension of plan 001. Inputs already measured and waiting for it: the runtime exports probe (scripts/exports-reachability-probe.mjs), koala's consumer census (4 surviving files, 4 live symbols), and the root-export defect below. ACCEPTANCE TEST, set by Jordan's OQ-2 ruling 2026-08-08 and measurable rather than a taste question: HARNESS RE-IMPLEMENTS `plan validate` USING PUBLIC EXPORTS ONLY. Today's answer is NO, by exactly five symbols (DEFAULT_GATE_TERMINAL_STATES, deriveItems, effectiveRel, collectDeclaredRels, isRecord \u2014 lg-000b). Design the surface around the PLAN USE CASE as the driving case: it is the hardest known consumer, exercising typed links, cardinality, cross-document traversal, derived state and gate semantics simultaneously, so a surface that expresses it expresses almost anything simpler. Jordan: \"SDK shoudl be super rich.\""
-        },
-        {
-          "id": "wl-0002",
-          "title": "Fix Windows drive-letter re-anchoring at three sites",
-          "why": "LIVE PRODUCT DEFECT in the shipped CLI. `startsWith('/')` misreads a drive-letter path as relative, so `C:/Users/x` becomes `<repoRoot>/C:/Users/x`. Two of the three sites back `dd doctor --path` and `dd graph --path`, so it reaches users directly.",
-          "state": "planned",
-          "size": "s",
-          "blocked_on": "none \u2014 scoped into plan 002 (SDK build)",
-          "source": "backlog #22 \u2014 found by pij-related-koala reading this fork, reproduced here before recording",
-          "note": "core/validate.ts:88 is the one that matters most: byte-identical to upstream, and upstream deliberately deferred its fix to a later PR, so it will NEVER arrive by forward port. Not a separator bug \u2014 toPosix does not fix it. Two distinct families per upstream's own split; do not port as one change. SCOPED INTO PLAN 002 by Jordan 2026-08-08 (\"na scope it to new plan\"), NOT hotfixed on main. Rationale recorded in that plan's requirements as S-1: core/validate.ts:88 sits on the LIBRARY surface and resolveAddressFile is already a harness-imported symbol, so an SDK cannot ship a public address resolver that mis-resolves a whole platform's absolute paths; and the upstream fix uses resolveInRepo / ABSOLUTE_LOGICAL, which are primitives \u2014 the exact surface question plan 002 exists to answer."
-        },
-        {
-          "id": "wl-0003",
-          "title": "Add `prepare` so a git-URL install produces a working package",
-          "why": "`npm install github:AI-Substrate/dd` reports SUCCESS and installs a broken package \u2014 no dist/, bin throws ERR_MODULE_NOT_FOUND. We have `prepack` but npm runs `prepare` on git installs, and dist/ is gitignored. A failure that looks like success.",
-          "state": "planned",
-          "size": "xs",
-          "blocked_on": "none \u2014 LANDED on main at 114b2c1",
-          "source": "measured 2026-08-08 while answering Jordan's git-URL distribution question",
-          "note": "One line. Fix verified against a real git install: dist/ builds, bin runs, envelope correct. Live defect regardless of which distribution method is chosen. LANDED 2026-08-08 at 114b2c1 on Jordan's ruling. Proven against a REAL GitHub install after the push rather than a local simulation: npm install github:AI-Substrate/dd into a clean scratch project yields dist/index.js and a working bin. The git-URL fast path is live."
-        },
-        {
-          "id": "wl-0004",
-          "title": "Decide and implement the distribution method: git-URL dependency vs npm publish",
-          "why": "Jordan raised distributing to harness via the git repo rather than npm. A git DEPENDENCY serves both the bin and library imports; `npx`-the-runner serves only the CLI and gives harness nothing importable, which does not fit the four surviving library consumers.",
-          "state": "planned",
-          "size": "m",
-          "blocked_on": "none \u2014 ruled: BOTH npm and git-URL",
-          "source": "Jordan 2026-08-08",
-          "note": "Measured: the exports map gates IDENTICALLY under a git install \u2014 ./plan is still ERR_PACKAGE_PATH_NOT_EXPORTED \u2014 so the distribution method does NOT answer OQ-2. It does soften the freeze: without publishing, freezing stops being a semver promise to strangers and becomes 'do not break harness'. Choosing git-URL would let the whole release apparatus stay permanently inert. RULED 2026-08-08: BOTH. npm is the durable/external path; git-URL is the fast inner loop between first-party projects, because a corporate registry proxy quarantines new versions for seven days. CORRECTION to this row's earlier reasoning: choosing git-URL does NOT let the release apparatus stay permanently inert \u2014 npm publish remains in the picture, it simply is not on the critical path for iteration speed. Two carried constraints: first-party repos only, and pin to a tag or SHA rather than a bare branch."
-        },
-        {
-          "id": "wl-0005",
-          "title": "Fix the root export so importing the package does not execute the CLI",
-          "why": "`.` resolves to dist/index.js, which IS the bin entry \u2014 it carries the node shebang and calls main(). So `import '@ai-substrate/dd'` runs the CLI, prints help to stdout, and yields zero named exports. Harmless to harness today (it imports subpaths only) but wrong for an SDK.",
-          "state": "ready",
-          "size": "s",
-          "blocked_on": "nothing technically \u2014 but it must land BEFORE any exports freeze, since a freeze is when a latent defect becomes permanent",
-          "source": "surfaced by the runtime exports probe, predicted by koala from the same defect in harness-engineering",
-          "note": "Already inside tk-0002's scope for exactly the freeze-timing reason. Listed here too because it is a real SDK-surface defect in its own right and wl-0001 will care about it."
-        },
-        {
-          "id": "wl-0006",
-          "title": "Mechanize the two guardrails that are still pure discipline",
-          "why": "Plan 001 shipped guardrails against claims outrunning evidence, but only some are enforced. The out-of-diff assertion sweep and measured-at stamping are still human discipline \u2014 nothing fails if a reviewer skips the sweep or a receipt omits its SHA. A rule not yet mechanized is a rule we pay for in attention every review.",
-          "state": "idea",
-          "size": "m",
-          "blocked_on": "nothing",
-          "source": "SUGG-001, raised by the PM and endorsed 2026-08-07; sits in the migrated backlog",
-          "note": "Two candidate instruments: a gate over assertions naming changed behaviour outside the diff, and a linter that every count-claim in an execution log carries a resolvable SHA. Precedent exists \u2014 `just check-orient` and `just check-handover` both started as discipline and became gates."
-        },
-        {
-          "id": "wl-0007",
-          "title": "Forward-port cfa501a6 onto the consumed surface",
-          "why": "First non-zero fork debt since the extraction. Two of three consumed files move (plan/index-plan.ts, links/map.ts); core/validate.ts is untouched, so four symbols are in play rather than seven.",
-          "state": "shaped",
-          "size": "m",
-          "blocked_on": "OQ-2 \u2014 not building against an unfrozen map, agreed with koala both ways",
-          "source": "backlog #23 \u2014 koala's dd-fork-divergence detector fired, which is the instrument working rather than a surprise",
-          "note": "Patch already prepared by koala with hunks rather than a description. wl-0002's act-site fix does NOT depend on this port and should not wait for it."
-        },
-        {
-          "id": "wl-0008",
-          "title": "Run `harness init` to stamp the governance doc",
-          "why": ".harness/engineering-harness.md has never existed, so every pre-flight boot across all four phases of plan 001 returned UNAVAILABLE over a demonstrably healthy substrate. The verdict describes a missing file, not the repo.",
-          "state": "ready",
-          "size": "xs",
-          "blocked_on": "Jordan \u2014 offered several times across plan 001, never ruled",
-          "source": "o-prime standing offer, unanswered",
-          "note": "One seeded-empty file (L0, TODO fields). Turns a permanently-uninformative boot verdict into a real one."
-        },
-        {
-          "id": "wl-0009",
-          "title": "Calculated columns and rows \u2014 derived tallies, recomputed on edit",
-          "why": "A total typed into a table is a claim that goes stale the moment any row it summarises changes, and nothing detects it \u2014 precisely the class plan 001 spent four phases cataloguing: a figure that was true when written. dd already renders .dd.md deterministically from .dd.json, so a tally computed at build time CANNOT rot: it is derived, never asserted, and `dd build --check` already fails on drift. This turns a whole category of stale-number defect into an impossibility rather than a discipline.",
-          "state": "idea",
-          "size": "m",
-          "blocked_on": "shape not settled \u2014 see the open questions in the note",
-          "source": "Jordan 2026-08-08, verbatim: \"next wishlist item is calculated columns (auto gens the total on edits, ato adds total column at bottom. cal tally cols and rows with setting.\"",
-          "note": "AS ASKED: totals regenerate on edit (any set/add/rm touching a tallied section), a total row is appended automatically, and both column and row tallies are configurable by a setting. OPEN SHAPE QUESTIONS, recorded rather than guessed: (1) does the setting live in the SCHEMA \u2014 a field declares itself summable, so every document of that type tallies alike \u2014 or in the DOCUMENT, per-instance? Schema-side is more deterministic and matches how dd resolves everything else; document-side is more flexible. (2) Which aggregates: sum only, or count/min/max/mean? (3) Do tallies MATERIALISE into the .dd.json, or exist only in the rendered .dd.md? Render-only keeps the source a single truth and avoids write amplification on every edit, which argues strongly for it \u2014 and it is the option that makes the total underivable-from-anything-but-the-data. (4) What happens to a non-numeric or empty cell in a tallied column \u2014 skip, zero, or refuse? Refusing fits this repo: a silently-skipped cell produces a wrong total that looks right, which is the exact failure mode the feature exists to remove."
-        },
-        {
-          "id": "wl-0010",
-          "title": "Custom validation \u2014 semantic rules as portable, declarable data rather than dd code",
-          "why": "Today dd validates STRUCTURE (does this field match the schema shape) while the SEMANTIC rules \u2014 a plan must have acceptance criteria, an AC must link to a task, a task's state derives from its assertions \u2014 live as hard-coded TypeScript in services/dd/plan. That means only we can express a semantic rule, only for the document families we shipped, and every new discipline needs a code change and a release. Making the rules declarable turns dd from 'a validator that knows about builder plans' into 'a validator anyone can teach', and lets a team encode its own conventions without forking us.",
-          "state": "shaped",
-          "size": "xl",
-          "blocked_on": "wl-0001 \u2014 this is an SDK-surface decision and should be designed inside that flow, not ahead of it",
-          "source": "Jordan 2026-08-08, verbatim: \"i want the rules that we usein pln to be expressable via a portable and customisable validation concept somehow so anyone can implement semantic validation across the top (plans must have acs, acs mst link to tasks in this file) etc. This will rely heavily on the typing system (ac must have at least one link to typeof tasks.dd/tasklist or what ever).\" Raised in the same breath as his note on OQ-2 \u2014 \"ah yes, but later we will remove\" \u2014 which is the strategic point below.",
-          "note": "THIS IS THE THING THAT MAKES services/dd/plan REMOVABLE, which is why Jordan raised it while answering OQ-2. Whatever we decide about shipping plan/ publicly is a TRANSITIONAL answer: once semantic rules are declarable, the hard-coded plan semantics become a set of rules attached to the builder/plan schema, and the module carrying them stops needing to exist as a public export. Decide OQ-2 for today's consumer, not for all time. IT LEANS ON THE TYPE SYSTEM, which dd already has and which is the real asset here: links are already rel-typed and target-typed (a proven_by must point at builder/execution-log/section/entries, and E406 link-type-mismatch already fires when it does not). Jordan's example \u2014 an AC must carry at least one link of type X to a document of type Y \u2014 is a CARDINALITY constraint over an existing typed edge, not a new concept. That is a strong sign the rule vocabulary can be small. SHAPE QUESTIONS for the design flow, recorded not guessed: (1) where do rules live \u2014 beside the schema (travelling with the family, so any repo resolving that schema inherits its rules) or in the consuming repo (local conventions over a shared family)? Both are wanted; the resolution order matters more than either. (2) How expressive: declarative predicates over the typed graph (cardinality, required-link-of-type, cross-document reachability) or an escape hatch to real code? A jiti-loaded custom type already exists as precedent for the escape hatch. (3) Are violations errors, warnings, or severity-declared by the rule? The plan validator already distinguishes ERROR from contradiction-class WARN, so severity is already a live concept. (4) NON-VACUITY: a rule engine can silently match nothing. Every rule needs to be provably capable of firing \u2014 the same requirement this repo puts on its own guards, and the reason plan 001 found a pin whose docstring claimed more than it pinned."
-        },
-        {
-          "id": "wl-0011",
-          "title": "Does src/plan belong in this repo at all \u2014 dead code carried, forward-ported, and reviewed",
-          "why": "Found during plan 002 P4: NOTHING outside src/plan imports it in this fork (grep for imports of ../plan/ or ./plan/ across src/ excluding src/plan returns empty \u2014 o-prime, measured 2026-08-08). Upstream it backed harness plan validate; here no CLI verb reaches it, and R-2 rules it never ships as public surface. So the fork carries, forward-ports, and spends review attention on code with no caller and no shipping path. Deleting it is surface-adjacent \u2014 harness re-implements plan semantics on dd primitives (R-2), and the koala trial is what shows whether any of src/plan's shape is still wanted as reference. Decision deliberately NOT plan 002's.",
-          "state": "idea",
-          "size": "s",
-          "blocked_on": "koala trial outcome (plan 002 ready-to-trial milestone, R-4)",
-          "source": "o-prime ruling 2026-08-08, prompted by pij-technological-starfish's P4 finding 3a (upstream cfa501a6 F1 sites unfixed in unreachable code)",
-          "note": "Do NOT act in plan 002. The cfa501a6 F1 spelling fix for plan/index-plan.ts is deferred WITH this row \u2014 zero-risk but zero-value while unreachable; fixing dead code launders it into looking alive."
-        },
-        {
-          "id": "wl-0012",
-          "title": "Execute the examples in every baked doc page, the way the README transcript already is",
-          "why": "**MEASURED, NOT ASSUMED \u2014 and the answer is 'partially exposed', which is the awkward middle.** `test/docs-surface.test.ts` already RUNS every line of the README quick start against the shipped bin, asserts the document it produces, reads and writes the address it documents, and checks a refusal. That is a genuine executable-doc guard and it is better than most repos have. **It covers the README ONLY.** The four pages under `docs/how/dd/` are guarded for DRIFT (byte-verbatim port from `src/docs/content/`, id parity with `dd docs list`, relative-link resolution) and NOT AT ALL for TRUTH. Nothing executes a single command in them.\n\nSo every example in `dd-overview`, `how-to-add-a-schema`, `how-to-use-and-extend-the-sdk` and the new canonical page is prose that an agent will execute, verified by hand once, at authoring time, and never again. **The drift guard makes this worse, not better**: it proves the port is byte-identical to its source, which reads like the page is checked. It is checked for being a faithful copy of possibly-wrong text.",
-          "state": "shaped",
-          "size": "m",
-          "blocked_on": "",
-          "source": "pij-massive-meadowlark, 2026-08-09, from the fr-0011 root cause. Its finding upstream: NOTHING executes or validates the JSON op examples in the harness doctrine files \u2014 markdown-lint covers markdownlint, links, anchors and mermaid only. That is the full answer to how a malformed worked example survived long enough to teach ox the wrong op shape and produce fr-0011 and fr-0012. It has scoped a guard that extracts JSON op batches from doctrine and runs them through parseOp, deliberately held out of the current PR, and asked whether we have the same exposure.",
-          "note": "**THE MACHINERY TO CLOSE THIS ALREADY EXISTS IN THIS REPO** \u2014 `docs-surface.test.ts` parses a fenced transcript, runs each `argv` against the shipped bin, and asserts the envelope. Pointing that same harness at the fenced blocks in the baked pages is an extension, not an invention. The honest scoping caveat: the README transcript was WRITTEN to be executable, and the how-to pages were not \u2014 they interleave real transcripts with illustrative fragments (schema snippets, a mermaid block, a rendered markdown sample), so the guard needs a way to mark which fences are claims and which are illustrations. That marking is the actual work; the runner is nearly free.\n\n**THIS IS MINE AND IT IS THE REASON THE ROW EXISTS.** I accepted `deterministic-documents.md` \u2014 roughly fifteen worked examples, every one run live by its author and spot-checked by me against source \u2014 with NO GUARD BEHIND EITHER OF US. Both checks were real and both happen exactly once. The page is accurate today and nothing in the repository will notice the day it stops being. That is the largest single addition of unguarded executable examples this package has taken, and it landed while I was writing up why unguarded worked examples cause outages in a neighbouring repo.\n\n**ID COLLISION, AND IT IS MINE.** This row was minted as `wl-0011` on main while the s002 branch already held a DIFFERENT `wl-0011` (the `src/plan` dead-code question). Two rows, one id, caught only by a merge conflict. **I hand-wrote the id in a script instead of using `dd add --mint`** \u2014 the exact affordance the canonical page documents three paragraphs after telling readers not to invent ids by hand. Renumbered to `wl-0012` because the branch's row is older and may be cited. Honest limit on the lesson: `--mint` reads one file and would NOT have seen the branch's row either, so the tool would not have saved me here \u2014 **the real gap is that ids are minted per-file while branches fork the file**, which is a genuine question for the SDK's minting story rather than an operator error to file away."
-        },
-        {
-          "id": "wl-0013",
-          "title": "Append-heavy shared documents conflict on EVERY append across a long-lived branch \u2014 id collision is the narrow case",
-          "why": "**THE GENERAL CASE IS THE FILE SHAPE, NOT THE IDS.** A dd document whose main section is an append-only array \u2014 wishlist, frictions, backlog \u2014 conflicts in git on **every** append made on both sides of a long-lived branch, whether or not the ids collide. Two appends to the same array tail are a textual conflict even when the rows are unrelated and correctly numbered.\n\nThe id case is the narrow, louder instance: `dd add --mint` picks a collision-free id **within the file it reads**, which is correct behaviour and **structurally blind to a forked twin**. Two branches can each mint the same next id, both correctly, and the collision exists only in the merge \u2014 surfaced here when `wl-0011` was minted on `main` while `s002/sdk-build` already held a different `wl-0011`.\n\n**THE SAME HOLE IS IN THE VALIDATION STORY (wl-0010).** A vocabulary that expresses *'ids are unique within this file'* and cannot express *'unique across the branch'* inherits it, so this is a question about validation scope as much as about minting.",
-          "state": "shaped",
-          "size": "unknown",
-          "blocked_on": "",
-          "source": "pij-certain-crab, 2026-08-09, reframing an id collision I caused during the main\u2192s002 merge. Its words, and the reason this row exists rather than a note in a commit message: this belongs filed as SDK design input, **not remembered as 'prime hand-wrote an id'**. It is right \u2014 the hand-written id is how it surfaced, not why it was possible.\n\n**WIDENED 2026-08-09** on crab's reading, and the widening is the point: the original row described the ID case, but the same day produced THREE conflicts in one file from the same habit, only the first of which involved ids. Writing the narrow version and re-hitting the wide one within the hour is the fr-0009 lesson landing on its own author \u2014 **consolidate causes, never instruments**; an id is an instrument, the array tail is the cause. Widened rather than given a second row, deliberately.",
-          "note": "Related: [[wl-0010]] (custom validation) shares the scope hole; [[wl-0012]] records the incident itself. **Open question, not a proposal**: candidate answers all carry real costs \u2014 a corpus-wide mint that reads every document (slow, and wrong across branches anyway), content-addressed or random ids (collision-free, unreadable), or a merge-time uniqueness check (catches it late but at the one moment both halves exist). **The third is the only one that sees the actual failure**, which suggests the answer is a gate rather than a minting change \u2014 and that is a conclusion worth testing rather than adopting.\n\n**OPERATIONAL MITIGATION ALREADY IN FORCE, ahead of any tooling fix**: while a long-lived PR is open, the o-prime stops appending to shared dd documents on `main` \u2014 rows either queue or land on the branch under the PM's commit. That removes the recurrence without waiting for a design answer, and it is a habit change rather than a ledger row because three incidents in one day from one habit is a habit problem."
-        }
-      ]
+     "id": "wl-0002",
+     "title": "Fix Windows drive-letter re-anchoring at three sites",
+     "why": "LIVE PRODUCT DEFECT in the shipped CLI. `startsWith('/')` misreads a drive-letter path as relative, so `C:/Users/x` becomes `<repoRoot>/C:/Users/x`. Two of the three sites back `dd doctor --path` and `dd graph --path`, so it reaches users directly.",
+     "state": "planned",
+     "size": "s",
+     "blocked_on": "none — scoped into plan 002 (SDK build)",
+     "source": "backlog #22 — found by pij-related-koala reading this fork, reproduced here before recording",
+     "note": "core/validate.ts:88 is the one that matters most: byte-identical to upstream, and upstream deliberately deferred its fix to a later PR, so it will NEVER arrive by forward port. Not a separator bug — toPosix does not fix it. Two distinct families per upstream's own split; do not port as one change. SCOPED INTO PLAN 002 by Jordan 2026-08-08 (\"na scope it to new plan\"), NOT hotfixed on main. Rationale recorded in that plan's requirements as S-1: core/validate.ts:88 sits on the LIBRARY surface and resolveAddressFile is already a harness-imported symbol, so an SDK cannot ship a public address resolver that mis-resolves a whole platform's absolute paths; and the upstream fix uses resolveInRepo / ABSOLUTE_LOGICAL, which are primitives — the exact surface question plan 002 exists to answer."
+    },
+    {
+     "id": "wl-0003",
+     "title": "Add `prepare` so a git-URL install produces a working package",
+     "why": "`npm install github:AI-Substrate/dd` reports SUCCESS and installs a broken package — no dist/, bin throws ERR_MODULE_NOT_FOUND. We have `prepack` but npm runs `prepare` on git installs, and dist/ is gitignored. A failure that looks like success.",
+     "state": "planned",
+     "size": "xs",
+     "blocked_on": "none — LANDED on main at 114b2c1",
+     "source": "measured 2026-08-08 while answering Jordan's git-URL distribution question",
+     "note": "One line. Fix verified against a real git install: dist/ builds, bin runs, envelope correct. Live defect regardless of which distribution method is chosen. LANDED 2026-08-08 at 114b2c1 on Jordan's ruling. Proven against a REAL GitHub install after the push rather than a local simulation: npm install github:AI-Substrate/dd into a clean scratch project yields dist/index.js and a working bin. The git-URL fast path is live."
+    },
+    {
+     "id": "wl-0004",
+     "title": "Decide and implement the distribution method: git-URL dependency vs npm publish",
+     "why": "Jordan raised distributing to harness via the git repo rather than npm. A git DEPENDENCY serves both the bin and library imports; `npx`-the-runner serves only the CLI and gives harness nothing importable, which does not fit the four surviving library consumers.",
+     "state": "planned",
+     "size": "m",
+     "blocked_on": "none — ruled: BOTH npm and git-URL",
+     "source": "Jordan 2026-08-08",
+     "note": "Measured: the exports map gates IDENTICALLY under a git install — ./plan is still ERR_PACKAGE_PATH_NOT_EXPORTED — so the distribution method does NOT answer OQ-2. It does soften the freeze: without publishing, freezing stops being a semver promise to strangers and becomes 'do not break harness'. Choosing git-URL would let the whole release apparatus stay permanently inert. RULED 2026-08-08: BOTH. npm is the durable/external path; git-URL is the fast inner loop between first-party projects, because a corporate registry proxy quarantines new versions for seven days. CORRECTION to this row's earlier reasoning: choosing git-URL does NOT let the release apparatus stay permanently inert — npm publish remains in the picture, it simply is not on the critical path for iteration speed. Two carried constraints: first-party repos only, and pin to a tag or SHA rather than a bare branch."
+    },
+    {
+     "id": "wl-0005",
+     "title": "Fix the root export so importing the package does not execute the CLI",
+     "why": "`.` resolves to dist/index.js, which IS the bin entry — it carries the node shebang and calls main(). So `import '@ai-substrate/dd'` runs the CLI, prints help to stdout, and yields zero named exports. Harmless to harness today (it imports subpaths only) but wrong for an SDK.",
+     "state": "ready",
+     "size": "s",
+     "blocked_on": "nothing technically — but it must land BEFORE any exports freeze, since a freeze is when a latent defect becomes permanent",
+     "source": "surfaced by the runtime exports probe, predicted by koala from the same defect in harness-engineering",
+     "note": "Already inside tk-0002's scope for exactly the freeze-timing reason. Listed here too because it is a real SDK-surface defect in its own right and wl-0001 will care about it."
+    },
+    {
+     "id": "wl-0006",
+     "title": "Mechanize the two guardrails that are still pure discipline",
+     "why": "Plan 001 shipped guardrails against claims outrunning evidence, but only some are enforced. The out-of-diff assertion sweep and measured-at stamping are still human discipline — nothing fails if a reviewer skips the sweep or a receipt omits its SHA. A rule not yet mechanized is a rule we pay for in attention every review.",
+     "state": "idea",
+     "size": "m",
+     "blocked_on": "nothing",
+     "source": "SUGG-001, raised by the PM and endorsed 2026-08-07; sits in the migrated backlog",
+     "note": "Two candidate instruments: a gate over assertions naming changed behaviour outside the diff, and a linter that every count-claim in an execution log carries a resolvable SHA. Precedent exists — `just check-orient` and `just check-handover` both started as discipline and became gates."
+    },
+    {
+     "id": "wl-0007",
+     "title": "Forward-port cfa501a6 onto the consumed surface",
+     "why": "First non-zero fork debt since the extraction. Two of three consumed files move (plan/index-plan.ts, links/map.ts); core/validate.ts is untouched, so four symbols are in play rather than seven.",
+     "state": "shaped",
+     "size": "m",
+     "blocked_on": "OQ-2 — not building against an unfrozen map, agreed with koala both ways",
+     "source": "backlog #23 — koala's dd-fork-divergence detector fired, which is the instrument working rather than a surprise",
+     "note": "Patch already prepared by koala with hunks rather than a description. wl-0002's act-site fix does NOT depend on this port and should not wait for it."
+    },
+    {
+     "id": "wl-0008",
+     "title": "Run `harness init` to stamp the governance doc",
+     "why": ".harness/engineering-harness.md has never existed, so every pre-flight boot across all four phases of plan 001 returned UNAVAILABLE over a demonstrably healthy substrate. The verdict describes a missing file, not the repo.",
+     "state": "ready",
+     "size": "xs",
+     "blocked_on": "Jordan — offered several times across plan 001, never ruled",
+     "source": "o-prime standing offer, unanswered",
+     "note": "One seeded-empty file (L0, TODO fields). Turns a permanently-uninformative boot verdict into a real one."
+    },
+    {
+     "id": "wl-0009",
+     "title": "Calculated columns and rows — derived tallies, recomputed on edit",
+     "why": "A total typed into a table is a claim that goes stale the moment any row it summarises changes, and nothing detects it — precisely the class plan 001 spent four phases cataloguing: a figure that was true when written. dd already renders .dd.md deterministically from .dd.json, so a tally computed at build time CANNOT rot: it is derived, never asserted, and `dd build --check` already fails on drift. This turns a whole category of stale-number defect into an impossibility rather than a discipline.",
+     "state": "idea",
+     "size": "m",
+     "blocked_on": "shape not settled — see the open questions in the note",
+     "source": "Jordan 2026-08-08, verbatim: \"next wishlist item is calculated columns (auto gens the total on edits, ato adds total column at bottom. cal tally cols and rows with setting.\"",
+     "note": "AS ASKED: totals regenerate on edit (any set/add/rm touching a tallied section), a total row is appended automatically, and both column and row tallies are configurable by a setting. OPEN SHAPE QUESTIONS, recorded rather than guessed: (1) does the setting live in the SCHEMA — a field declares itself summable, so every document of that type tallies alike — or in the DOCUMENT, per-instance? Schema-side is more deterministic and matches how dd resolves everything else; document-side is more flexible. (2) Which aggregates: sum only, or count/min/max/mean? (3) Do tallies MATERIALISE into the .dd.json, or exist only in the rendered .dd.md? Render-only keeps the source a single truth and avoids write amplification on every edit, which argues strongly for it — and it is the option that makes the total underivable-from-anything-but-the-data. (4) What happens to a non-numeric or empty cell in a tallied column — skip, zero, or refuse? Refusing fits this repo: a silently-skipped cell produces a wrong total that looks right, which is the exact failure mode the feature exists to remove."
+    },
+    {
+     "id": "wl-0010",
+     "title": "Custom validation — semantic rules as portable, declarable data rather than dd code",
+     "why": "Today dd validates STRUCTURE (does this field match the schema shape) while the SEMANTIC rules — a plan must have acceptance criteria, an AC must link to a task, a task's state derives from its assertions — live as hard-coded TypeScript in services/dd/plan. That means only we can express a semantic rule, only for the document families we shipped, and every new discipline needs a code change and a release. Making the rules declarable turns dd from 'a validator that knows about builder plans' into 'a validator anyone can teach', and lets a team encode its own conventions without forking us.",
+     "state": "shaped",
+     "size": "xl",
+     "blocked_on": "wl-0001 — this is an SDK-surface decision and should be designed inside that flow, not ahead of it",
+     "source": "Jordan 2026-08-08, verbatim: \"i want the rules that we usein pln to be expressable via a portable and customisable validation concept somehow so anyone can implement semantic validation across the top (plans must have acs, acs mst link to tasks in this file) etc. This will rely heavily on the typing system (ac must have at least one link to typeof tasks.dd/tasklist or what ever).\" Raised in the same breath as his note on OQ-2 — \"ah yes, but later we will remove\" — which is the strategic point below.",
+     "note": "THIS IS THE THING THAT MAKES services/dd/plan REMOVABLE, which is why Jordan raised it while answering OQ-2. Whatever we decide about shipping plan/ publicly is a TRANSITIONAL answer: once semantic rules are declarable, the hard-coded plan semantics become a set of rules attached to the builder/plan schema, and the module carrying them stops needing to exist as a public export. Decide OQ-2 for today's consumer, not for all time. IT LEANS ON THE TYPE SYSTEM, which dd already has and which is the real asset here: links are already rel-typed and target-typed (a proven_by must point at builder/execution-log/section/entries, and E406 link-type-mismatch already fires when it does not). Jordan's example — an AC must carry at least one link of type X to a document of type Y — is a CARDINALITY constraint over an existing typed edge, not a new concept. That is a strong sign the rule vocabulary can be small. SHAPE QUESTIONS for the design flow, recorded not guessed: (1) where do rules live — beside the schema (travelling with the family, so any repo resolving that schema inherits its rules) or in the consuming repo (local conventions over a shared family)? Both are wanted; the resolution order matters more than either. (2) How expressive: declarative predicates over the typed graph (cardinality, required-link-of-type, cross-document reachability) or an escape hatch to real code? A jiti-loaded custom type already exists as precedent for the escape hatch. (3) Are violations errors, warnings, or severity-declared by the rule? The plan validator already distinguishes ERROR from contradiction-class WARN, so severity is already a live concept. (4) NON-VACUITY: a rule engine can silently match nothing. Every rule needs to be provably capable of firing — the same requirement this repo puts on its own guards, and the reason plan 001 found a pin whose docstring claimed more than it pinned."
+    },
+    {
+     "id": "wl-0011",
+     "title": "Does src/plan belong in this repo at all — dead code carried, forward-ported, and reviewed",
+     "why": "Found during plan 002 P4: NOTHING outside src/plan imports it in this fork (grep for imports of ../plan/ or ./plan/ across src/ excluding src/plan returns empty — o-prime, measured 2026-08-08). Upstream it backed harness plan validate; here no CLI verb reaches it, and R-2 rules it never ships as public surface. So the fork carries, forward-ports, and spends review attention on code with no caller and no shipping path. Deleting it is surface-adjacent — harness re-implements plan semantics on dd primitives (R-2), and the koala trial is what shows whether any of src/plan's shape is still wanted as reference. Decision deliberately NOT plan 002's.",
+     "state": "idea",
+     "size": "s",
+     "blocked_on": "koala trial outcome (plan 002 ready-to-trial milestone, R-4)",
+     "source": "o-prime ruling 2026-08-08, prompted by pij-technological-starfish's P4 finding 3a (upstream cfa501a6 F1 sites unfixed in unreachable code)",
+     "note": "Do NOT act in plan 002. The cfa501a6 F1 spelling fix for plan/index-plan.ts is deferred WITH this row — zero-risk but zero-value while unreachable; fixing dead code launders it into looking alive."
+    },
+    {
+     "id": "wl-0012",
+     "title": "Execute the examples in every baked doc page, the way the README transcript already is",
+     "why": "**MEASURED, NOT ASSUMED — and the answer is 'partially exposed', which is the awkward middle.** `test/docs-surface.test.ts` already RUNS every line of the README quick start against the shipped bin, asserts the document it produces, reads and writes the address it documents, and checks a refusal. That is a genuine executable-doc guard and it is better than most repos have. **It covers the README ONLY.** The four pages under `docs/how/dd/` are guarded for DRIFT (byte-verbatim port from `src/docs/content/`, id parity with `dd docs list`, relative-link resolution) and NOT AT ALL for TRUTH. Nothing executes a single command in them.\n\nSo every example in `dd-overview`, `how-to-add-a-schema`, `how-to-use-and-extend-the-sdk` and the new canonical page is prose that an agent will execute, verified by hand once, at authoring time, and never again. **The drift guard makes this worse, not better**: it proves the port is byte-identical to its source, which reads like the page is checked. It is checked for being a faithful copy of possibly-wrong text.",
+     "state": "shaped",
+     "size": "m",
+     "blocked_on": "",
+     "source": "pij-massive-meadowlark, 2026-08-09, from the fr-0011 root cause. Its finding upstream: NOTHING executes or validates the JSON op examples in the harness doctrine files — markdown-lint covers markdownlint, links, anchors and mermaid only. That is the full answer to how a malformed worked example survived long enough to teach ox the wrong op shape and produce fr-0011 and fr-0012. It has scoped a guard that extracts JSON op batches from doctrine and runs them through parseOp, deliberately held out of the current PR, and asked whether we have the same exposure.",
+     "note": "**THE MACHINERY TO CLOSE THIS ALREADY EXISTS IN THIS REPO** — `docs-surface.test.ts` parses a fenced transcript, runs each `argv` against the shipped bin, and asserts the envelope. Pointing that same harness at the fenced blocks in the baked pages is an extension, not an invention. The honest scoping caveat: the README transcript was WRITTEN to be executable, and the how-to pages were not — they interleave real transcripts with illustrative fragments (schema snippets, a mermaid block, a rendered markdown sample), so the guard needs a way to mark which fences are claims and which are illustrations. That marking is the actual work; the runner is nearly free.\n\n**THIS IS MINE AND IT IS THE REASON THE ROW EXISTS.** I accepted `deterministic-documents.md` — roughly fifteen worked examples, every one run live by its author and spot-checked by me against source — with NO GUARD BEHIND EITHER OF US. Both checks were real and both happen exactly once. The page is accurate today and nothing in the repository will notice the day it stops being. That is the largest single addition of unguarded executable examples this package has taken, and it landed while I was writing up why unguarded worked examples cause outages in a neighbouring repo.\n\n**ID COLLISION, AND IT IS MINE.** This row was minted as `wl-0011` on main while the s002 branch already held a DIFFERENT `wl-0011` (the `src/plan` dead-code question). Two rows, one id, caught only by a merge conflict. **I hand-wrote the id in a script instead of using `dd add --mint`** — the exact affordance the canonical page documents three paragraphs after telling readers not to invent ids by hand. Renumbered to `wl-0012` because the branch's row is older and may be cited. Honest limit on the lesson: `--mint` reads one file and would NOT have seen the branch's row either, so the tool would not have saved me here — **the real gap is that ids are minted per-file while branches fork the file**, which is a genuine question for the SDK's minting story rather than an operator error to file away."
+    },
+    {
+     "id": "wl-0013",
+     "title": "Append-heavy shared documents conflict on EVERY append across a long-lived branch — id collision is the narrow case",
+     "why": "**THE GENERAL CASE IS THE FILE SHAPE, NOT THE IDS.** A dd document whose main section is an append-only array — wishlist, frictions, backlog — conflicts in git on **every** append made on both sides of a long-lived branch, whether or not the ids collide. Two appends to the same array tail are a textual conflict even when the rows are unrelated and correctly numbered.\n\nThe id case is the narrow, louder instance: `dd add --mint` picks a collision-free id **within the file it reads**, which is correct behaviour and **structurally blind to a forked twin**. Two branches can each mint the same next id, both correctly, and the collision exists only in the merge — surfaced here when `wl-0011` was minted on `main` while `s002/sdk-build` already held a different `wl-0011`.\n\n**THE SAME HOLE IS IN THE VALIDATION STORY (wl-0010).** A vocabulary that expresses *'ids are unique within this file'* and cannot express *'unique across the branch'* inherits it, so this is a question about validation scope as much as about minting.",
+     "state": "shaped",
+     "size": "unknown",
+     "blocked_on": "",
+     "source": "pij-certain-crab, 2026-08-09, reframing an id collision I caused during the main→s002 merge. Its words, and the reason this row exists rather than a note in a commit message: this belongs filed as SDK design input, **not remembered as 'prime hand-wrote an id'**. It is right — the hand-written id is how it surfaced, not why it was possible.\n\n**WIDENED 2026-08-09** on crab's reading, and the widening is the point: the original row described the ID case, but the same day produced THREE conflicts in one file from the same habit, only the first of which involved ids. Writing the narrow version and re-hitting the wide one within the hour is the fr-0009 lesson landing on its own author — **consolidate causes, never instruments**; an id is an instrument, the array tail is the cause. Widened rather than given a second row, deliberately.",
+     "note": "Related: [[wl-0010]] (custom validation) shares the scope hole; [[wl-0012]] records the incident itself. **Open question, not a proposal**: candidate answers all carry real costs — a corpus-wide mint that reads every document (slow, and wrong across branches anyway), content-addressed or random ids (collision-free, unreadable), or a merge-time uniqueness check (catches it late but at the one moment both halves exist). **The third is the only one that sees the actual failure**, which suggests the answer is a gate rather than a minting change — and that is a conclusion worth testing rather than adopting.\n\n**OPERATIONAL MITIGATION ALREADY IN FORCE, ahead of any tooling fix**: while a long-lived PR is open, the o-prime stops appending to shared dd documents on `main` — rows either queue or land on the branch under the PM's commit. That removes the recurrence without waiting for a design answer, and it is a habit change rather than a ledger row because three incidents in one day from one habit is a habit problem."
+    },
+    {
+     "id": "wl-0014",
+     "title": "The registry install route documents a package that has never been published — and our own guard pins the claim",
+     "why": "README's Install section presents `npm install -g @ai-substrate/dd` in the present tense, and test/docs-surface.test.ts ASSERTS THAT LITERAL STRING. So the guard does not check the claim is true; it checks the sentence is still written. A test can pin a falsehood as firmly as a fact — this is the claim-outran-implementation family inside our own shipped README, found by the seat that was writing it. Measured by pij-handsome-shrew: Jordan's configured feed (packagefeedproxy.microsoft.io) returns a definitive 404 for the package; this repo has 0 git tags, 0 GitHub releases, 0 release.yml runs (empty lists classified as genuinely-empty rather than read as instrument failure). The publish pipeline IS wired — release-please plus OIDC trusted publishing, provenance deliberately off — and has simply never fired. NOT a broken gate: an UNFIRED one. STRENGTH OF EVIDENCE, stated rather than implied: the public registry itself is UNMEASURED (shrew's sandbox cannot reach registry.npmjs.org and it declined to infer package state from its own network failure); with zero publish runs ever, nothing could have put it there, but that is inference, not measurement. Not re-measured by the o-prime or the PM.",
+     "state": "idea",
+     "size": "s",
+     "blocked_on": "Jordan — cut the first release, or mark the route pending-first-publish",
+     "source": "pij-handsome-shrew, measured while rewriting the README install section; relayed by pij-mental-dajeil, landed on the branch by pij-certain-crab under the open-PR no-append-to-main rule",
+     "note": "SIBLING OF BACKLOG 24 and neither is complete without the other: 24 says `npm install -g git+<url>` fails at prepare (TS2688). Both working routes today are git routes, and the global one is broken — so NO ONE-LINE GLOBAL INSTALL EXISTS ON ANY ROUTE. When first publish does happen, Jordan's proxy still imposes its ~7-day screen before his machines see it, which is the original reason R-3 made the git path load-bearing."
     }
-  ]
+   ]
+  }
+ ]
 }
