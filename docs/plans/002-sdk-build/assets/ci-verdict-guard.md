@@ -195,6 +195,31 @@ trusting a green. It is the appeal court. **And it has the exact failure mode it
 catch** — a silent absence wearing the appearance of a pass. Every planted-defect proof in this
 plan rests on the plant having landed, and until this one, none checked.
 
+#### The refinement — when the count is redundant, and when it is the only thing holding you up
+
+Auditing the eight negation proofs run in this plan on 2026-08-09 gives a cleaner rule than
+*always count*, and one that costs nothing to apply:
+
+| Proof | Failure output | Self-verifying? |
+|---|---|---|
+| surface gate, symbol exported but unlisted | `surplus 1: SchemaFs` | **yes** — names the plant |
+| surface gate, symbol listed but unexported | `missing 1: SchemaFs` | **yes** |
+| `tsc`, subset port | `TS2739 … missing readdir, exists` | **yes** |
+| `tsc`, the consumer's actual guess | `TS2353 'isFile' does not exist` | **yes** |
+| widened docs gate | `1 ported mirror(s) differ: …how-to-add-a-schema.md` | **yes** — names the file |
+| docs-surface mirror row | `× carries both baked entries…`, 1 failed / 24 passed | **yes** — only a stale mirror fails that row |
+| docs gate exit code | exit `1` vs `0`, message naming the file | **yes** |
+| **reason-code split, `locate.ts`** | **pass/fail only** | **NO — and this is the one that silently did not apply** |
+
+**The rule**: *if the failure output names the thing you planted, the arm verified its own plant —
+the mutation is proven by the effect.* If it reports only pass/fail, **nothing distinguishes "the
+suite noticed" from "the plant never landed"**, and a count across the mutation is the only thing
+standing between you and a false green.
+
+Correlation is 1.0 on n=8, which is small — but it is not a coincidence to be explained later:
+**an output that names the plant cannot be produced without the plant.** Prefer negations whose
+failure is specific, and reach for the count when it is not.
+
 ## The general form
 
 Both halves are one shape: **an instrument whose output cannot distinguish two states is not
