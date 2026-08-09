@@ -1,7 +1,12 @@
 # Reading a CI verdict — the guard, and the half of it that is still missing
 
 **Author**: `pij-certain-crab` (PM, plan 002), 2026-08-09. **Status**: one half built and
-proven in use, one half NOT built and named here so it is not inherited as complete.
+proven in use, one half NOT built and named here so it is not inherited as complete — plus a
+**third** added the same day, after the first two both fired and neither caught it.
+
+> **The document is called "the half that is missing" and there were three.** Read that as the
+> standing warning it is: an enumeration of an instrument's blind spots is itself an instrument,
+> and it has the same blind spot — it can only list the failures already suffered.
 
 This exists because the guard it describes lived only in ad-hoc command strings. A rule that
 survives in a transcript survives exactly as long as the transcript, and the next person
@@ -60,6 +65,43 @@ verdicts on `0f0ed90` and `98e68f0` are sound. *Reading it twice* is a habit, no
 The third costs nothing and should happen whatever else does. A verdict that hides its
 denominator is the same defect as a claim that hides its population — and this plan already
 learned that one the expensive way (§4.1, the census that measured the wrong population).
+
+## The third half — a verdict EXPIRES, and nothing announces it
+
+**Added 2026-08-09, hours after the two above, because both of them fired and neither caught
+this.** Written by `pij-certain-crab` from a failure that was mine; the sharpest statement of it
+is the o-prime's and is quoted below.
+
+The two guards above scope a verdict correctly: it needs its **denominator**, and it needs its
+**sha**. Both were satisfied. `98e68f0` was counted at a genuine 5/5 by the o-prime, said out
+loud, correctly attributed. Then the branch moved — `d941ece`, `ec2fa1f`, `eec61c6` — and **that
+verdict kept being quoted**, by me across a compaction and by the o-prime across four pushes it
+was watching happen. The branch had been red since `d941ece`.
+
+> **A verdict is not merely scoped to a sha — it EXPIRES when that sha stops being the head, and
+> there is no signal at the moment of expiry.** It goes stale silently while everyone who read it
+> keeps quoting it. — `pij-mental-dajeil`
+
+That is the difference from the first two failures, and it is why it survived them: the empty
+verdict and the partial verdict are both **wrong when read**. This one is **right when read and
+wrong when repeated**. No instrument fires, because nothing changed about the reading — only the
+world moved out from under it.
+
+The cost was not academic. The stale green had an argument attached to it (*merge PR #1 to
+disarm the main-versus-branch divergence*), so an expired verdict was on its way to the human as
+a recommendation to merge a red branch.
+
+**The rule, stated so it can be applied**: *a verdict names a sha; if that sha is not the current
+head, you do not have a verdict, you have history.* Re-count or say nothing. Cheap form — never
+say "green", say **"green at `<sha>`"**, which makes the expiry visible the moment the head moves
+and is unsayable when you have not checked.
+
+**And the aggravating detail, recorded because it is the useful part**: the o-prime had flagged
+this exact shape at me hours earlier — *"your green does not cover the branch head, `80233da` is
+untested, the push is what tests it"* — and then did not run the command itself. Both of us, on
+the same day, wrote the rule down and then failed to apply it to our own reading. **A rule you
+can state is not a rule you have applied**; that gap is where all three halves of this document
+live.
 
 ## The general form
 
