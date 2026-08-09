@@ -84,11 +84,40 @@ export interface DocumentWriteSuccess {
 
 export type DocumentWriteResult = DocumentWriteSuccess | DocumentWriteFailure;
 
-function restoreSource(fs: NodeFs, path: string, previousText: string): boolean {
+/** Exactly what a rollback touches — narrowed so a test can supply a recorder. */
+export type RollbackFs = Pick<NodeFs, 'writeText' | 'readText' | 'rename' | 'deleteFile'>;
+
+/**
+ * Put the previous bytes back, CRASH-SAFELY.
+ *
+ * Staged (`.tmp` then `rename`) for the same reason the forward writes are: a
+ * plain `writeText` is not atomic, so a crash partway through it leaves the live
+ * source neither the previous text nor the mutated text. That third state is
+ * exactly what `writeDocumentWithSibling` promises cannot happen, and the comment
+ * below its signature claimed the crash-safe shape for BOTH files while the
+ * recovery path did not have it.
+ *
+ * Its own temp name, not the forward path's `.tmp`: the two must never contend
+ * for one file, and a rollback running after a failed staged write would
+ * otherwise reuse a name that write may still own.
+ *
+ * The read-back is kept and is a SEPARATE guarantee — it says the bytes landed,
+ * not that the landing was atomic. `restored: true` has always meant the former.
+ * Reported by `pij-related-koala`; the read-back half of its report was already
+ * satisfied here (wl-0026).
+ */
+export function restoreSource(fs: RollbackFs, path: string, previousText: string): boolean {
+  const staged = `${path}.rollback.tmp`;
   try {
-    fs.writeText(path, previousText);
+    fs.writeText(staged, previousText);
+    fs.rename(staged, path);
     return fs.readText(path) === previousText;
   } catch {
+    try {
+      fs.deleteFile(staged);
+    } catch {
+      /* best effort — the staged temp is not the promise, the live file is */
+    }
     return false;
   }
 }
