@@ -152,6 +152,12 @@ If your new code needs a Node adapter or the CLI's error vocabulary, that is not
 weaken the gate; it is the gate telling you the code belongs in `src/node/` or `src/acts/`. A
 symbol that needs a host belongs in the tier named for having one.
 
+**Usage examples are safe to write anywhere.** The boundary check parses real import and export
+statements rather than matching text, so a specifier inside a comment, a docstring, a template
+literal or baked documentation is not an import and is not reported. Write the example that
+actually helps the reader. *(This page caused that fix: its own `import … from
+'@ai-substrate/dd'` example, baked into the docs module, was read as a live crossing.)*
+
 ### What not to do
 
 - **Do not add `./acts/*` or `./plan` to the exports map.** They are excluded by ruling, not by
