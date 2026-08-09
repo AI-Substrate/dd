@@ -14,7 +14,12 @@ import { type Envelope, ensureBuilt, parseEnvelope, repoRoot, runDd } from './su
  */
 
 const README = readFileSync(join(repoRoot, 'README.md'), 'utf8');
-const BAKED = ['dd-overview', 'how-to-add-a-schema', 'how-to-use-and-extend-the-sdk'] as const;
+const BAKED = [
+  'dd-overview',
+  'how-to-add-a-schema',
+  'how-to-use-and-extend-the-sdk',
+  'deterministic-documents',
+] as const;
 
 describe('README', () => {
   it('covers the four things a standalone reader needs', () => {
@@ -60,7 +65,13 @@ describe('README', () => {
     ];
     const broken: string[] = [];
     for (const page of pages) {
-      const text = readFileSync(join(repoRoot, page), 'utf8');
+      // Prose only. A fenced block is an EXAMPLE — a rendered `.dd.md` table quotes
+      // `[lg-3c4d](log.dd.md#entries)` because that is what dd emits, and the file it
+      // names is illustrative, not a page in this repo. Scanning inside the fence made
+      // a correct example look like a broken link, and the fix that "worked" would have
+      // been to falsify the example. Same defect as the import walker matching a
+      // specifier inside a string: an instrument that reads examples as claims.
+      const text = readFileSync(join(repoRoot, page), 'utf8').replace(/^```[\s\S]*?^```/gm, '');
       for (const [, , target] of text.matchAll(/\[([^\]]+)\]\(([^)]+)\)/g)) {
         if (/^(https?:|mailto:|#)/.test(target)) continue;
         const path = target.split('#')[0];

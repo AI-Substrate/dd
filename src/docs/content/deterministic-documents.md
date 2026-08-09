@@ -1,7 +1,3 @@
-<!-- Ported verbatim from the baked `dd docs` corpus (`src/docs/content/deterministic-documents.md`).
-     The CLI carries the same text: `dd docs get deterministic-documents`. Edit the SOURCE, then run
-     `npm run gen:dd-docs` — `npm run check:dd-docs` fails the build on drift. -->
-
 # Deterministic documents
 
 A deterministic document is one document with two faces. The source is a `.dd.json` file:

@@ -163,6 +163,7 @@ describe('harness dd act surface', () => {
       'dd-overview',
       'how-to-add-a-schema',
       'how-to-use-and-extend-the-sdk',
+      'deterministic-documents',
     ]);
     for (const doc of data.docs) expect(doc.summary.length).toBeGreaterThan(20);
   });
