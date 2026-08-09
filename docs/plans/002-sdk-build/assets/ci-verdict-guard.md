@@ -44,6 +44,17 @@ N=$(gh api repos/<owner>/<repo>/commits/<sha>/check-runs --jq '.total_count')
 Without that, a false green would have reached the human through two seats, because a green
 from a trusted seat gives the seat above it no reason to doubt.
 
+**AMENDED 2026-08-09 — "empty is a finding" needs one exception, and it is a common one.** An
+intermediate commit in a **batched push** legitimately has zero check runs: GitHub schedules on
+the pushed head, so `6f41d5d` reported `total_count: 0` purely because `a37a20e` went up in the
+same push. That is not state 2 or state 3 — nothing is wrong and nothing is pending.
+
+So the rule sharpens: **zero runs means "no run exists", and the question is WHY.** Never was the
+head · has not registered yet · cannot run at all. Only the last two are findings, and the first
+is indistinguishable from them by count alone — check whether the sha was ever pushed as a head
+before treating an empty verdict as a problem. *(Cost of getting this backwards is small but it
+is the exact shape of every other entry here: one observable, three states.)*
+
 ## The half that is NOT fixed — partial rendered as complete
 
 `total_count` **grows as checks register**. Observed twice on this branch: 4 at a 75-second
