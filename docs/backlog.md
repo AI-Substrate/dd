@@ -205,3 +205,67 @@ chore firing, which is the instrument working rather than a surprise.
   byte-identical. Four symbols move, not seven.
 - Sequencing: item 22's act-site fix does **not** depend on this port and should not wait
   for it.
+
+## 24 — `npm install -g git+<url>` FAILS at `prepare` · UNASSIGNED · **ADDED 2026-08-09** · needs a decision
+
+**The route Jordan specifically needs is the one that is broken.** His work machines force npm
+through a supply-chain proxy that imposes a **seven-day delay**, which is why the git route exists
+at all — and the git route's most useful shape is the one that does not work.
+
+**Measured, not reasoned** — matrix run by `pij-handsome-shrew` from the merged head, and the
+`-g`-from-main leg independently reproduced by `pij-mental-dajeil` into a sandboxed `--prefix` (so
+the real global tree was never touched):
+
+| command | result |
+|---|---|
+| `npm install -g git+file://…/dd` (main) | **FAILS** — TS2688 during `prepare`'s `tsc` |
+| `npm install -g git+file://…/s002-sdk-build` | **FAILS** — same |
+| `npm install -g git+https://github.com/AI-Substrate/dd.git` | **FAILS** — same |
+| `npm install git+file://…/dd` (local dep) | ok, `dist/` built, envelope answers |
+| `npm install git+https://github.com/AI-Substrate/dd.git` (local dep) | ok |
+| `git clone` → `npm install` → `npm install -g .` | ok — the working route to a git-fresh global binary |
+
+So **local git installs work and global git installs fail, from any source.** Environment:
+npm **11.10.0**, node **v24.7.0**; `typescript ^6.0.3` and `@types/node ^26` are both devDeps;
+`prepare` and `prepack` both run `npm run build`.
+
+The exact error:
+
+```
+error TS2688: Cannot find type definition file for 'node'.
+  tsconfig.json:9:15   "types": ["node"],
+```
+
+**Proven vs unproven, kept separate deliberately.** PROVEN: under `-g`, `tsc` itself resolves
+(from this machine's global typescript), which is why the failure is `TS2688` and not
+`tsc: not found` — on a machine with no global typescript the same route fails as
+command-not-found instead. **NOT PROVEN**: *why* the staged clone lacks `@types/node` under `-g`.
+pacote's inner install advertises `--include=dev` on its own command line and the types are absent
+at build time anyway; whether `npm_config_global` leaks into the inner install and redirects it is
+**unpinned**, and is not asserted anywhere in the README.
+
+**Our gate does not exercise this.** `scripts/pack-gate.sh` proves `prepare` under `npm ci` in a
+clone and `prepack` under pack — both real, neither is the `-g` staging path. That is the same
+shape as `wl-0012`: a guard that is genuinely green about something adjacent to the thing that
+broke.
+
+**Candidate fixes, none ruled — this needs a decision, not an implementation:**
+
+1. **Commit `dist/`.** Makes every git route work immediately, including `-g`, and removes
+   `prepare` from the critical path. Cost: a generated artifact in the tree, which needs a drift
+   gate to stay honest. **We already run exactly this pattern** — a generated `.dd.md` committed
+   beside its source with `dd build --check` proving it fresh — so the machinery and the doctrine
+   both exist. The symmetry is not an argument that it is right, but it is an argument that it is
+   cheap.
+2. **Pin the mechanism first and fix the real cause**, if it turns out to be a leaked
+   `npm_config_global`. Correct, and unbounded until the diagnosis lands.
+3. **Report upstream to npm** if the inner install genuinely ignores its own `--include=dev`.
+   Right thing to do regardless; useless as a fix on Jordan's timeline.
+
+**Do NOT "fix" it by weakening `prepare`.** A `|| true` or a swallowed build error turns a loud
+install failure into a package that installs clean and is broken at first use — the
+reports-success-while-broken family, bought deliberately.
+
+**Documented, not hidden**: the README states the observable failure in one sentence and documents
+the clone route as the way to a git-fresh global binary. Anyone hitting it finds it named rather
+than discovering it themselves.
