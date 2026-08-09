@@ -149,7 +149,24 @@ and 21 by koala's diagnosis of a wrong figure in its own pointer summary.
 
 ---
 
-## 22 — Windows drive-letter paths are re-anchored under the repo root · **LIVE PRODUCT DEFECT** · UNASSIGNED
+## 22 — Windows drive-letter paths are re-anchored under the repo root · **LIVE ON `main`** · **FIXED AT `5b6ad12` ON `s002/sdk-build`** · **PENDING MERGE VIA PR #1**
+
+> **STATUS IS HEAD-QUALIFIED AND THE DESCRIPTION BELOW IS NOT.** The prose is present-tense
+> and **TRUE on `main`** — `git show main:src/core/validate.ts` still carries `startsWith('/')`
+> at the resolve site, and `5b6ad12` is not an ancestor of main. **Do not "fix" it again.**
+> It is fixed on the branch, unmerged, and re-fixing it collides with PR #1 in the same file.
+>
+> This header previously read `**LIVE PRODUCT DEFECT** · UNASSIGNED`. The description was
+> accurate; **the status was false on every head** — it is assigned, it is fixed, and a reader
+> on `main` saw an unowned live defect in a shipped CLI, whose correct response is to go and
+> fix it. Caught by `pij-certain-crab`, which also derived the repair: a status must name its
+> ref, because *"fixed" with no ref is the same ambiguity as the present tense it replaces.*
+>
+> **THREE SEATS HIT THIS INSIDE ONE HOUR** — koala grepped a bare checkout of `main` and filed
+> the defect; the o-prime grepped `main` and nearly sent a correction; the PM measured the
+> branch and nearly attributed koala's report to a stale record of ours. **Every measurement
+> was right about the tree it read.** The trap is structural, not individual, and **it stays
+> armed until PR #1 merges.**
 
 **Added** 2026-08-07 after plan 001 delivery. **Found by** `pij-related-koala` reading this
 fork read-only during handover; **reproduced here before recording**, not accepted.
