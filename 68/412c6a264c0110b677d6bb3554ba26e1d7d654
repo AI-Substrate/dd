@@ -1,0 +1,47 @@
+src/docs/content/deterministic-documents.md
+  s_e3460fd42f286c::t_482ec43e4ac41f 1-274
+src/docs/dd-docs-manifest.json
+  s_e3460fd42f286c::t_d8c9f90f5ec201 24-30
+test/acts/dd.test.ts
+  s_e3460fd42f286c::t_ac04c9d574e27e 166
+docs/how/dd/README.md
+  s_6e59036559203c::t_9a75f99dbf554c 20,22
+docs/how/dd/deterministic-documents.md
+  s_6e59036559203c::t_42224d90062058 1-4
+src/docs/docs-content.ts
+  s_7d1ed3ebb46419::t_670b8568fe0943 34-42
+test/docs-surface.test.ts
+  s_6e59036559203c::t_343269f6f31b7f 17-22,68-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "68412c6a264c0110b677d6bb3554ba26e1d7d654",
+  "prompts": {},
+  "sessions": {
+    "s_6e59036559203c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06d3bbcf-6419-4a86-8e8c-7147b4e647ce",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_7d1ed3ebb46419": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "aa8368ab-f0c2-4a94-a993-60bdc2bb52cf",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_e3460fd42f286c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "b007eb76-365c-4da0-8164-519fdee51c00",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
