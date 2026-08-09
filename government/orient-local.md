@@ -161,6 +161,91 @@ step — pointing harness at this package and deleting the old code — is koala
   that survive them are the ones that live in **what people say about artifacts** and in
   **how artifacts get rearranged**. Do not expect the gates to cover that, and do not build
   a gate that pretends to.
+- **A LABEL MUST NAME WHICH CLAIM IT COVERS — partial labelling certifies the rest by silence.**
+  The unifying form of two defects that looked unrelated, named by `pij-related-koala` after both
+  fleets committed it. Its version: hedging *"I have not read the diff"* implied the reference's
+  existence and status **were** verified. Mine: writing **"Measured:"** over a message whose first
+  half was measured and whose second half was **recalled from a superseded artifact** — the word
+  reached the reader covering both. **Same class**, and in both cases *the label was the tell*: it
+  was accurate about what it named and silent about what it did not.
+  Underneath both sits one defect — **an instrument answering a neighbouring question
+  confidently**: a census asking *what imports X* when the question was *what breaks when Y
+  leaves*; a branch probe treating an empty branch as an absence of work; a probe description
+  recalled from the version that existed before the fix built for that exact blindness.
+  **Rule: a label names its scope, or it is a claim about everything in the message.** And the
+  standing personal one this repo keeps re-earning: **knowing an artifact is precisely the
+  condition under which you stop checking it** — every instance was someone reading a surface they
+  already knew instead of re-deriving it, *on the grounds that they knew it*.
+- **WHEN A TEST DISAGREES WITH THE IMPLEMENTATION, THE CONTRACT DECIDES WHICH IS WRONG — NOT THE
+  IMPLEMENTATION.** The sharpest instance either plan produced. Building the acceptance fixture, a
+  coder asserted `tracked === false`, observed `true`, and **conformed the fixture to the
+  implementation** — with the doc comment defining the correct behaviour **one screen up in the
+  same file**. The review then verified the clause asserted what the **code** did rather than what
+  the **contract** said. Three instruments touched that semantics; **only the external consumer,
+  reading the comment, resolved it right.**
+  **A fixture conformed to the implementation cannot fail.** This is the vacuous-guard family
+  reached from a new direction — not a weak test written weakly, but a **correct test fixed in the
+  wrong direction** the moment it did its job. The failing assertion *was* the finding, and it was
+  spent closing itself. **On any test-vs-code disagreement, go read the contract before you touch
+  either.**
+  Recorded with it: two of our instruments agreed on a floor and shared a blind spot; the floor
+  held anyway. **That is luck spent, not method proven** — and a coincidence that produces a right
+  answer is more dangerous than one that produces a wrong one, because nothing prompts the recheck.
+- **WHEN AN ALARM IS SATISFIABLE BY NOTHING, STOP RELAYING IT — AND SAY WHAT YOU DO INSTEAD.**
+  Measured, not assumed: a pij session has **three** state surfaces and only **two** are settable —
+  assignment state (`pij report state`), status card (`pij report now`), and an **activity axis**
+  derived from pane silence that **no command sets**. The watchdog stall alarm reads the third.
+  A PM between subordinate reports set `waiting` *before* the alarm fired and it fired anyway,
+  while `pij anomalies` stayed silent — so *"parked states never flag"* is **true of one detector
+  and false of the other**, and **the only surface a seat can declare is not the surface the
+  supervisor chase reads**.
+  **This is one step from "expect a red here" and must not become that.** The difference is
+  three-fold and all three are required: the exemption is **measured**, it is **scoped to one
+  instrument and one condition**, and **the supervisor keeps verifying by other means** —
+  liveness, pid, and whether the branch tip moved — rather than dropping the check. Relaying an
+  unsatisfiable alarm asks a subordinate to fix what it cannot, and it already cost one a turn
+  defending a correct record. **Never generalise the exemption, never stop looking, and write down
+  what you check instead.**
+- **A GATE THAT REPAIRS WHAT IT DETECTS CANNOT BE FAILED TWICE — and therefore cannot be trusted
+  once.** `just checks` reported three "transient" reds that greened on immediate re-run with no
+  change. They were **not** flakes. **Reproduced deliberately**: append a line to a generated file,
+  run `just checks` → exit 1; run it again → exit 0, the appended line gone, git clean. The check
+  **regenerates the artifact it diffs**, so it detects drift, reports red, *and repairs it in the
+  same pass*. Every one of those reds was a **real failure that erased its own evidence**.
+  **Worse than a flake, for three compounding reasons**: it *trains the re-run habit*, and the
+  re-run then "proves" the red was spurious; the actual drift is silently corrected so nobody
+  learns **what** drifted; and it makes *a transient red is a finding, never a re-run* feel like
+  superstition to anyone who tests it, because re-running genuinely does green.
+  **On any red: `git status` BEFORE re-running.** A clean tree plus a red gate means the gate just
+  repaired something and the evidence is already gone. **The fix is separation — `check-*` must be
+  read-only and fail without repairing; `gen-*` repairs.**
+- **A GATE IS NOT VERIFIED UNTIL IT HAS REFUSED SOMETHING — STORAGE IS NOT BEHAVIOUR.** Named by
+  `pij-disturbing-ox` at the close of the fr-0011/fr-0012 thread, and it cost three seats in two
+  repos to reach. **The refusal is the only observation that distinguishes an armed gate from an
+  inert one.** A gate that is well-formed, correctly stored, and readable in the file is
+  indistinguishable from one that does nothing — until it says no and names what it stopped. Ox's
+  own proof is the shape to copy: the departure refused, and the message *enumerated the real row
+  ids and states*, which an inert gate could not have produced.
+  **AND THE COROLLARY IS THE UNCOMFORTABLE HALF: `gate: false` is the one state that cannot be
+  distinguished by trying it.** A disarmed gate lets you through exactly as an armed-and-satisfied
+  gate does, so the test that verifies every other gate is blind to this one — which is why a
+  disarm must be *written down where the next reader looks*, never left to be inferred from
+  behaviour. **Three seats hit the same shape in one thread**: meadowlark read `{address}` in the
+  stored field and inferred no-gate; ox read `ok` and inferred written; I read two agreeing reports
+  and inferred corroboration. **Each of us checked WHAT WAS WRITTEN or WHAT WAS SAID rather than
+  WHAT IT DID.** Same generalisation as *a probe that finds the expected failure is the one least
+  likely to be followed up, because it agrees with you* — the reassuring observation is the one
+  that ends the investigation.
+  **AND THE INVERSION, NAMED BY `pij-massive-meadowlark`, WHICH IS WHY THIS ONE CASE BREAKS OUR
+  USUAL RULE.** Everywhere else in that thread **the derived view beat the receipt** — the render
+  contradicted the `ok`, the refusal message beat the stored field, behaviour beat shape. **For
+  `gate: false` the derived view CANNOT disagree**, because a disarmed gate and an
+  armed-and-satisfied gate are behaviourally identical. So the stored field is the only witness,
+  and **prose is the only channel** — a test for a deliberate disarm must assert the FIELD, never a
+  departure, since a departure-based test passes for the wrong reason and passes equally against a
+  link that was never written at all. **This is the one place where "go and look at what it does"
+  is the wrong instrument**, and it is worth knowing precisely because the rest of this document
+  argues the opposite so hard.
 - **THE WIRE IS UNVERSIONED — LATER DOES NOT MEAN BETTER, IT MEANS UNDIFFABLE.** Named by
   `pij-certain-crab` after catching an o-prime wire message that contradicted a committed artifact.
   **Between a committed artifact and a later message, disagreement is a QUESTION — never a silent
@@ -280,7 +365,7 @@ someone once saw.
 | Worktree naming | `dd-worktrees/s<ord>-<slug>` · branch `s<ord>/<slug>` — create with **`just worktree <slug>`**, inspect with `just worktrees` |
 | **WORKTREE-PER-WRITER — the main tree belongs to the o-prime** | **Any agent that writes while the o-prime is governing gets its own worktree.** Reviewers already did; **coders did not**, and phase 4 produced three incidents from that one shared index — two landed. A `.dlg-*` tree staged as a gitlink; 185 lines of a live coder's file swept into a governance commit (`648febd`, corrected by `git note`, not amended — rewriting under a live writer is worse); and an `index.lock` collision that missed **only because the lock fired before the commit did**. **All three were between the two most careful agents on the fleet** — that is the argument, not a mitigating detail. **What a worktree buys is structural**: its own index, so concurrent writers cannot stage or sweep each other's files. **What it does not buy**: the allocation step is still someone choosing to run the recipe. Stated plainly because a rule that implies an absent gate is worse than the honest gap. |
 | Base branch | `main` — remote `https://github.com/AI-Substrate/dd.git`. Resolve the SHA at allocation: `git rev-parse main` (at bootstrap: `489b7aab`) |
-| Landing policy | **Push to `main`, no PR** (Jordan, 2026-08-07) → CI (`.github/workflows/ci.yml`) must go green. Push is authorized but sequenced: review precedes it, because unreviewed work on a shared main is not cheaply reversible. `release.yml` does **not** fire on `main` — it stays inert until Jordan supplies `RELEASE_PLEASE_TOKEN` + the npm trusted publisher (`government/standing-constraints.md` §4). |
+| Landing policy | **PER-PLAN, and it has already changed once — check the plan before assuming.** Plan 001: **push to `main`, no PR** (Jordan, 2026-08-07). **Plan 002: PR UP AND CI GREEN** (Jordan, 2026-08-08, recorded verbatim as R-5 in `docs/plans/002-sdk-build/requirements.md`) — that ruling **supersedes the no-PR policy for plan 002 only**, and does not retroactively change plan 001. A later plan inherits neither by default. **Read the plan's own ruling; this row tells you that one exists, not what it says.** CI (`.github/workflows/ci.yml`) must go green either way. Push is authorized but sequenced: review precedes it, because unreviewed work on a shared main is not cheaply reversible. `release.yml` does **not** fire on `main` — it stays inert until Jordan supplies `RELEASE_PLEASE_TOKEN` + the npm trusted publisher (`government/standing-constraints.md` §4). |
 | Shared-tree fallback | o-prime rules it explicitly, per-occasion, under a baton. **Not the construction default** — one worktree + branch per stream is. |
 | Fleet defaults | copilot `gpt-5.6-sol` coders · cross-model reviewer (`claude-opus-5` or `gpt-5.6-terra`) · ceremony/PA tier `gemini-3.6-flash` |
 | **Keep the adversarial reviewer even when the coder is strong** | Plan 001 evidence: twice the reviewer protected a **decision**, not a diff — it caught a README guard that was vacuous while 9/9 green, and it refused an o-prime argument to Jordan that was assembled from correctly-derived facts but overstated in its modal verb (*impossible* where only *no drop-in substitution* was true). **Both times the code was fine and every mechanical gate passed.** This repo's gates detect claims that **decay**; they cannot detect an **overclaim built from correct facts**, and only a reader trying to *beat* the argument can. A strong coder does not remove the need for that seat — it raises it, because a strong coder produces defects that survive gates. |
