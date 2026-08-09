@@ -1,0 +1,35 @@
+docs/how/dd/how-to-use-and-extend-the-sdk.md
+  s_e3460fd42f286c::t_c1463025500391 1-4,113-115,117-131
+src/docs/content/how-to-use-and-extend-the-sdk.md
+  s_e3460fd42f286c::t_0d44c1406cd153 109-111,113-127
+src/docs/docs-content.ts
+  s_e3460fd42f286c::t_8de0314b8f05d9 32
+test/acts/dd.test.ts
+  s_e3460fd42f286c::t_1232397f6d0a13 162-166
+test/docs-surface.test.ts
+  s_3fcdc055efffb7::t_92870e199c2a7a 17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "0b42a47d3995cbb6809a3f2d197d1ca8f682f1b2",
+  "prompts": {},
+  "sessions": {
+    "s_3fcdc055efffb7": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "f1575938-81cb-4506-9f3d-756db2229628",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_e3460fd42f286c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "b007eb76-365c-4da0-8164-519fdee51c00",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
