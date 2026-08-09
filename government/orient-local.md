@@ -465,6 +465,15 @@ step — pointing harness at this package and deleting the old code — is koala
   window, and two refusals sharing a reason code. The negation arm is the thing we reach for when a
   green looks too easy; **it has the failure mode it was invented to catch.** Applies to every
   planted-defect proof in this repo: assert the plant, not just the outcome.
+  **AND THE PROPERTY THAT DECIDES THE BLAST RADIUS IS NOT THE DEFECT — IT IS WHETHER THE FAILURE
+  HAS A VOICE.** Shell quoting silently no-op'd work THREE times on 2026-08-09. Once it cost
+  nothing: the script died with a glob error, loudly, and the operator retried. Once it cost a
+  false proof: the negation plant never applied, the arm re-ran the control, and it reported a
+  PASS. **Same defect, same author, same hour, opposite consequences — decided entirely by whether
+  the failure could be heard.** So when choosing between two implementations of anything, prefer
+  the one whose failure mode is LOUD over the one whose failure mode is CORRECT-LOOKING, even at
+  some cost in elegance. A noisy failure costs minutes; a silent one enters the record as
+  evidence.
   **REFINEMENT — a cheaper sufficient condition, from `pij-certain-crab`'s audit of all eight
   negation proofs run that day: IF THE FAILURE OUTPUT NAMES THE THING YOU PLANTED, THE ARM
   VERIFIED ITS OWN PLANT.** Seven of eight named it (`surplus 1: SchemaFs`, `missing 1: SchemaFs`,
