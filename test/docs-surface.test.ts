@@ -13,6 +13,25 @@ import { type Envelope, ensureBuilt, parseEnvelope, repoRoot, runDd } from './su
  * bin, so an example that stops working stops the build.
  */
 
+/**
+ * PROSE ONLY — strip fenced blocks before asserting anything about a page.
+ *
+ * A fence is an EXAMPLE, not a claim. Scanning inside one reads the sample as
+ * the page: a rendered `.dd.md` table quotes `[lg-3c4d](log.dd.md#entries)`
+ * because that is what dd emits, and a doc showing `## Install` in a sample
+ * README is not itself installing anything. Both failure directions are real
+ * and only one is loud — a false RED here made a correct example look broken,
+ * while a false GREEN would let a heading exist only inside a sample and read
+ * as present. Same defect as an import walker matching a specifier inside a
+ * string: an instrument that cannot tell a demonstration from an assertion.
+ *
+ * Applied AT THE ASSERTION, never at the source: other rows in this file consume
+ * fenced blocks on purpose — the quick-start transcript is extracted from the
+ * README's own fences and executed. Stripping globally broke five of them, which
+ * is what the unchanged-README control is for.
+ */
+const prose = (markdown: string): string => markdown.replace(/^```[\s\S]*?^```/gm, '');
+
 const README = readFileSync(join(repoRoot, 'README.md'), 'utf8');
 const BAKED = [
   'dd-overview',
@@ -23,12 +42,22 @@ const BAKED = [
 
 describe('README', () => {
   it('covers the four things a standalone reader needs', () => {
-    // Section presence, not prose: each of these is a promise tk-0006 made.
-    expect(README).toContain('## Install');
+    // Two kinds of claim, two homes — do not merge them.
+    //
+    // A HEADING is the page's own structure, so it must appear in PROSE: one that
+    // exists only inside a fenced sample is a demonstration of some README, not
+    // evidence about this one, and passing on it is a false GREEN (silent, unlike
+    // the false red its sibling scanner hit).
+    //
+    // A COMMAND is the opposite: a fence is exactly where it belongs. Asserting it
+    // against prose would demand the install line be written outside a code block,
+    // which is the instrument dictating the document's shape.
+    const structure = prose(README);
+    expect(structure).toContain('## Install');
+    expect(structure).toContain('## Quick start');
+    expect(structure).toContain('## The envelope contract');
+    expect(structure).toContain('## The `.dd` resolution ladder');
     expect(README).toContain('npm install -g @ai-substrate/dd');
-    expect(README).toContain('## Quick start');
-    expect(README).toContain('## The envelope contract');
-    expect(README).toContain('## The `.dd` resolution ladder');
   });
 
   it('states the envelope contract with its exit-code map', () => {
@@ -65,13 +94,7 @@ describe('README', () => {
     ];
     const broken: string[] = [];
     for (const page of pages) {
-      // Prose only. A fenced block is an EXAMPLE — a rendered `.dd.md` table quotes
-      // `[lg-3c4d](log.dd.md#entries)` because that is what dd emits, and the file it
-      // names is illustrative, not a page in this repo. Scanning inside the fence made
-      // a correct example look like a broken link, and the fix that "worked" would have
-      // been to falsify the example. Same defect as the import walker matching a
-      // specifier inside a string: an instrument that reads examples as claims.
-      const text = readFileSync(join(repoRoot, page), 'utf8').replace(/^```[\s\S]*?^```/gm, '');
+      const text = prose(readFileSync(join(repoRoot, page), 'utf8'));
       for (const [, , target] of text.matchAll(/\[([^\]]+)\]\(([^)]+)\)/g)) {
         if (/^(https?:|mailto:|#)/.test(target)) continue;
         const path = target.split('#')[0];
