@@ -1,0 +1,33 @@
+docs/plans/wishlist.dd.json
+  s_6b8a25b7716dd8::t_2b78c90a7fd1fd 256-265
+docs/plans/wishlist.dd.md
+  s_6b8a25b7716dd8::t_729c9db19e3858 46
+src/acts/build.ts
+  s_6e59036559203c::t_bd6ebae97a9df8 87-110,112-113,116-120
+test/acts/rollback-staged.test.ts
+  s_6e59036559203c::t_b6e25e5ac21119 1-92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "eafa81165aad653119d57ed15f101de15c74561b",
+  "prompts": {},
+  "sessions": {
+    "s_6b8a25b7716dd8": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "0566e436-a7a0-4359-99b4-8a2dc8a4c21d",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_6e59036559203c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06d3bbcf-6419-4a86-8e8c-7147b4e647ce",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
