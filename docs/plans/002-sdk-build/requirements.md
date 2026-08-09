@@ -194,7 +194,7 @@ universal forever.
 
 ## 4. Measured starting state — all re-derivable
 
-### 4.1 The SDK is **not** currently rich enough to satisfy R-2
+### 4.1 The SDK was **not** rich enough to satisfy R-2 — *as measured on 2026-08-07*
 
 > **RULED (o-prime, 2026-08-08): this census measures the WRONG POPULATION for Q-4, not merely
 > an unverified count.** What it measures: the surface a **re-implementation** of `plan/` would
@@ -232,7 +232,19 @@ An `exports` map does not merely fail to list a subpath — it **forbids** it. R
 positive controls: **11 of 12 consumed subpaths reachable; `./plan` → `ERR_PACKAGE_PATH_NOT_EXPORTED`**.
 Gated in CI as `just check-exports` (`scripts/exports-reachability-probe.mjs`).
 
-### 4.3 The root export executes the CLI
+### 4.3 The root export executes the CLI — **FIXED AT `8fb6aec`, ON `s002/sdk-build`**
+
+> ✅ **DONE — read the paragraph below as the STARTING state, not the current one.** Retargeted
+> at **`8fb6aec`** (P3 T3, D-1/D-2 + A-1). Measured at `f712ded`:
+> `exports["."]` is `{ types: ./dist/lib.d.ts, import: ./dist/lib.js }`, and importing the root
+> yields **9 named exports and prints nothing**. `dist/index.js` still carries the shebang and
+> is still the bin entry — it is simply no longer what `"."` points at. koala's independent POC
+> measured the same thing from a fresh consumer: *"root import = 9 runtime exports, no CLI
+> execution"*.
+>
+> **STILL TRUE ON `main`**, which has not merged PR #1 — `8fb6aec` is not an ancestor of it. A
+> reader on the default branch will find the paragraph below accurate, so this record is stale
+> on one head and correct on the other. Head-qualify before quoting it.
 
 `"."` resolves to `dist/index.js`, which **is the bin entry** — it carries the node shebang and
 calls `main()`. So `import '@ai-substrate/dd'` **runs the CLI**, prints help to stdout, and
@@ -373,13 +385,19 @@ an existing typed edge**, not a new concept — which suggests the rule vocabula
 
 ---
 
-## 7. Open questions
+## 7. Open questions — **ALL THREE ANSWERED; the heading is historical**
 
-| # | Question | Blocks |
+> ⚠️ **Nothing in this table is open.** It was accurate when written and was never revisited,
+> which is the failure this plan named three separate times in one day (S-1, backlog 22, and the
+> SDK doc's own port table). A section titled *Open questions* is read as a live worklist by
+> anyone who did not close them — so the answers are inline below rather than in a note
+> elsewhere. **OQ-2 is the only genuinely open question and it lives in R-6, not here.**
+
+| # | Question | Answer |
 |---|---|---|
-| Q-3 | `harness init` — stamp the governance doc? Every pre-flight boot across plan 001 returned `UNAVAILABLE` over a healthy substrate. | boot verdicts stay uninformative |
-| Q-4 | Which primitives become public — **derived from the §5.1 fixture's import list** (ruled, o-prime 2026-08-08; §4.1's census is the wrong population and is historical evidence only), then widened or not per the R-1 research? | **the central question of this plan** |
-| Q-5 | Does the root-export fix (§4.3) change `"."` to a real barrel, or drop the root export entirely? | SDK shape |
+| Q-3 | `harness init` — stamp the governance doc? Every pre-flight boot across plan 001 returned `UNAVAILABLE` over a healthy substrate. | **CLOSED at `c210d3a`** (Jordan). `harness init` creates and fills the doc; the commit message names this exact symptom. Follow-up `465d490` corrected the baseline it wrote. |
+| Q-4 | Which primitives become public — **derived from the §5.1 fixture's import list** (ruled, o-prime 2026-08-08; §4.1's census is the wrong population and is historical evidence only), then widened or not per the R-1 research? | **CLOSED by D-2, RATIFIED** — width is the measured floor in domain-true subpaths, no speculative widening. `design-decision.md` is the surface authority, not this row. |
+| Q-5 | Does the root-export fix (§4.3) change `"."` to a real barrel, or drop the root export entirely? | **CLOSED by D-1, RATIFIED** — a curated *pure* barrel, with the bin separated. Landed at `8fb6aec`; see §4.3. |
 
 ---
 
@@ -456,6 +474,12 @@ currently depends on which runs first.
 
 ### S-1a · The cfa501a6 F1 residue — SPLIT ruling (o-prime, 2026-08-08), measurement PM's
 
+> ✅ **The SCOPED-IN half is DONE at `252402c`, on `s002/sdk-build`** — `nodeId`
+> (`src/links/map.ts:370`) now normalises through `toPosix` before building the key, so one
+> document is one node however its path is spelled. **The `src/plan/` half remains DEFERRED by
+> ruling, not by neglect** — that is a decision, and it is still the current one (`wl-0011`).
+> Read the two bullets below as the state at the time of the split ruling.
+
 Upstream's own F1 (identity-spelling) sites, found unfixed in this fork during P4:
 
 - **`src/plan/` sites (`index-plan.ts` itemKey/displayAddress) — DEFERRED.** Measured by
@@ -472,7 +496,16 @@ Upstream's own F1 (identity-spelling) sites, found unfixed in this fork during P
   `core/validate.ts:88` into S-1.** Fix dispatches as a P4 addendum (`p4b`), same F1 family
   discipline, after P3 completes.
 
-### S-2 · Move `FsDocLoader` into the SDK half — **ruled, from `fr-0010`**
+### S-2 · Move `FsDocLoader` into the SDK half — **DONE, ON `s002/sdk-build`**
+
+> ✅ **DONE — the paragraph below describes the hole, not the current state.** `FsDocLoader` now
+> lives at **`src/links/loader.ts:81`** and is exported from the root barrel
+> (`src/lib.ts`, beside `MemoizingDocLoader`). Measured at `f712ded`: both names are among the
+> **9 runtime exports** of `dist/lib.js`, and koala constructed the pair in its consumability POC.
+> **The citation `src/acts/shared.ts:108` below no longer resolves** — it is the original
+> location, kept because the ruling reasoned about it.
+>
+> **Still true on `main`**, which has not merged PR #1. Head-qualify before quoting.
 
 > **o-prime, 2026-08-08**, adopting koala's recommendation after verifying it: *"Ruled: move
 > `FsDocLoader` into the SDK half — its deps are already public."*
@@ -529,9 +562,11 @@ distribution method ships it. This plan has to answer it, not inherit it.
 > ruled together with OQ-2, never separately** — ruling them apart would be the two-vocabularies
 > hazard already rejected in fr-0010's option (c).
 
-**`fr-0010` — `FsDocLoader` is load-bearing, lives in the half that leaves, and is not
-exported.** The injection joint that made library consumption mandatory is the one place the
-surface is broken — see S-2 (§7a) for the ruling and the corrected trial bar (§5.1) it forced.
+**`fr-0010` — `FsDocLoader` WAS load-bearing, lived in the half that leaves, and was not
+exported.** ✅ **CLOSED on `s002/sdk-build`**: it is now at `src/links/loader.ts:81` and exported
+from the root barrel — see the S-2 callout (§7a) for the measurement. The injection joint that
+made library consumption mandatory was the one place the surface was broken; the ruling and the
+corrected trial bar (§5.1) it forced are recorded there.
 Found by the consumer *before* the trial, because the trial bar was sent to koala before being
 finalised.
 
