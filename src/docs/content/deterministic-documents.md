@@ -210,7 +210,11 @@ grep ac-5e6f plan.dd.md
 
 This is what a completion gate reads. Each state vocabulary declares a `gate_terminal` set
 (by default `checked`, `human-skipped`, `na`), and "done" means membership in that set — a
-mechanical check over rows, with every open item nameable by id. The flow-level gate that
+mechanical check over rows, with every open item nameable by id. One warning about
+authority: a row's typed `state` and a summary derived from the assertion rows it links to
+are separate claims, and `dd validate` does not reconcile them — a task can say `checked`
+over an all-`unchecked` assertion list without raising a finding. When the two disagree,
+believe the derived summary; it is the one computed from rows. The flow-level gate that
 refuses to leave a phase while criteria are open is built on exactly this layer; the gate
 verbs themselves live upstream in `harness`, not in this package.
 
@@ -245,6 +249,11 @@ dd doctor
 The answer is either zeros or a named list of findings, each carrying its severity, its
 location, and the owner — the document that must change to fix it, which is not always the one
 where the problem surfaced.
+
+A document can ask the sweep to skip it: `"sweep_exclude": true` in its `dd` envelope. The
+doctor honours it — this corpus with one document excluded answers `"discovered": 3,
+"swept": 2` — but a direct `dd validate <path>` never does: pointing the verb at a document
+always validates it, and the excluded document above still fails its own validate with `E402`.
 
 ## How commands answer
 
