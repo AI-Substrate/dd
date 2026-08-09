@@ -1,0 +1,27 @@
+docs/plans/frictions.dd.json
+  s_f5a59eaabcfb7d::t_54e1d2d7ec3c60 158
+docs/plans/frictions.dd.md
+  s_f5a59eaabcfb7d::t_dcc12317e450a5 32
+docs/plans/wishlist.dd.json
+  s_f5a59eaabcfb7d::t_1bf5df0149342c 116-125
+docs/plans/wishlist.dd.md
+  s_f5a59eaabcfb7d::t_85b28507f45213 32
+government/orient-local.md
+  s_f5a59eaabcfb7d::t_c96526f6c6ae1a 222-238
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "5ffde0d3035d92a8c5b194a18a3f680fecfde668",
+  "prompts": {},
+  "sessions": {
+    "s_f5a59eaabcfb7d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c1a8ee5f-0c77-4a73-9109-a12db9cd18a8",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
