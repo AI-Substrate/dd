@@ -1,0 +1,19 @@
+README.md
+  s_7d1ed3ebb46419::t_33b237027053fa 23-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "45801c34284dc4d997e270265b5566488cf4363c",
+  "prompts": {},
+  "sessions": {
+    "s_7d1ed3ebb46419": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "aa8368ab-f0c2-4a94-a993-60bdc2bb52cf",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
