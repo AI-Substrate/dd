@@ -20,6 +20,10 @@ npm install -g @ai-substrate/dd     # the `dd` binary on your PATH
 npm install @ai-substrate/dd        # or as a library
 ```
 
+The registry route is pending the first publish: `@ai-substrate/dd` has not yet been released
+to npm, so these two commands answer 404 today. Until that release lands, use the git routes
+below.
+
 And straight from git — the route that matters when a registry proxy screens new versions for
 days at a time, or when you want a branch the registry has not seen. As a library dependency it
 is one line; the package builds itself on install:
