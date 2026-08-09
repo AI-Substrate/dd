@@ -1,0 +1,41 @@
+docs/plans/wishlist.dd.json
+  s_e3460fd42f286c::t_ebd664dd2590e7 2-3,5,7-12,15-137,139-140
+docs/plans/wishlist.dd.md
+  s_e3460fd42f286c::t_d9e7e3a542fa3a 33
+docs/plans/001-dd-extraction/assets/handover-packet.md
+  s_6e59036559203c::t_946c935c823ca4 945,1006-1025
+docs/plans/frictions.dd.json
+  s_6e59036559203c::t_0e186b1afecf1a 25-26,38-39,64-65,77-78,90-91,103-104,146-171
+docs/plans/frictions.dd.md
+  s_6e59036559203c::t_6835421c673fcd 22-23,25-28,32-33
+government/briefs/brief-dd-canonical-doc.md
+  s_6e59036559203c::t_8174b6e1c5d03f 1-101
+government/orient-local.md
+  s_6e59036559203c::t_41b161a1c89f8d 164-248,368
+government/standing-constraints.md
+  s_6e59036559203c::t_6dc4e387acd07d 74-94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "8fda9a8018f84bd0bad413c031c06c102ff54ded",
+  "prompts": {},
+  "sessions": {
+    "s_6e59036559203c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06d3bbcf-6419-4a86-8e8c-7147b4e647ce",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_e3460fd42f286c": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "b007eb76-365c-4da0-8164-519fdee51c00",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
