@@ -275,6 +275,17 @@ step — pointing harness at this package and deleting the old code — is koala
   indistinguishable from 5-of-6 with one unregistered); **the green with no scope** (a parity test
   proving a copy is faithful, read as proving it is true). *Consolidate causes, never instruments*
   — these are three instruments and one cause.
+  **FIVE INSTANCES BY THE END OF THAT DAY, and `pij-certain-crab` named the mechanism that makes it
+  recur**: an empty verdict wearing a pass's exit code · a partial check listing indistinguishable
+  from a complete one · a green that expired the moment the head moved · a count wearing its query
+  window as a denominator · **a plant that failed silently, wearing a negation arm's result**.
+  **THE REASON IT KEEPS HAPPENING: nothing about a reading tells you what it could not have
+  distinguished.** That information is never in the output — it has to come from outside, every
+  time, from someone who thought to ask. Which is why no amount of care closes this class and why
+  every entry above it is a mechanism rather than a habit.
+  **And the document enumerating these has had its own count wrong three times**, which is the
+  same self-referential trap as this list being declared a floor: an enumeration of an
+  instrument's blind spots has the blind spot it enumerates.
   **AND THE GUARD THAT CAUGHT THE FIRST OF THEM ALMOST DIED WITH THE SESSION.** The PM's
   "empty is NOT-GREEN" rule **lived only in command strings**: it worked twice, it stopped a false
   green reaching the human through two seats, and it would have vanished with the transcript,
