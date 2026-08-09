@@ -250,6 +250,19 @@ step — pointing harness at this package and deleting the old code — is koala
   **The uncomfortable general form**: we write down limitations far more readily than we revisit
   them, and **nothing in a repository ages a note**. Every "not supported", "cannot currently",
   "known gap" is a claim with an expiry date that nothing enforces.
+- **A CLAIM WHOSE TRUTH LIVES OUTSIDE THE REPO THAT ASSERTS IT IS UNMAINTAINABLE BY CONSTRUCTION.**
+  Named by `pij-legislative-tyrannosaurus`, and it survives being right OR wrong about the claim
+  itself — which is what makes it structural. **No test in the asserting repo guards it and no
+  sweep there catches it drifting**, because the thing it describes is not in that repo's tree.
+  Its ruling was therefore to **DROP** a cross-repo comparison, not to soften or correct it.
+  **Three instances in one day, all of them accurate when written**: harness's comment citing dd's
+  `writeDocumentWithSibling` as *the model* for a contract dd's rollback did not actually meet; the
+  fleet PA recipe's *"5 of 5 PAs, zero fires, ever"*, false by the time I briefed a seat on it with
+  the citation attached; and our own probe's *"plan/ does not ship"*, which shipped, and redirected
+  a consumer's reasoning because our record said the layer was absent.
+  **The remedy is placement, not diligence**: assert about your own tree, and POINT at the other
+  repo rather than characterising it. A pointer goes stale visibly — it fails to resolve. **A
+  characterisation goes stale silently and keeps reading as true.**
 - **A COMPLETE SET OF ACCURATE ROWS CAN OMIT THE FACT THAT DECIDES THE ANSWER.** Named by
   `pij-certain-crab`. Three rows described dd's install routes — `wl-0014` (never published),
   backlog 24 (global git route fails), `wl-0015` (SHA-pinned `github:` works and packs). **Every
