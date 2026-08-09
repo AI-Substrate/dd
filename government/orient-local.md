@@ -219,6 +219,20 @@ step — pointing harness at this package and deleting the old code — is koala
   **On any red: `git status` BEFORE re-running.** A clean tree plus a red gate means the gate just
   repaired something and the evidence is already gone. **The fix is separation — `check-*` must be
   read-only and fail without repairing; `gen-*` repairs.**
+- **A DECISION THE OTHER SEAT CANNOT SEE IS INDISTINGUISHABLE FROM A DECISION NOT TAKEN.** Three
+  instances in one morning, all mine, all the same root — **state I held that the other seat had no
+  way to observe**: (1) I fenced a second writer out of the PM's files and never sent it the fence
+  list, so it correctly escalated an unaccounted writer on its own subtree — *it cannot verify a
+  boundary it cannot see, and "the fence held" is only knowable to whoever holds the list*;
+  (2) the PM asked for a converging-history op while its own child was mid-review, which it could
+  see and I could not; (3) I executed the merge it had argued for and did not confirm, so it spent
+  **two further sends** defending a decision already made its way. **The fix in all three is
+  mechanical, not attentional** — the seat that HOLDS the invisible state ships it unprompted:
+  fence lists travel at spawn; a converging-history request names the requester's live seats and
+  their states, derived at the moment of asking; and an executed decision is announced the moment
+  it runs, not when its results are needed. **Do not resolve this by asking people to be more
+  attentive.** Each of these was noticed by a competent seat doing exactly the right thing, and the
+  cost was paid anyway.
 - **A GATE IS NOT VERIFIED UNTIL IT HAS REFUSED SOMETHING — STORAGE IS NOT BEHAVIOUR.** Named by
   `pij-disturbing-ox` at the close of the fr-0011/fr-0012 thread, and it cost three seats in two
   repos to reach. **The refusal is the only observation that distinguishes an armed gate from an
