@@ -63,9 +63,49 @@ describe('audit gate — blocks on actionable, reports on unactionable', () => {
     const verdict = classify(
       EMPTY,
       report({ vitest: { severity: 'high', fixAvailable: { name: 'vitest', version: '9.9.9' } } }),
+      () => true,
     );
     expect(verdict.devUnactionable).toEqual([]);
+    expect(verdict.devPending).toEqual([]);
     expect(verdict.devActionable.map((f: { name: string }) => f.name)).toEqual(['vitest']);
+  });
+
+  /**
+   * The case that reddened this branch on 2026-08-09, now pinned.
+   *
+   * `fixAvailable` is a PROXY for "actionable" and it is REGISTRY-RELATIVE: CI
+   * saw nanoid as fixable while the local mirror 404'd the fixed version. Nobody
+   * can act on a version their registry will not serve, so it is PENDING —
+   * distinct from both blocking and clean, and it reds by itself the day the
+   * registry catches up. No list, no date, nothing to remember.
+   */
+  it('defers a dev fix the registry cannot serve — PENDING, not blocking, not clean', () => {
+    const unreachable = report({
+      nanoid: { severity: 'high', fixAvailable: { name: 'nanoid', version: '3.3.17' } },
+    });
+    const verdict = classify(EMPTY, unreachable, () => false);
+    expect(verdict.devActionable).toEqual([]);
+    expect(verdict.devUnactionable).toEqual([]);
+    expect(verdict.devPending.map((f: { name: string }) => f.name)).toEqual(['nanoid']);
+  });
+
+  it('NEVER defers a PRODUCTION advisory, even when the fix is unreachable', () => {
+    const prod = report({
+      evil: { severity: 'critical', fixAvailable: { name: 'evil', version: '2.0.0' } },
+    });
+    // Same unreachable-registry predicate as the case above — and it must not
+    // touch this column. A shipped vulnerability is not made safe by being
+    // unfixable; that is an emergency for a human, not a gate downgrade.
+    const verdict = classify(prod, prod, () => false);
+    expect(verdict.production.map((f: { name: string }) => f.name)).toEqual(['evil']);
+    expect(verdict.devPending).toEqual([]);
+  });
+
+  it('treats a bare `fixAvailable: true` as reachable — it names no version to probe', () => {
+    const verdict = classify(EMPTY, report({ x: { severity: 'high', fixAvailable: true } }), () => {
+      throw new Error('the reachability probe must not run when there is no version to check');
+    });
+    expect(verdict.devActionable.map((f: { name: string }) => f.name)).toEqual(['x']);
   });
 
   it('ignores severities below high, in both trees', () => {

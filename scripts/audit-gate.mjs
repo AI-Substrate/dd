@@ -14,13 +14,28 @@
  *
  * THE DESIGN RULE: block on ACTIONABLE, report on UNACTIONABLE.
  *
- *  - PRODUCTION dependencies, high or critical -> BLOCK. This is what a user
- *    installs. It passes today (`npm audit --omit=dev` exits 0), so it is a real
- *    gate rather than a permanently-red one.
- *  - DEV dependencies WITH a fix available -> BLOCK. Somebody can act, today.
+ *  - PRODUCTION dependencies, high or critical -> BLOCK, UNCONDITIONALLY. This is
+ *    what a user installs. It passes today (`npm audit --omit=dev` exits 0), so
+ *    it is a real gate rather than a permanently-red one. **The reachability
+ *    check below deliberately does NOT apply here**: a shipped vulnerability is
+ *    not made safe by being unfixable, and an unreachable production fix is an
+ *    emergency for a human, not something a gate quietly downgrades.
+ *  - DEV dependencies WITH a fix that RESOLVES -> BLOCK. Somebody can act, today.
+ *  - DEV dependencies with a fix that DOES NOT RESOLVE from the configured
+ *    registry -> PENDING. Reported distinctly, not blocking. Learned the hard
+ *    way on 2026-08-09: `fixAvailable` is a PROXY for "actionable" and that proxy
+ *    is REGISTRY-RELATIVE. The same commit and lockfile gave two verdicts — six
+ *    advisories with no fix locally, one fixable in CI — because the local
+ *    registry is a mirror lagging the public one, and it 404s the fixed version.
+ *    Nobody can act on a version their registry will not serve.
  *  - DEV dependencies with NO fix available -> REPORT, loudly, and do not block.
  *    A gate that fails for a reason nobody can fix trains everyone to skip the
  *    line, which is worse than no gate.
+ *
+ * All three dev states render differently and the REGISTRY IS NAMED IN EVERY RUN.
+ * A verdict whose hidden variable is the environment is the parent defect this
+ * whole plan is about; printing the environment is what stops the fix from
+ * closing one instance and leaving the class open.
  *
  * AND THE PART THAT MATTERS MOST: `fixAvailable` IS RE-DERIVED, NEVER BAKED.
  * Today all six dev advisories are unfixable transitives under vitest. That is a
@@ -88,15 +103,26 @@ const blockingFrom = (report) =>
  * keeps meeting: a gate nobody proved is a gate nobody can trust. Fixture
  * reports in `test/audit-gate.test.ts` exercise every branch instead.
  */
-export function classify(productionReport, everythingReport) {
+export function classify(productionReport, everythingReport, isFixReachable = () => true) {
   const prod = blockingFrom(productionReport);
   const prodNames = new Set(prod.map((f) => f.name));
   const dev = blockingFrom(everythingReport).filter((f) => !prodNames.has(f.name));
-  return {
-    production: prod,
-    devActionable: dev.filter((f) => Boolean(f.fixAvailable)),
-    devUnactionable: dev.filter((f) => !f.fixAvailable),
-  };
+
+  const devActionable = [];
+  const devPending = [];
+  const devUnactionable = [];
+  for (const f of dev) {
+    if (!f.fixAvailable) {
+      devUnactionable.push(f);
+      continue;
+    }
+    // REACHABILITY IS A DEV-COLUMN CONCERN ONLY — see the note above `main`.
+    // `fixAvailable: true` (bare boolean) names no target version, so there is
+    // nothing to probe; treat it as reachable, which errs toward blocking.
+    if (f.fixAvailable === true || isFixReachable(f.fixAvailable)) devActionable.push(f);
+    else devPending.push(f);
+  }
+  return { production: prod, devActionable, devPending, devUnactionable };
 }
 
 const describeFix = (fixAvailable) => {
@@ -106,22 +132,67 @@ const describeFix = (fixAvailable) => {
   return `FIX AVAILABLE -> ${fixAvailable.name}@${fixAvailable.version}${major}`;
 };
 
+/** The registry actually consulted. Named in every run — see the note in `main`. */
+function currentRegistry() {
+  try {
+    return execFileSync('npm', ['config', 'get', 'registry'], { encoding: 'utf8' }).trim();
+  } catch {
+    return '(could not read npm config)';
+  }
+}
+
+/** Can this registry actually serve the fixed version? */
+function fixResolves(fix) {
+  if (!fix || typeof fix !== 'object' || !fix.name || !fix.version) return true;
+  try {
+    execFileSync('npm', ['view', `${fix.name}@${fix.version}`, 'version'], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function main() {
+  const registry = currentRegistry();
   const {
     production: prodFindings,
     devActionable,
+    devPending,
     devUnactionable,
-  } = classify(audit(['--omit=dev']), audit([]));
-  const devTotal = devActionable.length + devUnactionable.length;
+  } = classify(audit(['--omit=dev']), audit([]), fixResolves);
+  const devTotal = devActionable.length + devPending.length + devUnactionable.length;
 
   // stdout is data in npm lifecycles; the report goes to stderr.
   const say = (line) => console.error(line);
 
+  // THE REGISTRY IS NAMED ON EVERY RUN, PASS OR FAIL. On 2026-08-09 the same
+  // commit and the same lockfile produced two different verdicts — six dev
+  // advisories with no fix locally, one with a fix in CI — because the local
+  // registry is a mirror that lagged the public one and 404s the fixed version.
+  // Nothing in either output said which registry produced it. A verdict whose
+  // hidden variable is the environment is the parent defect of this whole plan,
+  // so the environment is printed rather than assumed.
+  say(`audit-gate: registry ${registry}`);
   say(
     `audit-gate: production high/critical: ${prodFindings.length} | ` +
       `dev high/critical: ${devTotal} ` +
-      `(${devActionable.length} fixable, ${devUnactionable.length} not)`,
+      `(${devActionable.length} fixable, ${devPending.length} pending, ` +
+      `${devUnactionable.length} no fix)`,
   );
+
+  // Three states, three renderings, never collapsed into each other.
+  if (devPending.length > 0) {
+    say('  PENDING — dev-only, fix published upstream but NOT SERVABLE by this registry:');
+    for (const f of devPending) {
+      say(`    - ${f.name} (${f.severity}) — wants ${describeFix(f.fixAvailable)}`);
+    }
+    say('    Nobody can act on these HERE: the fixed version does not resolve from');
+    say('    the registry above. Not ignored and not blocking — this goes RED by');
+    say('    itself the day that registry serves the fix.');
+  }
 
   if (devUnactionable.length > 0) {
     say('  NON-BLOCKING — dev-only, no fix published upstream today:');
