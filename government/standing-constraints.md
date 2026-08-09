@@ -54,11 +54,29 @@ Handover completes when the SDK surface is stable and the packet is sent. Upgrad
 harness-engineering to consume `@ai-substrate/dd` and stripping the old code is
 **koala's work**. Never start it.
 
-## 6 — Handover traffic is prime-to-prime
+## 6 — Handover traffic is prime-to-prime — AMENDED 2026-08-09, trial channel opened
 
 `pij-related-koala` is a peer prime. The PM prepares the handover packet; the **o-prime
 sends it**. A worker messaging another fleet is the wrong altitude, and an unreviewed
 packet makes our defects their problem.
+
+**AMENDED by Jordan, 2026-08-09, verbatim — given in the PM's pane, answering its
+"have you told it?" about the measured install route:**
+
+> "go direct, i allow it"
+
+**Scope, as the o-prime reads it and as the PM independently inferred**: this opens the
+**PM↔koala TRIAL channel** — install routes, surface measurements, re-pin coordination,
+the iteration loop. It is **not** a general collapse of prime-to-prime routing, and
+**handover packets remain the o-prime's to send**. The narrower reading is chosen
+deliberately: a ruling given about one exchange should not be stretched to cover traffic
+Jordan was not asked about, and the wider form is one message away if he wants it.
+
+**Why this is written down within the minute**: the PM went direct and told the o-prime
+inside the same minute so the change would not be discovered as a breach. A constraint
+contradicted by an unrecorded ruling is the surface-versus-wire gap this repo hit four
+times on 2026-08-09 alone — the artifact must say which reading is in force, or the next
+reader inherits the old rule and treats correct behaviour as a violation.
 
 ## 7 — Human rulings are transcribed verbatim before anyone acts
 

@@ -206,7 +206,7 @@ chore firing, which is the instrument working rather than a surprise.
 - Sequencing: item 22's act-site fix does **not** depend on this port and should not wait
   for it.
 
-## 24 — `npm install -g git+<url>` FAILS at `prepare` · UNASSIGNED · **ADDED 2026-08-09** · needs a decision
+## 24 — `npm install -g git+<url>` FAILS at `prepare` — the GLOBAL staging path ONLY · UNASSIGNED · **ADDED 2026-08-09** · needs a decision
 
 **The route Jordan specifically needs is the one that is broken.** His work machines force npm
 through a supply-chain proxy that imposes a **seven-day delay**, which is why the git route exists
@@ -224,6 +224,27 @@ the real global tree was never touched):
 | `npm install git+file://…/dd` (local dep) | ok, `dist/` built, envelope answers |
 | `npm install git+https://github.com/AI-Substrate/dd.git` (local dep) | ok |
 | `git clone` → `npm install` → `npm install -g .` | ok — the working route to a git-fresh global binary |
+
+**NARROWED 2026-08-09 by `pij-certain-crab`, and the narrowing matters more than the defect.**
+A SHA-pinned `github:` PROJECT install **WORKS TODAY, from the unmerged branch**:
+
+```
+npm install github:AI-Substrate/dd#a28f2595022fa2899f7903be2362c20c98324ff0
+-> added 3 packages in 12s | dist/lib.js PRESENT | root import = 9 runtime exports, no CLI execution | ./node resolves
+```
+
+Three measurements now bracket it: a local `git+file://` install works, a SHA-pinned
+`github:` project install works, and only `npm install -g git+<url>` fails. **So this row is
+NOT "git installs fail" — it is specifically the GLOBAL staging path**, and saying otherwise
+would push the next reader off the git route entirely, which is the route the distribution
+ruling made load-bearing in the first place. The o-prime predicted the `github:` route would
+fail the same way; **it does not**, and that prediction is recorded here rather than quietly
+dropped.
+
+**The SHA-pinned `github:` route also closes a gap koala named independently**: a `file:`
+tarball dependency carries no provenance — the lockfile records a path and a version, no sha —
+whereas `github:…#<full-sha>` **is self-describing**. Two seats arrived at the same problem from
+opposite ends within the hour.
 
 So **local git installs work and global git installs fail, from any source.** Environment:
 npm **11.10.0**, node **v24.7.0**; `typescript ^6.0.3` and `@types/node ^26` are both devDeps;
