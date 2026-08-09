@@ -219,6 +219,22 @@ step — pointing harness at this package and deleting the old code — is koala
   **On any red: `git status` BEFORE re-running.** A clean tree plus a red gate means the gate just
   repaired something and the evidence is already gone. **The fix is separation — `check-*` must be
   read-only and fail without repairing; `gen-*` repairs.**
+- **A COMPLETE SET OF ACCURATE ROWS CAN OMIT THE FACT THAT DECIDES THE ANSWER.** Named by
+  `pij-certain-crab`. Three rows described dd's install routes — `wl-0014` (never published),
+  backlog 24 (global git route fails), `wl-0015` (SHA-pinned `github:` works and packs). **Every
+  one accurate. None of them said WHICH ROUTE IS ACTUALLY IN USE**, and that was the only fact
+  that answered the question in front of the human. It lived nowhere until it was written into a
+  standing constraint, and it arrived buried inside a comms permission — Jordan's *"we will source
+  sdk from its branch to get this done fast"*, read by both seats as context for the channel rather
+  than as the ruling it was.
+  **The damage is not a wrong claim, it is a true one carrying false urgency**: *"no one-line
+  global install exists on any route today"* was correct and invited a decision the facts did not
+  support, because the route in use is neither global nor blocked. **Same family as the population
+  error — every figure right, the reader still misled, because the deciding fact is not on any of
+  the surfaces that describe the subject.**
+  **The check is to ask of any complete-looking set: which row would change the decision, and is
+  that row here at all?** Coverage of a subject is not the same as the operative fact about it, and
+  a set of rows reads as exhaustive precisely when each one is correct.
 - **THE PARENT CAUSE UNDER MOST OF WHAT FOLLOWS: AN INSTRUMENT WHOSE OUTPUT CANNOT DISTINGUISH TWO
   STATES IS NOT EVIDENCE FOR EITHER — until you add the instrument that can.** Named by
   `pij-certain-crab`, and it consolidates **three separate near-misses from one day** that were
