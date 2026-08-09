@@ -104,24 +104,80 @@ export function generateDdDocs({ check = false } = {}) {
     console.warn('gen-dd-docs: biome not found — emitted file may not be biome-canonical.');
   }
 
+  // The verbatim mirror under `docs/how/dd/` is part of "the dd docs" by any
+  // reasonable reading of this script's name — and until 2026-08-09 it was neither
+  // regenerated nor checked here. `check:dd-docs` printed "OK — no drift" over a
+  // stale mirror; only a vitest row caught it. **A gate named for a job it does not
+  // do is worse than a missing gate**: a reader trusts the name without reading the
+  // implementation. Widened rather than renamed, deliberately, for that reason.
+  //
+  // A port, not a rewrite: each file is its hand-authored `<!-- … -->` header, a
+  // blank line, then the source byte-for-byte. The header is preserved; only the
+  // ported body is regenerated.
+  //
+  // NOTE the asymmetry with the baked module above, which is intentional. That path
+  // WRITES and then diffs, so a failing check repairs the very evidence it is
+  // reporting (the C-6 hazard: a gate that regenerates what it diffs greens on
+  // re-run and erases the finding). The mirror check below **compares without
+  // writing** in `--check` mode. The older behaviour is left alone rather than
+  // changed under a green build, but it is not copied.
+  const mirrorDrift = [];
+  for (const row of rows) {
+    const rel = `docs/how/dd/${row.id}.md`;
+    const mirrorPath = join(repoRoot, rel);
+    if (!existsSync(mirrorPath)) {
+      mirrorDrift.push(`${rel} (MISSING — the port header is hand-authored; create it)`);
+      continue;
+    }
+    const current = readFileSync(mirrorPath, 'utf8');
+    const headerEnd = current.indexOf('-->');
+    if (!current.startsWith('<!--') || headerEnd === -1) {
+      mirrorDrift.push(`${rel} (no \`<!-- … -->\` port header)`);
+      continue;
+    }
+    const rebuilt = `${current.slice(0, headerEnd + 3)}\n\n${row.content}`;
+    if (current === rebuilt) continue;
+    mirrorDrift.push(rel);
+    if (!check) writeFileSync(mirrorPath, rebuilt, 'utf8');
+  }
+
   // stderr, not stdout (plan 017 Finding 01): this runs inside npm lifecycles
   // where stdout is data.
   console.error(`gen-dd-docs: wrote ${rows.length} docs → ${outPath.replace(`${repoRoot}/`, '')}`);
+  if (!check && mirrorDrift.length) {
+    console.error(`gen-dd-docs: re-ported ${mirrorDrift.length} mirror(s) → ${mirrorDrift.join(', ')}`);
+  }
 
   if (!check) return { drifted: false, count: rows.length };
 
   const after = readFileSync(outPath, 'utf8');
-  if (before === after) {
-    console.error('check:dd-docs OK — no drift');
+  const bakedDrifted = before !== after;
+  if (!bakedDrifted && mirrorDrift.length === 0) {
+    // The scope is stated in the OK line on purpose. A green that does not say what
+    // it covered is how this gate came to be trusted for a job it was not doing.
+    console.error(
+      `check:dd-docs OK — no drift (baked module + ${rows.length} ported mirror(s))`,
+    );
     return { drifted: false, count: rows.length };
   }
-  console.error('check:dd-docs FAIL — baked dd docs drifted from their sources; diff follows');
-  try {
-    execFileSync('git', ['--no-pager', 'diff', '--', outPath], { cwd: repoRoot, stdio: 'inherit' });
-  } catch (err) {
+  if (mirrorDrift.length) {
     console.error(
-      `check:dd-docs: unable to print git diff (${err instanceof Error ? err.message : err})`,
+      `check:dd-docs FAIL — ${mirrorDrift.length} ported mirror(s) differ from source: ${mirrorDrift.join(', ')}`,
     );
+    console.error('  Run `npm run gen:dd-docs` and commit — the mirror is header + source, verbatim.');
+  }
+  if (bakedDrifted) {
+    console.error('check:dd-docs FAIL — baked dd docs drifted from their sources; diff follows');
+    try {
+      execFileSync('git', ['--no-pager', 'diff', '--', outPath], {
+        cwd: repoRoot,
+        stdio: 'inherit',
+      });
+    } catch (err) {
+      console.error(
+        `check:dd-docs: unable to print git diff (${err instanceof Error ? err.message : err})`,
+      );
+    }
   }
   process.exitCode = 1;
   return { drifted: true, count: rows.length };

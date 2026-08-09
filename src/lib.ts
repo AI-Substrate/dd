@@ -44,4 +44,14 @@ export { type DocLoader, validateWalk } from './core/walk.js';
 // Exporting only the memoizer is what made it unusable before — a consumer could
 // name the wrapper and not build the wrapped (P1 census B1, fr-0010).
 export { FsDocLoader, MemoizingDocLoader } from './links/index.js';
+// TYPE ONLY, and ratified on that condition (o-prime, 2026-08-09). The concrete
+// `NodeSchemaFs` stays in `./node`; the root names the SHAPE, not an implementation.
+//
+// This interface was already public by structure — anyone passing a resolver port
+// writes to it whether or not they can name it — so exporting the type adds no
+// commitment, it only makes the existing one CHECKABLE. It is here because our
+// first real consumer guessed it wrong twice: a `readText`-only port CONSTRUCTS
+// FINE and then finds no schemas at all. A wrong answer, not a crash, which is
+// the one failure class this repository has spent two days learning to refuse.
+export type { SchemaFs } from './schema/model.js';
 export { ConventionSchemaResolver } from './schema/resolve.js';

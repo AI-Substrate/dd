@@ -119,8 +119,8 @@ const DECLARED_SURFACE = [
     authority: 'the D-1 allowlist',
     names: [
       'ConventionSchemaResolver', 'DdDoc', 'DdIssue', 'DocLoader', 'FsDocLoader',
-      'MemoizingDocLoader', 'SchemaResolver', 'collectLinkCells', 'isAddressFailure',
-      'parse', 'parseAddress', 'resolveAddressFile', 'validateWalk',
+      'MemoizingDocLoader', 'SchemaFs', 'SchemaResolver', 'collectLinkCells',
+      'isAddressFailure', 'parse', 'parseAddress', 'resolveAddressFile', 'validateWalk',
     ],
   },
   {

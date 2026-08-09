@@ -45,21 +45,33 @@ the only thing standing between you and a silent misfit.**
 
 | You provide | Passed to | Exact shape | Type importable? |
 |---|---|---|---|
-| schema fs | `new ConventionSchemaResolver({ fs })` | `readdir(path): string[]`<br>`exists(path): boolean`<br>`readText(path): string \| null` | **No** — `SchemaFs` is internal |
+| schema fs | `new ConventionSchemaResolver({ fs })` | `readdir(path): string[]`<br>`exists(path): boolean`<br>`readText(path): string \| null` | **Yes** — `import type { SchemaFs }` |
 | doc text source | `new FsDocLoader(fs, …)` | `readText(path): string \| null` | No — structural |
 | hash | `new FsDocLoader(…, hash, …)` | `sha256Hex(input: string): string` | No — structural |
 | a whole loader | `validateWalk(doc, { docLoader })` | `load(path): DocLoadResult` | **Yes** — `import type { DocLoader }` |
 | a whole resolver | `validateWalk(doc, { schemaResolver })` | `resolve(schemaRef, fromPath): SchemaResolveResult` | **Yes** — `import type { SchemaResolver }` |
 
-> **The schema fs is the one that catches people — it caught our first real consumer twice.**
-> An earlier version of this page showed one `FsLike { readText }` as what "a schema resolver and
-> the document loader read with". That is true of the **loader** and **false of the resolver**:
-> `ConventionSchemaResolver` walks the precedence chain, so it needs `readdir` and `exists` too.
-> A port with only `readText` type-checks against nothing, constructs fine, and then **finds no
-> schemas at all** — a wrong answer, not a crash. If that is your symptom, this is your bug.
+> **The schema fs is the one that catches people — it caught our first real consumer twice, and
+> the fix was to change the package rather than this page.** `SchemaFs` used to be internal, so
+> nothing could refuse a wrong port. It is now a **type-only** export of the root
+> (`import type { SchemaFs } from '@ai-substrate/dd'`) and the compiler does the refusing:
 >
-> Two of the five rows are types you can import; the other three you match by hand. **Where you
-> can import, do** — a guess that compiles is a guess you will debug at runtime instead.
+> ```
+> const fs: SchemaFs = { readText: (p) => null };
+> // TS2739: Type '{ readText … }' is missing the following properties
+> //         from type 'SchemaFs': readdir, exists
+> ```
+>
+> That is the whole point of the row. Before, a `readText`-only port **constructed fine and then
+> found no schemas at all** — a wrong answer, not a crash, and the hardest kind to debug because
+> nothing anywhere reports a failure. An earlier version of this page actively encouraged it, by
+> showing one `FsLike { readText }` as what "a schema resolver and the document loader read
+> with": true of the **loader**, false of the **resolver**.
+>
+> **Annotate your ports.** A port that is merely passed is checked structurally at the call site
+> and can still be wrong in ways that type-check; a port declared `const fs: SchemaFs = …` is
+> checked where you wrote it. Three of the five rows are importable — **where you can import, do.**
+> A guess that compiles is a guess you will debug at runtime instead.
 
 `null` means *not found* everywhere in this table, and **never** an exception: these ports do not
 throw.
