@@ -41,13 +41,32 @@ dd never constructs its own filesystem, hash, or clock. You pass them in, and th
 already has. That is the whole reason dd is consumable as a library rather than something you
 shell out to.
 
-The two shapes you will most often implement:
+### Port contracts at a glance
 
-```ts
-// what a schema resolver and the document loader read with
-interface FsLike  { readText(path: string): string | null }   // null = not found, never throw
-interface HashLike { sha256Hex(input: string): string }        // NOTE the name — see below
-```
+Every row below is read off the shipped types, not recalled. The last column is the one to look
+at first: **where the answer is "no", the compiler cannot catch a wrong guess, so the table is
+the only thing standing between you and a silent misfit.**
+
+| You provide | Passed to | Exact shape | Type importable? |
+|---|---|---|---|
+| schema fs | `new ConventionSchemaResolver({ fs })` | `readdir(path): string[]`<br>`exists(path): boolean`<br>`readText(path): string \| null` | **No** — `SchemaFs` is internal |
+| doc text source | `new FsDocLoader(fs, …)` | `readText(path): string \| null` | No — structural |
+| hash | `new FsDocLoader(…, hash, …)` | `sha256Hex(input: string): string` | No — structural |
+| a whole loader | `validateWalk(doc, { docLoader })` | `load(path): DocLoadResult` | **Yes** — `import type { DocLoader }` |
+| a whole resolver | `validateWalk(doc, { schemaResolver })` | `resolve(schemaRef, fromPath): SchemaResolveResult` | **Yes** — `import type { SchemaResolver }` |
+
+> **The schema fs is the one that catches people — it caught our first real consumer twice.**
+> An earlier version of this page showed one `FsLike { readText }` as what "a schema resolver and
+> the document loader read with". That is true of the **loader** and **false of the resolver**:
+> `ConventionSchemaResolver` walks the precedence chain, so it needs `readdir` and `exists` too.
+> A port with only `readText` type-checks against nothing, constructs fine, and then **finds no
+> schemas at all** — a wrong answer, not a crash. If that is your symptom, this is your bug.
+>
+> Two of the five rows are types you can import; the other three you match by hand. **Where you
+> can import, do** — a guess that compiles is a guess you will debug at runtime instead.
+
+`null` means *not found* everywhere in this table, and **never** an exception: these ports do not
+throw.
 
 A worked wiring, and the exact shape a real consumer uses:
 
@@ -72,16 +91,22 @@ const docLoader = new MemoizingDocLoader(
 const result = validateWalk(doc, { schemaResolver, docLoader }, options);
 ```
 
-Three things that are easy to get wrong, all of them measured rather than guessed:
+Things that are easy to get wrong — every one of them measured rather than guessed, and **this
+list is a floor, not a closed set**. It said "three" until a consumer found the fourth:
 
 - **`sha256Hex`, not `sha256`.** The method name is part of the contract, and a JS consumer
   discovers that by crashing. Named here so you do not have to.
 - **The loader pair is one expression.** `MemoizingDocLoader` decorates `FsDocLoader`; the
   memoizer alone is not a loader. (This was a real defect — the wrapper was exported and the
   wrapped was not, so the pattern could not be built at all.)
-- **`tracked` is `boolean | null`, and `null` is not `false`.** `null` means *this host has no
-  tracking concept* — not "nothing is tracked". Branch with `=== false`, never `!tracked`, or
-  you will fire untracked-target findings on every host that does not use git.
+- **`tracked` is two different types three lines apart.** What you *pass* to `new FsDocLoader`
+  is a **`ReadonlySet<string> | null`** — the tracked paths, from one `git ls-files` snapshot
+  taken before the walk. What you *read back* on a result is a **`boolean | null`** per path.
+  The example above passes `null` for the set; that is the "no tracking concept" host.
+- **On the result, `null` is not `false`.** `null` means *this host has no tracking concept* —
+  not "nothing is tracked". Branch with `=== false`, never `!tracked`, or you will fire
+  untracked-target findings on every host that does not use git. A `null` set in gives `null`
+  out, per path, never `true` (A-2).
 
 ### Proving your integration
 

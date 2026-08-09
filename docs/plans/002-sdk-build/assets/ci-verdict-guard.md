@@ -103,6 +103,29 @@ the same day, wrote the rule down and then failed to apply it to our own reading
 can state is not a rule you have applied**; that gap is where all three halves of this document
 live.
 
+### Two corollaries, both found the same hour
+
+**1. Recording a finding can invalidate the measurement the finding is about.** I committed the
+expiry rule above and *that push expired the verdict I was waiting on* — my watcher was still
+keyed to a sha that had stopped being head. This is not carelessness, it is the rule's hardest
+case: **any commit expires the head's verdict, including one whose entire content is
+documentation.** There is no version of "write it down" that avoids it.
+
+The practical resolution is not to write less, it is to **batch**: do the whole set of writes,
+push once, count once. Expiry is unavoidable; *repeated* expiry is a choice. And re-counting
+after your own documentation push is **not optional** — that is precisely the push you will feel
+entitled to skip.
+
+**2. A skipped check in a red run is not a neutral row.** `package-smoke` read `skipped` on every
+red run here and `success` the moment the branch went green — it had not been passing, it had
+been **absent**, gated behind the job that failed. Absence rendered as harmless, which is this
+document's founding defect wearing a third face.
+
+So a green count is only comparable to a green count: **`5 registered` where one was skipped is
+not the same instrument as `5 registered` where all five ran.** Read the conclusions, not just
+the total — and treat a `skipped` row as a gate whose findings you do not have, because the
+failure that skipped it was hiding whatever it would have found.
+
 ## The general form
 
 Both halves are one shape: **an instrument whose output cannot distinguish two states is not
