@@ -438,6 +438,27 @@ step — pointing harness at this package and deleting the old code — is koala
   independent basis, and the cross-drift check was ours at a different SHA. Nobody asked;
   it refused to let a correct confirmation read as stronger than it was. **Two agreeing
   checks on one basis are one check.**
+- **A RED ON AN UNWATCHED BRANCH IS INDISTINGUISHABLE FROM A GREEN — AND `main` IS THE UNWATCHED
+  BRANCH.** Found by `pij-certain-crab`, on `main`, which is the o-prime's own tree. **`main` was
+  RED for SIX consecutive commits** (`8a34a09` → `1cdfa19`), every one a governance commit by the
+  o-prime, **while both seats spent that hour enforcing verdict discipline on the PM's branch** —
+  count it, state the denominator, confirm the head has not moved. We counted the PM's every time
+  and **never counted `main` once**, because nothing in the loop points at it.
+  **Mechanism, and it is entirely mechanical**: `docs/plans/001-dd-extraction/assets/handover-packet.md`
+  embeds `government/standing-constraints.md` and the guardrails block **verbatim**. Editing either
+  source without `just gen-handover` makes `main` stale against itself **on the same commit that
+  improves it**. **RULE: an edit to `standing-constraints.md` or the guardrails source requires
+  `just gen-handover` IN THE SAME COMMIT** — same shape as persist-before-mutate, and the gate's
+  own error already prints the command.
+  **It also red-lit the PM's PR twice in one hour**, because a `pull_request` run tests the MERGE
+  REF: `main`'s stale packet lands in the branch's verdict, and the branch owner then debugs a
+  failure it did not cause.
+  **The general form is worse than the bug.** The PM's red interrupts it, because it wrote a
+  watcher. **Nothing watches `main`.** This is `ci-verdict-guard.md`'s founding defect one level
+  up — not *an empty verdict read as a pass*, but **no reader at all**. **A prime's verdict is
+  self-service by default, exactly like its status card, and for the same reason: nobody above it
+  is looking.** And it is item 9 again — *"the PM's branch is the thing under test"* was true when
+  adopted and quietly stopped being the whole truth once `main` started taking commits.
 - **Prefer the fix that does not depend on anyone being diligent.** Named by the PM at the
   end of plan 001, as the pattern behind every governance decision that stuck. Twice a
   sincere, competent agent volunteered the disciplined version of a fix — *"ask me every
