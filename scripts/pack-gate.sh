@@ -48,7 +48,7 @@ step() { printf '\n=== %s\n' "$1"; }
 fail() { printf '\npack-gate FAILED: %s\n' "$1" >&2; exit 1; }
 
 # ---------------------------------------------------------------------------
-step "1/7  clone HEAD into a clean tree (no node_modules, no dist)"
+step "1/8  clone HEAD into a clean tree (no node_modules, no dist)"
 # ---------------------------------------------------------------------------
 HEAD_SHA="$(git -C "$REPO_ROOT" rev-parse HEAD)"
 # `--local` is the fast path (hardlink-free copy of the object store), but git
@@ -62,17 +62,17 @@ git clone "${CLONE_ARGS[@]}" "$REPO_ROOT" "$CLONE"
 git -C "$CLONE" -c advice.detachedHead=false checkout --quiet "$HEAD_SHA"
 echo "    HEAD $HEAD_SHA"
 
-[ -d "$CLONE/dist" ] && fail "the clone already has dist/ — it is not clean, so prepack proves nothing"
+[ -d "$CLONE/dist" ] && fail "the clone already has dist/ — it is not clean, so the lifecycle-hook proof means nothing"
 [ -d "$CLONE/node_modules" ] && fail "the clone already has node_modules/ — it is not clean"
 echo "    clean: no dist/, no node_modules/"
 
 # ---------------------------------------------------------------------------
-step "2/7  install build dependencies in the clone"
+step "2/8  install build dependencies in the clone"
 # ---------------------------------------------------------------------------
 ( cd "$CLONE" && npm ci --silent --no-audit --no-fund ) || fail "npm ci failed in the clean clone"
 
 # ---------------------------------------------------------------------------
-step "3/7  prepare built dist/ on install; prepack must rebuild it after we clear it"
+step "3/8  prepare built dist/ on install; a lifecycle hook must rebuild it after we clear it"
 # ---------------------------------------------------------------------------
 # Both lifecycle hooks are proven here, in order, because Jordan's distribution
 # ruling made BOTH paths load-bearing: `prepare` serves the git-URL install and
@@ -83,10 +83,21 @@ step "3/7  prepare built dist/ on install; prepack must rebuild it after we clea
 [ -d "$CLONE/dist" ] || fail "npm ci did not build dist/ — prepare is not wired, so a git-URL install ships a broken package"
 echo "    prepare: npm ci built dist/ (the git-URL path)"
 
-# Now remove it, so `prepack` is still proven INDEPENDENTLY rather than passing on
-# prepare's output. If prepack is not wired, the pack below succeeds and produces a
-# tarball with no runtime — the failure this gate has always existed to catch, and
-# it stays asserted rather than assumed.
+# Now remove it and pack, so the tarball's runtime is asserted rather than assumed:
+# if NEITHER hook is wired, the pack below succeeds and produces a tarball with no
+# runtime — the failure this gate has always existed to catch.
+#
+# MEASURED, and narrower than this comment used to claim. It said `prepack` was
+# proven INDEPENDENTLY of `prepare` here. It is not: a four-line probe package
+# whose `prepare` writes a marker file shows `prepare` FIRES on a plain `npm pack`
+# under both npm 10.9.2 (node 22, our engines floor and a CI leg) and npm 11
+# (node 24) — and the pack below passes no --ignore-scripts. So clearing dist/
+# proves "prepack OR prepare rebuilt it", not prepack alone. Nothing is left
+# unproven for a consumer, because both hooks are wired today and either one
+# rebuilding dist/ is the outcome both install paths need; the claim is simply
+# smaller than the sentence that stood here. Isolating prepack would mean packing
+# with `prepare` stripped from the manifest, which is a change to what this step
+# tests, not a comment fix.
 rm -rf "$CLONE/dist"
 [ -d "$CLONE/dist" ] && fail "could not clear dist/ before the pack step"
 
@@ -102,11 +113,11 @@ case "$TARBALL_NAME" in
 esac
 TARBALL="$CLONE/$TARBALL_NAME"
 [ -f "$TARBALL" ] || fail "packed tarball not found at $TARBALL"
-[ -f "$CLONE/dist/index.js" ] || fail "prepack did not build dist/ — a clean clone does NOT self-build"
-echo "    packed $TARBALL_NAME (prepack built dist/)"
+[ -f "$CLONE/dist/index.js" ] || fail "neither prepack nor prepare rebuilt dist/ during pack — a clean clone does NOT self-build"
+echo "    packed $TARBALL_NAME (a lifecycle hook built dist/)"
 
 # ---------------------------------------------------------------------------
-step "4/7  file-list assertion — what is in the tarball, and what must not be"
+step "4/8  file-list assertion — what is in the tarball, and what must not be"
 # ---------------------------------------------------------------------------
 ( cd "$CLONE" && npm pack --dry-run --json --ignore-scripts 2>/dev/null ) | node -e '
   let s = ""; process.stdin.on("data", (d) => (s += d)).on("end", () => {
@@ -140,7 +151,7 @@ step "4/7  file-list assertion — what is in the tarball, and what must not be"
   });' || fail "the packed file list is wrong"
 
 # ---------------------------------------------------------------------------
-step "5/7  install the tarball into a throwaway consumer project"
+step "5/8  install the tarball into a throwaway consumer project"
 # ---------------------------------------------------------------------------
 mkdir -p "$CONSUMER"
 ( cd "$CONSUMER" && npm init -y >/dev/null 2>&1 )
@@ -161,7 +172,7 @@ INSTALLED_PKG="$CONSUMER/node_modules/@ai-substrate/dd"
 echo "    repo-absence: no src/, no test/ inside the installed package"
 
 # ---------------------------------------------------------------------------
-step "6/7  drive the installed bin: envelope contract + the fixture corpus"
+step "6/8  drive the installed bin: envelope contract + the fixture corpus"
 # ---------------------------------------------------------------------------
 CORPUS="$CONSUMER/corpus"
 # Resolution is `<root>/schemas/<pkg>/<schema>/schema.json`; the `schemas/` level
@@ -296,7 +307,7 @@ node -e '
 ' "$WORK/status.json" "$STATUS_CODE" || fail "the installed bin does not report a complete, honest ledger"
 
 # ---------------------------------------------------------------------------
-step "7/7  every ported verb answers on the installed bin"
+step "7/8  every ported verb answers on the installed bin"
 # ---------------------------------------------------------------------------
 node -e '
   const envelope = require(process.argv[1]);
@@ -307,5 +318,24 @@ node -e '
     || fail "verb '$verb' is claimed ported but does not answer --help on the installed bin"
 done
 echo "    ok — every claimed verb answers --help"
+
+# ---------------------------------------------------------------------------
+step "8/8  the SDK trial fixture — the published surface as a consumer sees it"
+# ---------------------------------------------------------------------------
+# Everything above drives the installed BIN. dd ships a second product through the
+# same tarball — the typed SDK — and a CLI smoke test is structurally blind to it:
+# the `exports` map, the subpath type declarations and the library's own behaviour
+# are invisible to a process that only ever spawns `dd`. Plan 002 §5.1 is the bar
+# for that half, and this is where it is met.
+#
+# It runs from the CLONE, not from the working tree. That costs nothing and buys a
+# real assertion: the fixture and its corpus must be COMMITTED. An uncommitted
+# corpus file would pass every local run and fail here, which is the same class of
+# defect the clean clone exists to catch for `dist/`.
+#
+# The tarball and the consumer are the ones this gate already built, so the
+# expensive half — pack plus install — happens exactly once.
+( cd "$CLONE" && node scripts/trial-fixture-run.mjs --tarball "$TARBALL" --consumer "$CONSUMER" ) \
+  || fail "the §5.1 trial fixture refused — the failing clause is named above"
 
 printf '\npack-gate PASSED — the tarball at %s is consumable.\n' "$TARBALL_NAME"

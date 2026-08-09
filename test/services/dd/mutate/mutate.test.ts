@@ -65,6 +65,37 @@ describe('dd mutate — locate (shape-directed, parent-aware)', () => {
     expect(entry.ok && Array.isArray(entry.value)).toBe(true);
   });
 
+  /**
+   * wl-0017 — the two refusals used to share `section-unknown` and differ only in
+   * free-text prose, so a consumer had to string-match the message to tell "the
+   * schema has no such section" from "the schema declares it and the document has
+   * not created it". Our first real consumer hit exactly that and could not branch.
+   *
+   * `mixed` is declared by the fixture schema and absent from the fixture document,
+   * so the case needs no new fixture — it was always reachable and never pinned.
+   * Nothing failed when the codes were split, which is the point: an unspecified
+   * behaviour is not a stable one.
+   */
+  it('separates a section the SCHEMA does not declare from one the DOCUMENT has not created', () => {
+    expect(locate(doc(), EVIDENCE_SCHEMA, ['mixed'])).toMatchObject({
+      ok: false,
+      reason: 'section-absent',
+    });
+    expect(locate(doc(), EVIDENCE_SCHEMA, ['nope'])).toMatchObject({
+      ok: false,
+      reason: 'section-unknown',
+    });
+    // The distinction has to survive as DATA, not as prose: same message shape,
+    // different reason. A consumer branching on `reason` must never need the text.
+    const absent = locate(doc(), EVIDENCE_SCHEMA, ['mixed']);
+    const unknown = locate(doc(), EVIDENCE_SCHEMA, ['nope']);
+    expect(absent.ok).toBe(false);
+    expect(unknown.ok).toBe(false);
+    expect(absent.ok === false && unknown.ok === false && absent.reason === unknown.reason).toBe(
+      false,
+    );
+  });
+
   it('refuses an unknown section, an unknown id and a leaf that cannot contain', () => {
     expect(locate(doc(), EVIDENCE_SCHEMA, ['nope'])).toMatchObject({
       ok: false,

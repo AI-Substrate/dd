@@ -1,84 +1,67 @@
-import { execFileSync, spawnSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
-
-const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
-const bin = join(repoRoot, 'bin', 'dd.js');
+import { describeRun, ensureBuilt, parseEnvelope, runDd } from './support/run-cli.js';
 
 /**
  * The real seam test: spawn the SHIPPED bin the way a consumer or CI would, and
  * assert the envelope contract and the status→exit-code mapping end to end.
  * Ported dd verbs slot in behind this same guarantee.
+ *
+ * THE SPAWN HELPERS ARE THE SHARED ONES, not a private copy. This file used to
+ * carry its own `runDd`/`parseEnvelope` pair, and the copies drifted: the shared
+ * one already stripped `DD_JSON` with an explicit `delete` while this one passed
+ * an `undefined`-valued key, whose handling differs across Node versions. Two
+ * implementations of "spawn the bin and read its envelope" means two different
+ * failure messages for the same defect, and the weaker one is the one that reds
+ * in CI. There is now one, and it reports everything the spawn knows.
  */
-function runDd(args: string[]) {
-  const result = spawnSync(process.execPath, [bin, ...args], {
-    cwd: repoRoot,
-    encoding: 'utf8',
-    env: { ...process.env, DD_JSON: undefined },
-  });
-  return { code: result.status, stdout: result.stdout, stderr: result.stderr };
-}
-
-function parseEnvelope(stdout: string) {
-  const line = stdout.trim().split('\n').at(-1) ?? '';
-  return JSON.parse(line) as {
-    command: string;
-    status: string;
-    timestamp: string;
-    data?: unknown;
-    error?: { code: string; message: string };
-    next_action?: string;
-  };
-}
 
 describe('dd bin smoke', () => {
-  beforeAll(() => {
-    if (!existsSync(join(repoRoot, 'dist', 'index.js'))) {
-      execFileSync('npm', ['run', 'build'], { cwd: repoRoot, stdio: 'inherit' });
-    }
-  });
+  beforeAll(ensureBuilt);
 
   it('--version prints the bare version and exits 0', () => {
-    const { code, stdout } = runDd(['--version']);
-    expect(code).toBe(0);
-    expect(stdout.trim()).toMatch(/^\d+\.\d+\.\d+$/);
+    const run = runDd(['--version']);
+    expect(run.code, describeRun(run)).toBe(0);
+    expect(run.stdout.trim(), describeRun(run)).toMatch(/^\d+\.\d+\.\d+$/);
   });
 
   it('--help lists the verbs and exits 0', () => {
-    const { code, stdout } = runDd(['--help']);
-    expect(code).toBe(0);
-    expect(stdout).toContain('Usage: dd');
-    expect(stdout).toContain('status');
+    const run = runDd(['--help']);
+    expect(run.code, describeRun(run)).toBe(0);
+    expect(run.stdout, describeRun(run)).toContain('Usage: dd');
+    expect(run.stdout, describeRun(run)).toContain('status');
   });
 
   it('a successful verb emits an ok envelope and exits 0', () => {
-    const { code, stdout } = runDd(['version']);
-    expect(code).toBe(0);
-    const env = parseEnvelope(stdout);
+    const run = runDd(['version']);
+    expect(run.code, describeRun(run)).toBe(0);
+    const env = parseEnvelope(run);
     expect(env).toMatchObject({ command: 'version', status: 'ok' });
     expect(env.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T/);
   });
 
   it('piped output auto-selects JSON without an explicit --json', () => {
     // spawnSync pipes stdout, so this run had no TTY and no DD_JSON set.
-    expect(() => parseEnvelope(runDd(['status']).stdout)).not.toThrow();
+    // Parsed rather than `.not.toThrow()`: a bare throw-assertion reports only
+    // the SyntaxError, discarding the exit code, signal and stderr that say WHY
+    // there was nothing to parse. `parseEnvelope` carries them into the message.
+    const run = runDd(['status']);
+    const env = parseEnvelope(run);
+    expect(env, describeRun(run)).toMatchObject({ command: 'status' });
   });
 
   it('--no-json forces the human renderer even when piped', () => {
-    const { code, stdout } = runDd(['--no-json', 'status']);
-    expect(code).toBe(0);
-    expect(stdout.trim().split('\n').at(0)).toBe('status: ok');
+    const run = runDd(['--no-json', 'status']);
+    expect(run.code, describeRun(run)).toBe(0);
+    expect(run.stdout.trim().split('\n').at(0), describeRun(run)).toBe('status: ok');
   });
 
   it('reports a complete port: every planned verb registered, exit 0', () => {
     // Phase 2 landed all ten verbs, so the ledger reads `ok`. It stays honest by
     // construction — `data.ported` is derived from the registered commands, so
     // this flips straight back to `unconfigured`/2 if a registration is lost.
-    const { code, stdout } = runDd(['--json', 'status']);
-    expect(code).toBe(0);
-    const env = parseEnvelope(stdout);
+    const run = runDd(['--json', 'status']);
+    expect(run.code, describeRun(run)).toBe(0);
+    const env = parseEnvelope(run);
     expect(env.status).toBe('ok');
     expect(env.next_action).toBeUndefined();
     expect((env.data as { remaining: string[]; ported: string[] }).remaining).toEqual([]);
@@ -86,9 +69,9 @@ describe('dd bin smoke', () => {
   });
 
   it('an unknown command emits an error envelope and exits 1', () => {
-    const { code, stdout } = runDd(['--json', 'no-such-verb']);
-    expect(code).toBe(1);
-    const env = parseEnvelope(stdout);
+    const run = runDd(['--json', 'no-such-verb']);
+    expect(run.code, describeRun(run)).toBe(1);
+    const env = parseEnvelope(run);
     expect(env.status).toBe('error');
     expect(env.error?.code).toBe('E001');
     expect(env.next_action).toBeTruthy();

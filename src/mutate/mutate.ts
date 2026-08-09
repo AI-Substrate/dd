@@ -159,7 +159,7 @@ export function ddSet(
   if (!cursor.ok) return cursor;
   if (cursor.parent === null) {
     const section = after.sections.find((entry) => entry.name === cursor.key);
-    if (!section) return refuse('section-unknown', `the document has no section "${cursor.key}"`);
+    if (!section) return refuse('section-absent', `the document has no section "${cursor.key}"`);
     section.value = coerced.value;
   } else if (Array.isArray(cursor.parent)) {
     cursor.parent[cursor.key as number] = coerced.value;
@@ -271,7 +271,7 @@ export function ddRemove(
 
   if (cursor.parent === null) {
     const index = after.sections.findIndex((entry) => entry.name === cursor.key);
-    if (index < 0) return refuse('section-unknown', `the document has no section "${cursor.key}"`);
+    if (index < 0) return refuse('section-absent', `the document has no section "${cursor.key}"`);
     after.sections.splice(index, 1);
   } else if (Array.isArray(cursor.parent)) {
     cursor.parent.splice(cursor.key as number, 1);

@@ -69,7 +69,14 @@ export interface DdLinkTarget {
   value: unknown;
   /** Content digest of the target document, as the basis ledger records it. */
   sha: string;
-  tracked: boolean;
+  /**
+   * Whether the target is tracked by the host's VCS — `null` when the host has
+   * no tracking concept at all (non-repo, or git unavailable), which is not the
+   * same claim as `false`. Widened from `boolean` by A-2: this value is the
+   * loader's answer passed straight through, so narrowing it back here would
+   * re-introduce, at the layer consumers actually read, the lie A-2 removed.
+   */
+  tracked: boolean | null;
 }
 
 export type DdLinkResolution =
@@ -103,7 +110,8 @@ export interface DdGraphNode {
   path: string;
   schema: string;
   sha: string;
-  tracked: boolean;
+  /** As {@link DdLinkTarget.tracked} — `null` means the host has no tracking concept. */
+  tracked: boolean | null;
   /** True when this document was reached by a link but is not itself a scan seed. */
   external: boolean;
 }

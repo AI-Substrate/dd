@@ -1155,3 +1155,199 @@ describe('dd graph map — the 80-column contract, on addresses that break it (T
     expect(next).toContain('\u2502');
   });
 });
+
+/**
+ * `nodeId` — F1 identity spelling, reaching PUBLIC `mapAddress` output (plan 002
+ * §7a S-1a; upstream cfa501a6's F1 half for `links/map.ts`).
+ *
+ * WHY THIS IS SCOPED IN HERE when upstream filed the same site as latent. There,
+ * every route into `mapAddress` was a CLI ingress that had already normalised, so
+ * no reachable defect existed. Here `mapAddress`, `DdLinkEdge` and the map result
+ * types are all on the `./links` public barrel: an SDK consumer builds the seed
+ * and the edge list itself, from its own filesystem walk, with nothing in
+ * between. `nodeId`'s output then reaches the consumer twice over — verbatim in
+ * `issues[].location`, and structurally in `nodes[].key`/`parent` and the node
+ * count, because two spellings of one document fail to dedup into one node.
+ *
+ * Each case runs the SAME logical corpus under three spellings and compares
+ * against the posix one, which is the contract as stated: however a consumer
+ * spells a path, the answer is the same answer.
+ */
+describe('nodeId — F1 identity spelling on the public map surface (S-1a)', () => {
+  /**
+   * Test-local, and deliberately NOT `src`'s `toPosix`: the fixture and the fix
+   * must not be the same instrument, or the test only proves the function agrees
+   * with itself.
+   */
+  function hostKey(path: string): string {
+    return path
+      .replace(/\\/g, '/')
+      .replace(/^([a-z]):/, (_, drive: string) => `${drive.toUpperCase()}:`);
+  }
+
+  /**
+   * A loader that answers for one document however its path is spelled — which
+   * is what a real Windows filesystem does. Modelling the HOST, not hiding the
+   * defect: `nodeId` is only ever handed paths that already reached a real file,
+   * so the open question is whether two such paths collapse to one identity.
+   */
+  class WinDocLoader implements DocLoader {
+    constructor(private readonly docs: ReadonlyMap<string, DdDoc>) {}
+
+    load(path: string): DocLoadResult {
+      const found = this.docs.get(hostKey(path));
+      return found
+        ? { ok: true, path, doc: found, sha: `sha-${hostKey(path)}`, tracked: true }
+        : { ok: false, path, reason: 'missing', message: `address target is missing: ${path}` };
+    }
+  }
+
+  /** One logical repo, three ways a caller could legitimately spell it. */
+  const SPELLINGS = [
+    { name: 'posix', repo: 'C:/repo', at: (rel: string) => `C:/repo/${rel}` },
+    {
+      name: 'backslash',
+      repo: 'C:\\repo',
+      at: (rel: string) => `C:\\repo\\${rel.replace(/\//g, '\\')}`,
+    },
+    { name: 'lowercase drive', repo: 'c:/repo', at: (rel: string) => `c:/repo/${rel}` },
+  ] as const;
+
+  const PLAN_REL = 'docs/plan.dd.json';
+  const PRESSURE_REL = 'docs/pressure.dd.json';
+  const CANONICAL_PRESSURE = `C:/repo/${PRESSURE_REL}`;
+
+  it('addresses a scan issue identically however the seed path is spelled', () => {
+    // An unindexable seed is the shortest route to the one place a raw nodeId
+    // string is emitted verbatim to a consumer: `link-scan-incomplete`.
+    const deps = {
+      schemaResolver: new MapSchemaResolver(),
+      docLoader: new WinDocLoader(new Map()),
+    };
+
+    const located = SPELLINGS.map(({ repo, at }) =>
+      mapAddress({ path: at(PLAN_REL), interior: ['rows', 'ac-0001'] }, [], deps, {
+        repoRoot: repo,
+        depth: 2,
+        maxNodes: 20,
+        direction: 'both',
+      }).issues.map((issue) => issue.location),
+    );
+
+    expect(located[0]).toEqual(['C:/repo/docs/plan.dd.json#rows/ac-0001']);
+    for (const locations of located) expect(locations).toEqual(located[0]);
+  });
+
+  /**
+   * Two edges citing ONE document under two spellings — exactly what a native
+   * filesystem walk feeding an already-POSIX address boundary produces. Under
+   * the `posix` spelling both strings are equal, so that row is a CONTROL: it
+   * yields one node with or without the fix, which is what makes the other two
+   * rows a measurement of the fix rather than of the fixture.
+   */
+  function twoSpellingsOfOneTarget(at: (rel: string) => string): {
+    seedPath: string;
+    deps: { schemaResolver: SchemaResolver; docLoader: WinDocLoader };
+    edges: DdLinkEdge[];
+  } {
+    const seedPath = at(PLAN_REL);
+    const docs = new Map<string, DdDoc>([
+      [
+        `C:/repo/${PLAN_REL}`,
+        doc('map/plan', [
+          { name: 'meta', value: { title: 'A plan' } },
+          {
+            name: 'rows',
+            value: [
+              { id: 'ac-0001', claim: 'first', state: 'checked', pressure: 'x#rows/bp-0001' },
+              { id: 'ac-0002', claim: 'second', state: 'checked', pressure: 'x#rows/bp-0001' },
+            ],
+          },
+        ]),
+      ],
+      [
+        CANONICAL_PRESSURE,
+        doc('map/pressure', [
+          { name: 'rows', value: [{ id: 'bp-0001', criterion: 'the pressure', state: 'checked' }] },
+        ]),
+      ],
+    ]);
+    const edges: DdLinkEdge[] = [
+      {
+        from: seedPath,
+        to: at(PRESSURE_REL),
+        address: 'x#rows/bp-0001',
+        location: '$.sections[rows].value[0].pressure',
+        rel: 'ref',
+        sameDocument: false,
+      },
+      {
+        from: seedPath,
+        to: CANONICAL_PRESSURE,
+        address: 'x#rows/bp-0001',
+        location: '$.sections[rows].value[1].pressure',
+        rel: 'ref',
+        sameDocument: false,
+      },
+    ];
+    return {
+      seedPath,
+      deps: { schemaResolver: new MapSchemaResolver(), docLoader: new WinDocLoader(docs) },
+      edges,
+    };
+  }
+
+  it('collapses two spellings of one target into ONE node, for every spelling', () => {
+    const walked = SPELLINGS.map(({ repo, at }) => {
+      const built = twoSpellingsOfOneTarget(at);
+      const result = mapAddress({ path: built.seedPath, interior: [] }, built.edges, built.deps, {
+        repoRoot: repo,
+        depth: 2,
+        maxNodes: 20,
+        direction: 'out',
+      });
+      return result.nodes.map((node) => ({
+        key: node.key,
+        parent: node.parent,
+        address: node.address,
+        arm: node.arm,
+        resolved: node.resolved,
+      }));
+    });
+
+    expect(walked[0]).toEqual([
+      { key: 'n0', parent: null, address: 'docs/plan.dd.json', arm: 'seed', resolved: true },
+      {
+        key: 'n1',
+        parent: 'n0',
+        address: 'docs/pressure.dd.json#rows/bp-0001',
+        arm: 'out',
+        resolved: true,
+      },
+    ]);
+    // The whole claim, per spelling: the same graph, key for key and parent for
+    // parent — not merely the same number of nodes.
+    for (const nodes of walked) expect(nodes).toEqual(walked[0]);
+  });
+
+  /**
+   * The control that keeps the two cases above honest. `displayAddress` already
+   * runs through `posixRelative`, which normalises both sides, so a node's
+   * ADDRESS was spelling-independent before this fix and stays so after it. It
+   * going green under negation is the evidence that the three spellings really
+   * are one corpus, and that `nodeId` is the only variable being measured.
+   */
+  it('already agreed on the displayed address — the pre-existing normalisation', () => {
+    const seeds = SPELLINGS.map(({ repo, at }) => {
+      const built = twoSpellingsOfOneTarget(at);
+      return mapAddress({ path: built.seedPath, interior: [] }, built.edges, built.deps, {
+        repoRoot: repo,
+        depth: 1,
+        maxNodes: 20,
+        direction: 'out',
+      }).seed.address;
+    });
+
+    expect(seeds).toEqual(['docs/plan.dd.json', 'docs/plan.dd.json', 'docs/plan.dd.json']);
+  });
+});

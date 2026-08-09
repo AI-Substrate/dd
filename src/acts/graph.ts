@@ -17,6 +17,7 @@ import { ErrorCodes } from '../output/error-codes.js';
 import { exitWithEnvelope } from '../output/exit.js';
 import type { CliIo, OutputPort } from '../output/output-port.js';
 import { bold, cyan, dim, green, magenta, red, yellow } from '../output/style.js';
+import { resolveInRepo } from '../shared/posix-path.js';
 import { codedLinkIssues, createLinkContext, type DdActDeps, nextActionFor } from './shared.js';
 
 export function registerGraphCommand(dd: Command, io: CliIo, deps: DdActDeps): void {
@@ -27,7 +28,7 @@ export function registerGraphCommand(dd: Command, io: CliIo, deps: DdActDeps): v
     .action(async (opts: { path?: string }) => {
       const ctx = await createLinkContext(io, deps, { tracked: false });
       const port = graphPort(io, ctx.port);
-      const root = opts.path ? resolveScope(opts.path, ctx.repoRoot) : ctx.repoRoot;
+      const root = opts.path ? resolveInRepo(opts.path, ctx.repoRoot) : ctx.repoRoot;
 
       const scan = scanCorpus(ctx.fs, root);
       const failed = scan.issues.find((issue) => issue.severity === 'ERROR');
@@ -379,8 +380,4 @@ function mapPalette(enabled: boolean): DdMapPalette {
 
 function isDirection(value: string): value is DdMapDirection {
   return value === 'in' || value === 'out' || value === 'both';
-}
-
-function resolveScope(path: string, repoRoot: string): string {
-  return path.startsWith('/') ? path : `${repoRoot}/${path}`.replace(/\/+$/, '');
 }

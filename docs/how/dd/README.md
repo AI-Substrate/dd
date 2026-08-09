@@ -16,8 +16,10 @@ longer form.
 |---|---|---|
 | [dd-overview.md](dd-overview.md) | `dd-overview` | The envelope, ids and addresses, completion states and the gate, schema resolution, the CLI family, reading it with `jq`. |
 | [how-to-add-a-schema.md](how-to-add-a-schema.md) | `how-to-add-a-schema` | A worked schema package with custom enums and `gate_terminal`, the `human-skipped` receipt convention, and a custom-type adapter. |
+| [how-to-use-and-extend-the-sdk.md](how-to-use-and-extend-the-sdk.md) | `how-to-use-and-extend-the-sdk` | Consuming dd as a library — the three import tiers, wiring your own fs/hash ports, and the three steps plus gates for putting a new symbol on the public surface. |
+| [deterministic-documents.md](deterministic-documents.md) | `deterministic-documents` | The canonical single-pager: one document with two faces, ids and addresses, typed links the validator checks, a writer that refuses bad values, and a rendered view that cannot drift. |
 
-Both pages are **ported verbatim** from `src/docs/content/`, which is the source of truth. They
+Every page here is **ported verbatim** from `src/docs/content/`, which is the source of truth. They
 carry a header saying so. Editing a copy here changes nothing the CLI serves — edit the source and
 run `npm run gen:dd-docs`; `npm run check:dd-docs` runs inside `just checks` and fails the build if
 the baked module drifts from its sources.

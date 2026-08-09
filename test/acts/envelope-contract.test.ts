@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import {
+  describeRun,
   type Envelope,
   EXIT_BY_STATUS,
   ensureBuilt,
@@ -141,14 +142,14 @@ describe('envelope contract over every ported verb', () => {
       const run = () => runDd(['--json', ...testCase.argv]);
 
       it(`answers ${testCase.status} and exits ${EXIT_BY_STATUS[testCase.status]}`, () => {
-        const { code, stdout } = run();
-        const envelope = parseEnvelope(stdout);
-        expect(envelope.status).toBe(testCase.status);
-        expect(code).toBe(EXIT_BY_STATUS[testCase.status]);
+        const cli = run();
+        const envelope = parseEnvelope(cli);
+        expect(envelope.status, describeRun(cli)).toBe(testCase.status);
+        expect(cli.code, describeRun(cli)).toBe(EXIT_BY_STATUS[testCase.status]);
       });
 
       it('carries the envelope shape', () => {
-        const envelope = parseEnvelope(run().stdout);
+        const envelope = parseEnvelope(run());
         expect(typeof envelope.command).toBe('string');
         expect(envelope.command.length).toBeGreaterThan(0);
         expect(envelope.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
@@ -157,7 +158,7 @@ describe('envelope contract over every ported verb', () => {
       it(
         testCase.status === 'ok' ? 'needs no next_action' : 'carries a next_action (required)',
         () => {
-          const envelope = parseEnvelope(run().stdout);
+          const envelope = parseEnvelope(run());
           if (testCase.status === 'ok') return;
           expect(envelope.next_action).toBeTruthy();
         },
@@ -165,7 +166,7 @@ describe('envelope contract over every ported verb', () => {
 
       if (testCase.code) {
         it(`reports ${testCase.code}`, () => {
-          expect(parseEnvelope(run().stdout).error?.code).toBe(testCase.code);
+          expect(parseEnvelope(run()).error?.code).toBe(testCase.code);
         });
       }
     });
@@ -191,14 +192,14 @@ describe('every ported verb is a proven verb', () => {
   beforeAll(ensureBuilt);
 
   it('exercises everything dd status calls ported', () => {
-    const status = parseEnvelope(runDd(['--json', 'status']).stdout);
+    const status = parseEnvelope(runDd(['--json', 'status']));
     const ported = (status.data as { ported: string[] }).ported;
     const exercised = new Set(VERB_CASES.map((testCase) => testCase.verb));
     expect([...ported].sort()).toEqual([...ported].filter((verb) => exercised.has(verb)).sort());
   });
 
   it('claims a verb only once it answers on the shipped bin', () => {
-    const status = parseEnvelope(runDd(['--json', 'status']).stdout);
+    const status = parseEnvelope(runDd(['--json', 'status']));
     for (const verb of (status.data as { ported: string[] }).ported) {
       expect(runDd([verb, '--help']).code, `${verb} --help`).toBe(0);
     }

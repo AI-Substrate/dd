@@ -69,6 +69,16 @@ check-handover:
 check-exports:
     node scripts/exports-reachability-probe.mjs
 
+# Dependency advisories, blocking on what someone can ACT on. Production high or
+# critical always reds — that is what a user installs. A DEV advisory reds only
+# once a fix exists, because a gate that fails for a reason nobody can fix trains
+# everyone to skip the line. Crucially the fixable/unfixable split is re-derived
+# every run rather than baked as an exemption list: the day vitest ships a patched
+# line, this goes red by itself. Replaces `npm audit --audit-level=high || true`,
+# which had been printing six high advisories under a green tick.
+audit:
+    node scripts/audit-gate.mjs
+
 # Fail if orient-local's repo-state block no longer matches `dd --json status`.
 # orient-local is the mandatory first read for a new seat; it once carried a
 # hand-written "Measured:" line claiming the port had not happened, long after it
@@ -84,6 +94,31 @@ check-orient:
 # rule: they carry their own discovery roots and several drift on purpose.
 self-host:
     ./scripts/self-host-check.sh
+
+# Prove the PUBLISHED SURFACE is consumable: pack a tarball, install it into a
+# throwaway project with a real `npm install <tgz>`, and compile + run the §5.1
+# trial fixture against it in Node's own NodeNext resolution.
+#
+# This is plan 002's acceptance gate. `just typecheck` already compiles the same
+# fixture in-repo, but under `Bundler` resolution against local `dist/` reached by
+# self-name — which is structurally blind to the `files` allowlist, the prepack
+# build, the runtime dependencies, and whether the library actually behaves. The
+# two are not redundant; they fail for different reasons.
+#
+# Measured at ~6s, which is why it is cheap enough for the inner loop while
+# `just pack-gate` (a clean clone plus `npm ci`) is not. It does resolve
+# `commander` and `jiti` from the registry on a cold npm cache.
+#
+# NOT in `just checks` — and that is a fence outcome, not a judgement that it
+# does not belong there. `test/ci-parity.test.ts` binds every gate inside
+# `checks` to a matching step in `.github/workflows/ci.yml`, and ci.yml is
+# outside the P5 packet's allowed paths, so adding the line here without the
+# matching CI step would redden the parity guard by design. It rides
+# `just pack-gate` instead (§5.1 T4's sanctioned alternative), where CI already
+# runs it on every PR through the package-smoke job — against a tarball built
+# from a CLEAN CLONE, which is the stronger artifact of the two.
+check-trial:
+    node scripts/trial-fixture-run.mjs
 
 # The canonical proof lane: what CI runs and what `harness checks` wraps. Build
 # before test — the smoke test spawns the compiled bin. The docs drift gate runs
@@ -101,6 +136,7 @@ checks:
     just check-orient
     just check-handover
     just check-exports
+    just audit
     just self-host
     just test
 

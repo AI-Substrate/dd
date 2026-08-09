@@ -10,11 +10,11 @@
   "bin": {
     "dd": "./bin/dd.js"
   },
-  "$comment": "exports — SKELETON, not frozen (plan 001 tk-0005; the freeze is phase 3, ac-0002). Every subpath below is an import specifier OBSERVED in a harness consumer (research dossier F-04), mapped explicitly rather than by wildcard so that what is public is a list somebody chose. './plan' is DELIBERATELY ABSENT pending Jordan's OQ-2 ruling — whether src/plan ships publicly, stays internal, or returns harness-side is unruled, and a wildcard would have decided it by accident. The plan barrel is proven importable internally only; see test/consumer-surface.test.ts and docs/plans/001-dd-extraction/plan.dd.md#open-questions.",
+  "$comment": "exports — the ratified plan-002 surface (design-decision.md D-1..D-6, o-prime 2026-08-08). Every subpath is an import specifier OBSERVED in a consumer, mapped explicitly rather than by wildcard so that what is public is a list somebody chose. '.' is a CURATED PURE BARREL (dist/lib.js): importing the package used to execute the CLI and yield zero named exports, which is the canonical dual-package defect. The bin is unchanged and is no longer reachable through the map. './node' is the host-bound tier — NodeSchemaFs, trackedPaths, DdActDeps, DD_ISSUE_CODES, renderDocument — named so a consumer can tell whether an import costs it a host dependency; the last two land there by ratified amendment A-1 because dd's architecture gate forbids the SDK tree from reaching 'output/' or an adapter. './plan' is DELIBERATELY ABSENT: R-2 rules that plan/ does not ship. './acts/*' is never exported. Reachability is proven, not declared — scripts/exports-reachability-probe.mjs.",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "types": "./dist/lib.d.ts",
+      "import": "./dist/lib.js"
     },
     "./core/address": {
       "types": "./dist/core/address.d.ts",
@@ -39,6 +39,10 @@
     "./links": {
       "types": "./dist/links/index.d.ts",
       "default": "./dist/links/index.js"
+    },
+    "./node": {
+      "types": "./dist/node/index.d.ts",
+      "import": "./dist/node/index.js"
     },
     "./render/renderer": {
       "types": "./dist/render/renderer.d.ts",
@@ -91,9 +95,11 @@
     "jiti": "2.7.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
     "@biomejs/biome": "^2.5.0",
     "@types/node": "^26",
     "@vitest/coverage-v8": "^4.1.8",
+    "publint": "0.3.22",
     "typescript": "^6.0.3",
     "vitest": "^4.1.8"
   }

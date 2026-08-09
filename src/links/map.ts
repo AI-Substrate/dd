@@ -5,7 +5,7 @@ import type { DdDoc, DdShape, ResolvedDdSchema } from '../core/model.js';
 import { isPathWithinRepo, type SchemaResolver } from '../core/validate.js';
 import { isRecord } from '../core/value.js';
 import type { DocLoader } from '../core/walk.js';
-import { posixRelative, resolveInRepo } from '../shared/posix-path.js';
+import { posixRelative, resolveInRepo, toPosix } from '../shared/posix-path.js';
 import { type DdLinkEdge, type DdLinkIssue, linkIssue } from './model.js';
 import { resolveLink } from './resolver.js';
 import { boundedWalk, type DdWalkCut } from './traverse.js';
@@ -349,8 +349,27 @@ export function resolveMapSeed(
   };
 }
 
+/**
+ * The identity of one addressable node within a walk — and therefore the thing
+ * two spellings of one document must NOT disagree about.
+ *
+ * `toPosix` at this boundary is the F1 identity-spelling fix (plan 002 §7a S-1a,
+ * upstream cfa501a6), and it is legitimate HERE for the reason it was wrong in
+ * the F2 predicate: this is not a question about what a path MEANS, it is the
+ * construction of a key. A filesystem walk on Windows yields native separators
+ * and whatever drive case the caller typed; a parsed dd address always yields
+ * forward slashes. Without this, one document reached by both routes becomes two
+ * nodes, and `mapAddress` answers with a graph that has a phantom in it.
+ *
+ * Reaching PUBLIC output, which is why this is fixed here rather than filed:
+ * `mapAddress` is exported from `./links`, so an SDK consumer supplies its own
+ * seed and its own `DdLinkEdge[]` — no CLI ingress stands between them and this
+ * function. The spelling lands in `issues[].location` verbatim, and the failure
+ * to dedup lands in `nodes[].key`/`parent` and the node count.
+ */
 function nodeId(path: string, interior: readonly string[]): string {
-  return interior.length > 0 ? `${path}#${interior.join('/')}` : path;
+  const posixPath = toPosix(path);
+  return interior.length > 0 ? `${posixPath}#${interior.join('/')}` : posixPath;
 }
 
 function displayAddress(repoRoot: string, path: string, interior: readonly string[]): string {

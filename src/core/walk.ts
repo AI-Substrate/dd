@@ -10,7 +10,7 @@ import {
 } from './validate.js';
 
 export type DocLoadResult =
-  | { ok: true; path: string; doc: DdDoc; sha: string; tracked: boolean }
+  | { ok: true; path: string; doc: DdDoc; sha: string; tracked: boolean | null }
   | { ok: false; path: string; reason: 'missing'; message: string };
 
 /** P4 and doctor implement this over their filesystem/repository ports. */
@@ -105,7 +105,12 @@ export function validateWalk(
         );
         continue;
       }
-      if (!loaded.tracked) {
+      // `=== false` and not `!loaded.tracked`: `null` means the host has no
+      // tracking concept, so there is no such thing as an untracked target to
+      // report. Only a definite "this file is not in the index" earns the WARN.
+      // A truthiness test would fire on `null` and turn "unknowable" into an
+      // accusation — the mirror of the defect A-2 removed from the loader.
+      if (loaded.tracked === false) {
         issues.push(
           finding(
             {

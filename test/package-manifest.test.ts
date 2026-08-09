@@ -1,7 +1,18 @@
 import { execFileSync } from 'node:child_process';
-import { accessSync, constants, readFileSync, statSync } from 'node:fs';
-import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import {
+  accessSync,
+  constants,
+  cpSync,
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, relative, sep } from 'node:path';
+import { afterAll, describe, expect, it } from 'vitest';
 import { repoRoot } from './support/run-cli.js';
 
 /**
@@ -30,19 +41,89 @@ interface PackResult {
 const manifest = JSON.parse(readFileSync(join(repoRoot, 'package.json'), 'utf8'));
 
 /**
- * `npm pack --dry-run` with scripts ignored: the file LIST is what these rows
- * assert, and running `prepack` here would rebuild `dist/` on every test run for
- * no extra proof. That `prepack` actually builds is proven where it matters —
- * from a clean clone, in `scripts/pack-gate.sh`.
+ * Entries a pack never reads, and copying them would cost seconds: npm's own
+ * install tree, the git directory (a FILE in a worktree), and the coverage
+ * output. Everything else is copied so the ignore rules are exercised over the
+ * same tree the repo actually has.
+ */
+const NOT_COPIED = new Set(['node_modules', '.git', 'coverage']);
+
+let packRoot: string | undefined;
+let packed: PackResult | undefined;
+
+/**
+ * `npm pack --dry-run`, run against a THROWAWAY COPY of the repo — never
+ * against the repo itself.
+ *
+ * `--ignore-scripts` alone is NOT enough here, and the previous comment's claim
+ * that it was cost a CI investigation. npm 10.9.2 — the npm bundled with node
+ * 22, which is this package's `engines` floor and a CI matrix leg — runs
+ * `prepare` on `npm pack --dry-run` ANYWAY; npm 11 (node 24) honours the flag.
+ * Measured both ways: under node 22's npm the live `dist/` mtime moves, under
+ * node 24's it does not. `prepare` is `npm run build`, and `tsc` overwrites
+ * `dist/` IN PLACE, so on node 22 these rows rebuilt the shipped output four
+ * times per suite run while sibling tests were spawning the bin out of that
+ * same directory — a window in which a module is half-written and a spawn fails
+ * for a reason no assertion here is about.
+ *
+ * Packing from a copy removes the race by construction rather than by flag:
+ * npm's cwd is the copy, so whatever lifecycle scripts npm decides to run write
+ * THERE. `prepack`/`prepare` are stripped from the copied manifest as well, so
+ * the copy needs no `node_modules` and the pack cannot shell `tsc` at all;
+ * `--ignore-scripts` stays as the second layer, no longer as the only one.
+ *
+ * What is still proven: the file LIST, from the real `npm pack`, over a tree
+ * carrying the same `files` field and the same ignore rules. That `prepack`
+ * actually builds is proven where it matters — from a clean clone, in
+ * `scripts/pack-gate.sh`.
+ *
+ * The result is packed ONCE and shared: all four rows below assert facts about
+ * the same artifact, and four identical spawns proved nothing four times.
  */
 function packDryRun(): PackResult {
+  if (packed) return packed;
+
+  packRoot = mkdtempSync(join(tmpdir(), 'dd-pack-manifest-'));
+  const tree = join(packRoot, 'repo');
+  cpSync(repoRoot, tree, {
+    recursive: true,
+    filter: (source) => {
+      const path = relative(repoRoot, source);
+      if (path === '') return true;
+      return !NOT_COPIED.has(path.split(sep)[0]) && !path.endsWith('.tgz');
+    },
+  });
+
+  const copiedManifest = JSON.parse(readFileSync(join(tree, 'package.json'), 'utf8'));
+  copiedManifest.scripts = Object.fromEntries(
+    Object.entries(copiedManifest.scripts as Record<string, string>).filter(
+      ([name]) => name !== 'prepack' && name !== 'prepare',
+    ),
+  );
+  writeFileSync(join(tree, 'package.json'), `${JSON.stringify(copiedManifest, null, 2)}\n`);
+
+  // The copy carries whatever `dist/` the repo has. If there is none, these rows
+  // are about an artifact that was never built — say so, rather than letting it
+  // surface as a missing-path assertion that reads like a packaging defect.
+  if (!existsSync(join(tree, 'dist', 'index.js'))) {
+    throw new Error(
+      'dist/ is not built, so there is no artifact to pack — run `npm run build` first ' +
+        '(these rows deliberately do NOT build it: that is what caused the mid-suite rebuild race)',
+    );
+  }
+
   const raw = execFileSync('npm', ['pack', '--dry-run', '--json', '--ignore-scripts'], {
-    cwd: repoRoot,
+    cwd: tree,
     encoding: 'utf8',
     maxBuffer: 32 * 1024 * 1024,
   });
-  return (JSON.parse(raw) as PackResult[])[0];
+  packed = (JSON.parse(raw) as PackResult[])[0];
+  return packed;
 }
+
+afterAll(() => {
+  if (packRoot) rmSync(packRoot, { recursive: true, force: true });
+});
 
 describe('package manifest', () => {
   it('keeps package.json and the release-please manifest on the same version', () => {

@@ -123,7 +123,7 @@ describe('no invocation tells a user to run `harness dd`', () => {
   it('exercises cases that really do emit command suggestions (non-vacuity)', () => {
     // If `next_action` ever stopped naming a command, the rows above would pass
     // for the wrong reason — so pin that the surface under guard is still there.
-    const envelope = parseEnvelope(runDd(['validate', 'no/such/file.dd.json', '--json']).stdout);
+    const envelope = parseEnvelope(runDd(['validate', 'no/such/file.dd.json', '--json']));
     expect(envelope.next_action).toContain('dd validate');
     expect(envelope.next_action).not.toContain('harness dd');
   });

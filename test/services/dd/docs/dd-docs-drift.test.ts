@@ -24,17 +24,22 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 const REPO_ROOT = fileURLToPath(new URL('../../../../', import.meta.url));
 const DOCS_DIR = 'src/docs';
+// The verbatim mirror the gate also checks, as of 2026-08-09. Staged here because
+// the fixture must reproduce every path the gate reads — when the gate was widened
+// to cover the mirror, this fixture was the thing that noticed it had not been.
+const MIRROR_DIR = 'docs/how/dd';
 
 let root = '';
 
 afterEach(() => {
-  if (root.length > 0) rmSync(root, { recursive: true, force: true });
+  if (root.length > 0)
+    rmSync(root, { recursive: true, force: true, maxRetries: 3, retryDelay: 50 });
   root = '';
 });
 
 /**
  * A throwaway tree the generator can run in. It derives its repo root from its
- * OWN location, so reproducing the two paths it reads is enough — and doing it
+ * OWN location, so reproducing the paths it reads is enough — and doing it
  * this way means the thing under test is the shipped generator rather than a
  * re-description of it.
  */
@@ -43,6 +48,8 @@ function stageGenerator(): string {
   mkdirSync(join(root, 'scripts'), { recursive: true });
   cpSync(join(REPO_ROOT, 'scripts/gen-dd-docs.mjs'), join(root, 'scripts/gen-dd-docs.mjs'));
   cpSync(join(REPO_ROOT, DOCS_DIR), join(root, DOCS_DIR), { recursive: true });
+  mkdirSync(join(root, MIRROR_DIR), { recursive: true });
+  cpSync(join(REPO_ROOT, MIRROR_DIR), join(root, MIRROR_DIR), { recursive: true });
   // The gate prints `git diff` when it finds drift. Without a repository that
   // call fails and dumps git's entire usage text into the test log, burying the
   // one line that matters.

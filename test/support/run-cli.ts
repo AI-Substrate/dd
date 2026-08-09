@@ -7,7 +7,12 @@ export const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..'
 const bin = join(repoRoot, 'bin', 'dd.js');
 
 export interface CliRun {
+  /** The argv the bin was given — a red that cannot say WHICH run failed is half a red. */
+  argv: readonly string[];
   code: number | null;
+  signal: NodeJS.Signals | null;
+  /** `spawnSync` reports a failure to START (EAGAIN, ENOMEM) here, NOT in `code`. */
+  spawnError: Error | undefined;
   stdout: string;
   stderr: string;
 }
@@ -30,6 +35,15 @@ export function ensureBuilt(): void {
 /**
  * Spawn the SHIPPED bin the way a consumer or CI would. `DD_JSON` is stripped so
  * a developer's exported preference can never decide what these assertions see.
+ *
+ * EVERY FIELD THE SPAWN REPORTS IS KEPT. This returned `{code, stdout, stderr}`
+ * and `parseEnvelope` took a bare string, so a run that produced nothing
+ * parseable failed as `SyntaxError: Unexpected end of JSON input` and NOTHING
+ * else — a red that cannot distinguish a crash from a signal from a spawn that
+ * never happened from output truncated in flight. That is not hypothetical: it
+ * cost a full CI investigation on the node-22 leg, where the log could name the
+ * assertion but not the cause. 24 call sites across 7 files share this helper,
+ * so the blindness was shared too.
  */
 export function runDd(args: string[], options: { cwd?: string } = {}): CliRun {
   const env = { ...process.env };
@@ -39,13 +53,84 @@ export function runDd(args: string[], options: { cwd?: string } = {}): CliRun {
     encoding: 'utf8',
     env,
   });
-  return { code: result.status, stdout: result.stdout, stderr: result.stderr };
+  return {
+    argv: args,
+    code: result.status,
+    signal: result.signal,
+    spawnError: result.error,
+    stdout: result.stdout ?? '',
+    stderr: result.stderr ?? '',
+  };
 }
 
-/** The envelope is the LAST stdout line, so any preamble cannot confuse it. */
-export function parseEnvelope(stdout: string): Envelope {
+/**
+ * Name the shape of a run that produced no envelope, when the shape is known.
+ *
+ * A clean exit with no error whose last line is a PARTIAL JSON object is the
+ * signature of TRUNCATION and of nothing else: the command believed it
+ * succeeded, so the bytes were lost after it stopped caring. Saying so in the
+ * failure message is the difference between a fixed bug and a re-run.
+ *
+ * The partial-JSON test is what keeps that claim honest. Output that never
+ * looked like an envelope — a human-mode summary, a stack trace — is a
+ * different fault entirely, and a diagnosis that called it truncation would be
+ * this helper committing the same sin it exists to expose: a confident wrong
+ * answer where the truth was "I cannot tell".
+ */
+function diagnose(run: CliRun, line: string): string {
+  if (run.spawnError !== undefined) return 'the bin never ran — spawn itself failed';
+  if (run.signal !== null) return `the bin was killed by ${run.signal}`;
+  if (run.stdout.trim() === '') {
+    return run.code === 0
+      ? 'the bin exited 0 and wrote NOTHING to stdout'
+      : 'the bin wrote nothing to stdout and exited non-zero — read stderr';
+  }
+  if (line.startsWith('{')) {
+    return run.code === 0
+      ? 'exit 0, no error, partial JSON — the TRUNCATION signature (output lost after the command succeeded)'
+      : 'partial JSON and a non-zero exit — the bin died mid-write';
+  }
+  return 'stdout is not JSON at all — was this run in human mode, or is something else writing to stdout?';
+}
+
+/** Everything known about a spawn, on one line a CI log can be read from. */
+export function describeRun(run: CliRun): string {
+  const spawnError =
+    run.spawnError === undefined
+      ? 'none'
+      : `${(run.spawnError as NodeJS.ErrnoException).code ?? 'Error'}: ${run.spawnError.message}`;
+  return [
+    `dd ${run.argv.join(' ')}`,
+    `exit=${run.code}`,
+    `signal=${run.signal ?? 'none'}`,
+    `spawnError=${spawnError}`,
+    `stdoutBytes=${Buffer.byteLength(run.stdout)}`,
+    `stderrBytes=${Buffer.byteLength(run.stderr)}`,
+    `stdout=${JSON.stringify(run.stdout.slice(0, 400))}`,
+    `stderr=${JSON.stringify(run.stderr.slice(0, 400))}`,
+  ].join(' | ');
+}
+
+/**
+ * The envelope is the LAST stdout line, so any preamble cannot confuse it.
+ *
+ * Pass the RUN, not `run.stdout`: a bare string cannot say why it is empty, and
+ * every accepted-string call site is one that will waste an investigation the
+ * day it fails. The string overload exists only for output this helper did not
+ * produce.
+ */
+export function parseEnvelope(source: CliRun | string): Envelope {
+  const stdout = typeof source === 'string' ? source : source.stdout;
   const line = stdout.trim().split('\n').at(-1) ?? '';
-  return JSON.parse(line) as Envelope;
+  try {
+    return JSON.parse(line) as Envelope;
+  } catch (cause) {
+    const detail =
+      typeof source === 'string'
+        ? `stdoutBytes=${Buffer.byteLength(stdout)} | stdout=${JSON.stringify(stdout.slice(0, 400))} | (caller passed a bare string, so exit code, signal and stderr are unknown here)`
+        : `${diagnose(source, line)} — ${describeRun(source)}`;
+    throw new Error(`dd emitted no parseable envelope: ${detail}`, { cause });
+  }
 }
 
 /** Status → exit code, per the repo contract: ok/degraded 0, unconfigured 2, error 1. */

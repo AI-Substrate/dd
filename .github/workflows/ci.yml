@@ -93,6 +93,14 @@ jobs:
       - name: Exports reachability (map is consumable, not merely declared)
         run: node scripts/exports-reachability-probe.mjs
 
+      # Was `npm audit --audit-level=high || true` and named "(advisory)". That
+      # command exits 1 on this tree — six high advisories — so the step reported
+      # success on every commit while printing them. A step that cannot fail is
+      # not a gate. Now blocks on production advisories and on any DEV advisory
+      # that has become fixable; unfixable dev-only ones are printed, not hidden.
+      - name: Audit (blocks on actionable advisories)
+        run: node scripts/audit-gate.mjs
+
       - name: Self-host (dd renders this repo's own documents)
         run: ./scripts/self-host-check.sh
 
@@ -107,8 +115,6 @@ jobs:
           path: coverage/lcov.info
           if-no-files-found: error
 
-      - name: Audit (advisory)
-        run: npm audit --audit-level=high || true
 
   # Packaging smoke: pack the tarball, install it into a clean temp project, and
   # invoke the installed `dd` bin through its symlink. Guards the two things unit

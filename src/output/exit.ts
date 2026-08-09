@@ -13,8 +13,55 @@ export function exitCodeFor(env: Envelope): number {
   return EXIT_BY_STATUS[env.status];
 }
 
+/**
+ * Make the process streams BLOCKING before the final write.
+ *
+ * `process.exit()` terminates without draining pending stream writes, and on a
+ * PIPE Node's stdout is asynchronous — so the envelope could be queued and then
+ * discarded by the exit that follows it. Measured on this repo's own output:
+ * `dd --json graph` emits 34,316 bytes and a piped consumer received only 8,192
+ * or 16,384 of them on Node 22, every single run. Node 24 tolerated that payload
+ * and truncated above ~60,000 instead, which is why the loss showed up as a
+ * one-platform mystery rather than an obvious bug. Both are lossy; 22 is simply
+ * lossier, and 22 is this package's `engines` floor.
+ *
+ * Blocking streams make the write complete before it returns, so there is
+ * nothing left to drain and `process.exit` cannot race it. This is what Node
+ * already does for TTYs and regular files — pipes are the exception, and this
+ * puts them on the same footing.
+ *
+ * WHY NOT the `emitRawAndExit` treatment (set `process.exitCode` and return)?
+ * Because it is not equivalent here. `exitWithEnvelope` is declared `never` and
+ * 38 of its 59 call sites rely on that: they emit a terminal envelope as a bare
+ * statement and let the guarantee of not-returning stop the act. THE COUNT
+ * CARRIES ITS POPULATION, because an unscoped one is how this comment first
+ * claimed 43: 37 of the 38 are in `src/acts/**`, and the thirty-eighth is
+ * `src/app.ts:162`, where returning falls through to `throw err`. The other 21
+ * sites are terminal by position — 18 end their function, 1 is followed by a
+ * bare `return`, and 2 are the bodies of `never`-declared local `fail` helpers,
+ * which relocate the dependency to those helpers' callers rather than remove it.
+ * Measured, with the returning version built: `dd address validate` emitted TWO
+ * envelopes — an `ok` one and then an `error` one — and `dd <unknown-verb>`
+ * printed its error envelope followed by an unhandled `dd: unexpected error:`
+ * line. `tsc` catches 34 of those sites; the rest compile clean and break the
+ * one-envelope contract silently. Draining by returning is the right
+ * architecture, but it is a 59-call-site change across `src/acts/**` and
+ * `src/app.ts`, not a change to this file.
+ *
+ * Guarded rather than assumed: `_handle` is internal, so if it or `setBlocking`
+ * ever disappears this quietly does nothing — and the regression test in
+ * `test/acts/envelope-flush.test.ts` reds the moment that silence costs bytes.
+ */
+function makeOutputBlocking(): void {
+  for (const stream of [process.stdout, process.stderr]) {
+    const handle = (stream as unknown as { _handle?: { setBlocking?(on: boolean): void } })._handle;
+    handle?.setBlocking?.(true);
+  }
+}
+
 /** Single exit point for the whole CLI — only the kernel calls process.exit. */
 export function exitWithEnvelope(env: Envelope, io: OutputPort): never {
+  makeOutputBlocking();
   io.emit(env);
   process.exit(exitCodeFor(env));
 }

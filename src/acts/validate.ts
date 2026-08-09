@@ -7,13 +7,13 @@ import { NodeProcess } from '../adapters/process/node-process.js';
 import { parse } from '../core/parse.js';
 import type { DdIssue } from '../core/validate.js';
 import { validateWalk } from '../core/walk.js';
+import { NodeSchemaFs } from '../node/index.js';
 import { formatDegraded, formatError, formatOk } from '../output/envelope.js';
 import { ErrorCodes } from '../output/error-codes.js';
 import { exitWithEnvelope } from '../output/exit.js';
 import { type CliIo, createOutputPort } from '../output/output-port.js';
 import { ConventionSchemaResolver } from '../schema/resolve.js';
 import { resolveInRepo, toPosix } from '../shared/posix-path.js';
-import { NodeSchemaFs } from './schema-fs.js';
 import { DD_ISSUE_CODES, type DdActDeps, FsDocLoader, trackedPaths } from './shared.js';
 
 interface ReportedIssue extends DdIssue {
