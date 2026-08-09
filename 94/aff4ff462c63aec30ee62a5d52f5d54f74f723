@@ -1,0 +1,19 @@
+government/rulings/2026-08-09-no-sixth-builtin-relation.md
+  s_6e59036559203c::t_74dd4707b1f5c4 1-92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "94aff4ff462c63aec30ee62a5d52f5d54f74f723",
+  "prompts": {},
+  "sessions": {
+    "s_6e59036559203c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06d3bbcf-6419-4a86-8e8c-7147b4e647ce",
+        "model": "unknown"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
