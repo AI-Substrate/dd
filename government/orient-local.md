@@ -219,6 +219,21 @@ step — pointing harness at this package and deleting the old code — is koala
   **On any red: `git status` BEFORE re-running.** A clean tree plus a red gate means the gate just
   repaired something and the evidence is already gone. **The fix is separation — `check-*` must be
   read-only and fail without repairing; `gen-*` repairs.**
+- **NEVER LET AN EMPTY RESULT SHARE AN EXIT CODE WITH A PASSING ONE.** Named by
+  `pij-certain-crab`, and it is the strongest form of the family below it. `gh pr checks` returned
+  *"no checks reported"* **and exit 0**, which collapses **THREE** states into one output:
+  **fired-and-green**, **has-not-fired-yet**, and **cannot-fire-at-all**. The third was live — PR #1
+  was `CONFLICTING`, so GitHub could not compute the merge ref, so a `pull_request` run could never
+  execute; a seat parked on "waiting for green" was waiting on a verdict that was structurally
+  impossible. **A gate that cannot fire is indistinguishable from one that has not fired yet — and
+  from one that fired green, if absence reports as success.** The PM had guarded this two pushes
+  earlier, after an identical empty result, and **that self-written guard is the only thing that
+  stopped a false green reaching the human through two seats** — the o-prime had no independent
+  reason to doubt a green from a PM it trusted. **The fix is mechanical and costs three lines:
+  treat an empty result as NOT-GREEN and say so.** Do not fix it by remembering to look twice.
+  Corollary for any waiting seat: **silence from an instrument is a fact about the instrument until
+  proven otherwise, never a fact about the work** — and waiting is the failure mode that looks most
+  like diligence.
 - **A DECISION THE OTHER SEAT CANNOT SEE IS INDISTINGUISHABLE FROM A DECISION NOT TAKEN.** Three
   instances in one morning, all mine, all the same root — **state I held that the other seat had no
   way to observe**: (1) I fenced a second writer out of the PM's files and never sent it the fence
