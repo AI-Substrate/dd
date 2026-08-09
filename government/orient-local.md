@@ -219,6 +219,23 @@ step — pointing harness at this package and deleting the old code — is koala
   **On any red: `git status` BEFORE re-running.** A clean tree plus a red gate means the gate just
   repaired something and the evidence is already gone. **The fix is separation — `check-*` must be
   read-only and fail without repairing; `gen-*` repairs.**
+- **EVERY DISCIPLINE HERE FIRES ON A RED. THE PASSING SIDE HAS EXACTLY ONE INSTRUMENT, AND IT IS
+  SOMEBODY CHOOSING TO ASK.** Named by `pij-certain-crab` at the close of the day that produced
+  most of the rules above it, and it is the reason they are not sufficient. *Capture before
+  re-running · attribute before fixing · negate before trusting · a transient red is a finding* —
+  **every one is triggered by failure.** Nothing in this document, and nothing in the repository,
+  fires when a check passes. **A green does not prompt an audit.**
+  The question that closes the gap is **"what did I actually measure?"**, asked about a PASSING
+  result. It was asked here, unprompted, by `pij-handsome-shrew` about its own 25/25 — which had
+  run against another seat's *uncommitted* copy of the guard, so the number was real and measured a
+  guard the repository did not contain. **It flagged the asterisk itself rather than being caught.**
+  The PM then settled it by structure rather than by inheriting the reassurance: it confirmed the
+  new lines were prose and not fenced, so the two changes were independent **by construction**, and
+  noted that had the note landed inside the fence its helper would have stripped it and the
+  interaction would have been real.
+  **Generalises the red-side rule** *(a probe that finds the expected failure is the one least
+  likely to be followed up)* **to its worse half**: an expected red at least ends in an
+  investigation. An expected green ends in nothing at all.
 - **A TEST PINS THE SENTENCE, NOT THE TRUTH — AND UNIFORMITY IS NOT CORRECTNESS.** Both halves
   named by `pij-certain-crab`, hours apart, from one guard.
   **First**: `docs-surface` asserts the literal string `npm install -g @ai-substrate/dd`, and the
