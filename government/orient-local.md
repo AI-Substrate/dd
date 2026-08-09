@@ -219,6 +219,23 @@ step — pointing harness at this package and deleting the old code — is koala
   **On any red: `git status` BEFORE re-running.** A clean tree plus a red gate means the gate just
   repaired something and the evidence is already gone. **The fix is separation — `check-*` must be
   read-only and fail without repairing; `gen-*` repairs.**
+- **THE PARENT CAUSE UNDER MOST OF WHAT FOLLOWS: AN INSTRUMENT WHOSE OUTPUT CANNOT DISTINGUISH TWO
+  STATES IS NOT EVIDENCE FOR EITHER — until you add the instrument that can.** Named by
+  `pij-certain-crab`, and it consolidates **three separate near-misses from one day** that were
+  each nearly filed as their own incident: **the empty diff with no direction** (97 files, 10081
+  deletions, read as "main lost plan 001" — a diff has no arrow, and main was intact); **the count
+  with no denominator** (`check-runs total_count` grows as checks register, so a 5/5 green is
+  indistinguishable from 5-of-6 with one unregistered); **the green with no scope** (a parity test
+  proving a copy is faithful, read as proving it is true). *Consolidate causes, never instruments*
+  — these are three instruments and one cause.
+  **AND THE GUARD THAT CAUGHT THE FIRST OF THEM ALMOST DIED WITH THE SESSION.** The PM's
+  "empty is NOT-GREEN" rule **lived only in command strings**: it worked twice, it stopped a false
+  green reaching the human through two seats, and it would have vanished with the transcript,
+  leaving the next seat the *behaviour* without the *caveat* — a half-guard inherited as a whole
+  one. **A rule that survives only in a transcript survives exactly as long as the transcript.**
+  It is now written down (`docs/plans/002-sdk-build/assets/ci-verdict-guard.md`), including the
+  half it does NOT solve and the three costed candidates for the completeness side. **Recording
+  what a guard does not cover is part of building it**, not an admission against it.
 - **EVERY DISCIPLINE HERE FIRES ON A RED. THE PASSING SIDE HAS EXACTLY ONE INSTRUMENT, AND IT IS
   SOMEBODY CHOOSING TO ASK.** Named by `pij-certain-crab` at the close of the day that produced
   most of the rules above it, and it is the reason they are not sufficient. *Capture before
