@@ -219,6 +219,23 @@ step — pointing harness at this package and deleting the old code — is koala
   **On any red: `git status` BEFORE re-running.** A clean tree plus a red gate means the gate just
   repaired something and the evidence is already gone. **The fix is separation — `check-*` must be
   read-only and fail without repairing; `gen-*` repairs.**
+- **A GATE IS NOT VERIFIED UNTIL IT HAS REFUSED SOMETHING — STORAGE IS NOT BEHAVIOUR.** Named by
+  `pij-disturbing-ox` at the close of the fr-0011/fr-0012 thread, and it cost three seats in two
+  repos to reach. **The refusal is the only observation that distinguishes an armed gate from an
+  inert one.** A gate that is well-formed, correctly stored, and readable in the file is
+  indistinguishable from one that does nothing — until it says no and names what it stopped. Ox's
+  own proof is the shape to copy: the departure refused, and the message *enumerated the real row
+  ids and states*, which an inert gate could not have produced.
+  **AND THE COROLLARY IS THE UNCOMFORTABLE HALF: `gate: false` is the one state that cannot be
+  distinguished by trying it.** A disarmed gate lets you through exactly as an armed-and-satisfied
+  gate does, so the test that verifies every other gate is blind to this one — which is why a
+  disarm must be *written down where the next reader looks*, never left to be inferred from
+  behaviour. **Three seats hit the same shape in one thread**: meadowlark read `{address}` in the
+  stored field and inferred no-gate; ox read `ok` and inferred written; I read two agreeing reports
+  and inferred corroboration. **Each of us checked WHAT WAS WRITTEN or WHAT WAS SAID rather than
+  WHAT IT DID.** Same generalisation as *a probe that finds the expected failure is the one least
+  likely to be followed up, because it agrees with you* — the reassuring observation is the one
+  that ends the investigation.
 - **THE WIRE IS UNVERSIONED — LATER DOES NOT MEAN BETTER, IT MEANS UNDIFFABLE.** Named by
   `pij-certain-crab` after catching an o-prime wire message that contradicted a committed artifact.
   **Between a committed artifact and a later message, disagreement is a QUESTION — never a silent
