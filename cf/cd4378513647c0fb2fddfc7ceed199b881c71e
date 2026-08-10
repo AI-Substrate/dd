@@ -1,0 +1,33 @@
+docs/plans/wishlist.dd.json
+  s_6e59036559203c::t_03a0ae9ffc0fd4 266-267
+  s_6e59036559203c::t_0492906419bee8 268-270
+  s_6e59036559203c::t_9c73d6e4ddcb11 271-275
+docs/plans/wishlist.dd.md
+  s_6e59036559203c::t_091cdfa7c8b289 47
+government/orient-local.md
+  s_6e59036559203c::t_cf2ee5f64b57c1 253-308
+package-lock.json
+  s_6e59036559203c::t_94244e145ff246 1733-1735
+src/core/walk.ts
+  s_6e59036559203c::t_1886f64876c2cb 38-58
+src/links/traverse.ts
+  s_6e59036559203c::t_b4cef8c04e1df4 93-98,106
+test/services/dd/links/sweep-exclusion-unparseable.test.ts
+  s_6e59036559203c::t_bf91fa40a84e4c 1-64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "cfcd4378513647c0fb2fddfc7ceed199b881c71e",
+  "prompts": {},
+  "sessions": {
+    "s_6e59036559203c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "06d3bbcf-6419-4a86-8e8c-7147b4e647ce",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
