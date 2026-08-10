@@ -35,8 +35,27 @@ function testFixturePath(path: string): boolean {
   return testIndex >= 0 && parts.slice(testIndex + 1).includes('fixtures');
 }
 
-export function shouldExcludeFromSweep(path: string, doc: DdDoc): boolean {
-  return doc.dd.sweep_exclude === true || testFixturePath(path);
+/**
+ * Is this document excluded from a SWEEP?
+ *
+ * Two predicates with different inputs, and only one of them needs a parsed
+ * document. `doc` is therefore OPTIONAL: called without it this answers the
+ * path-only half, which a caller can ask BEFORE attempting to load.
+ *
+ * That matters because the exclusion is unreachable otherwise. A `.dd.json` bad
+ * enough not to parse fails at the loader first, and the link scan then reports
+ * `link-scan-incomplete` and degrades the envelope — for a document the sweep was
+ * meant to skip. `links/doctor.ts` promises the exclusion is "what lets a
+ * repository keep a known-bad corpus committed and still run a green
+ * `harness checks`", and a document that does not parse is the most obvious
+ * known-bad document anyone would commit. Found by a coder building a fixture.
+ *
+ * Widening the signature rather than exporting `testFixturePath` is deliberate:
+ * `./core/walk` is a PUBLISHED subpath, so a new exported symbol there is a
+ * surface change and an API review. An optional parameter is neither.
+ */
+export function shouldExcludeFromSweep(path: string, doc?: DdDoc): boolean {
+  return doc?.dd.sweep_exclude === true || testFixturePath(path);
 }
 
 function finding(issue: Omit<DdIssue, 'owner'>, owner: string): DdIssue {

@@ -250,6 +250,62 @@ step — pointing harness at this package and deleting the old code — is koala
   **The uncomfortable general form**: we write down limitations far more readily than we revisit
   them, and **nothing in a repository ages a note**. Every "not supported", "cannot currently",
   "known gap" is a claim with an expiry date that nothing enforces.
+- **A REMEDY IS A CLAIM AND NEEDS THE SAME VERIFICATION AS THE DEFECT — AND A CHEAP OBVIOUS FIX IS
+  THE SHAPE THAT ESCAPES THE CHECK.** Worked instance, 2026-08-09, three seats deep. The defect: a
+  generated banner prescribing `dd build`, which on every Unix resolves to **coreutils**. Two
+  proposed remedies, each endorsed by a seat that had verified the DEFECT one command earlier and
+  did not extend the same command to the FIX:
+  **`npx dd build`** — a package named `dd` **exists on npm** (`0.26.0`, someone else's), so in a
+  project without ours installed it **downloads and executes third-party code**. **`npx
+  @ai-substrate/dd build`** — our package **has never been published**, so it prescribes a 404.
+  **The correct answer was CHANGE NOTHING**: the status quo fails **loud and inert** (`unknown
+  operand`, exit non-zero, nothing can happen) where remedy one fails **silent and active**.
+  **A REMEDY MORE DANGEROUS THAN THE DEFECT IT REMOVES is a real class, and no amount of care about
+  the DEFECT surfaces it** — the checking reflex points at the problem, never at the answer.
+  meadowlark's diagnosis of why: **a fix does not feel like an assertion, it feels like the END of
+  one.** And crab's: **a fix that is obviously right and cheap is exactly the shape that ships
+  without the check that would have stopped it.** Two seats improved each other's answer in
+  sequence and the correct answer was to leave it alone.
+  **The structural remedy, not a resolution to be careful: COUPLE THE FIX TO THE FACT THAT MAKES IT
+  TRUE.** The banner becomes correct the moment the package is published, so it belongs **in the
+  release commit** — where it cannot land before its own precondition.
+  **AND THE SHARPER FORM, which is meadowlark's and outranks the rest of this entry: A REMEDY IS A
+  CLAIM, AND SO IS THE PREMISE THAT ONE IS NEEDED.** The arc was `dd build` → `npx dd build` →
+  `npx @ai-substrate/dd build` → **`dd build`, unchanged**. Three seats, three rounds, on a
+  one-word change, **and the status quo was correct the whole time.** Nobody scored *do nothing*
+  as a candidate until the third pass — **because the finding was framed as a DEFECT in its first
+  message, and a defect implies a fix.** Each round verified the hazard, then the fix, then the
+  second fix, and **never re-examined whether the confusion cost was worth spending anything on.**
+  **Put "change nothing" on the candidate list explicitly, every time**, or the framing of the
+  first report silently removes it.
+- **NEVER HAND-RESOLVE A GENERATED FILE — TAKE EITHER SIDE AND RE-RUN THE GENERATOR.** A hand-merged
+  `.dd.md` sibling produces a file that does not match its source, and the parity gate catches it
+  **later**, somewhere else, as a drift error whose cause is two merges back. The generator is the
+  only thing that can produce a correct answer, and it is one command.
+  **Corollary — an append-only shared ledger is a CONFLICT MAGNET the moment two branches exist**,
+  and it conflicts in TWO files: the `.dd.json` and its rendered sibling. That is a structural cost
+  of short-lived branches, not a mistake by either author. Cheapest handling: **land one, then
+  re-render the other** so the tool resolves it. Named by `pij-certain-crab` when two same-day PRs
+  each appended a wishlist row.
+- **CITE LINE NUMBERS FROM THE TREE THE WORK WILL HAPPEN IN, OR CITE NO LINE NUMBERS AT ALL.** The
+  o-prime cited `build.ts:251-258` from a worktree that was being actively edited, to a PM working
+  off `main`, where the same function sits at `:87`. **The code was identical and the finding was
+  unaffected — the citation simply did not resolve.** A line number is a claim about a FILE STATE,
+  not about code, and it decays the moment either tree moves. Cite the symbol; add the line only
+  when both parties are pinned to the same SHA.
+- **A CLAIM WHOSE TRUTH LIVES OUTSIDE THE REPO THAT ASSERTS IT IS UNMAINTAINABLE BY CONSTRUCTION.**
+  Named by `pij-legislative-tyrannosaurus`, and it survives being right OR wrong about the claim
+  itself — which is what makes it structural. **No test in the asserting repo guards it and no
+  sweep there catches it drifting**, because the thing it describes is not in that repo's tree.
+  Its ruling was therefore to **DROP** a cross-repo comparison, not to soften or correct it.
+  **Three instances in one day, all of them accurate when written**: harness's comment citing dd's
+  `writeDocumentWithSibling` as *the model* for a contract dd's rollback did not actually meet; the
+  fleet PA recipe's *"5 of 5 PAs, zero fires, ever"*, false by the time I briefed a seat on it with
+  the citation attached; and our own probe's *"plan/ does not ship"*, which shipped, and redirected
+  a consumer's reasoning because our record said the layer was absent.
+  **The remedy is placement, not diligence**: assert about your own tree, and POINT at the other
+  repo rather than characterising it. A pointer goes stale visibly — it fails to resolve. **A
+  characterisation goes stale silently and keeps reading as true.**
 - **A COMPLETE SET OF ACCURATE ROWS CAN OMIT THE FACT THAT DECIDES THE ANSWER.** Named by
   `pij-certain-crab`. Three rows described dd's install routes — `wl-0014` (never published),
   backlog 24 (global git route fails), `wl-0015` (SHA-pinned `github:` works and packs). **Every
