@@ -307,3 +307,68 @@ reports-success-while-broken family, bought deliberately.
 **Documented, not hidden**: the README states the observable failure in one sentence and documents
 the clone route as the way to a git-fresh global binary. Anyone hitting it finds it named rather
 than discovering it themselves.
+
+## 25 — `envelope-contract` asserts a status that depends on the RUNNER'S HOME · UNASSIGNED · **ADDED 2026-08-12** · **recorded, not fixed, on Jordan's instruction**
+
+**A test in this repo passes or fails on state that does not live in this repo.**
+
+`test/acts/envelope-contract.test.ts` asserts that `dd schema list` answers `ok`. It answers
+`degraded` on any machine that has home-level schemas installed, because shadowing is a real
+degraded condition and dd reports it correctly with a next_action naming the chain.
+
+**Measured, with a control arm, both at `9d2812e`:**
+
+| HOME | result |
+|---|---|
+| real (`~/.dd/schemas` present, 5 `builder/*` schemas) | **1 failed / 63 passed** |
+| empty temp dir | **64 passed / 64** |
+
+Same commit, same code, same command. **The only variable is the runner's home directory.**
+
+**dd is not wrong here — the test is.** `dd schema list` returning `degraded` with
+*"5 schema(s) shadow a lower-precedence copy"* is the correct answer to a real condition. The
+defect is that a test asserts the unshadowed answer as if it were the only one.
+
+**Why CI never caught it, and this is the part that matters.** CI runs with a clean HOME, so it
+answers `ok` every time. **CI's green means "passes on a machine with no home schemas", not
+"passes"** — an instrument whose output cannot distinguish those two states is not evidence for
+either. The five home schemas appeared at `~/.dd/schemas` on **11 Aug 07:51**, roughly ten hours
+**after** the three PRs merged at 21:38 on the 10th. **This is not fallout from that work** — the
+control arm proves the merged code is sound.
+
+**Who this hits.** The five shadowing schemas are `builder/{plan,backpressure,execution-log,fence,
+review}` — the harness builder's own home install. So **anyone who has run the builder on their
+machine will see this repo's suite go red**, and will reasonably assume they broke something.
+
+**Not ruled — needs a decision, not an implementation:**
+
+1. **Make the test hermetic** — pin HOME to a temp dir for the suite. Cheapest, and it stops the
+   test lying. Cost: the suite then *never* exercises the home rung of the resolution ladder.
+2. **Assert the shadow behaviour explicitly** — two cases, `ok` with a clean HOME and `degraded`
+   with a planted home schema. More expensive, and it turns an environment accident into the
+   coverage we do not currently have.
+3. **Both.** Option 1 is the bug fix; option 2 is the missing test.
+
+**Do NOT fix it by relaxing the assertion to accept `degraded`** — that makes the test pass in
+both worlds while distinguishing neither, which is the failure it already has.
+
+## 26 — CI runs on every PR push and is burning build minutes · UNASSIGNED · **ADDED 2026-08-12** · **Jordan's instruction, recorded not actioned**
+
+**Jordan, verbatim, 2026-08-12:** *"also we have been usign way too many build minutes, need to
+make sure pushing to PR is not auto CI build. CI to be required, but manual"* — followed
+immediately by *"remember that for next work, dont fix now"*.
+
+**The shape of what he asked for, and the tension in it, stated plainly so whoever picks this up
+does not resolve it by accident:** CI must remain a **required** check for merge, but must not
+**auto-trigger** on every push to a PR. Those two pull against each other on GitHub — a required
+check that never runs blocks the PR forever. **The mechanism has to be chosen deliberately**
+(`workflow_dispatch`, a label or comment trigger, `paths-ignore`, merge-queue-only, or a required
+job that is satisfiable without a full run). **Whoever takes this must not simply drop the
+required status to make the red go away** — that trades build minutes for the gate itself, and
+this repository has already ruled that a gate defeated by nobody at all is the worst outcome.
+
+**Measured context, so the saving is sized before the change is designed:** the three merges of
+10 Aug ran ~2 minutes each across five jobs (`build-test` ×2, `package-smoke`, `static-gates`,
+`ci-required`), and the two open dependabot PRs have each burned a full run on a **stale** nanoid
+red that no longer exists. **Nobody has yet counted the actual minutes** — that number should
+open the work, not close it.
