@@ -644,6 +644,21 @@ step — pointing harness at this package and deleting the old code — is koala
   **The cost is not the wasted report — it is that a rediscovery arrives wearing the confidence
   of a new finding**, and a supervisor who does not happen to recognise their own commit will
   bank it twice.
+- **File the observation, not the theory — the finding survives its explanations dying.**
+  fr-0017: a self-host gate went red on four files the moment a paved writer touched them.
+  The row recorded the command, the exit code, and the diff — and then, separately, a
+  presumed mechanism. That mechanism died THREE TIMES: "the bundled pin is stale" (there is
+  no pin — it is an unnameable in-repo fork), "fork-vs-dd render divergence" (src/render was
+  byte-identical), "renders-differently-per-schema" (koala's counter-theory — same schema,
+  same input, reproduced anyway). The truth was one line in 52k: RENDER_BANNER hardcodes the
+  rendering command's OWN NAME, so each implementation permanently drift-flags the other's
+  output. **The row survived because its title was the observation.** Had it been filed as
+  "the bundled pin is stale", the row would have died with the theory — the PM's own words,
+  kept because they are the rule. Corollary from the same probe unit: **a retracted finding
+  stays in the ledger at full length**, marked not-reproducible, because a retraction is
+  evidence about the reporter's instruments — fr-0016 fell to two stacked reading errors
+  (`d.now ?? d.node` on a truthy string; nav-show's field name asked of orient), and the
+  next seat probing this surface should inherit both traps, not a deleted row.
 
 ## Harness surface
 
