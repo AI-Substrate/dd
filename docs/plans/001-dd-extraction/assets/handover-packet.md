@@ -942,12 +942,12 @@ number instead of living in one agent's memory.
 
 <!-- BEGIN GENERATED: constraints (scripts/gen-handover-embeds.mjs) -->
 
-**Reproduced verbatim as of `8bfd2c9`** — 9 constraints,
+**Reproduced verbatim as of `348a25e`** — 9 constraints,
 the commit that last changed the source. Cite them BY NUMBER. Stamped past-tense copy:
 check whether yours is stale, and re-pull, with:
 
 ```bash
-git log -1 --format=%h -- government/standing-constraints.md   # newer than the stamp above? re-pull.
+git log -1 --format=%h -- .harness/government/standing-constraints.md   # newer than the stamp above? re-pull.
 ```
 
 ```
