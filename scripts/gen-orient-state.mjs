@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Derives the repo-state paragraph in `government/orient-local.md` from the
+ * Derives the repo-state paragraph in `.harness/government/orient-local.md` from the
  * shipped bin, in the same operation that writes it.
  *
  * Why this exists rather than a hand-written line: orient-local is the mandatory
@@ -19,7 +19,7 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 
-const TARGET = 'government/orient-local.md';
+const TARGET = '.harness/government/orient-local.md';
 const OPEN = '<!-- BEGIN GENERATED: repo-state (scripts/gen-orient-state.mjs) -->';
 const CLOSE = '<!-- END GENERATED: repo-state -->';
 

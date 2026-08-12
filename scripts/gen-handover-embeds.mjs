@@ -4,7 +4,7 @@
  * sources, in the same operation that writes them:
  *
  *   - the execution guardrails, read out of plan.dd.json through the shipped bin;
- *   - the standing constraints, read out of government/standing-constraints.md.
+ *   - the standing constraints, read out of .harness/government/standing-constraints.md.
  *
  * Why this is generated rather than pasted. Both blocks exist because koala
  * intends to CITE them, and a rule someone intends to cite has to arrive
@@ -22,7 +22,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 
 const TARGET = 'docs/plans/001-dd-extraction/assets/handover-packet.md';
 const PLAN = 'docs/plans/001-dd-extraction/plan.dd.json';
-const CONSTRAINTS = 'government/standing-constraints.md';
+const CONSTRAINTS = '.harness/government/standing-constraints.md';
 
 const BLOCKS = [
   {

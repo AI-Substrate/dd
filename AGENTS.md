@@ -1,5 +1,14 @@
 # AGENTS.md — dd
 
+## Government lives at `.harness/government/`
+
+This repo is governed by an o-prime whose durable state — doctrine
+(`orient-local.md`), standing constraints, rulings, briefs — lives in
+**`.harness/government/`** (moved from the repo root `government/` on
+2026-08-12, Jordan's instruction). `orient-local.md` there is the mandatory
+first read for any new seat. Fleet operating doctrine (how PMs run workers)
+is `.harness/government/how-fleets-work.md`.
+
 ## What this repo is
 
 This is the standalone home of **dd** (deterministic documents) — the tooling that

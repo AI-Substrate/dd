@@ -43,7 +43,7 @@ gen-docs:
 check-docs:
     npm run check:dd-docs
 
-# Regenerate the repo-state block in government/orient-local.md from the shipped bin.
+# Regenerate the repo-state block in .harness/government/orient-local.md from the shipped bin.
 gen-orient:
     node scripts/gen-orient-state.mjs
 
@@ -53,7 +53,7 @@ gen-handover:
     node scripts/gen-handover-embeds.mjs
 
 # Fail if the handover packet's embedded guardrails or standing constraints have
-# drifted from plan.dd.json / government/standing-constraints.md. koala intends to
+# drifted from plan.dd.json / .harness/government/standing-constraints.md. koala intends to
 # CITE those blocks, so a stale copy is a wrong contract, not a cosmetic diff --
 # the guardrail block went stale inside one review cycle when guardrail 9 was
 # amended while the packet sat in review.
@@ -154,7 +154,7 @@ clean:
     rm -rf dist coverage
 
 # Create an isolated worktree for a writer — the mechanism behind the
-# worktree-per-writer rule (government/orient-local.md, plan 001 P-2).
+# worktree-per-writer rule (.harness/government/orient-local.md, plan 001 P-2).
 #
 # Phase 4 produced three incidents from one shared index, two of which landed:
 # a delegate worktree staged as a gitlink, 185 lines of a live coder's file
