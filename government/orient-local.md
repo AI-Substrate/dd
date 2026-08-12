@@ -612,6 +612,24 @@ step — pointing harness at this package and deleting the old code — is koala
   to stage delegate worktrees; guardrail 12 making authority a SHA rather than a habit of
   citing carefully.
 
+- **A consequence stated in a brief is indistinguishable from a ruling unless it says which
+  it is.** Caught by `pij-alleged-junglefowl` on its first turn, against a brief I had just
+  written. The brief carried a section explaining that storing a derived value *requires*
+  `dd validate` to recompute and compare — true, load-bearing, and derived by me. The PM read
+  it, could not tell whether it was **scope it must build** or **analysis it must not act on**,
+  and asked rather than guessing. It was right to: I had never decided. **The reader cannot
+  recover an authoring distinction the text does not carry**, and a brief is exactly where that
+  bites, because a brief's whole job is to be acted on without re-deriving it. The fix is
+  cheap and belongs to the author: label the two — *RULED* versus *CONSEQUENCE, UNRULED* —
+  every time both appear in one document. Same family as the parent cause below: an artifact
+  whose output cannot distinguish two states is not evidence for either, and here the two
+  states were "build this" and "do not build this".
+  **The near-miss is what makes it worth recording.** A less careful seat would have built it —
+  the reasoning was sound, the section read as settled, and the result would have been correct
+  code delivered against scope nobody authorised. **It would have looked like good work, and
+  the failure would have been invisible in the artifact.** A brief that produces the right
+  outcome by luck certifies the method that produced it.
+
 ## Harness surface
 
 | Need | Command | Evidence |
