@@ -8,6 +8,7 @@ import {
 } from './constants.js';
 import type { DdDoc, DdShape, ResolvedDdSchema } from './model.js';
 import { relOf } from './rel.js';
+import { tallyMismatches } from './tally.js';
 import { isRecord } from './value.js';
 
 export type DdSeverity = 'ERROR' | 'WARN';
@@ -27,7 +28,8 @@ export type DdIssueClass =
   | 'link-type-mismatch'
   | 'schema-shape'
   | 'schema-unresolvable'
-  | 'state-note-required';
+  | 'state-note-required'
+  | 'tally-mismatch';
 
 export interface DdIssue {
   class: DdIssueClass;
@@ -563,6 +565,28 @@ export function validateDocument(
       continue;
     }
     validateShape(section.value, declaration.shape, `$.sections[${name}].value`, ctx);
+    // Recompute and compare. This is what makes STORING a tally safe rather than
+    // merely convenient: without it, a `.dd.json` edited outside dd's writers
+    // yields a document whose total contradicts its own rows while
+    // `dd build --check` PASSES, because the markdown faithfully reflects the
+    // wrong JSON. That is not drift — it is internally consistent and false, and
+    // nothing else in the repo can see it. Hand edits are not hypothetical here;
+    // a merge resolved one by hand in this repo's own plan documents.
+    //
+    // It REPORTS ONLY. Repair belongs to `dd build` and the writer verbs, which
+    // already rewrite the document; a validator that silently corrected its own
+    // input would destroy the evidence that something upstream is wrong.
+    for (const mismatch of tallyMismatches(section, declaration.shape.items)) {
+      addIssue(
+        ctx,
+        'tally-mismatch',
+        'ERROR',
+        `$.sections[${name}].${mismatch.location}`,
+        Number.isNaN(mismatch.computed)
+          ? `stored tally has "${mismatch.column}", which is not a marked column`
+          : `stored tally says ${JSON.stringify(mismatch.stored)} but the rows sum to ${mismatch.computed}`,
+      );
+    }
   }
   for (const section of doc.sections) {
     if (!(section.name in resolved.schema.sections)) {

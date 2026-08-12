@@ -3,6 +3,7 @@ import { hasLinksBucket, LINKS_BUCKET_FIELD, readLinksBucket } from '../core/buc
 import { DEFAULT_GATE_TERMINAL_STATES } from '../core/constants.js';
 import { type DdDerivedState, deriveState } from '../core/derive.js';
 import type { DdDoc, DdSection, DdShape, ResolvedDdSchema } from '../core/model.js';
+import { tallyPlan } from '../core/tally.js';
 import { isRecord } from '../core/value.js';
 import type { DdAdapterContext, DdRenderContext } from './contract.js';
 
@@ -380,11 +381,15 @@ function renderBucket(value: unknown, location: string, deps: CellDeps): string 
     .join('<br>');
 }
 
+/** The footer's label, in the first cell that is not itself carrying a sum. */
+const TALLY_LABEL = '**Tally**';
+
 function renderObjectRows(
   rows: readonly Record<string, unknown>[],
   itemShape: DdShape | undefined,
   location: string,
   deps: CellDeps,
+  stored?: Record<string, number>,
 ): string {
   const columns = columnsFor(rows, itemShape);
   const bucketDeclared = itemShape?.fields !== undefined && LINKS_BUCKET_FIELD in itemShape.fields;
@@ -406,6 +411,23 @@ function renderObjectRows(
     }
     return cells;
   });
+
+  // The footer renders the STORED sums, never a fresh computation. That is what
+  // makes `dd build --check` a drift gate over the tally too: the markdown is a
+  // faithful function of the JSON, and any disagreement between the JSON and its
+  // own rows is `dd validate`'s finding to report, not something the renderer
+  // papers over by quietly summing again.
+  const plan = tallyPlan(itemShape);
+  if (plan && stored) {
+    const footer = columns.map((column, index) => {
+      const sum = stored[column];
+      if (sum !== undefined && plan.footerColumns.includes(column)) return `**${sum}**`;
+      return index === 0 ? TALLY_LABEL : EMPTY_CELL;
+    });
+    if (showBucket) footer.push(EMPTY_CELL);
+    body.push(footer);
+  }
+
   return renderTable(showBucket ? [...columns, 'Links'] : columns, body);
 }
 
@@ -450,7 +472,13 @@ function renderSectionBody(section: DdSection, deps: CellDeps): string {
   if (Array.isArray(value)) {
     if (value.length === 0) return '_No entries._';
     if (value.every((entry) => isRecord(entry))) {
-      return renderObjectRows(value as Record<string, unknown>[], declared?.items, location, deps);
+      return renderObjectRows(
+        value as Record<string, unknown>[],
+        declared?.items,
+        location,
+        deps,
+        section.tally,
+      );
     }
     return value
       .map((entry) => `- ${typeof entry === 'string' ? entry : renderContainer(entry, 1, deps)}`)

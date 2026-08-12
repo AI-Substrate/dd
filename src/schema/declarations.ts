@@ -1,5 +1,6 @@
 import { COMPLETION_STATES, DEFAULT_GATE_TERMINAL_STATES } from '../core/constants.js';
 import type { DdEnumSchema, DdSectionSchema, DdShape, ResolvedDdSchema } from '../core/model.js';
+import { DD_TALLY_ROLES, DD_TALLY_TYPES, isTallyRole } from '../core/tally.js';
 import { isRecord } from '../core/value.js';
 import {
   type SchemaIssue,
@@ -191,6 +192,37 @@ function parseShape(raw: unknown, location: string, ctx: ParseContext): DdShape 
     }
     shape.allowAdditional = raw.allowAdditional;
   }
+  // The tally marking. This block exists for the SAME reason the `rel` block
+  // above it does, and the comment there is the receipt: `parseShape` is an
+  // ALLOW-LIST, so a key it does not name is discarded with no warning of any
+  // kind. Without these lines every `tally` in every schema would vanish between
+  // the file and the resolved shape, `tallyPlan` would see nothing marked, and
+  // the whole feature would ship inert while every one of its unit tests — which
+  // build shapes in memory and never go through this parser — passed.
+  if (raw.tally !== undefined) {
+    if (!isTallyRole(raw.tally)) {
+      fail(
+        ctx,
+        'package-invalid',
+        `${location}.tally`,
+        `tally must be ${DD_TALLY_ROLES.map((role) => `"${role}"`).join(' or ')}`,
+      );
+      return null;
+    }
+    // A tally is a SUM ACROSS COLUMNS, so it is only defined when the columns
+    // share a unit — days of a week, dollars per bucket. Marking a string is not
+    // a near miss to tolerate, it is a statement with no meaning.
+    if (!DD_TALLY_TYPES.includes(type)) {
+      fail(
+        ctx,
+        'package-invalid',
+        `${location}.tally`,
+        `tally is only meaningful on ${DD_TALLY_TYPES.join(' or ')}, not "${type}"`,
+      );
+      return null;
+    }
+    shape.tally = raw.tally;
+  }
 
   if (type === 'enum' && shape.values === undefined && shape.enum === undefined) {
     fail(
@@ -250,6 +282,22 @@ function parseShape(raw: unknown, location: string, ctx: ParseContext): DdShape 
         fields[field] = parsed;
       }
       shape.fields = fields;
+      // One row sum, one home for it. Two `total` columns would leave which one
+      // the writers refresh — and which one `dd validate` recomputes against —
+      // decided by object key order, which is exactly the kind of implicit
+      // behaviour this feature refuses.
+      const totals = Object.entries(fields)
+        .filter(([, field]) => field.tally === 'total')
+        .map(([name]) => name);
+      if (totals.length > 1) {
+        fail(
+          ctx,
+          'package-invalid',
+          `${location}.fields`,
+          `${totals.map((name) => `"${name}"`).join(' and ')} are both marked tally "total" — a row has one total`,
+        );
+        return null;
+      }
     }
     for (const field of shape.required ?? []) {
       if (shape.fields && !(field in shape.fields)) {

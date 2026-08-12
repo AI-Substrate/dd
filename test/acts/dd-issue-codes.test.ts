@@ -38,6 +38,10 @@ const EXPECTED: Record<string, string> = {
   'schema-shape': 'E402',
   'schema-unresolvable': 'E401',
   'state-note-required': 'E408',
+  // Tally columns. A stored footer sum that disagrees with the rows it claims to
+  // sum is its own class: `dd build --check` cannot see it (the markdown is a
+  // faithful render of the wrong JSON), so it needs a code a caller can filter on.
+  'tally-mismatch': 'E463',
 };
 
 describe('DD_ISSUE_CODES — one class, one code', () => {

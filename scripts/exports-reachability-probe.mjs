@@ -174,7 +174,10 @@ const DECLARED_SURFACE = [
     names: [
       'DdDoc', 'DdEnumSchema', 'DdFailure', 'DdFailureClass', 'DdHeader', 'DdInstance',
       'DdPrimitiveType', 'DdReference', 'DdReferenceMode', 'DdSection', 'DdSectionSchema',
-      'DdShape', 'DdStateEntry', 'ResolvedDdSchema',
+      // Widened for tally columns: a consumer typing a shape has to be able to
+      // name what a column's `tally` marking may be. The union is the whole
+      // vocabulary, so exporting it exports no mechanism.
+      'DdShape', 'DdStateEntry', 'DdTallyRole', 'ResolvedDdSchema',
     ],
   },
   {

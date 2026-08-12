@@ -125,12 +125,12 @@ describe('dd frozen surface manifest', () => {
 
   it('records every E400-E459 name and value', () => {
     const entries = Object.entries(ErrorCodes).filter(([, value]) => /^E4\d\d$/.test(value));
-    // Sixty-three, not sixty: plan 070 Phase 1 opened E450-E459, plan 071
-    // ph-7103 opened E460-E469, and plan 072 took E462 for the readiness gate —
-    // each by the one-line renegotiation recorded in the manifest. The count is
-    // adjusted DELIBERATELY — never loosened to a range — so a code that ships
-    // without a manifest row still fails here.
-    expect(entries).toHaveLength(63);
+    // Sixty-four, not sixty: plan 070 Phase 1 opened E450-E459, plan 071
+    // ph-7103 opened E460-E469, plan 072 took E462 for the readiness gate, and
+    // tally columns took E463 — each by the one-line renegotiation recorded in
+    // the manifest. The count is adjusted DELIBERATELY — never loosened to a
+    // range — so a code that ships without a manifest row still fails here.
+    expect(entries).toHaveLength(64);
     for (const [name, value] of entries) {
       expect(MANIFEST).toContain(`| ${value} | \`${name}\``);
     }

@@ -204,9 +204,18 @@ alternative and was rejected: readiness can fail because a backpressure receipt 
 stale or missing, which is not a statement about the plan being incomplete, and an
 agent switching on E457 would be told the wrong thing. Partial allocation —
 E463-E469 are free. The surface test counts sixty-three E4xx codes.
+**EXTENDED 2026-08-12 (one-line renegotiation, tally columns)**: a section's
+stored tally can disagree with the rows it claims to sum. Reusing
+`DD_SCHEMA_SHAPE_INVALID` (E402) was the alternative and was rejected: the
+document is perfectly well SHAPED — every field is the declared type — and the
+defect is that a stored number is false, which `dd build --check` cannot see at
+all because the markdown is a faithful render of the wrong JSON. An agent
+filtering on E402 would be told the schema was violated when it was not. Partial
+allocation — E464-E469 are free. The surface test counts sixty-four E4xx codes.
 
 | Code | Name | Failure class |
 |---|---|---|
 | E460 | `DD_FENCE_VIOLATION` | a touched path is refused by an active fence row |
 | E461 | `DD_FENCE_INVALID` | the fence document cannot be read as a fence |
 | E462 | `DD_PLAN_NOT_READY` | `plan ready --strict` reached a not-ready verdict |
+| E463 | `DD_TALLY_MISMATCH` | a stored tally disagrees with the rows it sums |

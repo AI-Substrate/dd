@@ -27,6 +27,21 @@ export interface DdSection {
   name: string;
   title?: string;
   value: unknown;
+  /**
+   * The STORED footer sums for this section: column name → sum, plus the
+   * grand total under the row-total column's own name.
+   *
+   * Stored rather than derived at render, by ruling. The reason is that agents
+   * read these with `jq` instead of summing rows themselves, so the number has
+   * to exist in the JSON to be queryable at all. It has no home in any row —
+   * a footer sum spans them — which is why it is a third key on the section
+   * rather than a field.
+   *
+   * Because it is stored, it can be made wrong by hand. `validateDocument`
+   * recomputes and compares, so the tally is a checked invariant and not
+   * trusted data.
+   */
+  tally?: Record<string, number>;
 }
 
 /** Stateful/linkable array members carry a born-once id; other fields stay schema-defined. */
@@ -62,6 +77,18 @@ export type DdPrimitiveType =
   | 'text'
   | (string & {});
 
+/**
+ * What a column does in a tally, when it does anything at all.
+ *
+ * - `in`    — marked in: summed down into the footer row, and an addend of the
+ *             row total.
+ * - `total` — holds the row sum. It is an ordinary declared column, so it
+ *             validates, addresses and renders like every other one; the mark
+ *             only says who computes its value. It is summed down too, and that
+ *             footer cell is the grand total.
+ */
+export type DdTallyRole = 'in' | 'total';
+
 /** Recursive schema shape consumed by the hand-rolled validator. */
 export interface DdShape {
   type: DdPrimitiveType;
@@ -83,6 +110,15 @@ export interface DdShape {
   rel?: string;
   gate_terminal?: readonly string[];
   allowAdditional?: boolean;
+  /**
+   * Opt this column INTO the tally. Absent means it does not participate,
+   * however numeric it looks — nothing about a tally is implicit.
+   *
+   * Only meaningful on `int` and `number`: a sum across columns is only
+   * defined when the columns share a unit, which is why this feature is a
+   * timesheet rather than an invoice. There is no expression language here.
+   */
+  tally?: DdTallyRole;
   /**
    * For `type: 'object'` — the shape every value of a DYNAMIC-KEY map must
    * satisfy (OD-8). Declared `fields` still win per key; `valuesShape` covers the

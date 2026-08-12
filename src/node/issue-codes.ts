@@ -55,4 +55,5 @@ export const DD_ISSUE_CODES: Record<DdIssueClass | DdLinkIssueClass, string> = {
   'schema-shape': ErrorCodes.DD_SCHEMA_SHAPE_INVALID,
   'schema-unresolvable': ErrorCodes.DD_SCHEMA_UNRESOLVABLE,
   'state-note-required': ErrorCodes.DD_STATE_NOTE_REQUIRED,
+  'tally-mismatch': ErrorCodes.DD_TALLY_MISMATCH,
 };
