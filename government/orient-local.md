@@ -629,6 +629,21 @@ step — pointing harness at this package and deleting the old code — is koala
   code delivered against scope nobody authorised. **It would have looked like good work, and
   the failure would have been invisible in the artifact.** A brief that produces the right
   outcome by luck certifies the method that produced it.
+- **Name a branch point WITH WHAT LANDED AT IT, or the seat re-discovers your own last commit
+  as news.** Same handover, same day, second defect. I sent a PM to a worktree cut from
+  `6fc7d83` and named the SHA and nothing else. It went on to report the `~/.dd` schema-shadow
+  failure to me as a finding — and `6fc7d83` **is** the commit that recorded it, 65 lines of
+  `docs/backlog.md`, one commit behind it the entire time. It caught its own error and framed it
+  exactly right: *"the observation stands, the novelty does not."*
+  **The failure needed both halves, which is why the remedy is on both ends.** Mine: a SHA is an
+  address, not a description — it tells a seat where it stands and nothing about what is already
+  known there, so a brief that names one without naming its content is inviting a rediscovery.
+  Theirs, volunteered without being asked: **read the branch point regardless of whether the
+  brief names it.** Take the mechanical half — write what landed — because that one holds when
+  the reader is rushed, cheap, or compacted, and never rely on the diligence half alone.
+  **The cost is not the wasted report — it is that a rediscovery arrives wearing the confidence
+  of a new finding**, and a supervisor who does not happen to recognise their own commit will
+  bank it twice.
 
 ## Harness surface
 
