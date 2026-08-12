@@ -1,0 +1,52 @@
+.harness/government/rulings/2026-08-09-no-sixth-builtin-relation.md
+  s_f5a59eaabcfb7d::t_a1d7b8275e7100 1-92
+.harness/government/rulings/2026-08-09-semantic-ontology-leaves-dd.md
+  s_f5a59eaabcfb7d::t_a1d7b8275e7100 1-73
+scripts/gen-orient-state.mjs
+  s_f5a59eaabcfb7d::t_2e538c8c8e3cc3 22
+  s_f5a59eaabcfb7d::t_c87dd338488732 3
+.harness/government/briefs/pm-brief-002-sdk-build.md
+  s_f5a59eaabcfb7d::t_a1d7b8275e7100 1-130
+.harness/government/standing-constraints.md
+  s_f5a59eaabcfb7d::t_a1d7b8275e7100 1-148
+.harness/government/orient-local.md
+  s_f5a59eaabcfb7d::t_a1d7b8275e7100 1-586,588-609,611-695,697-730
+  s_f5a59eaabcfb7d::t_fc6ee9d33e242f 587,610,696
+scripts/gen-handover-embeds.mjs
+  s_f5a59eaabcfb7d::t_c87dd338488732 7
+  s_f5a59eaabcfb7d::t_2a8dc95f52a0d6 25
+.harness/government/briefs/pm-brief-scallop-001.md
+  s_f5a59eaabcfb7d::t_a1d7b8275e7100 1-40
+AGENTS.md
+  s_f5a59eaabcfb7d::t_d69275f79274a7 3-11
+.harness/government/briefs/pa-brief-pij-major-vicuna.md
+  s_f5a59eaabcfb7d::t_a1d7b8275e7100 1-123
+justfile
+  s_f5a59eaabcfb7d::t_c87dd338488732 46,56,157
+.harness/government/briefs/brief-dd-canonical-doc.md
+  s_f5a59eaabcfb7d::t_a1d7b8275e7100 1-101
+.github/workflows/ci.yml
+  s_f5a59eaabcfb7d::t_c87dd338488732 87
+.harness/government/how-fleets-work.md
+  s_f5a59eaabcfb7d::t_fc55160f7efb4d 1-123
+.harness/government/pending.md
+  s_f5a59eaabcfb7d::t_a1d7b8275e7100 1-36
+.harness/government/briefs/pa-exact-giraffe.md
+  s_f5a59eaabcfb7d::t_a1d7b8275e7100 1-158
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "348a25e112f4be16170ffb905534c05eb09ac588",
+  "prompts": {},
+  "sessions": {
+    "s_f5a59eaabcfb7d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c1a8ee5f-0c77-4a73-9109-a12db9cd18a8",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
