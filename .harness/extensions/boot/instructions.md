@@ -9,7 +9,7 @@ broken".
 It wraps `just boot`, which runs two steps:
 
 1. `npm run build` — `tsc` emit to `dist/`.
-2. `npx vitest run test/smoke.test.ts` — spawns `bin/dd.js` as a real subprocess
+2. `npx vitest run test/smoke.test.ts` — spawns `bin/ddocs.js` as a real subprocess
    and asserts the wire contract end to end: an `ok` envelope exits 0,
    `unconfigured` exits 2 and carries a `next_action`, an unknown command exits 1
    with error code `E001`, piped stdout auto-selects JSON, and `--no-json` still
@@ -46,7 +46,7 @@ The verb reports; it does not judge. You decide:
 - **`ok` is narrower than "dd works".** This repo is a scaffold: the dd verbs are
   still being ported out of harness-engineering (`harness/cli/src/acts/dd`). A
   green lane proves the CLI seam and the envelope contract hold — it says nothing
-  about dd behaviour that has not landed yet. Run `dd status --json` for the
+  about dd behaviour that has not landed yet. Run `ddocs status --json` for the
   honest port ledger; it reports `unconfigured` until every planned verb exists.
 - **`boot` does not lint or typecheck.** That is deliberate — it is the fast lane.
   Use `harness checks` for the full gate.

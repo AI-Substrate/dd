@@ -32,7 +32,7 @@ source of truth.
 | ↳ `meta.budget` / `tasks[].spent` | Custom type → adapter (`adapters/duration.ts`), proving `ctx` carries the column declaration |
 | `limits/repo/docs/limits.dd.json` → `.dd.md` | Every **invented limit** with a fixture that CROSSES it (P2 DL-006): `MAX_CELL_DEPTH` nested-container rendering — `at-limit` sits at the bound, `crosses-limit` goes past it and collapses to `⟨…⟩`. Also proves the title fallback to the source basename when no section carries a `title` |
 | `chain/repo/docs/source.dd.json` + `consumer.dd.json` | Transclusion chain for live-ledger refresh (T005): consumer's `upstream` link carries a **precomputed cross-file** summary `[~] 2/3`; `references` row is `mode: live`; empty section renders `_No entries._` |
-| `drift/repo/docs/drift.dd.json` | The hand-edit path (AC-03). `drift.expected.md` is the correct render; `drift.dd.md` is the **deliberately hand-edited sibling** that `dd build --check` must catch as byte drift (E422) and `dd build` must overwrite |
+| `drift/repo/docs/drift.dd.json` | The hand-edit path (AC-03). `drift.expected.md` is the correct render; `drift.dd.md` is the **deliberately hand-edited sibling** that `ddocs build --check` must catch as byte drift (E422) and `ddocs build` must overwrite |
 
 ## Adapter failure classes → fixture map
 
@@ -62,7 +62,7 @@ Goldens are the spec, so the procedure is deliberately two-step and never blind
 To *inspect* what the renderer currently produces without overwriting anything:
 
 ```sh
-node harness/cli/bin/harness.js dd build <fixture>.dd.json --check --json
+ddocs build <fixture>.dd.json --check --json
 ```
 
 `--check` never writes. There is deliberately **no `--update-goldens` flag**: a

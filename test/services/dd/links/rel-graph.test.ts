@@ -110,7 +110,7 @@ function corpus() {
   );
 }
 
-describe('dd graph — relation labels (dw-0141)', () => {
+describe('ddocs graph — relation labels (dw-0141)', () => {
   it('carries the declared relation on every traversed edge', () => {
     const edges = corpus().edges;
     expect(edges.map((edge) => ({ location: edge.location, rel: edge.rel }))).toStrictEqual([
@@ -130,7 +130,7 @@ describe('dd graph — relation labels (dw-0141)', () => {
   });
 });
 
-describe('dd graph map — --rel filter (dw-0142)', () => {
+describe('ddocs graph map — --rel filter (dw-0142)', () => {
   const seed = { path: PLAN, interior: ['acceptance_criteria', 'ac-0001'] };
 
   it('shows every relation when no filter is given', () => {

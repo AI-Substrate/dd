@@ -25,7 +25,7 @@ const CLOSE = '<!-- END GENERATED: repo-state -->';
 
 /** Read the port ledger from the shipped bin — never from memory or a constant. */
 function readLedger() {
-  const raw = execFileSync('node', ['bin/dd.js', '--json', 'status'], {
+  const raw = execFileSync('node', ['bin/ddocs.js', '--json', 'status'], {
     encoding: 'utf8',
   });
   const { status, data } = JSON.parse(raw);
@@ -46,10 +46,10 @@ function renderBlock({ status, ported, remaining, planned }) {
     `Derived from the shipped bin by \`just gen-orient\` — **do not hand-edit this block**,`,
     `and do not restate these numbers in prose elsewhere in this file.`,
     '',
-    `- \`dd --json status\` → status **${status}**, ${ported.length}/${planned} ported, ${remaining.length} remaining`,
+    `- \`ddocs --json status\` → status **${status}**, ${ported.length}/${planned} ported, ${remaining.length} remaining`,
     `- Registered: ${verbs}`,
     remaining.length > 0 ? `- Remaining: ${remaining.map((v) => `\`${v}\``).join(', ')}` : null,
-    `- Re-derive: \`node bin/dd.js --json status\``,
+    `- Re-derive: \`node bin/ddocs.js --json status\``,
     '',
     CLOSE,
   ]
@@ -75,7 +75,7 @@ export function generateOrientState({ check = false } = {}) {
   }
   if (check) {
     console.error(
-      `${TARGET}: repo-state block is STALE — it no longer matches \`dd --json status\`.\n` +
+      `${TARGET}: repo-state block is STALE — it no longer matches \`ddocs --json status\`.\n` +
         'Run `just gen-orient` and commit the result.',
     );
     process.exit(1);

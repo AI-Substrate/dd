@@ -35,7 +35,7 @@ export function registerValidateCommand(dd: Command, io: CliIo, deps: DdActDeps)
       if (!Number.isInteger(depth) || depth < 0) {
         exitWithEnvelope(
           formatError(
-            'dd validate',
+            'ddocs validate',
             ErrorCodes.INVALID_ARGS,
             `--depth must be a non-negative integer, got "${opts.depth}"`,
             clock,
@@ -51,11 +51,11 @@ export function registerValidateCommand(dd: Command, io: CliIo, deps: DdActDeps)
       if (text === null) {
         exitWithEnvelope(
           formatError(
-            'dd validate',
+            'ddocs validate',
             ErrorCodes.DD_DOCUMENT_INVALID,
             `document is missing or unreadable: ${target}`,
             clock,
-            { next_action: 'Check the path, then re-run `dd validate <path>`.' },
+            { next_action: 'Check the path, then re-run `ddocs validate <path>`.' },
           ),
           port,
         );
@@ -65,13 +65,13 @@ export function registerValidateCommand(dd: Command, io: CliIo, deps: DdActDeps)
       if (Array.isArray(doc)) {
         exitWithEnvelope(
           formatError(
-            'dd validate',
+            'ddocs validate',
             ErrorCodes.DD_DOCUMENT_INVALID,
             `${target} is not a valid dd document`,
             clock,
             {
               details: { path: target, failures: doc },
-              next_action: 'Fix the reported location, then re-run `dd validate <path>`.',
+              next_action: 'Fix the reported location, then re-run `ddocs validate <path>`.',
             },
           ),
           port,
@@ -91,7 +91,7 @@ export function registerValidateCommand(dd: Command, io: CliIo, deps: DdActDeps)
 
       // OD-1: direct invocation NEVER skips a document. `sweep_exclude` and the
       // fixture-path exclusion belong to the doctor's sweep, not to this verb —
-      // pointing `dd validate` at a known-bad fixture must still fail.
+      // pointing `ddocs validate` at a known-bad fixture must still fail.
       const issues: ReportedIssue[] = validateWalk(
         doc,
         target,
@@ -113,9 +113,9 @@ export function registerValidateCommand(dd: Command, io: CliIo, deps: DdActDeps)
 
       if (blocking) {
         exitWithEnvelope(
-          formatError('dd validate', blocking.code, blocking.message, clock, {
+          formatError('ddocs validate', blocking.code, blocking.message, clock, {
             details: data,
-            next_action: `Fix ${blocking.owner} at ${blocking.location}, then re-run \`dd validate ${path}\`.`,
+            next_action: `Fix ${blocking.owner} at ${blocking.location}, then re-run \`ddocs validate ${path}\`.`,
           }),
           port,
         );
@@ -123,7 +123,7 @@ export function registerValidateCommand(dd: Command, io: CliIo, deps: DdActDeps)
       if (issues.length > 0) {
         exitWithEnvelope(
           formatDegraded(
-            'dd validate',
+            'ddocs validate',
             data,
             `${issues.length} WARN-class finding(s) — review them, or narrow the walk with --depth.`,
             clock,
@@ -132,8 +132,8 @@ export function registerValidateCommand(dd: Command, io: CliIo, deps: DdActDeps)
         );
       }
       exitWithEnvelope(
-        formatOk('dd validate', data, clock, {
-          next_action: 'Run `dd build <path>` to regenerate the sibling markdown.',
+        formatOk('ddocs validate', data, clock, {
+          next_action: 'Run `ddocs build <path>` to regenerate the sibling markdown.',
         }),
         port,
       );

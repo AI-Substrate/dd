@@ -178,9 +178,9 @@ jobs:
             npm install "@ai-substrate/dd@canary" && break
             echo "canary not visible yet (attempt $attempt/10) — waiting 15s for propagation…"; sleep 15
           done
-          test -x ./node_modules/.bin/dd || { echo "::error title=canary::@canary did not become installable after retries"; exit 1; }
-          echo "installed bin:"; ls -l node_modules/.bin/dd
-          ./node_modules/.bin/dd --json version | tee version.json
+          test -x ./node_modules/.bin/ddocs || { echo "::error title=canary::@canary did not become installable after retries"; exit 1; }
+          echo "installed bin:"; ls -l node_modules/.bin/ddocs
+          ./node_modules/.bin/ddocs --json version | tee version.json
           grep -q '"status":"ok"' version.json || { echo "::error title=canary::installed bin did not return status ok"; exit 1; }
           echo "dist-tags:"; npm dist-tag ls @ai-substrate/dd || true
           LATEST=$(npm view @ai-substrate/dd dist-tags.latest 2>/dev/null || true)

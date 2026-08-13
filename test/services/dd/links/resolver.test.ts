@@ -8,7 +8,7 @@ function resolve(raw: string, fromPath: string | null = PLAN) {
   return resolveLink(raw, deps(), { repoRoot: REPO, fromPath });
 }
 
-describe('dd links resolver — targets', () => {
+describe('ddocs links resolver — targets', () => {
   it.each([
     ['evidence.dd.json#entries', 'section', ['section']],
     ['plan.dd.json#phases/ph-1a2b', 'instance', ['section', 'instance']],
@@ -103,7 +103,7 @@ describe('dd links resolver — targets', () => {
   });
 });
 
-describe('dd links resolver — every unresolved reason', () => {
+describe('ddocs links resolver — every unresolved reason', () => {
   it.each([
     ['evidence.dd.json#nosuchsection', 'section-unknown'],
     ['plan.dd.json#meta/nosuchpart', 'part-unknown'],
@@ -173,7 +173,7 @@ describe('dd links resolver — every unresolved reason', () => {
  * with it workshop-002 Ruling 3's whole design, where a task row links to its own
  * evidence list by the task's explicit id. The exemplar corpus found it.
  */
-describe('dd links resolver — dynamic-key map interiors (OD-8)', () => {
+describe('ddocs links resolver — dynamic-key map interiors (OD-8)', () => {
   const MAP = docPath('docs/map-entries.dd.json');
 
   it('steps into a map entry addressed by its explicit id', () => {

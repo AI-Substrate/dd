@@ -60,9 +60,9 @@ export interface RefreshOptions {
  * render; view freshness; refreshing is always correct").
  *
  * **It does not rewrite the document.** Two reasons, and they are the ruling:
- * `dd build` would otherwise become a mutating verb that fights its own drift gate
+ * `ddocs build` would otherwise become a mutating verb that fights its own drift gate
  * (every build would dirty the `.dd.json`, so `--check` could never be stable); and
- * staleness already has an owner — `dd validate` reports `basis-stale`, and P4's
+ * staleness already has an owner — `ddocs validate` reports `basis-stale`, and P4's
  * `verify-basis` adjudicates a pinned one. Duplicating that surface here would give
  * an operator two answers to one question.
  *

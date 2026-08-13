@@ -126,7 +126,7 @@ step "4/8  file-list assertion — what is in the tarball, and what must not be"
     const problems = [];
 
     // Required: the bin a consumer runs, and the entry point they import.
-    for (const required of ["bin/dd.js", "dist/index.js", "dist/index.d.ts", "LICENSE", "package.json"]) {
+    for (const required of ["bin/ddocs.js", "dist/index.js", "dist/index.d.ts", "LICENSE", "package.json"]) {
       if (!paths.includes(required)) problems.push(`MISSING ${required}`);
     }
 
@@ -160,7 +160,7 @@ mkdir -p "$CONSUMER"
 ( cd "$CONSUMER" && npm install --silent --no-audit --no-fund --omit=dev "$TARBALL" ) \
   || fail "installing the tarball failed"
 
-DD="$CONSUMER/node_modules/.bin/dd"
+DD="$CONSUMER/node_modules/.bin/ddocs"
 [ -x "$DD" ] || fail "installed bin is missing or not executable: $DD"
 echo "    installed; bin resolves to $(readlink "$DD" 2>/dev/null || echo "$DD")"
 
@@ -231,28 +231,28 @@ JSON
 # temp path is judged outside the repository root and the build refuses (E429).
 run_dd() { ( cd "$CORPUS" && "$DD" "$@" ); }
 
-echo "--- dd --version"
-run_dd --version >/dev/null || fail "dd --version failed"
+echo "--- ddocs --version"
+run_dd --version >/dev/null || fail "ddocs --version failed"
 
-echo "--- dd validate (must be ok, exit 0)"
+echo "--- ddocs validate (must be ok, exit 0)"
 set +e
 run_dd --json validate timing.dd.json > "$WORK/validate.json"; VALIDATE_CODE=$?
 set -e
-[ "$VALIDATE_CODE" -eq 0 ] || { cat "$WORK/validate.json"; fail "dd validate exited $VALIDATE_CODE, expected 0"; }
+[ "$VALIDATE_CODE" -eq 0 ] || { cat "$WORK/validate.json"; fail "ddocs validate exited $VALIDATE_CODE, expected 0"; }
 node -e '
   const envelope = require(process.argv[1]);
   if (envelope.status !== "ok") { console.error(JSON.stringify(envelope, null, 2)); process.exit(1); }
   for (const key of ["command", "status", "data", "timestamp"]) {
     if (!(key in envelope)) { console.error(`envelope missing ${key}`); process.exit(1); }
   }
-' "$WORK/validate.json" || fail "dd validate did not answer a clean envelope"
+' "$WORK/validate.json" || fail "ddocs validate did not answer a clean envelope"
 echo "    ok"
 
-echo "--- dd build (the jiti custom type must reach the rendered markdown)"
+echo "--- ddocs build (the jiti custom type must reach the rendered markdown)"
 set +e
 run_dd --json build timing.dd.json > "$WORK/build.json"; BUILD_CODE=$?
 set -e
-[ "$BUILD_CODE" -eq 0 ] || { cat "$WORK/build.json"; fail "dd build exited $BUILD_CODE, expected 0"; }
+[ "$BUILD_CODE" -eq 0 ] || { cat "$WORK/build.json"; fail "ddocs build exited $BUILD_CODE, expected 0"; }
 grep -q '\*\*43h 30m\*\*' "$CORPUS/timing.dd.md" \
   || { echo "--- rendered:"; cat "$CORPUS/timing.dd.md"; fail "the jiti-loaded adapter did NOT run through the installed tarball"; }
 grep -q '2610' "$CORPUS/timing.dd.md" \

@@ -19,7 +19,7 @@ const MINIMAL = {
   sections: { body: { shape: { type: 'string' } } },
 };
 
-describe('dd schema declarations', () => {
+describe('ddocs schema declarations', () => {
   it('takes its name from the folder path, never from the file', () => {
     const result = parseSchemaDeclaration(
       JSON.stringify({ ...MINIMAL, name: 'someone/else' }),
@@ -232,7 +232,7 @@ describe('dd schema declarations', () => {
  * declaration, and the contradiction engine would then ship inert on every real
  * plan with a green build.
  */
-describe('dd schema declarations — link relations', () => {
+describe('ddocs schema declarations — link relations', () => {
   const withShape = (shape: unknown) => parse({ ...MINIMAL, sections: { body: { shape } } });
 
   it('round-trips a rel on a single link shape', () => {

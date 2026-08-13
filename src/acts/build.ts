@@ -29,7 +29,7 @@ export {
  *
  * NOT for a mutating verb. A verb that changes a document and then regenerates
  * best-effort can report success while leaving source and sibling out of step —
- * manufacturing the very drift `dd build --check` exists to catch. Mutating verbs
+ * manufacturing the very drift `ddocs build --check` exists to catch. Mutating verbs
  * use {@link writeDocumentWithSibling}, which stages the render first and rolls
  * the source back if either write fails.
  */
@@ -144,7 +144,7 @@ export function restoreSource(fs: RollbackFs, path: string, previousText: string
  * killed mid-`write(2)` — leaves a TRUNCATED `.dd.md` on disk while the rollback
  * puts only the `.dd.json` back. The verb then returned E452 saying "the document
  * was left unchanged", which was false: the repo was left in precisely the drift
- * state this function exists to make impossible, and `dd build --check` would
+ * state this function exists to make impossible, and `ddocs build --check` would
  * later report it as a hand-edit. "It threw" never implied "it wrote nothing";
  * staging is what makes those two the same claim.
  */
@@ -239,7 +239,7 @@ function envelopeFor(
   const evidence = [{ label: 'rendered markdown', path: result.sibling }];
   const degradations = [...result.warnings, ...result.refreshIssues];
   if (degradations.length === 0) {
-    return formatOk('dd build', data, clock, {
+    return formatOk('ddocs build', data, clock, {
       ...(outcome === 'written' && { evidence }),
       next_action:
         outcome === 'written'
@@ -260,7 +260,7 @@ function envelopeFor(
       : []),
   ].join('; ');
   return formatDegraded(
-    'dd build',
+    'ddocs build',
     data,
     `Rendered with ${causes}. Fix the cause, or accept the degraded render.`,
     clock,
@@ -281,7 +281,7 @@ export function registerBuildCommand(dd: Command, io: CliIo, deps: DdActDeps): v
       const result = await renderDocument(target, repoRoot);
       if (!result.ok) {
         exitWithEnvelope(
-          formatError('dd build', result.code, result.message, clock, {
+          formatError('ddocs build', result.code, result.message, clock, {
             ...(result.details !== undefined && { details: result.details }),
             next_action: result.next_action,
           }),
@@ -308,7 +308,7 @@ export function registerBuildCommand(dd: Command, io: CliIo, deps: DdActDeps): v
         if (committed !== result.markdown) {
           exitWithEnvelope(
             formatError(
-              'dd build',
+              'ddocs build',
               ErrorCodes.DD_RENDER_DRIFT,
               committed === null
                 ? `no rendered sibling to check against: ${result.sibling}`
@@ -316,7 +316,7 @@ export function registerBuildCommand(dd: Command, io: CliIo, deps: DdActDeps): v
               clock,
               {
                 details: { ...data, drift: true },
-                next_action: `Regenerate with \`dd build ${path}\` and commit the result.`,
+                next_action: `Regenerate with \`ddocs build ${path}\` and commit the result.`,
               },
             ),
             port,
@@ -332,7 +332,7 @@ export function registerBuildCommand(dd: Command, io: CliIo, deps: DdActDeps): v
       } catch (error) {
         exitWithEnvelope(
           formatError(
-            'dd build',
+            'ddocs build',
             ErrorCodes.DD_RENDER_WRITE_FAILED,
             `failed to write ${result.sibling}: ${
               error instanceof Error ? error.message : String(error)

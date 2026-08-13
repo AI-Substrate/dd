@@ -8,7 +8,7 @@
     "url": "git+https://github.com/AI-Substrate/dd.git"
   },
   "bin": {
-    "dd": "./bin/dd.js"
+    "ddocs": "./bin/ddocs.js"
   },
   "$comment": "exports — the ratified plan-002 surface (design-decision.md D-1..D-6, o-prime 2026-08-08). Every subpath is an import specifier OBSERVED in a consumer, mapped explicitly rather than by wildcard so that what is public is a list somebody chose. '.' is a CURATED PURE BARREL (dist/lib.js): importing the package used to execute the CLI and yield zero named exports, which is the canonical dual-package defect. The bin is unchanged and is no longer reachable through the map. './node' is the host-bound tier — NodeSchemaFs, trackedPaths, DdActDeps, DD_ISSUE_CODES, renderDocument — named so a consumer can tell whether an import costs it a host dependency; the last two land there by ratified amendment A-1 because dd's architecture gate forbids the SDK tree from reaching 'output/' or an adapter. './plan' is DELIBERATELY ABSENT: R-2 rules that plan/ does not ship. './acts/*' is never exported. Reachability is proven, not declared — scripts/exports-reachability-probe.mjs.",
   "exports": {

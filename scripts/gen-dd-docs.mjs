@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Build-time generator for the baked `dd docs` corpus (plan 065, D15).
+ * Build-time generator for the baked `ddocs docs` corpus (plan 065, D15).
  *
  * Reads the curated allow-list (`dd-docs-manifest.json`) + each source `.md`, and
  * emits a committed TypeScript module (`docs-content.ts`) exporting a `DD_DOCS`
@@ -104,7 +104,7 @@ export function generateDdDocs({ check = false } = {}) {
     console.warn('gen-dd-docs: biome not found — emitted file may not be biome-canonical.');
   }
 
-  // The verbatim mirror under `docs/how/dd/` is part of "the dd docs" by any
+  // The verbatim mirror under `docs/how/dd/` is part of "the ddocs docs" by any
   // reasonable reading of this script's name — and until 2026-08-09 it was neither
   // regenerated nor checked here. `check:dd-docs` printed "OK — no drift" over a
   // stale mirror; only a vitest row caught it. **A gate named for a job it does not
@@ -167,7 +167,7 @@ export function generateDdDocs({ check = false } = {}) {
     console.error('  Run `npm run gen:dd-docs` and commit — the mirror is header + source, verbatim.');
   }
   if (bakedDrifted) {
-    console.error('check:dd-docs FAIL — baked dd docs drifted from their sources; diff follows');
+    console.error('check:dd-docs FAIL — baked ddocs docs drifted from their sources; diff follows');
     try {
       execFileSync('git', ['--no-pager', 'diff', '--', outPath], {
         cwd: repoRoot,

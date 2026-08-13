@@ -1,10 +1,10 @@
-<!-- Ported verbatim from the baked `dd docs` corpus (`src/docs/content/how-to-use-and-extend-the-sdk.md`).
-     The CLI carries the same text: `dd docs get how-to-use-and-extend-the-sdk`. Edit the SOURCE, then run
+<!-- Ported verbatim from the baked `ddocs docs` corpus (`src/docs/content/how-to-use-and-extend-the-sdk.md`).
+     The CLI carries the same text: `ddocs docs get how-to-use-and-extend-the-sdk`. Edit the SOURCE, then run
      `npm run gen:dd-docs` — `npm run check:dd-docs` fails the build on drift. -->
 
 # How to use dd as a library (and extend its surface)
 
-dd ships two things from one package: the `dd` **binary**, and a **library surface** you import.
+dd ships two things from one package: the `ddocs` **binary**, and a **library surface** you import.
 This page is the second one — how to consume it, and what to do when you add a feature and want
 it public.
 

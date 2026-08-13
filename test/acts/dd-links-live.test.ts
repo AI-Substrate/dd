@@ -206,7 +206,7 @@ function writeBroken(sweepExclude: boolean): void {
   });
 }
 
-describe('dd links family — live over a real corpus', () => {
+describe('ddocs links family — live over a real corpus', () => {
   beforeAll(() => {
     repo = mkdtempSync(join(tmpdir(), 'dd-links-live-'));
     seedCorpus();
@@ -462,7 +462,7 @@ describe('dd links family — live over a real corpus', () => {
     // `autoRegenerateSibling` shipped in Phase 3 with no call site, because every
     // dd verb until now was read-only. This is the first verb that MUTATES a
     // document, so it is the first that owes its `.dd.md` a regeneration \u2014 and
-    // without it `dd build --check` would later report the ledger move as drift.
+    // without it `ddocs build --check` would later report the ledger move as drift.
     const before = JSON.parse(readFileSync(join(repo, 'docs/plan.dd.json'), 'utf8'));
     write('docs/evidence.dd.json', evidenceDoc('another upstream edit'));
 
@@ -480,7 +480,7 @@ describe('dd links family — live over a real corpus', () => {
     expect(updated.envelope.data).toMatchObject({ updated: true, sibling_regenerated: true });
 
     // The sibling carries the NEW basis, and it is byte-identical to what
-    // `dd build` itself would have produced \u2014 the drift gate agrees.
+    // `ddocs build` itself would have produced \u2014 the drift gate agrees.
     const sibling = readFileSync(join(repo, 'docs/plan.dd.md'), 'utf8');
     expect(sibling).toContain(sha('docs/evidence.dd.json'));
     const check = await runDd(['dd', 'build', 'docs/plan.dd.json', '--check']);
@@ -541,7 +541,7 @@ describe('dd links family — live over a real corpus', () => {
     expect(result.envelope.next_action).toContain('never mints one');
   });
 
-  it('AC-14: dd links reports inbound and outbound edges by local scan', async () => {
+  it('AC-14: ddocs links reports inbound and outbound edges by local scan', async () => {
     const evidence = await runDd(['dd', 'links', 'docs/evidence.dd.json']);
     expect(evidence.code).toBe(0);
     const data = evidence.envelope.data as {
@@ -555,7 +555,7 @@ describe('dd links family — live over a real corpus', () => {
     expect((plan.envelope.data as { counts: { outbound: number } }).counts.outbound).toBe(2);
   });
 
-  it('AC-14: dd graph emits mermaid directly, and scopes without changing the radius', async () => {
+  it('AC-14: ddocs graph emits mermaid directly, and scopes without changing the radius', async () => {
     const graph = await runDd(['dd', 'graph']);
     expect(graph.code).toBe(0);
     const mermaid = (graph.envelope.data as { mermaid: string }).mermaid;

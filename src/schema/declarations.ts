@@ -283,7 +283,7 @@ function parseShape(raw: unknown, location: string, ctx: ParseContext): DdShape 
       }
       shape.fields = fields;
       // One row sum, one home for it. Two `total` columns would leave which one
-      // the writers refresh — and which one `dd validate` recomputes against —
+      // the writers refresh — and which one `ddocs validate` recomputes against —
       // decided by object key order, which is exactly the kind of implicit
       // behaviour this feature refuses.
       const totals = Object.entries(fields)
@@ -483,7 +483,7 @@ export function parseSchemaDeclaration(raw: string, name: string, path: string):
   };
 }
 
-/** The built-in completion vocabulary, exported so `dd schema show` can name it. */
+/** The built-in completion vocabulary, exported so `ddocs schema show` can name it. */
 export const BUILTIN_COMPLETION_ENUM: DdEnumSchema = {
   values: COMPLETION_STATES,
   gate_terminal: DEFAULT_GATE_TERMINAL_STATES,

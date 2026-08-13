@@ -1,5 +1,5 @@
-<!-- Ported verbatim from the baked `dd docs` corpus (`src/docs/content/how-to-add-a-schema.md`).
-     The CLI carries the same text: `dd docs get how-to-add-a-schema`. Edit the SOURCE, then run
+<!-- Ported verbatim from the baked `ddocs docs` corpus (`src/docs/content/how-to-add-a-schema.md`).
+     The CLI carries the same text: `ddocs docs get how-to-add-a-schema`. Edit the SOURCE, then run
      `npm run gen:dd-docs` — `npm run check:dd-docs` fails the build on drift. -->
 
 # How to add a schema (and an adapter)
@@ -69,7 +69,7 @@ Any of the four discovery roots works — the document's own folder, `<gitroot>/
 
 Three rules worth stating plainly:
 
-- **`description` lives in the file.** `dd schema list` shows it beside the resolved path.
+- **`description` lives in the file.** `ddocs schema list` shows it beside the resolved path.
 - **`gate_terminal` is declared on the enum, never on a field.** A schema may bind at most one
   gate-terminal declaration to its `state` fields — `deriveState` takes exactly one terminal set,
   so an ambiguity is refused at declaration time instead of quietly changing what "done" means.
@@ -79,8 +79,8 @@ Three rules worth stating plainly:
 ## 3. Check it resolves
 
 ```bash
-dd schema list
-dd schema show review/checklist
+ddocs schema list
+ddocs schema show review/checklist
 ```
 
 `show` prints the winning path, the section shapes, every declared enum with its gate-terminal
@@ -112,7 +112,7 @@ the *same* root, that is a hard error: nothing can arbitrate them, so fix the du
 ```
 
 ```bash
-dd validate review.dd.json --json | jq '{status, counts: .data.counts}'
+ddocs validate review.dd.json --json | jq '{status, counts: .data.counts}'
 ```
 
 ## 5. The `human-skipped` receipt convention
@@ -173,6 +173,6 @@ would let a broken adapter look like a boring document forever.
 
 1. `<root>/schemas/<pkg>/<schema>/schema.json` with `dd_schema: 1` and a `description`.
 2. Enums declared once, bound per field; `gate_terminal` on the enum.
-3. `dd schema show <pkg>/<schema>` resolves, and the path is the one you meant.
-4. `dd validate <doc>` is clean at `--depth 0`, then at the default depth.
+3. `ddocs schema show <pkg>/<schema>` resolves, and the path is the one you meant.
+4. `ddocs validate <doc>` is clean at `--depth 0`, then at the default depth.
 5. Adapters (if any) at `adapters/<type>.ts`, pure and total.

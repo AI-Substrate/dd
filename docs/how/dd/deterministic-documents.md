@@ -1,5 +1,5 @@
-<!-- Ported verbatim from the baked `dd docs` corpus (`src/docs/content/deterministic-documents.md`).
-     The CLI carries the same text: `dd docs get deterministic-documents`. Edit the SOURCE, then run
+<!-- Ported verbatim from the baked `ddocs docs` corpus (`src/docs/content/deterministic-documents.md`).
+     The CLI carries the same text: `ddocs docs get deterministic-documents`. Edit the SOURCE, then run
      `npm run gen:dd-docs` — `npm run check:dd-docs` fails the build on drift. -->
 
 # Deterministic documents
@@ -14,11 +14,11 @@ If you are an agent meeting a dd mid-task, the two rules that keep you safe:
 
 1. **Never hand-edit a `.dd.md` file.** It is generated. Your edit will be flagged as drift
    (`E422`) and overwritten by the next build.
-2. **Write through the CLI** — `dd set`, `dd add`, `dd rm`. It validates before writing, refuses
+2. **Write through the CLI** — `ddocs set`, `ddocs add`, `ddocs rm`. It validates before writing, refuses
    bad values with nothing written, and regenerates the sibling in the same operation. Editing
-   the `.dd.json` by hand is allowed, but then you owe a `dd build`.
+   the `.dd.json` by hand is allowed, but then you owe a `ddocs build`.
 
-Everything below was run with the `dd` CLI in this repository; the outputs are real
+Everything below was run with the `ddocs` CLI in this repository; the outputs are real
 (long absolute paths shortened to filenames).
 
 ## Why this exists
@@ -66,7 +66,7 @@ The envelope is always this shape: `dd.schema` names a schema, resolved by folde
 first hit wins). `sections` is an ordered list of named slots the schema shapes. `references`
 is the basis ledger, covered by the freshness commands.
 
-`dd build plan.dd.json` writes the generated face:
+`ddocs build plan.dd.json` writes the generated face:
 
 ```markdown
 # Search rollout
@@ -89,11 +89,11 @@ The `[x]` marks are read out of `state`, at render time, from the vocabulary the
 `file#name/id/name/id…` — one `#`, then alternating section names and instance ids:
 
 ```bash
-dd get "plan.dd.json#acceptance_criteria/ac-1a2b/state"
+ddocs get "plan.dd.json#acceptance_criteria/ac-1a2b/state"
 ```
 
 ```json
-{ "command": "dd get", "status": "ok",
+{ "command": "ddocs get", "status": "ok",
   "data": { "address": "plan.dd.json#acceptance_criteria/ac-1a2b/state",
             "trail": ["acceptance_criteria", "ac-1a2b", "state"],
             "kind": "part", "value": "checked" } }
@@ -108,14 +108,14 @@ jq -r '.sections[] | select(.name=="acceptance_criteria")
 ```
 
 Ids are born once and never reused, so addresses survive editing. Reverse the order of the
-criteria rows in the JSON and the same `dd get` returns the same value — the address names the
+criteria rows in the JSON and the same `ddocs get` returns the same value — the address names the
 row by id, never by position. This is what plain markdown cannot do: there is no way to link to
 a list item, and renumbering breaks whatever convention you invented instead.
 
-Do not invent ids by hand. `dd add --mint` picks a collision-free one under a registered prefix:
+Do not invent ids by hand. `ddocs add --mint` picks a collision-free one under a registered prefix:
 
 ```bash
-dd add "plan.dd.json#acceptance_criteria" \
+ddocs add "plan.dd.json#acceptance_criteria" \
   '{"claim": "Rollback drill rehearsed", "state": "unchecked"}' --mint ac
 # → "minted": "ac-5e70", "written": true, "sibling_regenerated": true
 ```
@@ -139,21 +139,21 @@ Point one of those links at the wrong kind of row — a log entry, say — and v
 with the exact mismatch:
 
 ```bash
-dd validate tasks.dd.json
+ddocs validate tasks.dd.json
 ```
 
 ```json
 { "status": "error",
   "error": { "code": "E406",
     "message": "link targets \"guide/log/section/entries\", expected \"guide/plan/section/acceptance_criteria\"" },
-  "next_action": "Fix tasks.dd.json at $.sections[tasks].value[0].satisfies[0], then re-run `dd validate tasks.dd.json`." }
+  "next_action": "Fix tasks.dd.json at $.sections[tasks].value[0].satisfies[0], then re-run `ddocs validate tasks.dd.json`." }
 ```
 
 Because links carry a relation (`satisfies`, `proven_by`, …), the graph is walkable in both
 directions. "Which tasks claim this criterion?" is one command:
 
 ```bash
-dd links "plan.dd.json#acceptance_criteria/ac-1a2b"
+ddocs links "plan.dd.json#acceptance_criteria/ac-1a2b"
 ```
 
 ```json
@@ -166,7 +166,7 @@ dd links "plan.dd.json#acceptance_criteria/ac-1a2b"
 ```
 
 The claim, the task that satisfies it, and the log entry that proves it: three documents, one
-traversal. `dd graph` emits the same structure as a mermaid diagram — this corpus comes back as:
+traversal. `ddocs graph` emits the same structure as a mermaid diagram — this corpus comes back as:
 
 ```text
 flowchart LR
@@ -185,7 +185,7 @@ States come from a vocabulary. The built-in completion enum is `unchecked`, `che
 outside the vocabulary:
 
 ```bash
-dd set "plan.dd.json#acceptance_criteria/ac-5e6f/state" done
+ddocs set "plan.dd.json#acceptance_criteria/ac-5e6f/state" done
 ```
 
 ```json
@@ -199,14 +199,14 @@ Some states carry obligations — `blocked` and `na` require a note, `human-skip
 receipt with the human's verbatim words — and the writer holds those too:
 
 ```bash
-dd set "plan.dd.json#acceptance_criteria/ac-5e6f/state" blocked
+ddocs set "plan.dd.json#acceptance_criteria/ac-5e6f/state" blocked
 # → E451: state "blocked" requires a non-empty note   (written: false)
 ```
 
 A valid write goes through, and the markdown face updates in the same operation:
 
 ```bash
-dd set "plan.dd.json#acceptance_criteria/ac-5e6f/state" checked
+ddocs set "plan.dd.json#acceptance_criteria/ac-5e6f/state" checked
 # → "written": true, "sibling_regenerated": true
 grep ac-5e6f plan.dd.md
 # | ac-5e6f | Index rebuild is idempotent | [x] checked | — | — | — |
@@ -216,7 +216,7 @@ This is what a completion gate reads. Each state vocabulary declares a `gate_ter
 (by default `checked`, `human-skipped`, `na`), and "done" means membership in that set — a
 mechanical check over rows, with every open item nameable by id. One warning about
 authority: a row's typed `state` and a summary derived from the assertion rows it links to
-are separate claims, and `dd validate` does not reconcile them — a task can say `checked`
+are separate claims, and `ddocs validate` does not reconcile them — a task can say `checked`
 over an all-`unchecked` assertion list without raising a finding. When the two disagree,
 believe the derived summary; it is the one computed from rows. The flow-level gate that
 refuses to leave a phase while criteria are open is built on exactly this layer; the gate
@@ -227,26 +227,26 @@ verbs themselves live upstream in `harness`, not in this package.
 Hand-edit the `.dd.json` (or the `.dd.md`) and the two faces disagree. The check catches it:
 
 ```bash
-dd build plan.dd.json --check
+ddocs build plan.dd.json --check
 ```
 
 ```json
 { "status": "error",
   "error": { "code": "E422",
     "message": "plan.dd.md drifted from the render of plan.dd.json" },
-  "next_action": "Regenerate with `dd build plan.dd.json` and commit the result." }
+  "next_action": "Regenerate with `ddocs build plan.dd.json` and commit the result." }
 ```
 
-`dd build plan.dd.json` regenerates the sibling and the check goes green. Run the check in CI
+`ddocs build plan.dd.json` regenerates the sibling and the check goes green. Run the check in CI
 and a stale rendered view cannot land. CLI writes never owe a build — `set`, `add`, and `rm`
 regenerate the sibling themselves.
 
 ## The doctor sweeps the whole corpus
 
-`dd doctor` discovers every dd document in the repository and validates the lot:
+`ddocs doctor` discovers every dd document in the repository and validates the lot:
 
 ```bash
-dd doctor
+ddocs doctor
 # → "discovered": 3, "swept": 3, "counts": { "error": 0, "warn": 0 }, "findings": []
 ```
 
@@ -256,7 +256,7 @@ where the problem surfaced.
 
 A document can ask the sweep to skip it: `"sweep_exclude": true` in its `dd` envelope. The
 doctor honours it — this corpus with one document excluded answers `"discovered": 3,
-"swept": 2` — but a direct `dd validate <path>` never does: pointing the verb at a document
+"swept": 2` — but a direct `ddocs validate <path>` never does: pointing the verb at a document
 always validates it, and the excluded document above still fails its own validate with `E402`.
 
 ## How commands answer
@@ -272,13 +272,13 @@ can drive the whole surface without parsing prose.
 - **Root `README.md`** — install, and a complete quick start: write a schema with a custom
   vocabulary, a document against it, then validate, build, and mutate. The repository executes
   it as a test, so it cannot rot.
-- **`dd docs get how-to-add-a-schema`** — the worked schema package: custom enums,
+- **`ddocs docs get how-to-add-a-schema`** — the worked schema package: custom enums,
   `gate_terminal`, the `human-skipped` receipt convention, and a custom render adapter.
-- **`dd docs get how-to-use-and-extend-the-sdk`** — consuming dd as a library: the import
+- **`ddocs docs get how-to-use-and-extend-the-sdk`** — consuming dd as a library: the import
   tiers, the fs/hash ports you bring, and how the public surface grows.
-- **`dd docs get dd-overview`** — the reference tour: the envelope fields, id grammar, schema
+- **`ddocs docs get dd-overview`** — the reference tour: the envelope fields, id grammar, schema
   resolution and shadowing, completion states, and jq recipes.
-- **`dd docs list`** — this corpus, baked into the binary, readable with no checkout and no
+- **`ddocs docs list`** — this corpus, baked into the binary, readable with no checkout and no
   network.
 
 The deeper reference set (eleven chapters) and the worked `exemplar/` corpus live upstream in

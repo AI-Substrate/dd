@@ -31,7 +31,7 @@ export function registerLinkCommands(dd: Command, io: CliIo, deps: DdActDeps): v
         const issues = codedLinkIssues(resolution.issues);
         exitWithEnvelope(
           formatError(
-            'dd link resolve',
+            'ddocs link resolve',
             issues[0]?.code ?? ErrorCodes.DD_LINK_UNRESOLVED,
             issues[0]?.message ?? `address did not resolve: ${address}`,
             ctx.clock,
@@ -45,8 +45,8 @@ export function registerLinkCommands(dd: Command, io: CliIo, deps: DdActDeps): v
       }
       const { target } = resolution;
       exitWithEnvelope(
-        formatOk('dd link resolve', { address, target }, ctx.clock, {
-          next_action: `Run \`dd link verify-basis ${target.address} --sha ${target.sha}\` to check its basis.`,
+        formatOk('ddocs link resolve', { address, target }, ctx.clock, {
+          next_action: `Run \`ddocs link verify-basis ${target.address} --sha ${target.sha}\` to check its basis.`,
         }),
         ctx.port,
       );
@@ -78,7 +78,7 @@ export function registerLinkCommands(dd: Command, io: CliIo, deps: DdActDeps): v
         const issues = codedLinkIssues(result.issues);
         exitWithEnvelope(
           formatError(
-            'dd link verify-basis',
+            'ddocs link verify-basis',
             issues[0]?.code ?? ErrorCodes.DD_BASIS_VERIFY_FAILED,
             issues[0]?.message ?? `address did not resolve: ${address}`,
             ctx.clock,
@@ -100,7 +100,7 @@ export function registerLinkCommands(dd: Command, io: CliIo, deps: DdActDeps): v
         if (verdict.state === 'stale') {
           exitWithEnvelope(
             formatDegraded(
-              'dd link verify-basis',
+              'ddocs link verify-basis',
               data,
               'The target moved: recompute anything derived from it, then re-verify with `--update <doc>`.',
               ctx.clock,
@@ -109,7 +109,7 @@ export function registerLinkCommands(dd: Command, io: CliIo, deps: DdActDeps): v
           );
         }
         exitWithEnvelope(
-          formatOk('dd link verify-basis', data, ctx.clock, {
+          formatOk('ddocs link verify-basis', data, ctx.clock, {
             next_action: 'Nothing to do — the recorded basis still matches the target.',
           }),
           ctx.port,
@@ -147,10 +147,16 @@ async function updateBasis(
 ): Promise<never> {
   const fail = (message: string, next_action?: string): never =>
     exitWithEnvelope(
-      formatError('dd link verify-basis', ErrorCodes.DD_BASIS_VERIFY_FAILED, message, ctx.clock, {
-        details: { document: docPath, path: verdict.path },
-        ...(next_action && { next_action }),
-      }),
+      formatError(
+        'ddocs link verify-basis',
+        ErrorCodes.DD_BASIS_VERIFY_FAILED,
+        message,
+        ctx.clock,
+        {
+          details: { document: docPath, path: verdict.path },
+          ...(next_action && { next_action }),
+        },
+      ),
       ctx.port,
     );
 
@@ -172,7 +178,7 @@ async function updateBasis(
 
   // The ledger move and the sibling render are one operation: stage the render
   // from the updated text, then write both, or roll the document back. Leaving
-  // `dd build --check` to discover the drift later — and call it a hand-edit —
+  // `ddocs build --check` to discover the drift later — and call it a hand-edit —
   // is not an option a mutating verb gets to take.
   const write = await writeDocumentWithSibling({
     documentPath: docPath,
@@ -182,7 +188,7 @@ async function updateBasis(
   });
   if (!write.ok) {
     return exitWithEnvelope(
-      formatError('dd link verify-basis', write.code, write.message, ctx.clock, {
+      formatError('ddocs link verify-basis', write.code, write.message, ctx.clock, {
         details: {
           document: docPath,
           path: verdict.path,
@@ -200,7 +206,7 @@ async function updateBasis(
 
   exitWithEnvelope(
     formatOk(
-      'dd link verify-basis',
+      'ddocs link verify-basis',
       {
         address,
         document: docPath,

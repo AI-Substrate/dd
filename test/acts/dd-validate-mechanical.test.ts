@@ -5,16 +5,16 @@ import { createSyntheticPlan, type SyntheticCorpus } from '../support/dd-corpus.
 import { runCli } from '../support/run-cli.js';
 
 /**
- * `dd validate` stays MECHANICAL (tk-7026 / dw-0261).
+ * `ddocs validate` stays MECHANICAL (tk-7026 / dw-0261).
  *
  * Plan 070 gave `harness plan validate` opinions — contradictions, open rows,
- * unclaimed criteria. This pin is the other half of that bargain: `dd validate`
+ * unclaimed criteria. This pin is the other half of that bargain: `ddocs validate`
  * answers exactly one question, "is this document well-formed against its
  * schema?", and its answer did not move. The separation is what lets a gate
  * choose which question it is asking; a mechanical check that quietly started
  * reporting judgement calls would break every consumer that trusted it not to.
  */
-describe('dd validate — byte-for-byte mechanical (dw-0261)', () => {
+describe('ddocs validate — byte-for-byte mechanical (dw-0261)', () => {
   let corpus: SyntheticCorpus;
   let previousCwd = '';
 
@@ -82,14 +82,14 @@ describe('dd validate — byte-for-byte mechanical (dw-0261)', () => {
     // dd is kept and the half that belongs to harness stays upstream.
     //
     // The claim it was guarding is not lost — the very next case pins it from the
-    // other side, asserting `dd validate` never grows `findings`/`summary`/`mode`.
+    // other side, asserting `ddocs validate` never grows `findings`/`summary`/`mode`.
   });
 
   it('keeps its envelope shape: counts and issues, and no semantic keys', async () => {
     const result = await runCli(['dd', 'validate', corpus.planRelative, '--depth', '0']);
     const data = result.envelope?.data as Record<string, unknown>;
     expect(Object.keys(data).sort()).toStrictEqual(['counts', 'depth', 'issues', 'path', 'schema']);
-    // Named explicitly: these are the keys `plan validate` grew, and `dd validate`
+    // Named explicitly: these are the keys `plan validate` grew, and `ddocs validate`
     // must never grow them. A weaker assertion would pass the day one leaks in.
     expect(data.findings).toBeUndefined();
     expect(data.summary).toBeUndefined();
@@ -98,7 +98,7 @@ describe('dd validate — byte-for-byte mechanical (dw-0261)', () => {
 
   it('still fails a document that is genuinely malformed', async () => {
     // The pin is "unchanged", not "toothless". Planted by hand rather than
-    // through `dd set`, because the writer's own gate refuses to produce this.
+    // through `ddocs set`, because the writer's own gate refuses to produce this.
     const target = join(corpus.folder, 'plan.dd.json');
     const doc = JSON.parse(readFileSync(target, 'utf8')) as {
       sections: Array<{ name: string; value: unknown }>;

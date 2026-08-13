@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 export const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const bin = join(repoRoot, 'bin', 'dd.js');
+const bin = join(repoRoot, 'bin', 'ddocs.js');
 
 export interface CliRun {
   /** The argv the bin was given — a red that cannot say WHICH run failed is half a red. */
@@ -100,7 +100,7 @@ export function describeRun(run: CliRun): string {
       ? 'none'
       : `${(run.spawnError as NodeJS.ErrnoException).code ?? 'Error'}: ${run.spawnError.message}`;
   return [
-    `dd ${run.argv.join(' ')}`,
+    `ddocs ${run.argv.join(' ')}`,
     `exit=${run.code}`,
     `signal=${run.signal ?? 'none'}`,
     `spawnError=${spawnError}`,
@@ -129,7 +129,7 @@ export function parseEnvelope(source: CliRun | string): Envelope {
       typeof source === 'string'
         ? `stdoutBytes=${Buffer.byteLength(stdout)} | stdout=${JSON.stringify(stdout.slice(0, 400))} | (caller passed a bare string, so exit code, signal and stderr are unknown here)`
         : `${diagnose(source, line)} — ${describeRun(source)}`;
-    throw new Error(`dd emitted no parseable envelope: ${detail}`, { cause });
+    throw new Error(`ddocs emitted no parseable envelope: ${detail}`, { cause });
   }
 }
 
@@ -154,16 +154,16 @@ export const EXIT_BY_STATUS: Record<Envelope['status'], number> = {
  *
  * The other adaptation is argv. Upstream the verbs live under a `dd`
  * sub-command, so its tests spell them `runCli(['dd', 'validate', …])`. Here the
- * binary IS `dd` and the verbs are top level, so a leading `dd` token is dropped.
- * Doing it HERE keeps every ported test body byte-verbatim, instead of editing
- * that token at hundreds of call sites.
+ * binary is `ddocs` and the verbs are top level, so that upstream-only `dd` token
+ * is dropped. Doing it HERE keeps every ported test body byte-verbatim, instead
+ * of editing that provenance token at hundreds of call sites.
  */
 export async function runCli(argv: string[], mode: 'json' | 'human' = 'json'): Promise<CliRun2> {
   const { buildProgram } = await import('../../src/app.js');
   const { FakeClock } = await import('../../src/adapters/clock/fake-clock.js');
   const { vi } = await import('vitest');
 
-  // `['dd', 'validate', …]` upstream is `['validate', …]` here.
+  // Upstream `['dd', 'validate', …]` becomes standalone `['validate', …]` here.
   const args = argv[0] === 'dd' ? argv.slice(1) : argv;
 
   let out = '';

@@ -71,7 +71,7 @@ function sectionTargetOf(schema: ResolvedDdSchema, interior: readonly string[]):
  * Flatten a plan's documents into one item graph.
  *
  * Items come from the SAME index the map walks (`indexDocument`), so a row means
- * the same thing to `dd graph map` and to `plan validate` — two readings of one
+ * the same thing to `ddocs graph map` and to `plan validate` — two readings of one
  * structure, never two structures that have to agree.
  *
  * Edges are re-anchored from documents onto items: `traverseCorpus` answers

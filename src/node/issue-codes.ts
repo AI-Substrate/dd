@@ -16,8 +16,8 @@ import { ErrorCodes } from '../output/error-codes.js';
  *
  * There used to be three copies of this table — one per act that reports findings
  * — and they had already drifted: `address-path-escape` answered to the generic
- * address code in `dd validate` and to the specific link-escape code in
- * `dd doctor`, so one finding had two codes depending on which verb reported it.
+ * address code in `ddocs validate` and to the specific link-escape code in
+ * `ddocs doctor`, so one finding had two codes depending on which verb reported it.
  * One exported map, one answer (P5 T004).
  *
  * The collapse arbitrates exactly ONE class — `address-path-escape`, where the
@@ -25,7 +25,7 @@ import { ErrorCodes } from '../output/error-codes.js';
  * general consumers already gave it: `link-scan-failed` stays
  * `DD_LINK_SCAN_FAILED`, NOT the doctor's `DD_DOCTOR_SCAN_FAILED`, because a
  * class code says what went wrong and must not change with the verb that reports
- * it. `dd doctor` still answers a failed sweep with `DD_DOCTOR_SCAN_FAILED` —
+ * it. `ddocs doctor` still answers a failed sweep with `DD_DOCTOR_SCAN_FAILED` —
  * that is its ENVELOPE code, hardcoded at its own exit site, so the sweep needs
  * no override in this table (P5 review F002).
  *

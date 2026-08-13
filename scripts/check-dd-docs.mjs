@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Drift gate for the baked `dd docs` corpus (plan 065, D15, AC-08).
+ * Drift gate for the baked `ddocs docs` corpus (plan 065, D15, AC-08).
  *
  * Regenerate-and-diff, mirroring `check:docs`: if the committed
  * `docs-content.ts` no longer matches the manifest + source markdown, this exits

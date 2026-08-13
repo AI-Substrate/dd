@@ -80,7 +80,7 @@ function conflictIssue(hits: SchemaHit[]): SchemaIssue {
  * *lower-precedence* root is a WARN-class shadow, because local override is the
  * feature — silently forking validation is the bug it must not become.
  *
- * Scans and parses are memoised per instance: one `dd validate --depth 3` walk
+ * Scans and parses are memoised per instance: one `ddocs validate --depth 3` walk
  * resolves the same schema for every hop, and re-walking four roots per hop
  * would make depth quadratic in the corpus.
  */

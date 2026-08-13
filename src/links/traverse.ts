@@ -34,7 +34,7 @@ export interface DdTraverseOptions {
 /**
  * Walk the document graph once, breadth-first, and return it whole.
  *
- * `dd graph`, `dd links` and the doctor's radius-∞ sweep are three readings of
+ * `ddocs graph`, `ddocs links` and the doctor's radius-∞ sweep are three readings of
  * one traversal, so an edge means the same thing to all three.
  *
  * **The visited set is the loop breaker.** The corpus contains real cycles by
@@ -306,7 +306,7 @@ export function boundedWalk<E>(
  * contain cycles.
  *
  * A projection of {@link boundedWalk} at radius infinity, rather than its own
- * loop: the doctor's reachability and `dd graph map`'s bounded walk are then the
+ * loop: the doctor's reachability and `ddocs graph map`'s bounded walk are then the
  * same breadth-first traversal read two ways.
  */
 export function reachableFrom(seed: string, edges: readonly DdLinkEdge[]): Set<string> {

@@ -138,8 +138,8 @@ function isResolution(
 /**
  * Resolve one address to the document, section, part or instance it names.
  *
- * The single engine behind `dd link resolve`, `dd address validate --resolve`,
- * `dd links`, `dd graph` and the doctor's interior checks (plan 4.1-4.5, D16):
+ * The single engine behind `ddocs link resolve`, `ddocs address validate --resolve`,
+ * `ddocs links`, `ddocs graph` and the doctor's interior checks (plan 4.1-4.5, D16):
  * three CLI faces and two sweeps over exactly one implementation, so a rule can
  * only be right or wrong in one place.
  *

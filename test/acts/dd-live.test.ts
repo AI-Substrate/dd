@@ -71,7 +71,7 @@ async function runDd(argv: string[], mode: 'json' | 'human' = 'json') {
 }
 
 describe('harness dd validate — live body (OD-2 handoff)', () => {
-  // `dd validate` resolves its document argument against process.cwd() (the house
+  // `ddocs validate` resolves its document argument against process.cwd() (the house
   // repo-root convention), so CHAIN's relative path only means what it says when
   // cwd is the CLI package. Pin it — the repo also ships a root vitest.config.ts,
   // and vitest's `root` option does NOT set process.cwd().
@@ -144,7 +144,7 @@ describe('harness dd validate — live body (OD-2 handoff)', () => {
 
   it('never skips a document it was pointed at (OD-1)', async () => {
     // The fixture corpus is exactly what the doctor's sweep excludes; a direct
-    // invocation must still fail on it, or `dd validate <bad fixture>` is a lie.
+    // invocation must still fail on it, or `ddocs validate <bad fixture>` is a lie.
     const result = await runDd(['dd', 'validate', `${CHAIN}/d.dd.json`, '--depth', '0']);
     expect(result.code).toBe(1);
     expect(result.envelope?.error?.code).toBe('E408');
@@ -152,7 +152,7 @@ describe('harness dd validate — live body (OD-2 handoff)', () => {
 });
 
 describe('harness dd schema / docs — live bodies', () => {
-  // `dd schema list`/`show` resolve from the repo root by convention (the house
+  // `ddocs schema list`/`show` resolve from the repo root by convention (the house
   // cwd rule), so this group runs there — the suite's own cwd is `harness/cli`.
   const REPO_ROOT = fileURLToPath(new URL('../../', import.meta.url));
   let previousCwd = '';
@@ -207,7 +207,7 @@ describe('harness dd schema / docs — live bodies', () => {
   it('renders a human listing rather than a bare status line', async () => {
     const result = await runDd(['dd', 'schema', 'list'], 'human');
     expect(result.code).toBe(0);
-    expect(result.out).toContain('dd schema — resolved schemas');
+    expect(result.out).toContain('ddocs schema — resolved schemas');
     expect(result.out).toContain('Roots searched (precedence order):');
   });
 

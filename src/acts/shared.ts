@@ -34,9 +34,9 @@ export function nextActionFor(issues: readonly DdLinkIssue[], address: string): 
     return 'Address the file explicitly — `<path>#<interior>`. A bare-"#" address only means something inside its own document.';
   }
   if (reason === 'malformed') {
-    return 'Generate the address instead of writing it: `dd address generate "<interior>" --path <file>`.';
+    return 'Generate the address instead of writing it: `ddocs address generate "<interior>" --path <file>`.';
   }
-  return `Check the target with \`dd links <target>\`, then fix ${address}.`;
+  return `Check the target with \`ddocs links <target>\`, then fix ${address}.`;
 }
 
 export interface DdLinkContext {
@@ -51,7 +51,7 @@ export interface DdLinkContext {
 /**
  * Compose the adapters every link-consuming dd verb needs, once.
  *
- * `dd address`, `dd link`, `dd links`, `dd graph` and `dd doctor` all resolve
+ * `ddocs address`, `ddocs link`, `ddocs links`, `ddocs graph` and `ddocs doctor` all resolve
  * schemas the same way and load documents the same way, and a second copy of that
  * wiring is a second place for the two to drift apart.
  *
@@ -59,7 +59,7 @@ export interface DdLinkContext {
  * it in `acts/dd/link.ts` for one stated reason — "that file belongs to Phase 1
  * and the parallel phases must not touch each other's files" — and the fan-in
  * retired that constraint. Keeping it there would now cost a real boundary:
- * `dd link verify-basis --update` regenerates a sibling, so `link.ts` reaches the
+ * `ddocs link verify-basis --update` regenerates a sibling, so `link.ts` reaches the
  * render layer, and `graph.ts`/`links.ts` take their context from it — which would
  * drag both across the `dd-graph-never-imports-render` line that Phases 3 and 4
  * were deliberately split along. One module move keeps that boundary honest.

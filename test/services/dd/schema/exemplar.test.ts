@@ -125,7 +125,7 @@ describe('exemplar builder/* schema packages', () => {
   it('keys the done_when section by the owning task id — a map, not an id-bearing row', () => {
     // workshop-002 Ruling 3: `tk-9f2a:` is a KEY. As an id-bearing array entry it
     // would collide with the task row's own id (ids are unique per FILE), which is
-    // exactly what a live `dd validate` reported before this shape was adopted.
+    // exactly what a live `ddocs validate` reported before this shape was adopted.
     const evidence = section(doc('plan'), 'done_when').value as Record<string, unknown>;
     expect(Array.isArray(evidence)).toBe(false);
     const taskIds = (section(doc('plan'), 'tasks').value as { id: string }[]).map(

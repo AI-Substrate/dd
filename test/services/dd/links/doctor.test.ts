@@ -18,7 +18,7 @@ function doctor(adapterGaps?: DdAdapterGapSource, root = REPO) {
 const owners = (report: ReturnType<typeof doctor>['report'], issueClass: string) =>
   report.findings.filter((finding) => finding.class === issueClass).map((finding) => finding.owner);
 
-describe('dd doctor — the validate engine at radius infinity', () => {
+describe('ddocs doctor — the validate engine at radius infinity', () => {
   it('sweeps the corpus and terminates on it', () => {
     const { report } = doctor();
     expect(report.discovered.length).toBeGreaterThanOrEqual(23);
@@ -99,7 +99,7 @@ describe('dd doctor — the validate engine at radius infinity', () => {
   });
 });
 
-describe('dd doctor — the exclusion contract (OD-1, AC-15)', () => {
+describe('ddocs doctor — the exclusion contract (OD-1, AC-15)', () => {
   it('skips an opted-out document and every finding inside it', () => {
     const { report } = doctor();
     const excluded = docPath('docs/sweep-excluded.dd.json');
@@ -109,7 +109,7 @@ describe('dd doctor — the exclusion contract (OD-1, AC-15)', () => {
   });
 });
 
-describe('dd doctor — adapter gaps (AC-04, consumed by interface)', () => {
+describe('ddocs doctor — adapter gaps (AC-04, consumed by interface)', () => {
   it('repeats a render-layer adapter gap as a WARN', () => {
     // Phase 3 owns the aggregation; Phase 4 owns only this seam, so the source is
     // faked against the declared shape and no Phase 3 module is imported.
@@ -142,7 +142,7 @@ describe('dd doctor — adapter gaps (AC-04, consumed by interface)', () => {
   });
 });
 
-describe('dd doctor — scoping', () => {
+describe('ddocs doctor — scoping', () => {
   it('scopes the root set without changing the radius', () => {
     const { report } = doctor(undefined, `${REPO}/docs/nested`);
     expect(report.discovered).toEqual([

@@ -2,7 +2,7 @@
  * The PLAN semantic layer — the opinions a whole plan can hold that no single
  * document can.
  *
- * `dd validate` stays byte-for-byte mechanical: it answers "is this document
+ * `ddocs validate` stays byte-for-byte mechanical: it answers "is this document
  * well-formed against its schema?" and nothing else, and plan 070 does not move
  * that line. Everything here is a question about a plan's STORY — does a row
  * claiming to be done rest on something still open, is any criterion unaccounted

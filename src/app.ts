@@ -50,7 +50,7 @@ const INFORMATIONAL = new Set(['commander.help', 'commander.helpDisplayed', 'com
  *
  * `--json` is a program-level option and `enablePositionalOptions()` hands every
  * option after the verb to the verb — which does not declare it — so
- * `dd status --json` died with `E002 unknown option`, while `dd --json status`
+ * `ddocs status --json` died with `E002 unknown option`, while `ddocs --json status`
  * worked. The postfix form is the one people actually type, and one that only
  * works in one position is a wart, not a contract.
  *
@@ -74,9 +74,9 @@ export function buildProgram(io: CliIo, deps: ActDeps): Command {
   const program = new Command();
 
   program
-    .name('dd')
-    .description('dd — deterministic documents: validate, render, address, and inspect.')
-    .version(readVersion(), '-V, --version', 'print the dd version')
+    .name('ddocs')
+    .description('ddocs — deterministic documents: validate, render, address, and inspect.')
+    .version(readVersion(), '-V, --version', 'print the ddocs version')
     .option('--json', 'force JSON output')
     .option('--no-json', 'force human output')
     .enablePositionalOptions()
@@ -91,7 +91,7 @@ export function buildProgram(io: CliIo, deps: ActDeps): Command {
   registerStatusAct(program, io, deps);
 
   // Ported dd verbs register at the TOP LEVEL, not under a `dd` sub-command:
-  // upstream nests them beneath `harness dd …`, but here the binary IS `dd`.
+  // upstream nests them beneath `harness dd …`, but here the binary IS `ddocs`.
   // `status` derives its port ledger from exactly these registrations, so a verb
   // appearing below is a verb that works.
   //
@@ -140,7 +140,7 @@ export async function main(argv: string[] = process.argv, overrides: MainOverrid
   const program = buildProgram(io, deps);
 
   // Bare `dd` (or global flags only) is a discovery gesture, not an error: show
-  // the verb map and exit 0, the same as `dd --help`.
+  // the verb map and exit 0, the same as `ddocs --help`.
   if (!hasOperand(argv) && !wantsBuiltinInfo(argv)) {
     program.outputHelp();
     process.exitCode = 0;
@@ -161,7 +161,7 @@ export async function main(argv: string[] = process.argv, overrides: MainOverrid
           : ErrorCodes.INVALID_USAGE;
       exitWithEnvelope(
         formatError('dd', code, err.message.replace(/^error: /, ''), deps.clock, {
-          next_action: 'Run `dd --help` for the supported verbs.',
+          next_action: 'Run `ddocs --help` for the supported verbs.',
         }),
         createOutputPort(io.mode, io.writers),
       );

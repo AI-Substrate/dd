@@ -205,7 +205,7 @@ function addresses(result: DdMapResult, arm: 'in' | 'out'): string[] {
   return result.nodes.filter((node) => node.arm === arm).map((node) => node.address);
 }
 
-describe('dd graph map — item-scoped edge selection (T002)', () => {
+describe('ddocs graph map — item-scoped edge selection (T002)', () => {
   it('answers about the ROW, not the file the row lives in', () => {
     const result = mapFrom(`${REPO}/docs/plan.dd.json#rows/ac-0001`, twoRowCorpus(), {
       direction: 'out',
@@ -213,7 +213,7 @@ describe('dd graph map — item-scoped edge selection (T002)', () => {
     });
     // Only ac-0001's own two cells. The `meta.log` edge and ac-0002's pressure
     // both belong to the same DOCUMENT and to neither this row nor its answer —
-    // which is exactly the confusion `dd links` still has.
+    // which is exactly the confusion `ddocs links` still has.
     expect(addresses(result, 'out')).toEqual([
       'docs/pressure.dd.json#rows/bp-0001',
       'docs/log.dd.json#entries/lg-0001',
@@ -370,7 +370,7 @@ describe('dd graph map — item-scoped edge selection (T002)', () => {
   });
 });
 
-describe('dd graph map — the address index (T002)', () => {
+describe('ddocs graph map — the address index (T002)', () => {
   const built = twoRowCorpus();
   const index = indexDocument(
     `${REPO}/docs/plan.dd.json`,
@@ -410,7 +410,7 @@ describe('dd graph map — the address index (T002)', () => {
   });
 });
 
-describe('dd graph map — bidirectional transitive walk (T003)', () => {
+describe('ddocs graph map — bidirectional transitive walk (T003)', () => {
   it('answers both questions in one invocation, past the first hop', () => {
     const result = mapFrom(`${REPO}/docs/plan.dd.json#rows/ac-0001`, twoRowCorpus());
     const outbound = result.nodes.filter((node) => node.arm === 'out');
@@ -634,7 +634,7 @@ function wideCorpus(width: number, chain: number) {
   return corpus(docs);
 }
 
-describe('dd graph map — the bounds bind (T006)', () => {
+describe('ddocs graph map — the bounds bind (T006)', () => {
   it('stops at --max-nodes over a corpus that is larger than it', () => {
     const built = wideCorpus(40, 0);
     const result = mapFrom(`${REPO}/docs/hub.dd.json#rows`, built, {
@@ -734,14 +734,14 @@ describe('dd graph map — the bounds bind (T006)', () => {
   });
 });
 
-describe('dd graph map — the human render (T005)', () => {
+describe('ddocs graph map — the human render (T005)', () => {
   const render = (): string =>
     renderMapTree(mapFrom(`${REPO}/docs/plan.dd.json#rows/ac-0001`, twoRowCorpus()));
 
   it('pins the plain render, byte for byte', () => {
     expect(render()).toBe(
       [
-        'dd graph map  plan.dd.json#rows/ac-0001',
+        'ddocs graph map  plan.dd.json#rows/ac-0001',
         '  relative to docs/',
         '',
         '  <- inbound   what reaches this',
@@ -996,7 +996,7 @@ describe('cellWidth — characters are not columns (T005)', () => {
   });
 });
 
-describe('dd graph map — the 80-column contract, on addresses that break it (T005)', () => {
+describe('ddocs graph map — the 80-column contract, on addresses that break it (T005)', () => {
   /** Deep enough that even the header's folder line has to continue. */
   const DEEP = 'docs/plans/065-deterministic-documents/tasks/phase-7-graph-map/evidence';
   /** Long enough that a single address cannot fit a line on its own. */

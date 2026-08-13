@@ -53,7 +53,7 @@ function commandSamples(markdown: string): { line: number; text: string }[] {
 }
 
 const DD_COMMAND =
-  /^\s*(?:\$\s+)?(?:harness\s+)?(?<binary>\b[a-z][a-z0-9-]*\b)\s+(?:--(?:json|no-json)\s+)?(?:address|build|docs|doctor|graph|link|links|schema|set|status|validate|write)\b/;
+  /^\s*(?:\$\s+)?(?:harness\s+)?(?<binary>\b[a-z][a-z0-9-]*\b)\s+(?:--(?:json|no-json)\s+)?(?:add|address|build|docs|doctor|get|graph|link|links|rm|schema|set|status|validate|version|write)\b/;
 
 /**
  * The binary name comes from `package.json#bin`, so what the CLI SAYS and what

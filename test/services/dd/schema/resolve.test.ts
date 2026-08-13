@@ -21,7 +21,7 @@ function errors(issues: { severity: string; class: string }[]): string[] {
   return issues.filter((issue) => issue.severity === 'ERROR').map((issue) => issue.class);
 }
 
-describe('dd schema resolution — precedence', () => {
+describe('ddocs schema resolution — precedence', () => {
   it('resolves the doc-folder copy first and records every shadow in precedence order', () => {
     const { world, resolver } = resolverFor('precedence-chain');
     const resolution = resolver.resolveDetailed('builder/plan', world.doc('plan.dd.json'));
@@ -85,7 +85,7 @@ describe('dd schema resolution — precedence', () => {
   });
 });
 
-describe('dd schema resolution — failure classes', () => {
+describe('ddocs schema resolution — failure classes', () => {
   it('E412: a duplicate qualified name inside ONE root is a hard error', () => {
     const { world, resolver } = resolverFor('duplicate-in-root');
     const resolution = resolver.resolveDetailed('builder/plan', world.doc('plan.dd.json'));
@@ -168,7 +168,7 @@ describe('dd schema resolution — failure classes', () => {
   });
 });
 
-describe('dd schema resolution — declarations flow through to the engine', () => {
+describe('ddocs schema resolution — declarations flow through to the engine', () => {
   it('a custom enum both widens the vocabulary and moves the gate-terminal set', () => {
     const { world, resolver } = resolverFor('custom-enum');
     const record = resolver.resolveDetailed('builder/review', world.doc('review.dd.json')).record;
@@ -250,7 +250,7 @@ describe('dd schema resolution — declarations flow through to the engine', () 
   });
 });
 
-describe('dd schema listing', () => {
+describe('ddocs schema listing', () => {
   it('lists every visible schema with its path and shadow chain', () => {
     const { world, resolver } = resolverFor('precedence-chain');
     const listing = resolver.list(world.doc('plan.dd.json'));

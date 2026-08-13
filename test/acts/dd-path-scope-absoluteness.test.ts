@@ -11,7 +11,7 @@ import { toPosix } from '../../src/shared/posix-path.js';
 /**
  * S-1 · F2 — absoluteness detection, at the two ACT sites.
  *
- * `dd doctor --path` and `dd graph --path` carried two IDENTICAL hand-rolled
+ * `ddocs doctor --path` and `ddocs graph --path` carried two IDENTICAL hand-rolled
  * copies of `resolveScope`: `path.startsWith('/') ? path : ${repoRoot}/${path}`.
  * A Windows drive-letter path never starts with `/`, so it was read as RELATIVE
  * and glued onto the repo root — measured before the fix:
@@ -99,7 +99,7 @@ afterAll(() => {
   rmSync(repo, { recursive: true, force: true });
 });
 
-describe('dd doctor / dd graph --path — S-1 F2 absoluteness detection', () => {
+describe('ddocs doctor / ddocs graph --path — S-1 F2 absoluteness detection', () => {
   it.each([
     ['doctor', 'C:\\repo\\docs'],
     ['graph', 'C:\\repo\\docs'],

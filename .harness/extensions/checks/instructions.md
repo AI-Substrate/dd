@@ -44,6 +44,6 @@ is a strict subset, so a green `checks` implies a green `boot`.
   percentage as a quality signal and do not add thresholds to chase it.
 - **`ok` is narrower than "dd works".** The dd verbs are still being ported out of
   harness-engineering; this gate covers the CLI seam that exists today. Run
-  `dd status --json` for the honest port ledger.
+  `ddocs status --json` for the honest port ledger.
 - **The lane needs `just` and `npm` on PATH.** A missing tool surfaces as `error`,
   not `unconfigured` — read `error.details` before assuming the code is at fault.

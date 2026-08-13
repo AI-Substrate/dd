@@ -3,7 +3,7 @@ import { DD_SUFFIX, scanCorpus } from '../../../../src/links/scan.js';
 import type { SchemaFs } from '../../../../src/schema/model.js';
 import { FixtureFs, REPO } from './helpers.js';
 
-describe('dd links corpus scan', () => {
+describe('ddocs links corpus scan', () => {
   const scan = () => scanCorpus(new FixtureFs(), REPO);
 
   it('enumerates every dd document beneath the root, sorted', () => {
@@ -37,7 +37,7 @@ describe('dd links corpus scan', () => {
 
   it('yields to an EXPLICIT root inside the scratch directory (OD-1 symmetry)', () => {
     // Pointing the sweep into scratch is saying what you mean, exactly as
-    // pointing `dd validate` at a known-bad fixture is.
+    // pointing `ddocs validate` at a known-bad fixture is.
     const { paths } = scanCorpus(new FixtureFs(), `${REPO}/.harness/temp`);
     expect(paths).toEqual([`${REPO}/.harness/temp/scratch.dd.json`]);
   });

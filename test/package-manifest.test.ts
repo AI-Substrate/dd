@@ -152,11 +152,11 @@ describe('package manifest', () => {
   });
 
   it('points bin at a committed, executable wrapper', () => {
-    expect(manifest.bin).toEqual({ dd: './bin/dd.js' });
-    const binPath = join(repoRoot, 'bin', 'dd.js');
+    expect(manifest.bin).toEqual({ ddocs: './bin/ddocs.js' });
+    const binPath = join(repoRoot, 'bin', 'ddocs.js');
     expect(readFileSync(binPath, 'utf8').startsWith('#!/usr/bin/env node')).toBe(true);
     // The execute bit is part of the artifact: npm preserves it from the mode
-    // git has recorded, and a 644 wrapper installs as an unrunnable `dd`.
+    // git has recorded, and a 644 wrapper installs as an unrunnable `ddocs`.
     expect(() => accessSync(binPath, constants.X_OK)).not.toThrow();
     expect(statSync(binPath).mode & 0o111).not.toBe(0);
   });
@@ -193,7 +193,7 @@ describe('the packed tarball', () => {
 
   it('packs the entry point and the bin a consumer resolves', { timeout: 60_000 }, () => {
     const paths = new Set(packDryRun().files.map((file) => file.path));
-    expect(paths.has('bin/dd.js')).toBe(true);
+    expect(paths.has('bin/ddocs.js')).toBe(true);
     expect(paths.has('dist/index.js')).toBe(true);
     expect(paths.has('dist/index.d.ts')).toBe(true);
   });

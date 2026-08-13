@@ -53,7 +53,7 @@ export interface CollectAdapterGapsOptions {
 }
 
 /**
- * Collect every adapter gap across a set of documents, so `dd doctor` can repeat
+ * Collect every adapter gap across a set of documents, so `ddocs doctor` can repeat
  * a degraded render as a WARN (AC-04).
  *
  * **It renders, because two of the four failure classes only exist at render
@@ -67,11 +67,11 @@ export interface CollectAdapterGapsOptions {
  *
  * The render is a throwaway — its markdown is discarded and only the adapter
  * set's recorded issues are kept — so this never writes, and never competes with
- * `dd build` for the sibling.
+ * `ddocs build` for the sibling.
  *
  * A document that cannot be read, parsed, or schema-resolved yields no gaps: each
  * of those is already some other layer's finding, and repeating it here as an
- * adapter problem would misname it. A render that THROWS is likewise `dd build`'s
+ * adapter problem would misname it. A render that THROWS is likewise `ddocs build`'s
  * finding (a render failure is a dd bug, not a data error), so it is swallowed
  * here rather than renamed into an adapter gap.
  */
@@ -106,7 +106,7 @@ export async function collectAdapterGaps(
         adapters: set,
       });
     } catch {
-      // A render failure is `dd build`'s finding, not an adapter gap.
+      // A render failure is `ddocs build`'s finding, not an adapter gap.
     }
 
     for (const issue of set.issues) {

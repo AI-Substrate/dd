@@ -70,7 +70,7 @@ export function renderJson(env: Envelope, writers: Writers = processWriters): vo
 
 /**
  * Human renderer — diagnostics (here, the next_action) go to stderr; the final
- * one-line summary goes to stdout, so `dd … | …` pipes the summary.
+ * one-line summary goes to stdout, so `ddocs … | …` pipes the summary.
  */
 export function renderHuman(env: Envelope, writers: Writers = processWriters): void {
   if (env.next_action) {

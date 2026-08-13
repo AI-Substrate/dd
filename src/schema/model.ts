@@ -99,7 +99,7 @@ export interface DdSchemaItem {
   terminal: boolean;
 }
 
-/** One row of `dd schema list`. A row with no `record` failed to load; `issues` says why. */
+/** One row of `ddocs schema list`. A row with no `record` failed to load; `issues` says why. */
 export interface SchemaListEntry {
   name: string;
   record?: SchemaRecord;
@@ -135,7 +135,7 @@ export const SCAN_SKIP_DIRS = ['node_modules', '.git', 'dist', 'coverage'] as co
  * path rather than the name.
  *
  * **Why it is here at all**: `.harness/temp` is the harness's declared gitignored
- * scratch area — agents, sensors and the flow all write there. Once `dd doctor`
+ * scratch area — agents, sensors and the flow all write there. Once `ddocs doctor`
  * feeds a quality gate, a stray scratch document would report findings about
  * files that are not repository content and degrade that gate. That is the same
  * judgement `sweep_exclude` and the test-fixture rule already make, on its third

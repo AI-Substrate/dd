@@ -39,7 +39,7 @@ export type DdMintResult = { ok: true; id: string } | DdMutationFailure;
  *
  * This is the exact bug class DF-008 recorded: a hand-rolled mint derived from a
  * string slice produced twelve identical `dw-` ids across twelve tasks, and only
- * `dd validate`'s duplicate check caught it. With the CLI minting, that shape is
+ * `ddocs validate`'s duplicate check caught it. With the CLI minting, that shape is
  * unrepresentable rather than merely detected.
  */
 export function mintId(doc: DdDoc, prefix: string): DdMintResult {
