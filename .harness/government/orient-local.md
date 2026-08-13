@@ -659,6 +659,32 @@ step — pointing harness at this package and deleting the old code — is koala
   evidence about the reporter's instruments — fr-0016 fell to two stacked reading errors
   (`d.now ?? d.node` on a truthy string; nav-show's field name asked of orient), and the
   next seat probing this surface should inherit both traps, not a deleted row.
+- **Once a verdict is in front of a decision-maker, the head is FROZEN until they decide or
+  release it.** The PM asked whether to file two friction rows onto a green PR, framing the
+  choice as *"(a) if Jordan is not about to press the button, (b) if he is"* — an answer that
+  depends on PREDICTING A HUMAN, and so would resolve two ways on two days. The rule is a
+  property of the situation instead: a further commit makes *"5 of 5 at `2ebcbfe`"* describe
+  a head that no longer exists, and the human may act on a count that is no longer true.
+  **The PM then named the shape better than I had: that is E463 with a human in the loop
+  instead of a validator** — a stored number that no longer describes what it claims, handed
+  to someone about to act on it, while every gate still reads green. We would have
+  manufactured, at the decision point, the exact defect the feature exists to prevent.
+  **The rule binds its author**: I had three doctrine entries ready and did not push them,
+  because pushing to `main` moves the merge base and makes the PR's verdict describe a merge
+  that is no longer the merge that would happen.
+- **Ask whose it is before you move it — reversibility is not ownership.** I parked
+  `scratch/tally-demo` while diagnosing a red suite, calling it probe residue. It was the
+  PM's demo, placed there on JORDAN'S instruction, because `scratch/` in the main checkout is
+  the only path his IDE sees. **Removing it silently removed the thing he had asked for, and
+  neither of us would have known until he looked.** *"It was reversible"* answers a question
+  nobody asked: the cost was never the file. The PM disclosed having deleted scratch dirs
+  twice in the same session without checking whose they were — the rule binds both ends.
+- **A count standing in for a thing you could have looked at is where counting errors come
+  from.** Three self-caught, self-disclosed miscounts from one seat in one session. The habit
+  it changed was not "be careful" — it was **read the rows rather than trust a count of
+  them**. Worth saying plainly: a seat that discloses three of its own miscounts has a
+  calibrated instrument. The ones to worry about are the seats whose counts have never been
+  wrong.
 
 ## Harness surface
 
