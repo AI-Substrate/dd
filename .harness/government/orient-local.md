@@ -685,6 +685,45 @@ step — pointing harness at this package and deleting the old code — is koala
   them**. Worth saying plainly: a seat that discloses three of its own miscounts has a
   calibrated instrument. The ones to worry about are the seats whose counts have never been
   wrong.
+- **A NAME is the cheapest thing to read and the most expensive thing to trust.** I briefed a
+  fleet that `test/acts/binary-name.test.ts` "pins the binary name across docs and baked
+  content — change the constant and the suite enumerates every place that disagrees;
+  completeness is PROVEN, not hoped." **Every clause was false, and I took it from the file's
+  title and describe-block without reading a single assertion.** Measured by the coder before
+  it edited anything: the file holds exactly THREE positive assertions naming `dd` (`:77`,
+  `:81`, `:127`); everything else is a NEGATIVE guard against `harness dd` — **the PREVIOUS
+  rename's target** — and not one of them fails when `dd` becomes something else.
+  `docs-surface.test.ts:84` is titled *"shows the binary's own name in every command
+  example"* and its whole body is `expect(README).not.toContain('harness dd')`. **~634 doc
+  spellings were unguarded: rename all or none, suite stays green.** The PM then made the
+  same error one layer down — built a gate on my claim without opening a file it had already
+  had open twice — and named the cause better than I could: *a name is free to read and a
+  body costs attention, so the cheap read wins under load.* The defence is mechanical: **read
+  the body before you cite the file, with no exemption for files you have already seen.**
+  **A ratchet is a real instrument for the rename it was built for and a nearly-empty one for
+  the next.**
+- **Two measurements can both be right, disagree, and each be blind to what the other saw.**
+  Flipping the banner constant: I ran the FULL suite and got **13 reds across 5 files**; the
+  fleet ran the ratchet alone and got **3**. Twelve of my thirteen were golden-corpus and
+  drift tests, red because the banner string sits inside every committed golden — **real
+  regeneration work, zero name coverage.** Quoting "13 reds" would have read as coverage we
+  did not have. **Reconcile what each instrument COULD have seen, not just what it returned.**
+- **Green on the unchanged tree is not evidence a new guard works; it only proves no false
+  positive.** And the proof cannot come from the unchanged tree at all: **a guard that derives
+  the expected name from `package.json` `bin` is GREEN BY CONSTRUCTION there**, because that
+  tree is self-consistent. I ordered the fleet to make such a guard "FAIL on the unrenamed
+  tree and pass after" — **two requirements that cannot both hold**, which the PM proved in one
+  line and refused to pass on. Right principle, wrong tree state: non-vacuity lives on the
+  **HALF-RENAMED** tree — flip only `bin`, and the guard must red AND enumerate. *"A guard
+  that reds where nothing has been renamed is testing the tree's history, not the guard's
+  coverage."* Same rule as the Dim-0 plant — **break the WORLD, not the test** — one level up,
+  and I violated it in the act of restating it.
+- **When a name is a PREFIX of its replacement, the obvious guard can never pass.**
+  `'dd' in "ddocs build"` → `true`; `\bdd\b` → `false`. Anyone strengthening a negative guard
+  the natural way writes an assertion that fails forever, and the trap sits directly in the
+  path of the fix. Anchor on word boundaries, and **derive the expected name from
+  `package.json` `bin` rather than hardcoding** — a guard naming the new name rots at the next
+  rename, and this file has now seen two.
 
 ## Harness surface
 
