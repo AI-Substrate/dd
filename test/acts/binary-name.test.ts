@@ -53,7 +53,27 @@ function commandSamples(markdown: string): { line: number; text: string }[] {
 }
 
 const DD_COMMAND =
-  /^\s*(?:\$\s+)?(?:harness\s+)?(?<binary>\b[a-z][a-z0-9-]*\b)\s+(?:--(?:json|no-json)\s+)?(?:add|address|build|docs|doctor|get|graph|link|links|rm|schema|set|status|validate|version|write)\b/;
+  /^\s*(?:\$\s+)?(?:(?<harness>harness)\s+)?(?<binary>\b[a-z][a-z0-9-]*\b)\s+(?:--(?:json|no-json)\s+)?(?:add|address|build|docs|doctor|get|graph|link|links|rm|schema|set|status|validate|version|write)\b/;
+
+type CommandSampleInspection = { issue?: string };
+
+function inspectCommandSample(sample: string): CommandSampleInspection | undefined {
+  if (/^\s*(?:\$\s+)?harness\s+plan\b/.test(sample)) return undefined;
+  const match = DD_COMMAND.exec(sample);
+  const binary = match?.groups?.binary;
+  if (binary === undefined) return undefined;
+
+  const harnessPrefixed = match?.groups?.harness !== undefined;
+  if (binary !== BINARY_NAME) {
+    return {
+      issue: `expected ${BINARY_NAME}, found ${harnessPrefixed ? `harness ${binary}` : binary}`,
+    };
+  }
+  if (harnessPrefixed) {
+    return { issue: `invalid standalone command harness ${binary}; use ${binary} directly` };
+  }
+  return {};
+}
 
 /**
  * The binary name comes from `package.json#bin`, so what the CLI SAYS and what
@@ -118,7 +138,7 @@ describe(`the binary is named ${BINARY_NAME}, and says so`, () => {
   });
 
   it('uses the package binary in every shipped and baked command example', () => {
-    const stale: string[] = [];
+    const issues: string[] = [];
     const coveredCorpora = new Set<string>();
     const surfaces = [
       ...SHIPPED_DOCS.map((path) => ({
@@ -131,18 +151,27 @@ describe(`the binary is named ${BINARY_NAME}, and says so`, () => {
     for (const surface of surfaces) {
       const corpus = surface.path.startsWith('baked:') ? 'baked' : 'shipped';
       for (const sample of commandSamples(surface.markdown)) {
-        const binary = DD_COMMAND.exec(sample.text)?.groups?.binary;
-        if (binary === undefined) continue;
-        if (/^\s*harness plan\b/.test(sample.text)) continue;
+        const inspection = inspectCommandSample(sample.text);
+        if (inspection === undefined) continue;
         coveredCorpora.add(corpus);
-        if (binary !== BINARY_NAME) {
-          stale.push(`${surface.path}:${sample.line}: expected ${BINARY_NAME}, found ${binary}`);
+        if (inspection.issue !== undefined) {
+          issues.push(`${surface.path}:${sample.line}: ${inspection.issue}`);
         }
       }
     }
 
     expect([...coveredCorpora].sort()).toEqual(['baked', 'shipped']);
-    expect(stale, stale.join('\n')).toEqual([]);
+    expect(issues, issues.join('\n')).toEqual([]);
+  });
+
+  it('rejects current and stale binaries behind the unreachable harness prefix', () => {
+    expect(inspectCommandSample(`harness ${BINARY_NAME} build`)).toEqual({
+      issue: `invalid standalone command harness ${BINARY_NAME}; use ${BINARY_NAME} directly`,
+    });
+    expect(inspectCommandSample('harness dd build')).toEqual({
+      issue: `expected ${BINARY_NAME}, found harness dd`,
+    });
+    expect(inspectCommandSample(`${BINARY_NAME} build`)).toEqual({});
   });
 
   it('stamps generated markdown with this package’s own binary name', () => {
