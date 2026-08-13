@@ -372,3 +372,37 @@ this repository has already ruled that a gate defeated by nobody at all is the w
 `ci-required`), and the two open dependabot PRs have each burned a full run on a **stale** nanoid
 red that no longer exists. **Nobody has yet counted the actual minutes** — that number should
 open the work, not close it.
+
+## 27 — Two test names assert less than they claim, and both misled a fleet · UNASSIGNED · **ADDED 2026-08-13**
+
+**A test's name is read a hundred times and its body once.** These two were read as guarantees
+by two separate agents on the same afternoon, and neither guarantee exists.
+
+| File | Name says | Body asserts |
+|---|---|---|
+| `test/acts/binary-name.test.ts` — `describe('the binary is named dd, and says so')` | the binary's name is pinned wherever it appears | **three** positive assertions naming `dd` (`:77`, `:81`, `:127`); everything else is a negative guard against **`harness dd`** — the *previous* rename's target |
+| `test/docs-surface.test.ts:84` — `it('shows the binary’s own name in every command example')` | every command example shows the binary's own name | `expect(README).not.toContain('harness dd')` — one file, one negative |
+
+**Measured consequence**: renaming the binary leaves ~634 doc spellings unguarded. Rename all of
+them or none of them and the suite stays green. The o-prime briefed a fleet that "completeness is
+PROVEN, not hoped" on the strength of the first name alone; the PM then built a gate on that claim
+without opening a file it had already had open twice.
+
+**These are not bad tests.** Both are correct, load-bearing ratchets **for the rename they were
+built for** (`harness dd` → `dd`). The defect is purely that their names describe a general
+property while their bodies pin a specific historical one — so they read as coverage of the next
+rename, which they cannot provide.
+
+**The fix is renaming, not rewriting** (the coverage gap itself is being closed by the `feat/binary-rename`
+work, which adds a bin-derived, word-boundary-anchored guard):
+
+- `the binary is named dd, and says so` → *"no user-facing surface still says `harness dd`"*
+- `shows the binary’s own name in every command example` → *"README does not teach the upstream `harness dd` form"*
+
+**Do NOT resolve this by deleting either test** — both catch a real regression class, and the
+negative guard against `harness dd` stays valuable after the `ddocs` rename lands.
+
+**The general rule is already doctrine** (`9966b60`, `.harness/government/orient-local.md`): a name
+is the cheapest thing to read and the most expensive to trust; read the body before you cite the
+file, with no exemption for files you have already seen. **This row is the actionable residue** —
+two names in this repo that currently earn that distrust.
