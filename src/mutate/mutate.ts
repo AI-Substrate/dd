@@ -1,4 +1,5 @@
 import type { DdDoc, DdShape, ResolvedDdSchema } from '../core/model.js';
+import { refreshSectionTally } from '../core/tally.js';
 import { type DdIssue, type SchemaResolver, validateDocument } from '../core/validate.js';
 import { isRecord } from '../core/value.js';
 import { locate } from './locate.js';
@@ -109,6 +110,17 @@ function applied(
   deps: DdMutationDeps,
   result: Omit<DdMutationResult, 'ok' | 'doc'>,
 ): DdMutationOutcome {
+  // Bring every stored tally back into agreement with the rows BEFORE the gate
+  // runs, so the document that gets validated is the document that gets written.
+  //
+  // This is the one place it belongs. `dd build` stays a renderer — it never
+  // writes the source — and every writer verb funnels through here, so a tally
+  // cannot go stale by way of a verb. It cannot go stale by way of a hand edit
+  // either without `dd validate` saying so; between the two, a stored sum is a
+  // checked invariant rather than trusted data.
+  for (const section of after.sections) {
+    refreshSectionTally(section, deps.schema.sections[section.name]?.shape.items);
+  }
   const introduced = gate(before, after, deps);
   if (introduced.length > 0) {
     return refuse(

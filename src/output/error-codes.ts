@@ -147,6 +147,10 @@ export const ErrorCodes = {
   // --- plan readiness gate (plan 072; E462) ---
   /** `harness plan ready --strict` reached a not-ready verdict; CI asked for teeth. */
   DD_PLAN_NOT_READY: 'E462',
+
+  // --- tally columns (E463) ---
+  /** A section's stored tally disagrees with the rows it claims to sum. */
+  DD_TALLY_MISMATCH: 'E463',
 } as const;
 
 export type ErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes];

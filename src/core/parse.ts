@@ -84,11 +84,40 @@ function parseSections(raw: unknown, failures: DdFailure[]): DdSection[] {
     if (title !== undefined && (typeof title !== 'string' || title.trim().length === 0)) {
       failures.push(failure(`${location}.title`, 'section title must be a non-empty string'));
     }
+    // The STORED footer sums. This is carried explicitly for the same reason the
+    // shape's `tally` marking is: `parseSections` builds a fresh object from the
+    // keys it names, and `serializeDoc` writes that object back — so a key this
+    // block does not read is not merely invisible, it is DESTROYED by the next
+    // `dd set`. Values are checked here rather than trusted: a tally is read by
+    // agents with `jq` instead of being summed, so a non-number in it is a lie
+    // that travels.
+    const tally = entry.tally;
+    let tallyValues: Record<string, number> | undefined;
+    if (tally !== undefined) {
+      if (!isRecord(tally)) {
+        failures.push(failure(`${location}.tally`, 'section tally must be an object of sums'));
+      } else {
+        const wrong = Object.entries(tally).filter(
+          ([, sum]) => typeof sum !== 'number' || !Number.isFinite(sum),
+        );
+        if (wrong.length > 0) {
+          failures.push(
+            failure(
+              `${location}.tally.${wrong[0]?.[0]}`,
+              'a section tally sum must be a finite number',
+            ),
+          );
+        } else {
+          tallyValues = tally as Record<string, number>;
+        }
+      }
+    }
     if (typeof name === 'string' && name.trim().length > 0 && 'value' in entry) {
       sections.push({
         name,
         ...(typeof title === 'string' && title.trim().length > 0 && { title }),
         value: entry.value,
+        ...(tallyValues !== undefined && { tally: tallyValues }),
       });
     }
   });
