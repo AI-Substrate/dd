@@ -724,6 +724,15 @@ step — pointing harness at this package and deleting the old code — is koala
   path of the fix. Anchor on word boundaries, and **derive the expected name from
   `package.json` `bin` rather than hardcoding** — a guard naming the new name rots at the next
   rename, and this file has now seen two.
+- **A skip is a blind spot; an ASSERTED ABSENCE is a tripwire.** The PM's ruling, credited, and
+  it is the remedy half of the parent cause rather than another instance of it. One runtime case
+  (`status`) genuinely cannot name the binary — measured: `next_action` undefined, zero `dd <verb>`
+  mentions in either output mode. The obvious move is to skip it. **A skipped case reports nothing
+  on the day the world changes**, so the gap ages silently and the next reader sees a suite that
+  looks complete. Asserting the absence — *this output carries no command suggestion* — **FIRES on
+  the day `status` gains a `next_action`**, and forces a decision from whoever is there instead of
+  leaving the case quietly uncovered. It converts an uncoverable case into a DATED QUESTION.
+  Reach for it wherever coverage is genuinely impossible: assert the shape of the hole.
 
 ## Harness surface
 
