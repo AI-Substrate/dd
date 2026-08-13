@@ -480,7 +480,7 @@ describe('the handover packet carries the contracts it claims to carry', () => {
     'utf8',
   );
   const constraintsSource = readFileSync(
-    join(repoRoot, 'government/standing-constraints.md'),
+    join(repoRoot, '.harness/government/standing-constraints.md'),
     'utf8',
   );
 
@@ -513,7 +513,7 @@ describe('the handover packet carries the contracts it claims to carry', () => {
     // was looked for" would be the same green.
     expect(
       constraintHeadings.length,
-      'no numbered constraints parsed out of government/standing-constraints.md — that is a broken guard, not a clean repo',
+      'no numbered constraints parsed out of .harness/government/standing-constraints.md — that is a broken guard, not a clean repo',
     ).toBeGreaterThan(0);
   });
 
