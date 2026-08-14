@@ -161,7 +161,7 @@ jobs:
           npm pack --dry-run --json > /tmp/pack.json
           jq -e '.[0].name == "@ai-substrate/dd"' /tmp/pack.json >/dev/null \
             || { echo "::error title=dry-run::scoped name mismatch"; exit 1; }
-          jq -e '[.[0].files[].path] | any(test("bin/dd\\.js"))' /tmp/pack.json >/dev/null \
+          jq -e '[.[0].files[].path] | any(test("bin/ddocs\\.js"))' /tmp/pack.json >/dev/null \
             || { echo "::error title=dry-run::bin not packed"; exit 1; }
           jq -e '[.[0].files[].path] | any(startswith("dist/"))' /tmp/pack.json >/dev/null \
             || { echo "::error title=dry-run::dist not packed"; exit 1; }
