@@ -211,6 +211,21 @@ pij-varied-thrush    claims %0 with pid 4396,  but %0 is owned by pid 19713
 pij-bad-guan         claims %7 with pid 94257, but %7 is owned by pid 96664
 ```
 
+**WHAT THOSE PIDS ACTUALLY ARE — looked up by `pij-continuing-ermine`, verified here:**
+
+```
+4054  → com.apple.SafariPlatformSupport.Helper      %0 is really pid 19713: -zsh
+733   → ospredictiond
+4396  → powermetrics
+94257 → Microsoft Edge Helper (Renderer)
+```
+
+**So under the loose predicate, a dead seat's claim to Jordan's terminal is validated by the
+fact that SAFARI'S HELPER PROCESS IS RUNNING.** The check consults something **true,
+checkable, and utterly unrelated to the question** — which is why it reads as diligence. It is
+not a weak check; it is a check of the wrong proposition, and it fails safe at maximum blast
+radius, silently.
+
 **Three of the four claim `%0` — the operator's own terminal.** So the loose check does not
 merely undercount: **it fails safe exactly where the blast radius is largest**, telling you a
 dead seat legitimately owns Jordan's pane.
