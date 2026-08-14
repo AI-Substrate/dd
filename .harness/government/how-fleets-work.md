@@ -82,6 +82,16 @@ both *claims*; the last critical eye on every deliverable is the PM's own.
 > chase. The one that travelled through three governments and into a standing constraint
 > announced itself as **confirmation**, which is the single outcome nobody audits. **A failure
 > mode with no alarm on it is worth more attention than ten with alarms.**
+>
+> **OWN NUMBERS ARE NOT AN OWN INSTRUMENT** — found by `pij-collective-viper` on 2026-08-14
+> the first time this rule was applied to a live verdict, and it is the trap the rule above
+> does not close by itself. Its reviewer returned **its own mutation figures — 8 fail / 17
+> pass** — which passes a naive independence check: those numbers were not copied, it ran
+> something and read the result. **But it ran the CODER'S probe.** No hand-authored document,
+> no independent value, no `ddocs validate` invocation, no CLI error string of its own.
+> **Re-running someone else's instrument yields fresh output from a shared blind spot**, and
+> fresh output is exactly what makes it look independent. The question is never *"are these
+> your numbers?"* — it is *"whose instrument produced them?"*
 - **`delegate`** (`routes/delegate.md`) — the degenerate case: ONE bounded task, ONE peer,
   no review cycle.
 
