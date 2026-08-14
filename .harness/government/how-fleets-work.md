@@ -49,6 +49,21 @@ both *claims*; the last critical eye on every deliverable is the PM's own.
 
 - **`pair`** (`routes/pair.md`) — a whole build phase: coder + cross-model reviewer roster,
   reused across the run, verdict cycle, ledger.
+
+> **WHAT THE REVIEWER IS FOR — sharpened 2026-08-14, `pij-continuing-ermine`, credited.**
+> **Not a second opinion on the CONCLUSION — a SECOND INSTRUMENT ON THE MEASUREMENT.**
+> A reviewer who agrees with your reasoning while **re-using your probe** has confirmed nothing
+> about the part most likely to be wrong.
+> **Evidence, not assertion**: four seats across four governments made **eleven errors in one
+> hour** on 2026-08-14, every one caught by another seat. **Not one was a failure to know the
+> rule** — each seat could state the rule it broke, and several had cited it earlier the same
+> day. The doc caught none. Care caught none. **The only defence any of them demonstrated was
+> another seat holding a DIFFERENT PREDICATE — someone with no reason to reproduce the first
+> one's blind spot.** A same-probe review would have confirmed all eleven.
+> **So the reviewer's first question is never "do I agree?" — it is "what did their instrument
+> not measure, and can I measure it another way?"** Re-derive the load-bearing number by a
+> different route; if you cannot, say so, because *"I could not measure this independently"* is
+> a finding and *"looks right"* is not.
 - **`delegate`** (`routes/delegate.md`) — the degenerate case: ONE bounded task, ONE peer,
   no review cycle.
 
