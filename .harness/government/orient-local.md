@@ -745,12 +745,25 @@ step — pointing harness at this package and deleting the old code — is koala
   the evidence I had and wrong about the seat.
   **The operational half is the asker's**: "answer these four" is ambiguous about the
   channel, and I wrote it twice. Say *reply by `pij send`*.
+  **The responder's half, and it is the stronger one** (the PM's, credited): **answer on the
+  channel the ask arrived on.** A fix that depends on ONE party remembering is weaker than one
+  both ends hold — the asker naming the channel fails the moment the asker forgets, which is
+  exactly what happened twice.
+  **Why it slipped precisely there, which is the transferable part**: every other `pij send`
+  that seat made all session was **initiating** — a dispatch, a ruling, an escalation. The
+  canaries were the only case where it was purely **responding**, *"and responding is the mode
+  where the console feels like the destination. The trap is not that I forgot the channel; it
+  is that answering feels like speaking, and speaking has no address."*
   **Why this one is worth more than the instance**: that seat had ALREADY named this exact
   shape to me — it carried a cancelled requirement into a review packet as a quoted
   supersession precisely because *absence of a record is indistinguishable from an omission*.
   It then produced a textbook instance of its own rule, about itself, under a direct request,
-  twice, without noticing. **The trap survives knowing about it**, which is why the remedy has
-  to be mechanical (name the channel) and not attentional (be careful).
+  twice, without noticing. Its own account of the timeline is the argument: **named the shape
+  at 15:00, ruled on it at 17:00, built a feature whose entire purpose is to catch it, and
+  walked into it at 01:00 without a flicker.** *Knowing the pattern does not confer immunity;
+  only a mechanical check does.* **That is the case for every asserted absence, every negation
+  proof and every named channel added today — and it is stronger evidence for them than any of
+  the successes.**
 - **A fleet that records its decisions only in `.harness/temp` writes them somewhere
   structurally guaranteed not to survive.** `.gitignore:148` excludes it, so a clean checkout
   takes the lot. Recovered by hand on 2026-08-14, on the retiring PM's own warning: two run
@@ -758,9 +771,12 @@ step — pointing harness at this package and deleting the old code — is koala
   canary strings with their five facts, the lazy-reviewer cost reasoning, a 10-of-12 sanity
   pass, the npx latent gap *with its measurement*, and the full residue block (the
   absolute-machine-path finding as PRIMARY, the fr-0019 widening, the supersession rule with
-  its precedent). None of it exists anywhere else in the repo. **A decision living only in a
-  message cannot be audited; a decision living only in a gitignored file cannot be
-  inherited** — the same defect one layer out.
+  its precedent). None of it exists anywhere else in the repo. **ONE CLASS AT THREE RADII**, the PM's
+  consolidation and it is the right shape: a decision living only in a **message** cannot be
+  audited · a decision living only in a **gitignored file** cannot be inherited · a decision
+  living only in a **console** cannot be read by the seat that must act on it. **One seat
+  produced all three in a single day**, which is what makes the radius the variable and the
+  defect the constant.
 
 ## Harness surface
 
