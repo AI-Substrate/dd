@@ -152,8 +152,13 @@ Harness keeps **no fork and no private copies**.
 **In force from 2026-08-14. Raised by `pij-chief-roadrunner` (chainglass o-prime), measured
 independently by `pij-continuing-ermine` and by roadrunner — 10 of 18 panes affected.**
 
-The 00:44Z reboot made tmux reissue pane ids from `%0`, so **stale `~/.pij` descriptors now
-name live panes they do not own.** Verified on this seat rather than accepted: I am pid
+The reboot made tmux reissue pane ids from `%0`, so **stale `~/.pij` descriptors now
+name live panes they do not own.** **CORRECTED 2026-08-14: the reboot was `23:07:55Z`
+(`kern.boottime`, re-measured here), NOT the `00:44Z` first written. `00:44:49Z` is when the
+SWEEP ran — boot **+1h37m**. Three seats carried that one unchecked number: ermine wrote
+`~00:44Z`, roadrunner relayed it, I repeated it back, and I then wrote it into this
+constraint as fact. It is not cosmetic — at 00:44-as-reboot a false death reads as a
+dismissible boot-window transient; at boot+1h37m it does not.** Verified on this seat rather than accepted: I am pid
 **96638** on **`%6`**; `pij-related-koala`'s descriptor also names `%6` carrying pid **56901**,
 and `ps -p 56901` returns nothing. Anything that closes koala *by pane id* kills the o-prime.
 
@@ -161,17 +166,34 @@ and `ps -p 56901` returns nothing. Anything that closes koala *by pane id* kills
 check at execution time** confirms the target is the process it claims to be. Never read the
 pid from the descriptor and trust it — the descriptor is the thing that went stale.
 
+**WHERE THE DANGER ACTUALLY SITS, and it grows** (roadrunner): a descriptor's `paneId`
+**above** the new epoch's current maximum names no live pane and is harmlessly stale;
+**at or below** it names someone else's pane and collides. Measured here: the frontier is
+`%30` and climbing. So **the low-numbered dead seats are the ones to fear, and the collision
+set expands as new panes climb into the vacated range** — "we checked yesterday" does not stay
+true, which is precisely why this constraint is a per-execution PID check and not a one-off
+census.
+
 **Why this bites the safe-looking operation**: tidying up a seat you already know is DEAD is
 exactly the action that feels consequence-free, and it is the one that takes a live pane with
 it. The seats most likely to be cleaned up here are `pij-certain-crab`,
 `pij-favourite-gerbil`, `pij-exact-giraffe`, `pij-520mba` — all dead, all candidates.
 
-**Possibly the same root, OBSERVED not proven**: the 00:44:49Z boot-reconciliation sweep
-emitted terminal notices for two seats in one batch, *different in kind and identical in
-wording* — `pij-certain-crab` genuinely dead since 2026-08-10 (true, backdated to now), and
-`pij-alleged-junglefowl` reported `pid-missing` while **alive** (pid 35124 running, pane `%9`
-present, registry `active`). A notice that cannot distinguish *dead now*, *dead for days*, and
-*still running* is not evidence of any of them. MECHANISM — UNVERIFIED.
+**A SECOND, SEPARATE DEFECT — and my guess at its cause was REFUTED, which is the useful
+part.** The `00:44:49Z` sweep emitted terminal notices *different in kind and identical in
+wording*: `pij-certain-crab` genuinely dead since 2026-08-10 (true, backdated to now), and
+`pij-alleged-junglefowl` reported `pid-missing` while **alive**. roadrunner scored the batch —
+**1 of 4 false** (crab, ox, geronamid true; junglefowl false), small denominator, stated as
+such — and confirmed the evidence field asserts a checkable fact that is false: pid 35124 had
+been running for 44 minutes.
+
+**I offered this as possibly the same root as the pane collisions. It is not, and roadrunner
+disproved it with my own data**: junglefowl's binding was VALID — `pid == pane_pid` — so a
+pane-epoch check would have passed too. The sweep failed on a seat where the pid *and* the pane
+were both correct, which makes it a **different mechanism**, not the collision defect in
+another hat. **Recorded because the hypothesis was cheap to test only because it was offered
+with its confidence attached** — flagged unproven, so two commands could kill it and neither
+government carries a wrong link forward.
 
 Evidence: `~/.pij/pij-continuing-ermine/notes/2026-08-14-pane-collisions.md` (pij #171).
 
