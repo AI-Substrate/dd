@@ -778,6 +778,27 @@ step — pointing harness at this package and deleting the old code — is koala
   produced all three in a single day**, which is what makes the radius the variable and the
   defect the constant.
 
+- **When the remedy for a suspected failure is DELETION, the false-positive rate is
+  unobservable by construction.** `pij-continuing-ermine`'s framing, credited, and it
+  generalises far past the canary it came from. I asked a PM for four recall answers, got
+  silence, and retired it. **Discarding the seat would normally have discarded the
+  counterexample with it** — every wrongly-retired seat leaves exactly the same trace as a
+  correctly-retired one: nothing. So the error rate of that judgement is not merely unmeasured,
+  it is **unmeasurable**, and it is invisible from inside precisely because the evidence that
+  would refute it is destroyed by the act of responding.
+  **We only know it happened because the seat diagnosed its own false negative and re-sent on
+  the wire, after I had already retired it.** That is the exception that proves the rule rather
+  than an argument the rule is soft.
+  **Ask of any check whose failure triggers a discard: what would a false positive look like,
+  and would anything survive it to tell me?** If the answer is nothing, the check needs a
+  second signal that does not depend on the thing being tested. Ermine's is the model:
+  `readAt` receipts are recorded independently of any reply, so **readAt present with no reply
+  = received and answered elsewhere (do not discard); readAt absent = never consumed**, which
+  is the condition the canary is actually for. Note the SCOPING, which is why it holds: it
+  proves **consumption, never comprehension** — it does not separate retained from lost
+  context, it separates the false negative that throws healthy seats away. A weaker claim,
+  correctly stated.
+
 ## Harness surface
 
 | Need | Command | Evidence |
