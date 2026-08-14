@@ -18,9 +18,9 @@ inspects structured documents, published as `@ai-substrate/dd` with a `dd` bin.
 Derived from the shipped bin by `just gen-orient` — **do not hand-edit this block**,
 and do not restate these numbers in prose elsewhere in this file.
 
-- `dd --json status` → status **ok**, 10/10 ported, 0 remaining
+- `ddocs --json status` → status **ok**, 10/10 ported, 0 remaining
 - Registered: `validate`, `schema`, `docs`, `build`, `address`, `link`, `links`, `graph`, `doctor`, `write`
-- Re-derive: `node bin/dd.js --json status`
+- Re-derive: `node bin/ddocs.js --json status`
 
 <!-- END GENERATED: repo-state -->
 
@@ -45,7 +45,7 @@ step — pointing harness at this package and deleting the old code — is koala
   one place — `exitWithEnvelope`.
 - **Never fake success.** `unconfigured` means "nothing is mapped here yet", never "it
   worked". This is the repo's green-but-wrong defence and it is enforced in code, not prose.
-- **`dd status` is the self-updating port ledger.** It diffs registered verbs against the
+- **`ddocs status` is the self-updating port ledger.** It diffs registered verbs against the
   ten planned and exits 2 until none remain — so this CLI cannot claim to be finished while
   the port is in flight. **Any stream porting a verb inherits a moving honesty gate.**
 - Conventional commits are load-bearing: release-please reads them to cut versions and the
@@ -615,7 +615,7 @@ step — pointing harness at this package and deleting the old code — is koala
 - **A consequence stated in a brief is indistinguishable from a ruling unless it says which
   it is.** Caught by `pij-alleged-junglefowl` on its first turn, against a brief I had just
   written. The brief carried a section explaining that storing a derived value *requires*
-  `dd validate` to recompute and compare — true, load-bearing, and derived by me. The PM read
+  `ddocs validate` to recompute and compare — true, load-bearing, and derived by me. The PM read
   it, could not tell whether it was **scope it must build** or **analysis it must not act on**,
   and asked rather than guessing. It was right to: I had never decided. **The reader cannot
   recover an authoring distinction the text does not carry**, and a brief is exactly where that
@@ -797,8 +797,8 @@ someone once saw.
   Jordan names them. The obvious candidate — *port the ten `dd` verbs out of
   harness-engineering* — is **proposed, not accepted**.
 - **Open finding (recorded at bootstrap, not yet routed to a stream)**: `AGENTS.md`
-  documents `dd status --json`, but `--json` is a **program-level** option in `src/app.ts`,
-  so it must precede the subcommand. Measured: `dd status --json` → exit **1** (`E002
+  documents `ddocs status --json`, but `--json` is a **program-level** option in `src/app.ts`,
+  so it must precede the subcommand. Measured: `ddocs status --json` → exit **1** (`E002
   unknown option '--json'`); `dd --json status` → exit **2** (correct). The documented
   invocation is the one that fails.
 - **Sequencing watch**: the verb registry in `src/app.ts` is the single convergence point

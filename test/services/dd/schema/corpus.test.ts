@@ -18,7 +18,7 @@ function filesUnder(relativeDir: string): string[] {
   });
 }
 
-describe('dd schema fixture corpus', () => {
+describe('ddocs schema fixture corpus', () => {
   it('enumerates one world per resolution case, every file real and parseable', () => {
     expect(cases()).toEqual([
       'beyond-cap',

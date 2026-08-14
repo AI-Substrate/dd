@@ -10,12 +10,12 @@ import type { DdActDeps } from './shared.js';
 
 function renderList(result: DdDocsListResult): string {
   const width = Math.max(2, ...result.docs.map((doc) => doc.id.length));
-  const lines = ['dd docs — baked deterministic-document guidance', ''];
+  const lines = ['ddocs docs — baked deterministic-document guidance', ''];
   for (const doc of result.docs) {
     lines.push(`  ${doc.id.padEnd(width)}  ${doc.title}`);
     lines.push(`  ${' '.repeat(width)}  ${doc.summary}`);
   }
-  lines.push('', 'Run `dd docs get <id>` to print one.');
+  lines.push('', 'Run `ddocs docs get <id>` to print one.');
   return `${lines.join('\n')}\n`;
 }
 
@@ -32,8 +32,8 @@ export function registerDocsCommands(dd: Command, io: CliIo, deps: DdActDeps): v
     .action(() => {
       const clock = deps.clock ?? new SystemClock();
       exitWithEnvelope(
-        formatOk('dd docs list', listDdDocs(), clock, {
-          next_action: 'Run `dd docs get <id>` to print one.',
+        formatOk('ddocs docs list', listDdDocs(), clock, {
+          next_action: 'Run `ddocs docs get <id>` to print one.',
         }),
         listPort(io),
       );
@@ -47,19 +47,19 @@ export function registerDocsCommands(dd: Command, io: CliIo, deps: DdActDeps): v
       if ('notFound' in lookup) {
         exitWithEnvelope(
           formatError(
-            'dd docs get',
+            'ddocs docs get',
             ErrorCodes.DD_DOCS_ENTRY_NOT_FOUND,
             `no baked dd doc with id "${id}"`,
             clock,
-            { next_action: 'Run `dd docs list` to see the available ids.' },
+            { next_action: 'Run `ddocs docs list` to see the available ids.' },
           ),
           createOutputPort(io.mode, io.writers),
         );
       }
       if (io.mode === 'json') {
         exitWithEnvelope(
-          formatOk('dd docs get', lookup, clock, {
-            next_action: 'Run `dd schema list` to see the schemas this describes.',
+          formatOk('ddocs docs get', lookup, clock, {
+            next_action: 'Run `ddocs schema list` to see the schemas this describes.',
           }),
           createOutputPort('json', io.writers),
         );

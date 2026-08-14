@@ -88,7 +88,7 @@ function parseSections(raw: unknown, failures: DdFailure[]): DdSection[] {
     // shape's `tally` marking is: `parseSections` builds a fresh object from the
     // keys it names, and `serializeDoc` writes that object back — so a key this
     // block does not read is not merely invisible, it is DESTROYED by the next
-    // `dd set`. Values are checked here rather than trusted: a tally is read by
+    // `ddocs set`. Values are checked here rather than trusted: a tally is read by
     // agents with `jq` instead of being summed, so a non-number in it is a lie
     // that travels.
     const tally = entry.tally;

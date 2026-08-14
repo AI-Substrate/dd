@@ -280,7 +280,7 @@ describe('tally — validate recomputes and compares', () => {
     const schema = timesheetSchema();
     const markdown = renderDd(wrong, { schema, path: '/repo/docs/week.dd.json' });
     // The render reflects the stored number, and reflects it correctly — which is
-    // exactly why `dd build --check` cannot see the defect.
+    // exactly why `ddocs build --check` cannot see the defect.
     expect(markdown).toContain('**99**');
     expect(
       validateDocument(wrong, '/repo/docs/week.dd.json', resolver(), '/repo').some(

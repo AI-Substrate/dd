@@ -10,7 +10,7 @@ function corpus(seeds?: string[]) {
   return traverseCorpus(paths, deps(), { repoRoot: REPO, mode: 'sweep' });
 }
 
-describe('dd graph — direct mermaid emission', () => {
+describe('ddocs graph — direct mermaid emission', () => {
   it('emits a valid, deterministic mermaid flowchart', () => {
     const graph = corpus([docPath('docs/plan.dd.json')]);
     const mermaid = toMermaid(graph, REPO);
@@ -47,7 +47,7 @@ describe('dd graph — direct mermaid emission', () => {
   });
 });
 
-describe('dd links — inbound and outbound, by local scan', () => {
+describe('ddocs links — inbound and outbound, by local scan', () => {
   const plan = docPath('docs/plan.dd.json');
   const evidence = docPath('docs/evidence.dd.json');
 

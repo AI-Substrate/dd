@@ -36,8 +36,8 @@ and fails if a gate exists in one and not the other:
 | `lint` | biome, read-only |
 | `build` | tsc emit — prerequisite for anything that spawns the bin |
 | `typecheck` | src + test. **Required separately**: vitest strips types, so green tests do not imply a typechecked lane |
-| `check-docs` | the baked `dd docs` corpus has not drifted from its sources |
-| `check-orient` | `government/orient-local.md`'s repo-state block still matches `dd --json status` |
+| `check-docs` | the baked `ddocs docs` corpus has not drifted from its sources |
+| `check-orient` | `government/orient-local.md`'s repo-state block still matches `ddocs --json status` |
 | `check-handover` | the handover packet's verbatim guardrail/constraint blocks match their sources |
 | `check-exports` | the exports map is **reachable**, not merely declared — with positive controls |
 | `self-host` | every repo `.dd.json` still renders byte-for-byte to its committed `.dd.md`, using the **local** bin |
@@ -53,11 +53,11 @@ just pack-gate      # scripts/pack-gate.sh — clean clone → npm pack → inst
 ## Health check
 
 ```bash
-dd --json version   # → {"command":"version","status":"ok",...}
-dd --json status    # → the port ledger; exits 2 while any planned verb is unregistered
+ddocs --json version   # → {"command":"version","status":"ok",...}
+ddocs --json status    # → the port ledger; exits 2 while any planned verb is unregistered
 ```
 
-`dd status` is a **self-updating honesty gate**: it diffs registered verbs against the planned
+`ddocs status` is a **self-updating honesty gate**: it diffs registered verbs against the planned
 set and cannot report `ok` while the surface is incomplete.
 
 ## Interact method
@@ -76,9 +76,9 @@ enforced in code, not prose.
 status. There are no logs to scrape.
 
 ```bash
-dd doctor --json                 # sweep every document at infinite validation radius
-dd graph --json                  # the whole document graph as mermaid
-dd links <address> --json        # inbound + outbound edges for one address
+ddocs doctor --json                 # sweep every document at infinite validation radius
+ddocs graph --json                  # the whole document graph as mermaid
+ddocs links <address> --json        # inbound + outbound edges for one address
 harness doctor --json            # harness-layer health, ordered by dependency
 harness observe "<what>" --kind <kind>   # capture friction the moment it bites
 ```
@@ -87,12 +87,12 @@ harness observe "<what>" --kind <kind>   # capture friction the moment it bites
 
 | Dimension | State | Instrument |
 |---|---|---|
-| Runtime inspectability | **present** | the envelope contract; `dd doctor`; `dd --json status` |
+| Runtime inspectability | **present** | the envelope contract; `ddocs doctor`; `ddocs --json status` |
 | Smoke paths | **present** | `test/smoke.test.ts` spawns the compiled bin; `scripts/pack-gate.sh` drives the *installed* bin |
 | Checks gate | **present** | `harness checks` → `just checks` (nine stages, CI-parity asserted) |
 | Architecture / static | **present** | tsc strict + biome + an SDK-tree external-import gate |
 | Packaging | **present** | pack gate + publish dry-run + `scripts/exports-reachability-probe.mjs` (runtime reachability, positive controls) |
-| Self-hosting | **present** | `just self-host` — dd renders its own documents with the local bin |
+| Self-hosting | **present** | `just self-host` — ddocs renders its own documents with the local bin |
 | Drift detection | **present** | `check-docs`, `check-orient`, `check-handover` — each a generator plus a `--check` twin |
 | Sensors (`harness sensors`) | **absent** | none registered; `harness doctor` correctly reports the watcher as not needed |
 | Security / dependency | **partial** | `npm audit` runs advisory-only in CI |

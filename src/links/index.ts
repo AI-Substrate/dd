@@ -1,8 +1,8 @@
 /**
  * The `dd` links, ledger and doctor layer — the graph made mechanical.
  *
- * One resolver engine sits behind every face: `dd address validate --resolve`,
- * `dd link resolve`, `dd link verify-basis`, `dd links`, `dd graph` and the
+ * One resolver engine sits behind every face: `ddocs address validate --resolve`,
+ * `ddocs link resolve`, `ddocs link verify-basis`, `ddocs links`, `ddocs graph` and the
  * radius-∞ doctor. Consumers outside this CLI — the flow spine's gate first —
  * import `verifyBasis` and the model types from here, never from a module path.
  *

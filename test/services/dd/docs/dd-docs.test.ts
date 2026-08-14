@@ -15,7 +15,7 @@ const FAKE: DdDocRecord[] = [
   { id: 'b', title: 'B', summary: 'second', audience: 'human', content: '# B\n' },
 ];
 
-describe('baked dd docs — service', () => {
+describe('baked ddocs docs — service', () => {
   it('lists index entries only, never the body', () => {
     const result = listDdDocs(FAKE);
     expect(result.docs).toEqual([
@@ -41,7 +41,7 @@ describe('baked dd docs — service', () => {
   });
 });
 
-describe('baked dd docs — the shipped corpus', () => {
+describe('baked ddocs docs — the shipped corpus', () => {
   it('ships exactly what the manifest curates, in manifest order', () => {
     expect(DD_DOCS.map((doc) => doc.id)).toEqual(MANIFEST.docs.map((entry) => entry.id));
     for (const [index, entry] of MANIFEST.docs.entries()) {

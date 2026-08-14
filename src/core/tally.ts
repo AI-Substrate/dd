@@ -167,7 +167,7 @@ export function tallyRows(value: unknown): Record<string, unknown>[] | null {
  * into agreement with its rows.
  *
  * This is the write half of Jordan's ruling. It runs on the mutation path, where
- * the document is already being rewritten, and never on `dd build`, which stays a
+ * the document is already being rewritten, and never on `ddocs build`, which stays a
  * renderer. Returns whether anything moved.
  */
 export function refreshSectionTally(section: DdSection, itemShape: DdShape | undefined): boolean {
@@ -218,7 +218,7 @@ export interface TallyMismatch {
  *
  * A stored tally that nothing re-derives is trusted data, and a hand-edited
  * `.dd.json` then yields a document whose total contradicts its own rows while
- * `dd build --check` PASSES, because the markdown faithfully reflects the wrong
+ * `ddocs build --check` PASSES, because the markdown faithfully reflects the wrong
  * JSON. It is not drift; it is internally consistent and false. This reports it.
  * It reports ONLY — repair belongs to the writers.
  */

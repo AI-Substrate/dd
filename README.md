@@ -48,8 +48,8 @@ visible). The clone route above is the supported path to a git-fresh binary.
 Requires Node **>= 22**. The only runtime dependencies are `commander` and `jiti`.
 
 ```bash
-dd --version
-dd --help
+ddocs --version
+ddocs --help
 ```
 
 ## Quick start
@@ -115,30 +115,30 @@ JSON
 Then check it, render it, and change it — without ever hand-editing the markdown:
 
 ```bash
-dd validate review.dd.json          # is it well-formed, and is its neighbourhood healthy?
-dd build review.dd.json             # write the generated review.dd.md sibling
-dd get "review.dd.json#items/dw-4e01/state"
-dd set "review.dd.json#items/dw-4e01/state" approved
+ddocs validate review.dd.json          # is it well-formed, and is its neighbourhood healthy?
+ddocs build review.dd.json             # write the generated review.dd.md sibling
+ddocs get "review.dd.json#items/dw-4e01/state"
+ddocs set "review.dd.json#items/dw-4e01/state" approved
 ```
 
-`dd set` validates against the schema **before** it writes, rebuilds the `.dd.md` sibling in the
+`ddocs set` validates against the schema **before** it writes, rebuilds the `.dd.md` sibling in the
 same operation, and refuses — writing nothing — if the value is not one the schema allows.
 
 ## The command surface
 
 ```
-dd version      Report the installed dd version as an envelope
-dd status       Report which dd verbs have been ported into this package
-dd validate     Validate one document and its outbound neighbourhood
-dd schema       Inspect resolved schemas (list, show)
-dd docs         Read baked guidance, compiled into the CLI (list, get)
-dd build        Render one .dd.json to its deterministic .dd.md sibling
-dd address      Generate and validate canonical dd addresses
-dd link         Resolve links and inspect recorded basis freshness
-dd links        Report inbound and outbound links for one address or document
-dd graph        Emit a standalone mermaid view of the repository dd graph
-dd doctor       Sweep documents at infinite validation radius
-dd get/set/add/rm   Read and mutate the value an address names
+ddocs version      Report the installed ddocs version as an envelope
+ddocs status       Report which dd verbs have been ported into this package
+ddocs validate     Validate one document and its outbound neighbourhood
+ddocs schema       Inspect resolved schemas (list, show)
+ddocs docs         Read baked guidance, compiled into the CLI (list, get)
+ddocs build        Render one .dd.json to its deterministic .dd.md sibling
+ddocs address      Generate and validate canonical dd addresses
+ddocs link         Resolve links and inspect recorded basis freshness
+ddocs links        Report inbound and outbound links for one address or document
+ddocs graph        Emit a standalone mermaid view of the repository ddocs graph
+ddocs doctor       Sweep documents at infinite validation radius
+ddocs get/set/add/rm   Read and mutate the value an address names
 ```
 
 `dd <verb> --help` for any of them.
@@ -149,7 +149,7 @@ dd get/set/add/rm   Read and mutate the value an address names
 
 ```json
 {
-  "command": "dd validate",
+  "command": "ddocs validate",
   "status": "ok",
   "data": { },
   "error": { "code": "E400", "message": "..." },
@@ -177,8 +177,8 @@ detection. Piped output auto-selects JSON, and both flags are accepted **after**
 as before it.
 
 ```bash
-dd validate review.dd.json --json | jq '{status, counts: .data.counts}'
-dd --json validate review.dd.json | jq '.data.issues[] | {code, location, owner}'
+ddocs validate review.dd.json --json | jq '{status, counts: .data.counts}'
+ddocs --json validate review.dd.json | jq '.data.issues[] | {code, location, owner}'
 ```
 
 ## Addresses
@@ -195,8 +195,8 @@ docs/plans/065/tasks/phase-2/tasks.dd.json#tasks/tk-9f2a
 Generate them rather than typing them:
 
 ```bash
-dd address generate "tasks/tk-9f2a" --path tasks.dd.json
-dd address validate "tasks.dd.json#tasks/tk-9f2a" --resolve
+ddocs address generate "tasks/tk-9f2a" --path tasks.dd.json
+ddocs address validate "tasks.dd.json#tasks/tk-9f2a" --resolve
 ```
 
 ## Completion states and the gate
@@ -230,12 +230,12 @@ name.
 
 **Every hit is recorded, not just the winner.** A duplicate name *inside one root* is a hard
 error, because nothing can arbitrate it. The same name in a *lower-precedence* root is a shadow —
-reported as a warning, with its path, by `dd schema list` and `dd schema show`. Local override is
+reported as a warning, with its path, by `ddocs schema list` and `ddocs schema show`. Local override is
 the feature; silently forking validation is not.
 
 ```bash
-dd schema list                      # every resolvable schema + shadowed duplicates
-dd schema show review/checklist     # one schema: path, shapes, enums, gate-terminal set
+ddocs schema list                      # every resolvable schema + shadowed duplicates
+ddocs schema show review/checklist     # one schema: path, shapes, enums, gate-terminal set
 ```
 
 ## Custom render types
@@ -249,7 +249,7 @@ An adapter is a file whose **presence is its registration** — no manifest, no 
 It is plain TypeScript, loaded and transpiled at runtime (this is the one thing `jiti` is a
 dependency for), and it is a pure `(value, ctx) => string`. A missing or throwing adapter is
 **loud, not fatal**: the value renders with an honest fallback and the build envelope carries an
-explicit warning, which `dd doctor` repeats. A quiet fallback would let a broken adapter look like
+explicit warning, which `ddocs doctor` repeats. A quiet fallback would let a broken adapter look like
 a boring document forever.
 
 ## Going deeper
@@ -264,10 +264,10 @@ The same reference corpus is baked **into the binary**, so an agent can read it 
 checkout and no network:
 
 ```bash
-dd docs list
-dd docs get dd-overview
-dd docs get how-to-add-a-schema
-dd docs get how-to-use-and-extend-the-sdk
+ddocs docs list
+ddocs docs get dd-overview
+ddocs docs get how-to-add-a-schema
+ddocs docs get how-to-use-and-extend-the-sdk
 ```
 
 The repository copies live in [`docs/how/dd/`](docs/how/dd/README.md).

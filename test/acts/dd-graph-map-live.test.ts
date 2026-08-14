@@ -236,7 +236,7 @@ function seedCorpus(): void {
 
 const AC_0201 = 'docs/plan.dd.json#acceptance_criteria/ac-0201';
 
-describe('dd graph map — live over a real corpus', () => {
+describe('ddocs graph map — live over a real corpus', () => {
   beforeAll(() => {
     repo = mkdtempSync(join(tmpdir(), 'dd-graph-map-'));
     seedCorpus();
@@ -264,7 +264,7 @@ describe('dd graph map — live over a real corpus', () => {
     // `graph` keeps zero positionals, and only the tree can show both.
     const program = buildProgram({ mode: 'json', writers: sink() }, deps());
     // ADAPTED: upstream reaches `graph` through the `dd` sub-command
-    // (`harness dd graph`). Here the binary IS `dd`, so `graph` is top level —
+    // (`harness dd graph`). Here the binary IS `ddocs`, so `graph` is top level —
     // the claim being asserted, that `map` is a sibling verb UNDER `graph` and
     // that bare `graph` keeps zero positionals, is unchanged.
     const graph = program.commands.find((command) => command.name() === 'graph');
@@ -298,7 +298,7 @@ describe('dd graph map — live over a real corpus', () => {
     ]);
   });
 
-  it('T001: leaves bare `dd graph` byte-identical', async () => {
+  it('T001: leaves bare `ddocs graph` byte-identical', async () => {
     // The P4 freeze pins zero positionals and the same bytes. `map` is a sibling
     // verb under the same noun, so adding it must not move this at all.
     const graph = await runDd(['dd', 'graph']);
@@ -306,7 +306,7 @@ describe('dd graph map — live over a real corpus', () => {
     const data = graph.envelope?.data as { mermaid: string; counts: { nodes: number } };
     expect(data.mermaid.startsWith('flowchart LR\n')).toBe(true);
     expect(data.counts.nodes).toBe(3);
-    expect(graph.envelope?.command).toBe('dd graph');
+    expect(graph.envelope?.command).toBe('ddocs graph');
     expect(Object.keys(data).sort()).toEqual([
       'counts',
       'edges',
@@ -468,7 +468,7 @@ describe('dd graph map — live over a real corpus', () => {
  * stderr as well as stdout, because the contract is about what lands on a
  * terminal, not about one writer.
  */
-describe('dd graph map — 80 columns over the whole terminal surface (T005)', () => {
+describe('ddocs graph map — 80 columns over the whole terminal surface (T005)', () => {
   /** Deep enough that the header's folder line alone cannot fit. */
   const DEEP = 'docs/plans/065-deterministic-documents/tasks/phase-7-graph-map/evidence';
   /** Long enough that no single address fits a line. */
@@ -587,7 +587,7 @@ describe('dd graph map — 80 columns over the whole terminal surface (T005)', (
     const missing = `${DEEP}/plan-${LONG}.dd.json#acceptance_criteria/ac-9999`;
     const run = await runDd(['dd', 'graph', 'map', missing], { mode: 'human' });
     expect(run.code).toBe(1);
-    expect(run.err).toContain('dd graph map:');
+    expect(run.err).toContain('ddocs graph map:');
     expect(run.err).toContain('\u2192');
     // Same seed under `--json` names the code, so this really is the E430 path
     // and not some other failure that happens to write to stderr.

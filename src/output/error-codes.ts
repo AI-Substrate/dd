@@ -22,7 +22,7 @@ export const ErrorCodes = {
   DD_ID_INVALID: 'E403',
   /** Two instances share an id in one document's single id namespace. */
   DD_ID_DUPLICATE: 'E404',
-  /** A dd address violates the locked file/interior grammar. */
+  /** A ddocs address violates the locked file/interior grammar. */
   DD_ADDRESS_INVALID: 'E405',
   /** A link cell resolves to a schema/shape level different from its declared type path. */
   DD_LINK_TYPE_MISMATCH: 'E406',
@@ -51,14 +51,14 @@ export const ErrorCodes = {
   DD_SCHEMA_PATH_ESCAPE: 'E417',
   /** Writing or regenerating a schema-owned artifact failed. */
   DD_SCHEMA_WRITE_FAILED: 'E418',
-  /** `dd docs get`: no baked dd documentation entry exists for the requested id. */
+  /** `ddocs docs get`: no baked dd documentation entry exists for the requested id. */
   DD_DOCS_ENTRY_NOT_FOUND: 'E419',
   // --- `harness dd build` render/adapters (plan 065 Phase 3; E420-E429 complete allocation) ---
   /** Deterministic rendering failed before a complete markdown result was produced. */
   DD_RENDER_FAILED: 'E420',
   /** Writing the generated sibling `.dd.md` failed. */
   DD_RENDER_WRITE_FAILED: 'E421',
-  /** `dd build --check`: committed markdown differs from a fresh deterministic render. */
+  /** `ddocs build --check`: committed markdown differs from a fresh deterministic render. */
   DD_RENDER_DRIFT: 'E422',
   /** A schema-declared custom type has no discoverable render adapter. */
   DD_ADAPTER_NOT_FOUND: 'E423',
@@ -72,16 +72,16 @@ export const ErrorCodes = {
   DD_LIVE_BASIS_REFRESH_FAILED: 'E427',
   /** Phase 3 watcher support could not subscribe, process, or regenerate a changed document. */
   DD_WATCH_FAILED: 'E428',
-  /** `dd build` received an unreadable path or unsupported input shape. */
+  /** `ddocs build` received an unreadable path or unsupported input shape. */
   DD_BUILD_INPUT_INVALID: 'E429',
   // --- `harness dd address|link|links|graph|doctor` (plan 065 Phase 4; E430-E439 complete allocation) ---
   /** An address could not be resolved to the named document/section/instance. */
   DD_LINK_UNRESOLVED: 'E430',
-  /** The target file named by a dd address does not exist. */
+  /** The target file named by a ddocs address does not exist. */
   DD_LINK_TARGET_MISSING: 'E431',
-  /** The target file named by a dd address exists but is not tracked. */
+  /** The target file named by a ddocs address exists but is not tracked. */
   DD_LINK_TARGET_UNTRACKED: 'E432',
-  /** A dd address resolves outside the repository boundary. */
+  /** A ddocs address resolves outside the repository boundary. */
   DD_LINK_PATH_ESCAPE: 'E433',
   /** A references-ledger sha does not match the current target document. */
   DD_BASIS_STALE: 'E434',
@@ -91,7 +91,7 @@ export const ErrorCodes = {
   DD_LINK_SCAN_FAILED: 'E436',
   /** Building the standalone mermaid graph failed. */
   DD_GRAPH_FAILED: 'E437',
-  /** `dd doctor` found one or more ERROR-class document findings. */
+  /** `ddocs doctor` found one or more ERROR-class document findings. */
   DD_DOCTOR_FINDINGS: 'E438',
   /** The repo-wide doctor discovery/validation sweep itself failed. */
   DD_DOCTOR_SCAN_FAILED: 'E439',
@@ -114,7 +114,7 @@ export const ErrorCodes = {
   DD_GATE_EVENT_WRITE_FAILED: 'E447',
   /** Rendering or orienting the computed dd gate surface failed. */
   DD_GATE_SURFACE_FAILED: 'E448',
-  /** A gate-enabled flow node is missing its required dd link data. */
+  /** A gate-enabled flow node is missing its required ddocs link data. */
   DD_GATE_LINK_MISSING: 'E449',
   // --- dd writer verbs + the plan semantic layer (plan 070 Phase 1; E450-E459 complete allocation) ---
   /** An address does not name a target the requested mutation can act on. */

@@ -20,6 +20,6 @@ process.stdout.on('error', (err: NodeJS.ErrnoException) => {
 main().catch((err: unknown) => {
   process.exitCode = 1;
   process.stderr.write(
-    `dd: unexpected error: ${err instanceof Error ? err.message : String(err)}\n`,
+    `ddocs: unexpected error: ${err instanceof Error ? err.message : String(err)}\n`,
   );
 });

@@ -1,6 +1,6 @@
 # How to use dd as a library (and extend its surface)
 
-dd ships two things from one package: the `dd` **binary**, and a **library surface** you import.
+dd ships two things from one package: the `ddocs` **binary**, and a **library surface** you import.
 This page is the second one — how to consume it, and what to do when you add a feature and want
 it public.
 

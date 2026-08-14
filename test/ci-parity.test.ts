@@ -9,7 +9,7 @@ import { repoRoot } from './support/run-cli.js';
  * `ci.yml` used to carry the comment "Same three gates `just checks` runs
  * locally, in the same order, so CI and local can't drift." The recipe ran
  * FIVE, and the one CI was missing was `check-docs` — the gate whose entire
- * job is to catch silent drift in the baked `dd docs` corpus. So a comment
+ * job is to catch silent drift in the baked `ddocs docs` corpus. So a comment
  * promising no-drift was itself the drift, and nothing could see it: every
  * test passed, because no test read CI.
  *

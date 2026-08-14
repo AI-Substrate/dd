@@ -34,7 +34,7 @@ function clone(doc: DdDoc): DdDoc {
  * A CLI hands every value over as text, so something has to decide that `3` is an
  * int and `checked` is a state. Asking the shape is the only answer that cannot
  * be wrong: the same characters mean different things in different cells, and
- * guessing from the characters alone would make `dd set …/note 3` silently write
+ * guessing from the characters alone would make `ddocs set …/note 3` silently write
  * a number into a string field.
  *
  * `asJson` is the explicit override for the cases a shape cannot settle — an
@@ -113,10 +113,10 @@ function applied(
   // Bring every stored tally back into agreement with the rows BEFORE the gate
   // runs, so the document that gets validated is the document that gets written.
   //
-  // This is the one place it belongs. `dd build` stays a renderer — it never
+  // This is the one place it belongs. `ddocs build` stays a renderer — it never
   // writes the source — and every writer verb funnels through here, so a tally
   // cannot go stale by way of a verb. It cannot go stale by way of a hand edit
-  // either without `dd validate` saying so; between the two, a stored sum is a
+  // either without `ddocs validate` saying so; between the two, a stored sum is a
   // checked invariant rather than trusted data.
   for (const section of after.sections) {
     refreshSectionTally(section, deps.schema.sections[section.name]?.shape.items);
@@ -238,10 +238,10 @@ export function ddAdd(
     // A JIT-born container for an APPEND is a LIST. `add` means "put this item in
     // that collection", so birthing the bare item would make the first add
     // produce a different SHAPE from every subsequent one — and against a schema
-    // whose map values are arrays (`done_when`), the very first `dd add --mint`
+    // whose map values are arrays (`done_when`), the very first `ddocs add --mint`
     // would be refused as `value must be an array`.
     //
-    // An array item passes through untouched: `dd add <map-key> '[{…}]'` is
+    // An array item passes through untouched: `ddocs add <map-key> '[{…}]'` is
     // birthing the whole list at once, which is a different, legitimate thing to
     // ask for. (That form is what the plan-070 control happened to use, which is
     // exactly why it never caught this — the phase-2 dry-run did.)
@@ -258,7 +258,7 @@ export function ddAdd(
   if (!Array.isArray(cursor.value)) {
     return refuse(
       'target-exists',
-      `"${cursor.trail.join('/')}" is not a list — use \`dd set\` to replace it`,
+      `"${cursor.trail.join('/')}" is not a list — use \`ddocs set\` to replace it`,
     );
   }
   cursor.value.push(item);

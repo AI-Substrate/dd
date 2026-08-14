@@ -34,7 +34,7 @@ function walk(dir: string, files: Record<string, string>, dirs: Record<string, s
  * Load one fixture world into a `FakeFs`.
  *
  * The corpus stays REAL, enumerable files on disk (a human can read them, and
- * `dd validate`'s live proof runs against the same bytes) while the resolver
+ * `ddocs validate`'s live proof runs against the same bytes) while the resolver
  * under test still runs against a fake port — the house fakes-only rule holds
  * without the corpus degrading into inline string literals.
  */

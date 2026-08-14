@@ -102,7 +102,7 @@ export interface PlanCheckReading {
    * which is the honest reading of a run that was never asked about open rows.
    */
   green: boolean;
-  /** The mechanical findings, unchanged — `dd validate`'s answer, not a new one. */
+  /** The mechanical findings, unchanged — `ddocs validate`'s answer, not a new one. */
   issues: DdIssue[];
   /** The semantic findings, or `[]` when a blocking mechanical error stopped the read. */
   findings: PlanFinding[];

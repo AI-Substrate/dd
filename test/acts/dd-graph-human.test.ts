@@ -158,7 +158,7 @@ function write(relative: string, value: unknown): void {
 }
 
 /**
- * `dd graph` in human mode — FU-9.
+ * `ddocs graph` in human mode — FU-9.
  *
  * The command's entire job is to emit a graph, and in human mode it emitted
  * nothing: the mermaid it had already built was reachable only under `--json`.
@@ -166,7 +166,7 @@ function write(relative: string, value: unknown): void {
  * that "global --json + human mermaid already cover both modes"; these are the
  * tests for the half that was never delivered.
  */
-describe('dd graph — human mode emits the mermaid (FU-9)', () => {
+describe('ddocs graph — human mode emits the mermaid (FU-9)', () => {
   beforeAll(() => {
     repo = mkdtempSync(join(tmpdir(), 'dd-graph-human-'));
     write('.dd/schemas/live/plan/schema.json', PLAN_SCHEMA);
@@ -234,7 +234,7 @@ describe('dd graph — human mode emits the mermaid (FU-9)', () => {
   it('leaves `--json` byte-identical, since consumers already depend on it', async () => {
     const run = await runDd(['dd', 'graph']);
     expect(run.envelope?.status).toBe('ok');
-    expect(run.envelope?.command).toBe('dd graph');
+    expect(run.envelope?.command).toBe('ddocs graph');
     const data = run.envelope?.data as { mermaid: string; counts: { nodes: number } };
     expect(data.mermaid.startsWith('flowchart LR\n')).toBe(true);
     expect(data.counts.nodes).toBeGreaterThan(0);
@@ -247,7 +247,7 @@ describe('dd graph — human mode emits the mermaid (FU-9)', () => {
     const run = await runDd(['dd', 'graph'], { mode: 'human' });
     // Status and the next action are diagnostics; they go to stderr. Every line
     // of stdout has to be something mermaid can parse.
-    expect(run.out).not.toContain('dd graph:');
+    expect(run.out).not.toContain('ddocs graph:');
     expect(run.out).not.toContain('\u2192');
     expect(run.err).toContain('\u2192');
     for (const line of run.out.split('\n').filter((line) => line !== '')) {
@@ -256,7 +256,7 @@ describe('dd graph — human mode emits the mermaid (FU-9)', () => {
   });
 
   it('never styles the mermaid, even when colour is resolved ON', async () => {
-    // A deliberate exception to the palette `dd graph map` uses. Mermaid is a
+    // A deliberate exception to the palette `ddocs graph map` uses. Mermaid is a
     // machine format whose value is that it can be pasted into a viewer, and an
     // SGR byte in a paste corrupts the diagram.
     const coloured = await runDd(['dd', 'graph'], { mode: 'human', useColor: true });
@@ -317,7 +317,7 @@ describe('dd graph — human mode emits the mermaid (FU-9)', () => {
       if (accessible(locked)) return;
       const run = await runDd(['dd', 'graph', '--path', 'locked'], { mode: 'human' });
       expect(run.code).toBe(1);
-      expect(run.err).toContain('dd graph:');
+      expect(run.err).toContain('ddocs graph:');
       expect(run.err).toContain('\u2192');
       // Nothing on stdout: a partial diagram of a corpus we could not read would
       // look like a complete one.

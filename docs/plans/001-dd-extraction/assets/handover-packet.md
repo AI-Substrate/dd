@@ -894,7 +894,7 @@ these rows move as the o-prime amends them (row 9 was amended twice while this p
 in review). Check whether yours is stale, and re-pull the live version, with:
 
 ```bash
-dd get "docs/plans/001-dd-extraction/plan.dd.json#execution_guardrails"
+ddocs get "docs/plans/001-dd-extraction/plan.dd.json#execution_guardrails"
 git log -1 --format=%h -- docs/plans/001-dd-extraction/plan.dd.json   # newer than the stamp above? re-pull.
 ```
 

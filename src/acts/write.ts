@@ -50,15 +50,15 @@ const MUTATION_CODES: Record<DdMutationFailure['reason'], string> = {
 
 const NEXT_ACTIONS: Record<DdMutationFailure['reason'], string> = {
   'address-malformed':
-    'Generate the address instead of writing it: `dd address generate "<interior>" --path <file>`.',
+    'Generate the address instead of writing it: `ddocs address generate "<interior>" --path <file>`.',
   'container-invalid':
-    'Inspect the shape with `dd schema show <name>`, then address a container the verb can act on.',
+    'Inspect the shape with `ddocs schema show <name>`, then address a container the verb can act on.',
   'id-conflict': 'Drop `--mint`, or remove the `id` from the item and let the CLI mint it.',
   'id-exhausted': 'Use a different registered prefix, or split the document.',
   'mint-prefix-unregistered':
-    'Mint under a registered prefix — run `dd schema show <name>` to see the shapes that carry ids.',
+    'Mint under a registered prefix — run `ddocs schema show <name>` to see the shapes that carry ids.',
   'schema-refused': 'Fix the reported location in the value you supplied, then re-run.',
-  // NOT `dd schema show` — for this state that is a CIRCLE. The schema does
+  // NOT `ddocs schema show` — for this state that is a CIRCLE. The schema does
   // declare the section, so the command sent as the remedy displays the very
   // declaration the refusal appears to deny, and the caller learns nothing.
   // That dead end is what our first real consumer reported (wl-0017).
@@ -72,10 +72,10 @@ const NEXT_ACTIONS: Record<DdMutationFailure['reason'], string> = {
   // Written while both parties still knew, which is the only moment it is cheap.
   'section-absent':
     'The schema declares this section; the document has not created it yet. Seed the section in the document, then write into it — the writer verbs cannot create a section today.',
-  'section-unknown': 'Run `dd schema show <name>` to see the sections this schema declares.',
-  'target-exists': 'Use `dd set` to replace a value that is not a list.',
+  'section-unknown': 'Run `ddocs schema show <name>` to see the sections this schema declares.',
+  'target-exists': 'Use `ddocs set` to replace a value that is not a list.',
   'target-unknown':
-    'Resolve the address first with `dd link resolve <address>` to see where it stops.',
+    'Resolve the address first with `ddocs link resolve <address>` to see where it stops.',
   'value-invalid':
     'Supply a value of the declared type, or pass `--value-json` for a structural one.',
 };
@@ -92,7 +92,7 @@ interface WriterTarget {
  * Resolve `<address>` to the document it names and the schema that governs it.
  *
  * The address is anchored at the REPOSITORY ROOT, exactly as it is for
- * `dd link resolve` and `dd address validate` — an address typed on a command
+ * `ddocs link resolve` and `ddocs address validate` — an address typed on a command
  * line means the same thing whatever verb is on the line with it.
  */
 function readTarget(ctx: DdLinkContext, command: string, address: string): WriterTarget {
@@ -155,7 +155,7 @@ function readTarget(ctx: DdLinkContext, command: string, address: string): Write
       ErrorCodes.DD_SCHEMA_UNRESOLVABLE,
       resolution.issues.find((issue) => issue.severity === 'ERROR')?.message ??
         `schema not found: ${doc.dd.schema}`,
-      'Run `dd schema list` to see which schemas resolve from here.',
+      'Run `ddocs schema list` to see which schemas resolve from here.',
       { path, schema: doc.dd.schema, issues: resolution.issues },
     );
   }
@@ -189,7 +189,7 @@ function refuseMutation(
  * The regeneration is not a courtesy. A dd document's `.dd.md` is a derived
  * artifact with a drift gate pointed at it, so a writer that changed the source
  * and left the sibling behind would be manufacturing exactly the failure
- * `dd build --check` exists to catch — and the agent who ran the verb would be
+ * `ddocs build --check` exists to catch — and the agent who ran the verb would be
  * blamed for a hand-edit it never made. Best-effort regeneration has the same
  * defect wearing a warning: the envelope still says `written: true`. So a
  * sibling failure is a MUTATION failure here, the source is rolled back, and the
@@ -261,7 +261,7 @@ function mutationDeps(ctx: DdLinkContext, target: WriterTarget): DdMutationDeps 
 }
 
 /**
- * `dd get | set | add | rm` — the writer family (ac-7019, tk-7028).
+ * `ddocs get | set | add | rm` — the writer family (ac-7019, tk-7028).
  *
  * Ruled FIRST of plan 070's phase 1 so that everything after it, including the
  * journey authoring the plan, mutates documents through the CLI. Three properties
@@ -271,12 +271,12 @@ function mutationDeps(ctx: DdLinkContext, target: WriterTarget): DdMutationDeps 
  */
 export function registerWriterCommands(dd: Command, io: CliIo, deps: DdActDeps): void {
   dd.command('get <address>')
-    .description('Read the value a dd address names')
+    .description('Read the value a ddocs address names')
     .action(async (address: string) => {
       const ctx = await createLinkContext(io, deps, { tracked: false });
-      const target = readTarget(ctx, 'dd get', address);
+      const target = readTarget(ctx, 'ddocs get', address);
       const outcome = ddGet(target.doc, target.record.schema, target.segments);
-      if (!outcome.ok) refuseMutation(ctx, 'dd get', address, outcome);
+      if (!outcome.ok) refuseMutation(ctx, 'ddocs get', address, outcome);
       const data = {
         address,
         path: target.path,
@@ -286,8 +286,8 @@ export function registerWriterCommands(dd: Command, io: CliIo, deps: DdActDeps):
       };
       if (io.mode !== 'json') {
         // Human mode prints the VALUE, not a status word. A read verb whose human
-        // output is `dd get: ok` has answered a question nobody asked — and the
-        // `dd docs get` precedent already rules that a read exits naturally so a
+        // output is `ddocs get: ok` has answered a question nobody asked — and the
+        // `ddocs docs get` precedent already rules that a read exits naturally so a
         // large piped payload is never truncated by a hard exit.
         emitRawAndExit(
           `${typeof outcome.value === 'string' ? outcome.value : JSON.stringify(outcome.value, null, 2)}\n`,
@@ -296,25 +296,25 @@ export function registerWriterCommands(dd: Command, io: CliIo, deps: DdActDeps):
         return;
       }
       exitWithEnvelope(
-        formatOk('dd get', data, ctx.clock, {
-          next_action: `Change it with \`dd set ${address} <value>\`.`,
+        formatOk('ddocs get', data, ctx.clock, {
+          next_action: `Change it with \`ddocs set ${address} <value>\`.`,
         }),
         ctx.port,
       );
     });
 
   dd.command('set <address> <value>')
-    .description('Replace the value a dd address names, validating before the write')
+    .description('Replace the value a ddocs address names, validating before the write')
     .option('--value-json', 'read <value> as JSON rather than as the declared type')
     .action(async (address: string, value: string, opts: { valueJson?: boolean }) => {
       const ctx = await createLinkContext(io, deps, { tracked: false });
-      const target = readTarget(ctx, 'dd set', address);
+      const target = readTarget(ctx, 'ddocs set', address);
       const outcome = ddSet(target.doc, target.segments, value, {
         ...mutationDeps(ctx, target),
         asJson: opts.valueJson === true,
       });
-      if (!outcome.ok) refuseMutation(ctx, 'dd set', address, outcome);
-      await persist(ctx, 'dd set', address, target, outcome);
+      if (!outcome.ok) refuseMutation(ctx, 'ddocs set', address, outcome);
+      await persist(ctx, 'ddocs set', address, target, outcome);
     });
 
   dd.command('add <address> <json>')
@@ -322,22 +322,22 @@ export function registerWriterCommands(dd: Command, io: CliIo, deps: DdActDeps):
     .option('--mint <prefix>', 'let the CLI mint the item id under a registered prefix')
     .action(async (address: string, json: string, opts: { mint?: string }) => {
       const ctx = await createLinkContext(io, deps, { tracked: false });
-      const target = readTarget(ctx, 'dd add', address);
+      const target = readTarget(ctx, 'ddocs add', address);
       const outcome = ddAdd(target.doc, target.segments, json, {
         ...mutationDeps(ctx, target),
         ...(opts.mint !== undefined && { mint: opts.mint }),
       });
-      if (!outcome.ok) refuseMutation(ctx, 'dd add', address, outcome);
-      await persist(ctx, 'dd add', address, target, outcome);
+      if (!outcome.ok) refuseMutation(ctx, 'ddocs add', address, outcome);
+      await persist(ctx, 'ddocs add', address, target, outcome);
     });
 
   dd.command('rm <address>')
-    .description('Remove the item, entry, field or section a dd address names')
+    .description('Remove the item, entry, field or section a ddocs address names')
     .action(async (address: string) => {
       const ctx = await createLinkContext(io, deps, { tracked: false });
-      const target = readTarget(ctx, 'dd rm', address);
+      const target = readTarget(ctx, 'ddocs rm', address);
       const outcome = ddRemove(target.doc, target.segments, mutationDeps(ctx, target));
-      if (!outcome.ok) refuseMutation(ctx, 'dd rm', address, outcome);
-      await persist(ctx, 'dd rm', address, target, outcome);
+      if (!outcome.ok) refuseMutation(ctx, 'ddocs rm', address, outcome);
+      await persist(ctx, 'ddocs rm', address, target, outcome);
     });
 }

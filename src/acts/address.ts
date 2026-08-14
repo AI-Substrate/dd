@@ -23,7 +23,7 @@ export function registerAddressCommands(dd: Command, io: CliIo, deps: DdActDeps)
       const ctx = await createLinkContext(io, deps, { tracked: false });
       // Generation is a grammar question, not a repository question: the address
       // is assembled and then put through the same parser every consumer uses,
-      // so a string this verb hands back can never be one `dd address validate`
+      // so a string this verb hands back can never be one `ddocs address validate`
       // would reject. That is the whole point of the verb — agents stop
       // hand-assembling addresses (workshop 001 § Tooling contract).
       const raw = `${opts.path ?? ''}#${interior}`;
@@ -31,7 +31,7 @@ export function registerAddressCommands(dd: Command, io: CliIo, deps: DdActDeps)
       if (isAddressFailure(parsed)) {
         exitWithEnvelope(
           formatError(
-            'dd address generate',
+            'ddocs address generate',
             ErrorCodes.DD_ADDRESS_INVALID,
             parsed.message,
             ctx.clock,
@@ -48,7 +48,7 @@ export function registerAddressCommands(dd: Command, io: CliIo, deps: DdActDeps)
       const normalized = normalizeAddress(parsed);
       exitWithEnvelope(
         formatOk(
-          'dd address generate',
+          'ddocs address generate',
           {
             address: formatAddress(normalized),
             file: normalized.file,
@@ -57,7 +57,7 @@ export function registerAddressCommands(dd: Command, io: CliIo, deps: DdActDeps)
           },
           ctx.clock,
           {
-            next_action: `Check it against the repository with \`dd address validate "${formatAddress(normalized)}" --resolve\`.`,
+            next_action: `Check it against the repository with \`ddocs address validate "${formatAddress(normalized)}" --resolve\`.`,
           },
         ),
         ctx.port,
@@ -74,14 +74,14 @@ export function registerAddressCommands(dd: Command, io: CliIo, deps: DdActDeps)
       if (isAddressFailure(parsed)) {
         exitWithEnvelope(
           formatError(
-            'dd address validate',
+            'ddocs address validate',
             ErrorCodes.DD_ADDRESS_INVALID,
             parsed.message,
             ctx.clock,
             {
               details: { address: raw },
               next_action:
-                'Generate the address instead of writing it: `dd address generate "<interior>" --path <file>`.',
+                'Generate the address instead of writing it: `ddocs address generate "<interior>" --path <file>`.',
             },
           ),
           ctx.port,
@@ -102,7 +102,7 @@ export function registerAddressCommands(dd: Command, io: CliIo, deps: DdActDeps)
         // rather than handing back a guess that reads like an answer.
         exitWithEnvelope(
           formatOk(
-            'dd address validate',
+            'ddocs address validate',
             {
               ...syntax,
               classified: false,
@@ -127,7 +127,7 @@ export function registerAddressCommands(dd: Command, io: CliIo, deps: DdActDeps)
         const issues = codedLinkIssues(resolution.issues);
         exitWithEnvelope(
           formatError(
-            'dd address validate',
+            'ddocs address validate',
             issues[0]?.code ?? ErrorCodes.DD_LINK_UNRESOLVED,
             issues[0]?.message ?? `address did not resolve: ${raw}`,
             ctx.clock,
@@ -143,7 +143,7 @@ export function registerAddressCommands(dd: Command, io: CliIo, deps: DdActDeps)
       const { target } = resolution;
       exitWithEnvelope(
         formatOk(
-          'dd address validate',
+          'ddocs address validate',
           {
             ...syntax,
             classified: true,
@@ -158,7 +158,7 @@ export function registerAddressCommands(dd: Command, io: CliIo, deps: DdActDeps)
           },
           ctx.clock,
           {
-            next_action: `Run \`dd link resolve "${target.address}"\` to read the value it points at.`,
+            next_action: `Run \`ddocs link resolve "${target.address}"\` to read the value it points at.`,
           },
         ),
         ctx.port,

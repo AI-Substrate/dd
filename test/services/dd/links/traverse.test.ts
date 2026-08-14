@@ -8,7 +8,7 @@ function traverse(seeds: string[], mode: 'direct' | 'sweep' = 'sweep') {
   return { loader, graph: traverseCorpus(seeds, deps(loader), { repoRoot: REPO, mode }) };
 }
 
-describe('dd links traversal — loop breakers', () => {
+describe('ddocs links traversal — loop breakers', () => {
   it('terminates the two-document loop, visiting each document once', () => {
     const { loader, graph } = traverse([
       docPath('docs/cycle-a.dd.json'),
@@ -113,7 +113,7 @@ describe('dd links traversal — loop breakers', () => {
   });
 });
 
-describe('dd links traversal — edges and nodes', () => {
+describe('ddocs links traversal — edges and nodes', () => {
   it('records every schema-declared link cell as an edge', () => {
     const { graph } = traverse([docPath('docs/plan.dd.json')]);
     expect(graph.edges).toEqual([
@@ -182,7 +182,7 @@ describe('dd links traversal — edges and nodes', () => {
   });
 });
 
-describe('dd links traversal — sweep exclusion (OD-1)', () => {
+describe('ddocs links traversal — sweep exclusion (OD-1)', () => {
   const excluded = docPath('docs/sweep-excluded.dd.json');
 
   it('skips an opted-out document in sweep mode only', () => {
@@ -211,7 +211,7 @@ describe('dd links traversal — sweep exclusion (OD-1)', () => {
   });
 });
 
-describe('dd links traversal — reachability over a built edge list', () => {
+describe('ddocs links traversal — reachability over a built edge list', () => {
   const edge = (from: string, to: string | null): DdLinkEdge => ({
     from,
     to,

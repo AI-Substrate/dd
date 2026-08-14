@@ -3,8 +3,8 @@
 The `dd` guidance that ships **inside** the binary, kept here as readable files too.
 
 ```bash
-dd docs list          # the same corpus, baked into the CLI
-dd docs get <id>
+ddocs docs list          # the same corpus, baked into the CLI
+ddocs docs get <id>
 ```
 
 Start with the README at the repository root for install and a quick start. This folder is the
@@ -12,7 +12,7 @@ longer form.
 
 ## What is here
 
-| Page | `dd docs get` | Covers |
+| Page | `ddocs docs get` | Covers |
 |---|---|---|
 | [dd-overview.md](dd-overview.md) | `dd-overview` | The envelope, ids and addresses, completion states and the gate, schema resolution, the CLI family, reading it with `jq`. |
 | [how-to-add-a-schema.md](how-to-add-a-schema.md) | `how-to-add-a-schema` | A worked schema package with custom enums and `gate_terminal`, the `human-skipped` receipt convention, and a custom-type adapter. |

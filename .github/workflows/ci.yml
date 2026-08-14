@@ -81,7 +81,7 @@ jobs:
       - name: Typecheck (src + test)
         run: npm run typecheck
 
-      - name: Docs drift (baked `dd docs` corpus)
+      - name: Docs drift (baked `ddocs docs` corpus)
         run: npm run check:dd-docs
 
       - name: Orient drift (.harness/government/orient-local.md repo-state block)
@@ -101,7 +101,7 @@ jobs:
       - name: Audit (blocks on actionable advisories)
         run: node scripts/audit-gate.mjs
 
-      - name: Self-host (dd renders this repo's own documents)
+      - name: Self-host (ddocs renders this repo's own documents)
         run: ./scripts/self-host-check.sh
 
       - name: Test (vitest + coverage)
@@ -161,7 +161,7 @@ jobs:
           npm pack --dry-run --json > /tmp/pack.json
           jq -e '.[0].name == "@ai-substrate/dd"' /tmp/pack.json >/dev/null \
             || { echo "::error title=dry-run::scoped name mismatch"; exit 1; }
-          jq -e '[.[0].files[].path] | any(test("bin/dd\\.js"))' /tmp/pack.json >/dev/null \
+          jq -e '[.[0].files[].path] | any(test("bin/ddocs\\.js"))' /tmp/pack.json >/dev/null \
             || { echo "::error title=dry-run::bin not packed"; exit 1; }
           jq -e '[.[0].files[].path] | any(startswith("dist/"))' /tmp/pack.json >/dev/null \
             || { echo "::error title=dry-run::dist not packed"; exit 1; }
@@ -183,19 +183,19 @@ jobs:
           # needs at runtime must resolve without devDependencies present.
           npm install --omit=dev "$GITHUB_WORKSPACE/$TARBALL"
           echo "Installed bin symlink:"
-          ls -l node_modules/.bin/dd
+          ls -l node_modules/.bin/ddocs
 
-          echo "dd --version:"
-          ./node_modules/.bin/dd --version
+          echo "ddocs --version:"
+          ./node_modules/.bin/ddocs --version
 
-          echo "dd version (ok envelope, exit 0):"
-          ./node_modules/.bin/dd --json version | tee version.json
+          echo "ddocs version (ok envelope, exit 0):"
+          ./node_modules/.bin/ddocs --json version | tee version.json
           jq -e '.status == "ok"' version.json >/dev/null
           jq -e '.command == "version" and (.timestamp | type) == "string"' version.json >/dev/null
 
-          echo "dd status (complete port ledger, exit 0):"
+          echo "ddocs status (complete port ledger, exit 0):"
           set +e
-          ./node_modules/.bin/dd --json status > status.json; code=$?
+          ./node_modules/.bin/ddocs --json status > status.json; code=$?
           set -e
           cat status.json
           [ "$code" -eq 0 ] || { echo "::error title=smoke::a complete ledger must exit 0, got $code"; exit 1; }
@@ -207,9 +207,9 @@ jobs:
           jq -e '(.data.remaining | length) == 0' status.json >/dev/null
           jq -e '(.data.ported | length) == 10' status.json >/dev/null
 
-          echo "dd no-such-verb (error envelope, exit 1):"
+          echo "ddocs no-such-verb (error envelope, exit 1):"
           set +e
-          ./node_modules/.bin/dd --json no-such-verb > err.json; code=$?
+          ./node_modules/.bin/ddocs --json no-such-verb > err.json; code=$?
           set -e
           cat err.json
           [ "$code" -eq 1 ] || { echo "::error title=smoke::error must exit 1, got $code"; exit 1; }

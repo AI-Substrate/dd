@@ -74,7 +74,7 @@ function key(finding: DdDoctorFinding): string {
 }
 
 /**
- * `dd doctor` — the validate engine at radius ∞ (W8, plan 4.5).
+ * `ddocs doctor` — the validate engine at radius ∞ (W8, plan 4.5).
  *
  * The engine is P1's: every document is validated by `validateDocument` through
  * `validateWalk`, run at infinite depth so a finding anywhere in a document's
@@ -88,7 +88,7 @@ function key(finding: DdDoctorFinding): string {
  * the same document.
  *
  * Exclusions are the sweep's, and only the sweep's (OD-1): `sweep_exclude` and
- * fixture paths are skipped here, and never by a direct `dd validate`. That is
+ * fixture paths are skipped here, and never by a direct `ddocs validate`. That is
  * what lets a repository keep a known-bad corpus committed and still run a green
  * `harness checks` (AC-15).
  */

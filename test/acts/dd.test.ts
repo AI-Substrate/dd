@@ -38,7 +38,7 @@ async function runDd(argv: string[]): Promise<{ envelope: Envelope; code: number
 }
 
 describe('harness dd act surface', () => {
-  // The two live `dd validate` rows below hand the act repo-relative fixture
+  // The two live `ddocs validate` rows below hand the act repo-relative fixture
   // paths, and the act resolves them against process.cwd() (house repo-root
   // convention). Pin cwd to the CLI package so this suite means the same thing
   // under `just test` (which cds to harness/cli) and under the repo's own root
@@ -56,13 +56,13 @@ describe('harness dd act surface', () => {
     vi.restoreAllMocks();
   });
 
-  it('registers the full frozen family and reserves dd from extensions', () => {
+  it('registers the full frozen family and reserves ddocs from extensions', () => {
     const program = buildProgram(
       { mode: 'json', writers: { out: () => {}, err: () => {} } },
       deps(),
     );
     // ADAPTED: upstream the family hangs off a `dd` sub-command of `harness`.
-    // Here the binary IS `dd`, so the program itself is the family root — and
+    // Here the binary IS `ddocs`, so the program itself is the family root — and
     // `version`/`status` are this package's own verbs, which upstream has no
     // equivalent of, so the frozen family is asserted as a SUBSET in order.
     const dd = program;
@@ -104,10 +104,10 @@ describe('harness dd act surface', () => {
   });
 
   // Every stub row is gone: Phase 2 filled five bodies, Phase 4 seven, and Phase 3
-  // the last one (`dd build`), so the `unconfigured` table has no rows left to
+  // the last one (`ddocs build`), so the `unconfigured` table has no rows left to
   // assert and was removed with them. Each verb below must now answer with real
   // behaviour and its phase's exit mapping.
-  it('dd validate runs live against a real document', async () => {
+  it('ddocs validate runs live against a real document', async () => {
     const result = await runDd([
       'dd',
       'validate',
@@ -124,7 +124,7 @@ describe('harness dd act surface', () => {
     });
   });
 
-  it('dd validate maps an ERROR-class finding to error/exit 1 with a frozen code', async () => {
+  it('ddocs validate maps an ERROR-class finding to error/exit 1 with a frozen code', async () => {
     const result = await runDd([
       'dd',
       'validate',
@@ -137,7 +137,7 @@ describe('harness dd act surface', () => {
     expect(result.envelope.error?.code).toBe('E408');
   });
 
-  it('dd schema list resolves live and always reports the roots it searched', async () => {
+  it('ddocs schema list resolves live and always reports the roots it searched', async () => {
     const result = await runDd(['dd', 'schema', 'list']);
     expect(result.code).toBe(0);
     expect(['ok', 'degraded']).toContain(result.envelope.status);
@@ -147,14 +147,14 @@ describe('harness dd act surface', () => {
     );
   });
 
-  it('dd schema show reports an absent qualified name as E410', async () => {
+  it('ddocs schema show reports an absent qualified name as E410', async () => {
     const result = await runDd(['dd', 'schema', 'show', 'builder/no-such-schema-p2']);
     expect(result.code).toBe(1);
     expect(result.envelope.status).toBe('error');
     expect(result.envelope.error?.code).toBe('E410');
   });
 
-  it('dd docs list enumerates the baked corpus', async () => {
+  it('ddocs docs list enumerates the baked corpus', async () => {
     const result = await runDd(['dd', 'docs', 'list']);
     expect(result.code).toBe(0);
     expect(result.envelope.status).toBe('ok');
@@ -168,7 +168,7 @@ describe('harness dd act surface', () => {
     for (const doc of data.docs) expect(doc.summary.length).toBeGreaterThan(20);
   });
 
-  it('dd docs get returns one baked doc, and E419 for an unknown id', async () => {
+  it('ddocs docs get returns one baked doc, and E419 for an unknown id', async () => {
     const found = await runDd(['dd', 'docs', 'get', 'how-to-add-a-schema']);
     expect(found.code).toBe(0);
     expect((found.envelope.data as { content: string }).content).toContain('How to add a schema');
@@ -182,7 +182,7 @@ describe('harness dd act surface', () => {
   // `dd-build.test.ts` (drift, writing, adapters, refresh, the mutating-verb seam);
   // what this row holds is the act surface itself — that `build` answers, and
   // answers with the T006(b) exit mapping.
-  it('dd build checks a rendered sibling for drift without writing', async () => {
+  it('ddocs build checks a rendered sibling for drift without writing', async () => {
     // This suite pins cwd to the CLI package, but a dd document resolves its
     // schema from ITS OWN repo root — and the render fixtures are real repo
     // shapes, with `.dd/schemas` at the fixture's root rather than inside `docs/`.
@@ -198,7 +198,7 @@ describe('harness dd act surface', () => {
   // `dd-links-live.test.ts` (a real corpus in a temp directory); what these rows
   // hold is the act surface itself — that each command answers, and answers with
   // the frozen exit contract.
-  it('dd address generate returns the canonical bare-# form', async () => {
+  it('ddocs address generate returns the canonical bare-# form', async () => {
     const result = await runDd(['dd', 'address', 'generate', 'phases/ph-a1b2']);
     expect(result.code).toBe(0);
     expect(result.envelope.status).toBe('ok');
@@ -209,7 +209,7 @@ describe('harness dd act surface', () => {
     });
   });
 
-  it('dd address validate checks syntax, and says it has not classified anything', async () => {
+  it('ddocs address validate checks syntax, and says it has not classified anything', async () => {
     const result = await runDd(['dd', 'address', 'validate', '#phases/ph-a1b2']);
     expect(result.code).toBe(0);
     expect(result.envelope.data).toMatchObject({ classified: false, form: 'bare' });
@@ -219,14 +219,14 @@ describe('harness dd act surface', () => {
     expect(malformed.envelope.error?.code).toBe('E405');
   });
 
-  it('dd link resolve refuses to invent a base document for a bare-# address', async () => {
+  it('ddocs link resolve refuses to invent a base document for a bare-# address', async () => {
     const result = await runDd(['dd', 'link', 'resolve', '#phases/ph-a1b2']);
     expect(result.code).toBe(1);
     expect(result.envelope.error?.code).toBe('E430');
     expect(result.envelope.next_action).toContain('<path>#<interior>');
   });
 
-  it('dd link verify-basis resolves before it compares', async () => {
+  it('ddocs link verify-basis resolves before it compares', async () => {
     const result = await runDd([
       'dd',
       'link',
@@ -239,7 +239,7 @@ describe('harness dd act surface', () => {
     expect(result.envelope.error?.code).toBe('E430');
   });
 
-  it('dd links reports a named document even when the sweep excludes it (OD-1)', async () => {
+  it('ddocs links reports a named document even when the sweep excludes it (OD-1)', async () => {
     const result = await runDd([
       'dd',
       'links',
@@ -257,14 +257,14 @@ describe('harness dd act surface', () => {
     expect(data.counts.inbound).toBe(0);
   });
 
-  it('dd graph emits mermaid directly, with no renderer in the path', async () => {
+  it('ddocs graph emits mermaid directly, with no renderer in the path', async () => {
     const result = await runDd(['dd', 'graph']);
     expect(result.code).toBe(0);
     const mermaid = (result.envelope.data as { mermaid: string }).mermaid;
     expect(mermaid.startsWith('flowchart LR\n')).toBe(true);
   });
 
-  it('dd doctor sweeps this package clean, excluding the committed fixture corpus', async () => {
+  it('ddocs doctor sweeps this package clean, excluding the committed fixture corpus', async () => {
     const result = await runDd(['dd', 'doctor']);
     expect(result.code).toBe(0);
     expect(result.envelope.status).toBe('ok');

@@ -19,7 +19,7 @@ export function exitCodeFor(env: Envelope): number {
  * `process.exit()` terminates without draining pending stream writes, and on a
  * PIPE Node's stdout is asynchronous — so the envelope could be queued and then
  * discarded by the exit that follows it. Measured on this repo's own output:
- * `dd --json graph` emits 34,316 bytes and a piped consumer received only 8,192
+ * `ddocs --json graph` emits 34,316 bytes and a piped consumer received only 8,192
  * or 16,384 of them on Node 22, every single run. Node 24 tolerated that payload
  * and truncated above ~60,000 instead, which is why the loss showed up as a
  * one-platform mystery rather than an obvious bug. Both are lossy; 22 is simply
@@ -40,9 +40,9 @@ export function exitCodeFor(env: Envelope): number {
  * sites are terminal by position — 18 end their function, 1 is followed by a
  * bare `return`, and 2 are the bodies of `never`-declared local `fail` helpers,
  * which relocate the dependency to those helpers' callers rather than remove it.
- * Measured, with the returning version built: `dd address validate` emitted TWO
- * envelopes — an `ok` one and then an `error` one — and `dd <unknown-verb>`
- * printed its error envelope followed by an unhandled `dd: unexpected error:`
+ * Measured, with the returning version built: `ddocs address validate` emitted TWO
+ * envelopes — an `ok` one and then an `error` one — and `ddocs <unknown-verb>`
+ * printed its error envelope followed by an unhandled `ddocs: unexpected error:`
  * line. `tsc` catches 34 of those sites; the rest compile clean and break the
  * one-envelope contract silently. Draining by returning is the right
  * architecture, but it is a 59-call-site change across `src/acts/**` and
@@ -69,7 +69,7 @@ export function exitWithEnvelope(env: Envelope, io: OutputPort): never {
 /**
  * Verbatim passthrough exit: write raw text to stdout and let the process exit
  * NATURALLY with `code` (0 by default) — set `process.exitCode` and return, never
- * `process.exit`. A large raw payload (e.g. `dd docs get <id>`) piped or
+ * `process.exit`. A large raw payload (e.g. `ddocs docs get <id>`) piped or
  * redirected must not be truncated by an early `process.exit` that races the
  * stdout flush; a natural return lets Node drain stdout first (companion F002).
  * Envelope-bearing commands still use `exitWithEnvelope`.

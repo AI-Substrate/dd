@@ -37,7 +37,7 @@
  * under `fixtures/` beside this file. Verbatim matters: a hand-built toy document
  * would prove the library against a shape invented to suit it. `fixtures/` also
  * matters — that path segment is what `shouldExcludeFromSweep` reads to keep a
- * committed corpus out of `dd doctor`'s repo-wide sweep, and this corpus drifts
+ * committed corpus out of `ddocs doctor`'s repo-wide sweep, and this corpus drifts
  * ON PURPOSE (three of the plan's four phase-task links point at documents
  * deliberately left out, which is what clause C5 measures).
  *

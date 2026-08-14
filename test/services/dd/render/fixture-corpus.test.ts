@@ -72,7 +72,7 @@ describe('dd render fixture corpus', () => {
 
   it('ships no golden-regeneration switch — the corpus is a spec, not a snapshot', () => {
     // Pin the REAL command surface, not prose about it: registering the act on a
-    // bare commander root exposes exactly the flags `dd build` accepts, so adding
+    // bare commander root exposes exactly the flags `ddocs build` accepts, so adding
     // an `--update-goldens` escape hatch reddens this row (review F002 — the
     // earlier version of this test only read the README, which an escape hatch
     // could be added without ever touching).

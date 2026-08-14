@@ -21,9 +21,9 @@ export function registerLinksCommand(dd: Command, io: CliIo, deps: DdActDeps): v
       const failed = scan.issues.find((issue) => issue.severity === 'ERROR');
       if (failed) {
         exitWithEnvelope(
-          formatError('dd links', ErrorCodes.DD_LINK_SCAN_FAILED, failed.message, ctx.clock, {
+          formatError('ddocs links', ErrorCodes.DD_LINK_SCAN_FAILED, failed.message, ctx.clock, {
             details: { target, path },
-            next_action: 'Fix the unreadable directory, then re-run `dd links <target>`.',
+            next_action: 'Fix the unreadable directory, then re-run `ddocs links <target>`.',
           }),
           ctx.port,
         );
@@ -62,7 +62,7 @@ export function registerLinksCommand(dd: Command, io: CliIo, deps: DdActDeps): v
       if (issues.length > 0) {
         exitWithEnvelope(
           formatDegraded(
-            'dd links',
+            'ddocs links',
             data,
             `${issues.length} document(s) could not be scanned for links — the report may be incomplete.`,
             ctx.clock,
@@ -71,8 +71,8 @@ export function registerLinksCommand(dd: Command, io: CliIo, deps: DdActDeps): v
         );
       }
       exitWithEnvelope(
-        formatOk('dd links', data, ctx.clock, {
-          next_action: 'Run `dd graph` to see the same edges as a mermaid view.',
+        formatOk('ddocs links', data, ctx.clock, {
+          next_action: 'Run `ddocs graph` to see the same edges as a mermaid view.',
         }),
         ctx.port,
       );

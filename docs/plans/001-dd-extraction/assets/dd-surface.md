@@ -13,23 +13,23 @@ renegotiation.
 
 | Frozen signature | Owner | P1 placeholder |
 |---|---|---|
-| `dd validate <path> [--depth <n>] [--json]` | Phase 2: Schema layer & baked docs | `unconfigured`, exit 2; default depth `3` |
-| `dd schema list [--json]` | Phase 2: Schema layer & baked docs | `unconfigured`, exit 2 |
-| `dd schema show <name> [--json]` | Phase 2: Schema layer & baked docs | `unconfigured`, exit 2 |
-| `dd docs list [--json]` | Phase 2: Schema layer & baked docs | `unconfigured`, exit 2 |
-| `dd docs get <id> [--json]` | Phase 2: Schema layer & baked docs | `unconfigured`, exit 2 |
-| `dd build <path> [--check] [--json]` | Phase 3: Render, adapters & freshness | `unconfigured`, exit 2 |
-| `dd address generate <interior> [--path <path>] [--json]` | Phase 4: Links, ledger & doctor | `unconfigured`, exit 2 |
-| `dd address validate <address> [--resolve] [--json]` | Phase 4: Links, ledger & doctor | `unconfigured`, exit 2 |
-| `dd link resolve <address> [--json]` | Phase 4: Links, ledger & doctor | `unconfigured`, exit 2 |
-| `dd link verify-basis <address> --sha <sha> [--json]` | Phase 4: Links, ledger & doctor | `unconfigured`, exit 2 |
-| `dd links <target> [--json]` | Phase 4: Links, ledger & doctor | `unconfigured`, exit 2 |
-| `dd graph [--json]` | Phase 4: Links, ledger & doctor | `unconfigured`, exit 2 |
-| `dd doctor [--json]` | Phase 4: Links, ledger & doctor | `unconfigured`, exit 2 |
-| `dd get <address> [--json]` | plan 070 Phase 1: dd writer verbs | shipped |
-| `dd set <address> <value> [--value-json] [--json]` | plan 070 Phase 1: dd writer verbs | shipped |
-| `dd add <address> <json> [--mint <prefix>] [--json]` | plan 070 Phase 1: dd writer verbs | shipped |
-| `dd rm <address> [--json]` | plan 070 Phase 1: dd writer verbs | shipped |
+| `ddocs validate <path> [--depth <n>] [--json]` | Phase 2: Schema layer & baked docs | `unconfigured`, exit 2; default depth `3` |
+| `ddocs schema list [--json]` | Phase 2: Schema layer & baked docs | `unconfigured`, exit 2 |
+| `ddocs schema show <name> [--json]` | Phase 2: Schema layer & baked docs | `unconfigured`, exit 2 |
+| `ddocs docs list [--json]` | Phase 2: Schema layer & baked docs | `unconfigured`, exit 2 |
+| `ddocs docs get <id> [--json]` | Phase 2: Schema layer & baked docs | `unconfigured`, exit 2 |
+| `ddocs build <path> [--check] [--json]` | Phase 3: Render, adapters & freshness | `unconfigured`, exit 2 |
+| `ddocs address generate <interior> [--path <path>] [--json]` | Phase 4: Links, ledger & doctor | `unconfigured`, exit 2 |
+| `ddocs address validate <address> [--resolve] [--json]` | Phase 4: Links, ledger & doctor | `unconfigured`, exit 2 |
+| `ddocs link resolve <address> [--json]` | Phase 4: Links, ledger & doctor | `unconfigured`, exit 2 |
+| `ddocs link verify-basis <address> --sha <sha> [--json]` | Phase 4: Links, ledger & doctor | `unconfigured`, exit 2 |
+| `ddocs links <target> [--json]` | Phase 4: Links, ledger & doctor | `unconfigured`, exit 2 |
+| `ddocs graph [--json]` | Phase 4: Links, ledger & doctor | `unconfigured`, exit 2 |
+| `ddocs doctor [--json]` | Phase 4: Links, ledger & doctor | `unconfigured`, exit 2 |
+| `ddocs get <address> [--json]` | plan 070 Phase 1: dd writer verbs | shipped |
+| `ddocs set <address> <value> [--value-json] [--json]` | plan 070 Phase 1: dd writer verbs | shipped |
+| `ddocs add <address> <json> [--mint <prefix>] [--json]` | plan 070 Phase 1: dd writer verbs | shipped |
+| `ddocs rm <address> [--json]` | plan 070 Phase 1: dd writer verbs | shipped |
 
 Every placeholder `next_action` names its owning phase exactly. `dd validate`
 remains a placeholder until Phase 2 supplies the real convention-based schema
@@ -47,11 +47,11 @@ string.
 
 | Surface | Reservation |
 |---|---|
-| `dd doctor` scope/options | RESERVED — Phase 4 leaf decision. Options may be added; command name and zero frozen positionals may not change. **GRANTED 2026-08-03 (PM renegotiation, P4 T007b)**: `--path <dir>` — scopes the sweep ROOT SET to a subtree; radius stays infinite. |
-| `dd graph` emit/scope options | RESERVED — Phase 4 leaf decision. Options may be added; command name and zero frozen positionals may not change. **GRANTED 2026-08-03 (PM renegotiation, P4 T007c)**: `--path <dir>` — same root-set semantics as doctor, deliberately the same word. No emit option (global `--json` + human mermaid already cover both modes). |
-| `dd graph` subcommand namespace | RESERVED — extended for Phase 7. **GRANTED 2026-08-04 (PM renegotiation, P7 T001; requested by Jordan)**: `dd graph map <address>` — a NAMED SUBCOMMAND, not a positional on bare `dd graph`. Bare `dd graph` keeps zero positionals and byte-identical output, so the P4 freeze is intact rather than amended: `map` is a sibling verb under the same noun. Options granted with it: `--depth <n>` (default 3), `--max-nodes <n>` (default 20), `--direction in\|out\|both` (default both). **GRANTED 2026-08-04 (plan 070 Phase 1, tk-7014)**: `--rel <rel>` — repeatable; follows only edges carrying one of the named relations. No default: an absent flag means EVERY relation, because a filter that defaulted to a set would answer a narrower question than the one asked while looking like a complete map. **No new E-codes** — E430-E439 is full, and a bad seed address is already `E430 DD_LINK_UNRESOLVED` while a traversal failure is already `E436 DD_LINK_SCAN_FAILED`. Opening E450+ for this would be a block extension bought for nothing. |
-| `dd link verify-basis` explicit re-verification mutation semantics | RESERVED — Phase 4 leaf decision. Read-only `<address> --sha <sha>` remains frozen; any mutation option is additive only. **GRANTED 2026-08-03 (PM renegotiation, P4 T007a)**: `--update <doc>` — no separate re-verify verb; re-verification IS verify-basis plus this explicit write flag, updating the recorded sha in the REFERENCING doc's ledger entry (both `live` and `pinned` modes; an entry's mode never changes as a side effect). Read-only form byte-identical when absent. |
-| `dd address validate --resolve` segment classification | RESERVED — Phase 4 resolves optional instance ids versus shape-part names against the schema. P1 parser `kind` values are positional hints only; the frozen command and option do not change. **RULED 2026-08-03 (PM renegotiation, P4 T007d)**: no new option — with `--resolve`, each segment is classified against the resolved schema shape + data as section \| part \| instance (shape-directed, never positional guessing). |
+| `ddocs doctor` scope/options | RESERVED — Phase 4 leaf decision. Options may be added; command name and zero frozen positionals may not change. **GRANTED 2026-08-03 (PM renegotiation, P4 T007b)**: `--path <dir>` — scopes the sweep ROOT SET to a subtree; radius stays infinite. |
+| `ddocs graph` emit/scope options | RESERVED — Phase 4 leaf decision. Options may be added; command name and zero frozen positionals may not change. **GRANTED 2026-08-03 (PM renegotiation, P4 T007c)**: `--path <dir>` — same root-set semantics as doctor, deliberately the same word. No emit option (global `--json` + human mermaid already cover both modes). |
+| `ddocs graph` subcommand namespace | RESERVED — extended for Phase 7. **GRANTED 2026-08-04 (PM renegotiation, P7 T001; requested by Jordan)**: `ddocs graph map <address>` — a NAMED SUBCOMMAND, not a positional on bare `ddocs graph`. Bare `ddocs graph` keeps zero positionals and byte-identical output, so the P4 freeze is intact rather than amended: `map` is a sibling verb under the same noun. Options granted with it: `--depth <n>` (default 3), `--max-nodes <n>` (default 20), `--direction in\|out\|both` (default both). **GRANTED 2026-08-04 (plan 070 Phase 1, tk-7014)**: `--rel <rel>` — repeatable; follows only edges carrying one of the named relations. No default: an absent flag means EVERY relation, because a filter that defaulted to a set would answer a narrower question than the one asked while looking like a complete map. **No new E-codes** — E430-E439 is full, and a bad seed address is already `E430 DD_LINK_UNRESOLVED` while a traversal failure is already `E436 DD_LINK_SCAN_FAILED`. Opening E450+ for this would be a block extension bought for nothing. |
+| `ddocs link verify-basis` explicit re-verification mutation semantics | RESERVED — Phase 4 leaf decision. Read-only `<address> --sha <sha>` remains frozen; any mutation option is additive only. **GRANTED 2026-08-03 (PM renegotiation, P4 T007a)**: `--update <doc>` — no separate re-verify verb; re-verification IS verify-basis plus this explicit write flag, updating the recorded sha in the REFERENCING doc's ledger entry (both `live` and `pinned` modes; an entry's mode never changes as a side effect). Read-only form byte-identical when absent. |
+| `ddocs address validate --resolve` segment classification | RESERVED — Phase 4 resolves optional instance ids versus shape-part names against the schema. P1 parser `kind` values are positional hints only; the frozen command and option do not change. **RULED 2026-08-03 (PM renegotiation, P4 T007d)**: no new option — with `--resolve`, each segment is classified against the resolved schema shape + data as section \| part \| instance (shape-directed, never positional guessing). |
 
 ## Frozen link relations
 

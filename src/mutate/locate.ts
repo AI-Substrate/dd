@@ -76,7 +76,7 @@ export function locate(
       }
       const present = segment in value;
       // The permissive tail is what makes a JIT-born key addressable BEFORE it
-      // exists: `dd add <file>#done_when/tk-7028 '[...]'` has to name a key the
+      // exists: `ddocs add <file>#done_when/tk-7028 '[...]'` has to name a key the
       // document does not carry yet. It is deliberately the LAST segment only —
       // a missing key mid-path is still a genuine miss, not an invitation to
       // conjure the whole chain.

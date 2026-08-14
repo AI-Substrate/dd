@@ -3,7 +3,7 @@
 # self-host-check — dd proves itself on its own documents (plan 001 tk-0003).
 #
 # This repo's plan, execution log and task lists are dd documents. That makes
-# them the most honest test the tool has: if `dd build` cannot keep its own
+# them the most honest test the tool has: if `ddocs build` cannot keep its own
 # planning corpus byte-identical, the port did not work, however green the unit
 # tests are. Proof by consumption — we are the first consumer.
 #
@@ -29,7 +29,7 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
-DD_BIN="$REPO_ROOT/bin/dd.js"
+DD_BIN="$REPO_ROOT/bin/ddocs.js"
 [ -f "$DD_BIN" ] || { echo "self-host-check FAILED: no bin at $DD_BIN"; exit 1; }
 [ -d "$REPO_ROOT/dist" ] || {
   echo "self-host-check FAILED: dist/ is missing — run \`npm run build\` first"
@@ -71,7 +71,7 @@ for document in "${DOCUMENTS[@]}"; do
 
   if [ "$CODE" -ne 0 ]; then
     FAILED+=("$document (exit $CODE)")
-    printf '  ✗ %s — dd build --check exited %s\n' "$document" "$CODE"
+    printf '  ✗ %s — ddocs build --check exited %s\n' "$document" "$CODE"
     printf '    %s\n' "$OUTPUT"
     continue
   fi
@@ -117,7 +117,7 @@ if [ "${#DRIFTED[@]}" -ne 0 ] || [ "${#FAILED[@]}" -ne 0 ]; then
   # unbound-variable error on bash 3.2, and exactly one of these two is normally
   # empty, so the guard is load-bearing rather than defensive noise.
   for document in ${DRIFTED[@]+"${DRIFTED[@]}"}; do
-    echo "  drifted: $document  →  fix with: node bin/dd.js build $document"
+    echo "  drifted: $document  →  fix with: node bin/ddocs.js build $document"
   done
   for document in ${FAILED[@]+"${FAILED[@]}"}; do
     echo "  errored: $document"

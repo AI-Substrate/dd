@@ -14,9 +14,9 @@ import { DD_ISSUE_CODES } from '../../src/acts/shared.js';
 const EXPECTED: Record<string, string> = {
   'address-malformed': 'E405',
   'address-path-absolute': 'E405',
-  // THE ruled change (PM-confirmed, P5 T004): `dd validate` used to report a path
+  // THE ruled change (PM-confirmed, P5 T004): `ddocs validate` used to report a path
   // that leaves the repository with the generic address code (E405) while
-  // `dd doctor` reported the specific link-escape code. The specific code wins,
+  // `ddocs doctor` reported the specific link-escape code. The specific code wins,
   // and it is now the answer wherever the finding is reported.
   'address-path-escape': 'E433',
   'address-path-non-posix': 'E405',
@@ -29,7 +29,7 @@ const EXPECTED: Record<string, string> = {
   'human-skipped-receipt-required': 'E409',
   'id-invalid': 'E403',
   // NOT the doctor's E439: a class code says what went wrong and must not change
-  // with the verb reporting it. `dd doctor` keeps E439 as its ENVELOPE code, set
+  // with the verb reporting it. `ddocs doctor` keeps E439 as its ENVELOPE code, set
   // at its own exit site (P5 review F002).
   'link-scan-failed': 'E436',
   'link-scan-incomplete': 'E436',
@@ -39,7 +39,7 @@ const EXPECTED: Record<string, string> = {
   'schema-unresolvable': 'E401',
   'state-note-required': 'E408',
   // Tally columns. A stored footer sum that disagrees with the rows it claims to
-  // sum is its own class: `dd build --check` cannot see it (the markdown is a
+  // sum is its own class: `ddocs build --check` cannot see it (the markdown is a
   // faithful render of the wrong JSON), so it needs a code a caller can filter on.
   'tally-mismatch': 'E463',
 };

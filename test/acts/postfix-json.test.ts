@@ -10,8 +10,8 @@ import {
 /**
  * Postfix `--json` on every verb (plan 001, ac-0005).
  *
- * The plan recorded the wart precisely: `dd status --json` answered
- * `E002 unknown option` and exited 1, while `dd --json status` worked. `--json` is
+ * The plan recorded the wart precisely: `ddocs status --json` answered
+ * `E002 unknown option` and exited 1, while `ddocs --json status` worked. `--json` is
  * a program-level option and `enablePositionalOptions()` gives every option after
  * the verb to the verb, which never declared it.
  *
@@ -48,7 +48,7 @@ function comparable(envelope: Envelope): Omit<Envelope, 'timestamp'> {
 describe('postfix --json is accepted by every verb', () => {
   beforeAll(ensureBuilt);
 
-  it('the plan’s E002 repro (`dd status --json`) now exits per status', () => {
+  it('the plan’s E002 repro (`ddocs status --json`) now exits per status', () => {
     const cli = runDd(['status', '--json']);
     const envelope = parseEnvelope(cli);
     expect(envelope.error?.code, describeRun(cli)).toBeUndefined();

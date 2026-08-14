@@ -17,7 +17,7 @@ export interface DdLinksReport {
 }
 
 /**
- * Resolve the `dd links <target>` argument to a document path.
+ * Resolve the `ddocs links <target>` argument to a document path.
  *
  * The argument is either a path or an address; an address's interior selects
  * nothing extra, because edges are a property of documents (D11). Reporting at
@@ -54,7 +54,7 @@ export function linksFor(path: string, graph: DdCorpusGraph, target = path): DdL
  * Accent functions the human map render calls, injected rather than imported.
  *
  * This layer must never reach `output/` — the same architecture rule that keeps
- * `dd graph` off the render layer (`isolation.test.ts`) — so the ANSI itself is
+ * `ddocs graph` off the render layer (`isolation.test.ts`) — so the ANSI itself is
  * composed in the act, from `output/style.ts`, and handed in. The renderer then
  * has exactly ONE code path: it always calls the palette, and the palette is the
  * identity when colour is off. There is no coloured branch that can drift away
@@ -633,7 +633,7 @@ export function renderMapTree(
   lines.push(
     ...wrapSpans(
       [{ text: file, style: palette.seed }],
-      [{ text: 'dd graph map  ', style: palette.seed }],
+      [{ text: 'ddocs graph map  ', style: palette.seed }],
       '              ',
     ),
   );

@@ -33,6 +33,13 @@ import { type Envelope, ensureBuilt, parseEnvelope, repoRoot, runDd } from './su
 const prose = (markdown: string): string => markdown.replace(/^```[\s\S]*?^```/gm, '');
 
 const README = readFileSync(join(repoRoot, 'README.md'), 'utf8');
+const BINARY_NAME = Object.keys(
+  (
+    JSON.parse(readFileSync(join(repoRoot, 'package.json'), 'utf8')) as {
+      bin: Record<string, string>;
+    }
+  ).bin,
+)[0];
 const BAKED = [
   'dd-overview',
   'how-to-add-a-schema',
@@ -114,7 +121,7 @@ describe('docs/how/dd', () => {
       // A port, not a rewrite: the copy is a header plus the source, unchanged.
       expect(ported.endsWith(source)).toBe(true);
       expect(ported.startsWith('<!--')).toBe(true);
-      expect(ported).toContain(`dd docs get ${id}`);
+      expect(ported).toContain(`ddocs docs get ${id}`);
     }
   });
 
@@ -222,8 +229,9 @@ function parseTranscript(fences: string[]): Step[] {
         continue;
       }
 
-      if (/^dd\s/.test(line)) {
-        steps.push({ kind: 'dd', argv: tokenize(line).slice(1) });
+      const command = tokenize(line);
+      if (command[0] === BINARY_NAME) {
+        steps.push({ kind: 'dd', argv: command.slice(1) });
         continue;
       }
 
@@ -358,18 +366,18 @@ describe('the README quick start actually works', () => {
   it('reads and writes the value at the address the README addresses', () => {
     const read = ran.get('get');
     const write = ran.get('set');
-    expect(read, 'the quick start must demonstrate `dd get`').toBeDefined();
-    expect(write, 'the quick start must demonstrate `dd set`').toBeDefined();
+    expect(read, 'the quick start must demonstrate `ddocs get`').toBeDefined();
+    expect(write, 'the quick start must demonstrate `ddocs set`').toBeDefined();
     if (!read || !write) return;
 
     const document = JSON.parse(WRITES[1].body);
     const declared = (sectionOf(document, 'items') as Item[]).find(
       (item) => item.id === addressOf(read.argv).split('#')[1].split('/')[1],
     );
-    // `dd get` answered the state the README's own document declares.
+    // `ddocs get` answered the state the README's own document declares.
     expect((read.envelope.data as { value: unknown }).value).toBe(declared?.state);
 
-    // `dd set` wrote the value the README's own command asked for.
+    // `ddocs set` wrote the value the README's own command asked for.
     const address = addressOf(write.argv);
     const id = address.split('#')[1].split('/')[1];
     const wanted = write.argv.filter((argument) => !argument.startsWith('-')).at(-1);
@@ -379,10 +387,10 @@ describe('the README quick start actually works', () => {
   });
 
   it('refuses a value the documented schema does not allow', () => {
-    // The README claims `dd set` validates BEFORE writing and refuses, writing
+    // The README claims `ddocs set` validates BEFORE writing and refuses, writing
     // nothing. That is a promise about behaviour, so it is asserted, not quoted.
     const write = ran.get('set');
-    expect(write, 'the quick start must demonstrate `dd set`').toBeDefined();
+    expect(write, 'the quick start must demonstrate `ddocs set`').toBeDefined();
     if (!write) return;
     const address = addressOf(write.argv);
     const path = join(workspace, address.split('#')[0]);

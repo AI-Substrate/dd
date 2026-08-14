@@ -1,21 +1,21 @@
 /**
- * Public shapes for the baked `dd docs` surface (plan 065, D15).
+ * Public shapes for the baked `ddocs docs` surface (plan 065, D15).
  *
  * The corpus is compiled INTO the CLI — an agent that has the binary has the
  * documentation, with no repo checkout and no network. The service that returns
  * these is pure (it reads the generated array only); the act owns all I/O.
  */
 
-/** One baked doc as listed by `dd docs list` — the index entry, never the body. */
+/** One baked doc as listed by `ddocs docs list` — the index entry, never the body. */
 export interface DdDocEntry {
-  /** Stable slug — the `dd docs get <id>` argument. */
+  /** Stable slug — the `ddocs docs get <id>` argument. */
   id: string;
   title: string;
   summary: string;
   audience: 'human' | 'agent' | 'both';
 }
 
-/** One baked doc with its full body, as returned by `dd docs get <id>`. */
+/** One baked doc with its full body, as returned by `ddocs docs get <id>`. */
 export interface DdDocContent extends DdDocEntry {
   content: string;
   /** Pinned so a consumer can switch on it; only markdown ships today. */

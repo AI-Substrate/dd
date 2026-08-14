@@ -568,12 +568,12 @@ export function validateDocument(
     // Recompute and compare. This is what makes STORING a tally safe rather than
     // merely convenient: without it, a `.dd.json` edited outside dd's writers
     // yields a document whose total contradicts its own rows while
-    // `dd build --check` PASSES, because the markdown faithfully reflects the
+    // `ddocs build --check` PASSES, because the markdown faithfully reflects the
     // wrong JSON. That is not drift — it is internally consistent and false, and
     // nothing else in the repo can see it. Hand edits are not hypothetical here;
     // a merge resolved one by hand in this repo's own plan documents.
     //
-    // It REPORTS ONLY. Repair belongs to `dd build` and the writer verbs, which
+    // It REPORTS ONLY. Repair belongs to `ddocs build` and the writer verbs, which
     // already rewrite the document; a validator that silently corrected its own
     // input would destroy the evidence that something upstream is wrong.
     for (const mismatch of tallyMismatches(section, declaration.shape.items)) {

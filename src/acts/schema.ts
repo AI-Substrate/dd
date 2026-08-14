@@ -100,7 +100,7 @@ function schemaPort(io: CliIo, render: (envelope: Envelope) => string): OutputPo
 }
 
 function renderList(data: ListData): string {
-  const lines = ['dd schema — resolved schemas', ''];
+  const lines = ['ddocs schema — resolved schemas', ''];
   if (data.schemas.length === 0) lines.push('  (none found)');
   for (const schema of data.schemas) {
     lines.push(`  ${schema.name}  [${schema.root}]`);
@@ -182,9 +182,9 @@ export function registerSchemaCommands(dd: Command, io: CliIo, deps: DdActDeps):
       const fatal = issues.find((issue) => issue.class === 'scan-failed');
       if (fatal) {
         exitWithEnvelope(
-          formatError('dd schema list', fatal.code, fatal.message, clock, {
+          formatError('ddocs schema list', fatal.code, fatal.message, clock, {
             details: data,
-            next_action: 'Fix the unreadable discovery root, then re-run `dd schema list`.',
+            next_action: 'Fix the unreadable discovery root, then re-run `ddocs schema list`.',
           }),
           port,
         );
@@ -193,19 +193,19 @@ export function registerSchemaCommands(dd: Command, io: CliIo, deps: DdActDeps):
       if (issues.length > 0 || shadowing.length > 0) {
         exitWithEnvelope(
           formatDegraded(
-            'dd schema list',
+            'ddocs schema list',
             data,
             issues.length > 0
               ? `${issues.length} schema package(s) could not be loaded — see data.issues.`
-              : `${shadowing.length} schema(s) shadow a lower-precedence copy; run \`dd schema show <name>\` for the chain.`,
+              : `${shadowing.length} schema(s) shadow a lower-precedence copy; run \`ddocs schema show <name>\` for the chain.`,
             clock,
           ),
           port,
         );
       }
       exitWithEnvelope(
-        formatOk('dd schema list', data, clock, {
-          next_action: 'Run `dd schema show <name>` for one schema in full.',
+        formatOk('ddocs schema list', data, clock, {
+          next_action: 'Run `ddocs schema show <name>` for one schema in full.',
         }),
         port,
       );
@@ -223,13 +223,13 @@ export function registerSchemaCommands(dd: Command, io: CliIo, deps: DdActDeps):
         const blocking = issues.find((issue) => issue.severity === 'ERROR');
         exitWithEnvelope(
           formatError(
-            'dd schema show',
+            'ddocs schema show',
             blocking?.code ?? ErrorCodes.DD_SCHEMA_NOT_FOUND,
             blocking?.message ?? `schema "${name}" was not found`,
             clock,
             {
               details: { name, issues },
-              next_action: 'Run `dd schema list` to see every resolvable schema.',
+              next_action: 'Run `ddocs schema list` to see every resolvable schema.',
             },
           ),
           port,
@@ -240,7 +240,7 @@ export function registerSchemaCommands(dd: Command, io: CliIo, deps: DdActDeps):
       if (issues.length > 0) {
         exitWithEnvelope(
           formatDegraded(
-            'dd schema show',
+            'ddocs schema show',
             data,
             `${issues.length} lower-precedence copy/copies are shadowed — confirm the winning path is the one you meant.`,
             clock,
@@ -249,8 +249,8 @@ export function registerSchemaCommands(dd: Command, io: CliIo, deps: DdActDeps):
         );
       }
       exitWithEnvelope(
-        formatOk('dd schema show', data, clock, {
-          next_action: 'Run `dd validate <path>` against a document using this schema.',
+        formatOk('ddocs schema show', data, clock, {
+          next_action: 'Run `ddocs validate <path>` against a document using this schema.',
         }),
         port,
       );

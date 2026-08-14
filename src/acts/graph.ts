@@ -23,7 +23,7 @@ import { codedLinkIssues, createLinkContext, type DdActDeps, nextActionFor } fro
 export function registerGraphCommand(dd: Command, io: CliIo, deps: DdActDeps): void {
   const graph = dd
     .command('graph')
-    .description('Emit a standalone mermaid view of the repository dd graph')
+    .description('Emit a standalone mermaid view of the repository ddocs graph')
     .option('--path <dir>', 'scope the graph to a subtree (default: the repository root)')
     .action(async (opts: { path?: string }) => {
       const ctx = await createLinkContext(io, deps, { tracked: false });
@@ -34,9 +34,9 @@ export function registerGraphCommand(dd: Command, io: CliIo, deps: DdActDeps): v
       const failed = scan.issues.find((issue) => issue.severity === 'ERROR');
       if (failed) {
         exitWithEnvelope(
-          formatError('dd graph', ErrorCodes.DD_GRAPH_FAILED, failed.message, ctx.clock, {
+          formatError('ddocs graph', ErrorCodes.DD_GRAPH_FAILED, failed.message, ctx.clock, {
             details: { root },
-            next_action: 'Fix the unreadable directory, then re-run `dd graph`.',
+            next_action: 'Fix the unreadable directory, then re-run `ddocs graph`.',
           }),
           port,
         );
@@ -47,7 +47,7 @@ export function registerGraphCommand(dd: Command, io: CliIo, deps: DdActDeps): v
         { schemaResolver: ctx.resolver, docLoader: ctx.loader },
         { repoRoot: ctx.repoRoot, mode: 'sweep' },
       );
-      // Emitted directly, never through the render layer: `dd graph` is what
+      // Emitted directly, never through the render layer: `ddocs graph` is what
       // keeps Phase 3 and Phase 4 independent, and a renderer import is the one
       // dependency that would quietly re-couple them (Opus F1b, arch-enforced).
       const mermaid = toMermaid(graphed, ctx.repoRoot);
@@ -64,7 +64,7 @@ export function registerGraphCommand(dd: Command, io: CliIo, deps: DdActDeps): v
       if (issues.length > 0) {
         exitWithEnvelope(
           formatDegraded(
-            'dd graph',
+            'ddocs graph',
             data,
             `${issues.length} document(s) could not be scanned — the graph may be incomplete.`,
             ctx.clock,
@@ -73,8 +73,8 @@ export function registerGraphCommand(dd: Command, io: CliIo, deps: DdActDeps): v
         );
       }
       exitWithEnvelope(
-        formatOk('dd graph', data, ctx.clock, {
-          next_action: 'Run `dd links <target>` to inspect one document\u2019s edges.',
+        formatOk('ddocs graph', data, ctx.clock, {
+          next_action: 'Run `ddocs links <target>` to inspect one document\u2019s edges.',
         }),
         port,
       );
@@ -84,7 +84,7 @@ export function registerGraphCommand(dd: Command, io: CliIo, deps: DdActDeps): v
 }
 
 /**
- * The human port for `dd graph`: the mermaid goes to stdout, JSON is untouched.
+ * The human port for `ddocs graph`: the mermaid goes to stdout, JSON is untouched.
  *
  * The command whose entire job is to emit a graph was showing a human nothing —
  * the mermaid it had already built was reachable only under `--json`. The P4
@@ -93,7 +93,7 @@ export function registerGraphCommand(dd: Command, io: CliIo, deps: DdActDeps): v
  * T007c); human mermaid was the other half of that bargain, and this is it.
  *
  * RAW AND UNSTYLED, ON A TTY TOO. This is a deliberate exception to the palette
- * used by `dd graph map`, not an oversight: mermaid is a machine format whose
+ * used by `ddocs graph map`, not an oversight: mermaid is a machine format whose
  * value is that it can be pasted into a viewer, and SGR bytes in a paste corrupt
  * the diagram. Colour helps a human read a tree; it damages a document a human
  * is only carrying somewhere else.
@@ -104,7 +104,7 @@ export function registerGraphCommand(dd: Command, io: CliIo, deps: DdActDeps): v
  * routing it through the wrap helper.
  *
  * Only the diagram goes to stdout — status, diagnostics and the next action go
- * to stderr — so `dd graph --no-json > graph.mmd` yields a file that is
+ * to stderr — so `ddocs graph --no-json > graph.mmd` yields a file that is
  * valid on its own. That is the point of emitting a machine format at all.
  */
 function graphPort(io: CliIo, jsonPort: OutputPort): OutputPort {
@@ -127,7 +127,7 @@ function graphPort(io: CliIo, jsonPort: OutputPort): OutputPort {
       // graph" when the truth is "there was nothing to graph". Where it looked
       // is half the answer — an empty result is almost always a wrong `--path`.
       if (data.counts.nodes === 0) {
-        io.writers.err(`dd graph: no dd documents found under ${data.root}\n`);
+        io.writers.err(`ddocs graph: no dd documents found under ${data.root}\n`);
       }
       io.writers.out(data.mermaid);
       // A degraded run carries its explanation in `next_action` (that is what
@@ -138,15 +138,15 @@ function graphPort(io: CliIo, jsonPort: OutputPort): OutputPort {
 }
 
 /**
- * `dd graph map <address>` — what does this row reach, and what reaches it?
+ * `ddocs graph map <address>` — what does this row reach, and what reaches it?
  *
  * A NAMED SUBCOMMAND under `graph`, never a positional on it. The P4 surface
- * freeze pins bare `dd graph` at zero positionals and byte-identical output, so
+ * freeze pins bare `ddocs graph` at zero positionals and byte-identical output, so
  * `map` is a sibling verb under the same noun rather than an amendment to a
  * frozen surface (surface grant, `dd-surface.md`, P7 T001).
  *
  * It introduces no E-code. A seed that will not resolve is `E430
- * DD_LINK_UNRESOLVED` — the same failure `dd link resolve` reports for the same
+ * DD_LINK_UNRESOLVED` — the same failure `ddocs link resolve` reports for the same
  * address, from the same resolver — and a corpus that cannot be enumerated is
  * `E436 DD_LINK_SCAN_FAILED`. E430-E439 is full, and opening a block for a verb
  * whose failures already have names would buy nothing.
@@ -177,7 +177,7 @@ function registerGraphMapCommand(graph: Command, io: CliIo, deps: DdActDeps): vo
         if (!Number.isInteger(depth) || depth < 0) {
           exitWithEnvelope(
             formatError(
-              'dd graph map',
+              'ddocs graph map',
               ErrorCodes.INVALID_ARGS,
               `--depth must be a non-negative integer, got "${opts.depth}"`,
               ctx.clock,
@@ -190,7 +190,7 @@ function registerGraphMapCommand(graph: Command, io: CliIo, deps: DdActDeps): vo
         if (!Number.isInteger(maxNodes) || maxNodes < 1) {
           exitWithEnvelope(
             formatError(
-              'dd graph map',
+              'ddocs graph map',
               ErrorCodes.INVALID_ARGS,
               `--max-nodes must be a positive integer, got "${opts.maxNodes}"`,
               ctx.clock,
@@ -202,7 +202,7 @@ function registerGraphMapCommand(graph: Command, io: CliIo, deps: DdActDeps): vo
         if (!isDirection(opts.direction)) {
           exitWithEnvelope(
             formatError(
-              'dd graph map',
+              'ddocs graph map',
               ErrorCodes.INVALID_ARGS,
               `--direction must be in, out or both, got "${opts.direction}"`,
               ctx.clock,
@@ -218,7 +218,7 @@ function registerGraphMapCommand(graph: Command, io: CliIo, deps: DdActDeps): vo
           const coded = codedLinkIssues(seed.issues);
           exitWithEnvelope(
             formatError(
-              'dd graph map',
+              'ddocs graph map',
               coded[0]?.code ?? ErrorCodes.DD_LINK_UNRESOLVED,
               coded[0]?.message ?? `address did not resolve: ${address}`,
               ctx.clock,
@@ -239,10 +239,17 @@ function registerGraphMapCommand(graph: Command, io: CliIo, deps: DdActDeps): vo
         const failed = scan.issues.find((issue) => issue.severity === 'ERROR');
         if (failed) {
           exitWithEnvelope(
-            formatError('dd graph map', ErrorCodes.DD_LINK_SCAN_FAILED, failed.message, ctx.clock, {
-              details: { address },
-              next_action: 'Fix the unreadable directory, then re-run `dd graph map <address>`.',
-            }),
+            formatError(
+              'ddocs graph map',
+              ErrorCodes.DD_LINK_SCAN_FAILED,
+              failed.message,
+              ctx.clock,
+              {
+                details: { address },
+                next_action:
+                  'Fix the unreadable directory, then re-run `ddocs graph map <address>`.',
+              },
+            ),
             port,
           );
         }
@@ -252,7 +259,7 @@ function registerGraphMapCommand(graph: Command, io: CliIo, deps: DdActDeps): vo
           { schemaResolver: ctx.resolver, docLoader: ctx.loader },
           { repoRoot: ctx.repoRoot, mode: 'sweep' },
         );
-        // OD-1, exactly as `dd links` applies it: the inbound half is a SWEEP and
+        // OD-1, exactly as `ddocs links` applies it: the inbound half is a SWEEP and
         // honours the exclusions, while the seed was named on the command line and
         // is therefore direct — never skipped, or the answer would read "nothing
         // here" when the truth is "I refused to look".
@@ -295,7 +302,7 @@ function registerGraphMapCommand(graph: Command, io: CliIo, deps: DdActDeps): vo
         if (issues.length > 0) {
           exitWithEnvelope(
             formatDegraded(
-              'dd graph map',
+              'ddocs graph map',
               data,
               `${issues.length} document(s) could not be scanned — the map may be incomplete.`,
               ctx.clock,
@@ -304,10 +311,10 @@ function registerGraphMapCommand(graph: Command, io: CliIo, deps: DdActDeps): vo
           );
         }
         exitWithEnvelope(
-          formatOk('dd graph map', data, ctx.clock, {
+          formatOk('ddocs graph map', data, ctx.clock, {
             next_action: result.truncated.cut
               ? 'The walk hit a bound \u2014 re-run with a larger `--depth` or `--max-nodes` to see the rest.'
-              : 'Run `dd links <target>` for one document\u2019s raw edges.',
+              : 'Run `ddocs links <target>` for one document\u2019s raw edges.',
           }),
           port,
         );
@@ -316,7 +323,7 @@ function registerGraphMapCommand(graph: Command, io: CliIo, deps: DdActDeps): vo
 }
 
 /**
- * The human port for `dd graph map`: the tree goes to stdout, JSON is untouched.
+ * The human port for `ddocs graph map`: the tree goes to stdout, JSON is untouched.
  *
  * A `--json` run never reaches the renderer at all, so "not one escape byte in
  * JSON" is structural rather than a filter someone has to remember to apply.

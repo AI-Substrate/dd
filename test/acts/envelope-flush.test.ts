@@ -19,7 +19,7 @@ import {
  * `exitWithEnvelope` writes the envelope and then calls `process.exit`, which
  * does not drain pending stream writes. On a pipe Node's stdout is asynchronous,
  * so the tail of a big envelope was queued and then thrown away by the exit that
- * followed it: `dd --json graph` produced 34,316 bytes and a piped consumer
+ * followed it: `ddocs --json graph` produced 34,316 bytes and a piped consumer
  * received 8,192 on Node 22, ten runs out of ten. Exit code 0, empty stderr,
  * nothing logged — the command reported success while losing its answer, which
  * is why it survived so long.
@@ -50,7 +50,7 @@ const PIPE_CEILING = 400_000;
 const PAYLOAD_BYTES = PIPE_CEILING;
 /**
  * Row 2's corpus size. Measured, not guessed: 900 documents with 180-character
- * names produce a 499,668-byte `dd graph` envelope under the SHORTEST root these
+ * names produce a 499,668-byte `ddocs graph` envelope under the SHORTEST root these
  * tests can get (`/tmp/dd-flush-corpus-XXXXXX`, the Linux shape). A macOS
  * `/private/var/folders/...` root only makes it bigger, so the floor holds on
  * both with roughly 100 KB to spare.

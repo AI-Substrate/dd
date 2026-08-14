@@ -72,7 +72,7 @@ export function buildStatusEnvelope(registered: string[], deps: ActDeps): Envelo
   );
 }
 
-/** `dd status` — honest port-readiness report; the seam ported verbs slot into. */
+/** `ddocs status` — honest port-readiness report; the seam ported verbs slot into. */
 export function registerStatusAct(program: Command, io: CliIo, deps: ActDeps): void {
   program
     .command('status')

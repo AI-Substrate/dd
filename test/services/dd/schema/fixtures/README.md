@@ -16,7 +16,7 @@ package may sit at any depth beneath its root.
 
 Tests load a world through `loadSchemaWorld()` (`../world.ts`), which walks the real fixture
 tree once and seeds a `FakeFs` with it — the corpus stays real, enumerable files while the
-resolver still runs against a fake port (house rule: fakes only). `dd validate`'s live
+resolver still runs against a fake port (house rule: fakes only). `ddocs validate`'s live
 end-to-end proof runs against the same files on real disk.
 
 ## Failure classes and their good twins

@@ -32,7 +32,7 @@ function render(rows: unknown[]): string {
   return renderDd(doc(rows), { path: '/repo/docs/x.dd.json', schema: SCHEMA });
 }
 
-describe('dd links bucket — reading', () => {
+describe('ddocs links bucket — reading', () => {
   it('accepts a bare address as the ref-relation shorthand', () => {
     const reading = readLinksBucket(['plan.dd.json#phases/ph-0001'], '$.links');
     expect(reading.problems).toStrictEqual([]);
@@ -77,7 +77,7 @@ describe('dd links bucket — reading', () => {
   });
 });
 
-describe('dd links bucket — traversal and validation', () => {
+describe('ddocs links bucket — traversal and validation', () => {
   it('collects bucket edges as first-class link cells, with their relation', () => {
     const cells = collectLinkCells(
       doc([
@@ -104,7 +104,7 @@ describe('dd links bucket — traversal and validation', () => {
   });
 });
 
-describe('dd links bucket — rendering (dw-0131 / dw-0132)', () => {
+describe('ddocs links bucket — rendering (dw-0131 / dw-0132)', () => {
   it('renders a final Links column only when a row actually carries entries', () => {
     const populated = render([
       { id: 'a', label: 'first', links: [{ rel: 'satisfies', ref: '#rows/b' }] },

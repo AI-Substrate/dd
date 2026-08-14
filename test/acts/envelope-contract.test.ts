@@ -182,7 +182,7 @@ describe('the exit map itself', () => {
 /**
  * Ledger honesty, made mechanical (plan 001, ac-0003).
  *
- * `dd status` derives `data.ported` from the verbs registered on the program, so
+ * `ddocs status` derives `data.ported` from the verbs registered on the program, so
  * "registered" and "ported" cannot drift. What a registration alone does NOT
  * prove is that the verb WORKS — which is the actual claim the ledger makes. So
  * every verb the ledger reports as ported must also be exercised by the table
@@ -191,7 +191,7 @@ describe('the exit map itself', () => {
 describe('every ported verb is a proven verb', () => {
   beforeAll(ensureBuilt);
 
-  it('exercises everything dd status calls ported', () => {
+  it('exercises everything ddocs status calls ported', () => {
     const status = parseEnvelope(runDd(['--json', 'status']));
     const ported = (status.data as { ported: string[] }).ported;
     const exercised = new Set(VERB_CASES.map((testCase) => testCase.verb));

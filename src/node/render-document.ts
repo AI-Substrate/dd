@@ -57,8 +57,8 @@ export type BuildResult = BuildSuccess | BuildFailure;
 
 /**
  * Everything up to (but not including) the write: read, parse, resolve the schema,
- * load adapters, render. Shared by `dd build`, by `autoRegenerateSibling` and by
- * `writeDocumentWithSibling`, so no caller's render can drift from what `dd build`
+ * load adapters, render. Shared by `ddocs build`, by `autoRegenerateSibling` and by
+ * `writeDocumentWithSibling`, so no caller's render can drift from what `ddocs build`
  * itself would have produced.
  *
  * It lives in the host-bound tier because that is what it IS: the body constructs
@@ -85,7 +85,7 @@ export async function renderDocument(
       ok: false,
       code: ErrorCodes.DD_BUILD_INPUT_INVALID,
       message: `document is outside the repository root: ${documentPath}`,
-      next_action: 'Point `dd build` at a document inside this repository.',
+      next_action: 'Point `ddocs build` at a document inside this repository.',
     };
   }
 
@@ -95,7 +95,7 @@ export async function renderDocument(
       ok: false,
       code: ErrorCodes.DD_BUILD_INPUT_INVALID,
       message: `document is missing or unreadable: ${documentPath}`,
-      next_action: 'Check the path, then re-run `dd build <path>`.',
+      next_action: 'Check the path, then re-run `ddocs build <path>`.',
     };
   }
 
@@ -106,7 +106,7 @@ export async function renderDocument(
       code: ErrorCodes.DD_BUILD_INPUT_INVALID,
       message: `${documentPath} is not a valid dd document`,
       details: { path: documentPath, failures: doc },
-      next_action: 'Fix the reported location, then re-run `dd build <path>`.',
+      next_action: 'Fix the reported location, then re-run `ddocs build <path>`.',
     };
   }
 
@@ -124,7 +124,7 @@ export async function renderDocument(
       code: ErrorCodes.DD_SCHEMA_UNRESOLVABLE,
       message: blocking?.message ?? `schema not found: ${doc.dd.schema}`,
       details: { path: documentPath, schema: doc.dd.schema, issues: resolution.issues },
-      next_action: 'Run `dd schema list` to see which schemas resolve from here.',
+      next_action: 'Run `ddocs schema list` to see which schemas resolve from here.',
     };
   }
 
@@ -137,7 +137,7 @@ export async function renderDocument(
 
   // Live-ledger refresh (plan 3.4): recompute what this document's `live` entries
   // promise, so a cross-file row summary is current at render. It reads only —
-  // `dd build` must not dirty the document it renders, or `--check` could never
+  // `ddocs build` must not dirty the document it renders, or `--check` could never
   // be stable.
   const refresh = refreshLiveReferences({
     doc,

@@ -43,7 +43,7 @@ machine those differ by the screening window, by design.
 
 This is the standalone home of **dd** (deterministic documents) — the tooling that
 validates, renders, addresses, and inspects structured documents, published as
-`@ai-substrate/dd` with a `dd` bin.
+`@ai-substrate/dd` with a `ddocs` bin.
 
 **A port out of `AI-Substrate/harness-engineering` is in progress.** dd still ships
 inside that repo as the `harness dd …` verb family
@@ -54,7 +54,7 @@ verbs on the envelope seam, and `src/{output,adapters}` is the plumbing. Still
 ahead: package/release readiness (the exports freeze and the tarball gate) and
 self-hosting this repo's own document work on the local bin.
 
-Run `dd status --json` for the honest, self-updating port ledger — it diffs the
+Run `ddocs status --json` for the honest, self-updating port ledger — it diffs the
 verbs registered on the program against the ten planned. It reported
 `unconfigured` (exit 2) while verbs were missing and now reports `ok` (exit 0)
 with `ported[10]`; because the list is DERIVED from the registered commands, it
@@ -71,7 +71,7 @@ One envelope per command:
 - `next_action` is REQUIRED on any non-ok status — the constructors enforce it.
 - `--json` / `--no-json` beat `DD_JSON=1`, which beats TTY detection; piped output
   auto-selects JSON. Either flag may be written **before or after** the verb —
-  `dd status --json` and `dd --json status` are equivalent, at any subcommand
+  `ddocs status --json` and `ddocs --json status` are equivalent, at any subcommand
   depth.
 - **Never fake success.** `unconfigured` means "nothing is mapped here yet", not
   "it worked". A ported verb that cannot do its job says so.

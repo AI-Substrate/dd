@@ -73,14 +73,14 @@ export function registerDoctorCommand(dd: Command, io: CliIo, deps: DdActDeps): 
       if (scanFailure) {
         exitWithEnvelope(
           formatError(
-            'dd doctor',
+            'ddocs doctor',
             ErrorCodes.DD_DOCTOR_SCAN_FAILED,
             scanFailure.message,
             ctx.clock,
             {
               details: data,
               next_action:
-                'The sweep could not enumerate the corpus — fix the reported path, then re-run `dd doctor`.',
+                'The sweep could not enumerate the corpus — fix the reported path, then re-run `ddocs doctor`.',
             },
           ),
           ctx.port,
@@ -94,13 +94,13 @@ export function registerDoctorCommand(dd: Command, io: CliIo, deps: DdActDeps): 
       if (blocking) {
         exitWithEnvelope(
           formatError(
-            'dd doctor',
+            'ddocs doctor',
             ErrorCodes.DD_DOCTOR_FINDINGS,
             `${report.counts.error} ERROR-class finding(s) across ${report.swept.length} document(s)`,
             ctx.clock,
             {
               details: data,
-              next_action: `Fix ${blocking.owner} at ${blocking.location}, then re-run \`dd doctor\`.`,
+              next_action: `Fix ${blocking.owner} at ${blocking.location}, then re-run \`ddocs doctor\`.`,
             },
           ),
           ctx.port,
@@ -109,7 +109,7 @@ export function registerDoctorCommand(dd: Command, io: CliIo, deps: DdActDeps): 
       if (findings.length > 0) {
         exitWithEnvelope(
           formatDegraded(
-            'dd doctor',
+            'ddocs doctor',
             data,
             `${report.counts.warn} WARN-class finding(s) — review them; none of them fails a gate.`,
             ctx.clock,
@@ -118,7 +118,7 @@ export function registerDoctorCommand(dd: Command, io: CliIo, deps: DdActDeps): 
         );
       }
       exitWithEnvelope(
-        formatOk('dd doctor', data, ctx.clock, {
+        formatOk('ddocs doctor', data, ctx.clock, {
           next_action: `${report.swept.length} document(s) swept clean at infinite radius.`,
         }),
         ctx.port,

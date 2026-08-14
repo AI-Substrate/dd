@@ -51,8 +51,8 @@ function allSources(): Map<string, string> {
 }
 
 describe('architecture — the links layer stays independent of the render layer', () => {
-  it('dd graph never reaches dd/render, however indirectly', () => {
-    // This is what keeps Phase 3 and Phase 4 parallel. `dd graph` emits its
+  it('ddocs graph never reaches dd/render, however indirectly', () => {
+    // This is what keeps Phase 3 and Phase 4 parallel. `ddocs graph` emits its
     // mermaid as a string, built in the links layer, precisely so that the graph
     // family never needs the renderer — and a single import anywhere along its
     // dependency chain would silently undo that.

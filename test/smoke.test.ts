@@ -27,7 +27,7 @@ describe('dd bin smoke', () => {
   it('--help lists the verbs and exits 0', () => {
     const run = runDd(['--help']);
     expect(run.code, describeRun(run)).toBe(0);
-    expect(run.stdout, describeRun(run)).toContain('Usage: dd');
+    expect(run.stdout, describeRun(run)).toContain('Usage: ddocs');
     expect(run.stdout, describeRun(run)).toContain('status');
   });
 

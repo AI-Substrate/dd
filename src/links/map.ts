@@ -23,7 +23,7 @@ export type DdAddressableKind = 'anonymous' | 'document' | 'instance' | 'part' |
  * This pairing is the whole point. An address names an interior
  * (`acceptance_criteria/ac-0201`); an edge names a location
  * (`$.sections[acceptance_criteria].value[0].pressure`). Until now nothing in
- * this layer could turn one into the other, which is exactly why `dd links`
+ * this layer could turn one into the other, which is exactly why `ddocs links`
  * answers about the whole document when you hand it a row: the address was
  * parsed, and then discarded.
  *
@@ -69,7 +69,7 @@ const LABEL_FIELDS = [
  *
  * The render layer computes the same thing for the markdown it emits. It is
  * restated here rather than imported because this layer must never reach into
- * `dd/render` — the boundary that keeps `dd graph` independent of it is
+ * `dd/render` — the boundary that keeps `ddocs graph` independent of it is
  * arch-enforced (`isolation.test.ts`), so the four lines are the cheap side of
  * that trade.
  */
@@ -164,7 +164,7 @@ export function indexDocument(path: string, doc: DdDoc, schema: ResolvedDdSchema
  * links. A real containment continues with `.` or `[`, or not at all.
  *
  * A `null` prefix is the document node — everything is inside it, which is how
- * a document-shaped seed keeps `dd links`' whole-document answer.
+ * a document-shaped seed keeps `ddocs links`' whole-document answer.
  */
 export function isWithinLocation(location: string, prefix: string | null): boolean {
   if (prefix === null) return true;
@@ -305,7 +305,7 @@ export type DdMapSeedResult =
  * other dd face resolves through — so a bad seed fails with the SAME reason
  * (`id-not-found`, `section-unknown`, `path-escape`) it would fail with
  * anywhere else, rather than with a second opinion invented here. A bare path
- * names the document, which is the whole-document question `dd links` answers.
+ * names the document, which is the whole-document question `ddocs links` answers.
  */
 export function resolveMapSeed(
   raw: string,
@@ -357,7 +357,7 @@ export function resolveMapSeed(
  * upstream cfa501a6), and it is legitimate HERE for the reason it was wrong in
  * the F2 predicate: this is not a question about what a path MEANS, it is the
  * construction of a key. A filesystem walk on Windows yields native separators
- * and whatever drive case the caller typed; a parsed dd address always yields
+ * and whatever drive case the caller typed; a parsed ddocs address always yields
  * forward slashes. Without this, one document reached by both routes becomes two
  * nodes, and `mapAddress` answers with a graph that has a phantom in it.
  *

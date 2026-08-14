@@ -1,4 +1,4 @@
-# dd links fixture corpus
+# ddocs links fixture corpus
 
 Real `.dd.json` data laid out as a miniature repository (`repo/`), so the link
 resolver, the corpus scan, the graph and the doctor sweep are exercised against

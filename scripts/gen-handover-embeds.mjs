@@ -77,7 +77,7 @@ function sourceStamp(path) {
 
 /** Read the guardrail rows through the bin — never from a copy in this file. */
 function readGuardrails() {
-  const raw = execFileSync('node', ['bin/dd.js', '--json', 'get', `${PLAN}#execution_guardrails`], {
+  const raw = execFileSync('node', ['bin/ddocs.js', '--json', 'get', `${PLAN}#execution_guardrails`], {
     encoding: 'utf8',
   });
   const { status, data } = JSON.parse(raw);
@@ -99,7 +99,7 @@ function renderGuardrails() {
     `in review). Check whether yours is stale, and re-pull the live version, with:`,
     '',
     '```bash',
-    `dd get "${PLAN}#execution_guardrails"`,
+    `ddocs get "${PLAN}#execution_guardrails"`,
     `git log -1 --format=%h -- ${PLAN}   # newer than the stamp above? re-pull.`,
     '```',
     '',

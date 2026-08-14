@@ -20,7 +20,7 @@ function relative(repoRoot: string, path: string): string {
 /**
  * Emit the graph as mermaid, directly.
  *
- * This is a string, built here, on purpose: `dd graph` must not reach into the
+ * This is a string, built here, on purpose: `ddocs graph` must not reach into the
  * render layer. Phases 3 and 4 were split so they could land in parallel, and a
  * renderer import is the one dependency that would quietly re-couple them — so
  * the coupling is forbidden by an architecture rule, and this function is what

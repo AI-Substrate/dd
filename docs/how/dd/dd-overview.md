@@ -1,5 +1,5 @@
-<!-- Ported verbatim from the baked `dd docs` corpus (`src/docs/content/dd-overview.md`).
-     The CLI carries the same text: `dd docs get dd-overview`. Edit the SOURCE, then run
+<!-- Ported verbatim from the baked `ddocs docs` corpus (`src/docs/content/dd-overview.md`).
+     The CLI carries the same text: `ddocs docs get dd-overview`. Edit the SOURCE, then run
      `npm run gen:dd-docs` — `npm run check:dd-docs` fails the build on drift. -->
 
 # Deterministic documents (dd)
@@ -23,7 +23,7 @@ tools read the JSON, and neither has to trust prose.
 
 - **`dd.schema`** — the qualified `<pkg>/<schema>` name, resolved by convention (see below).
 - **`dd.sweep_exclude`** — optional; asks the doctor's repo-wide sweep to skip this file. It is
-  *never* honoured by a direct `dd validate <path>`: pointing the verb at a document always
+  *never* honoured by a direct `ddocs validate <path>`: pointing the verb at a document always
   validates it.
 - **`sections`** — a flat, ordered list of named slots. Each section's `value` is shaped by the
   schema; nothing is implicit.
@@ -66,7 +66,7 @@ A task's completion **summary** is derived: it reads gate-terminal when every on
 
 An explicit `state` field on the task itself is a **separate claim, and is not reconciled
 against the assertions it points at** — a task may say `checked` while its `done_when` list says
-`unchecked`, and `dd validate` will not object (`harness plan validate` does, as a contradiction). When the two disagree, trust the derived summary:
+`unchecked`, and `ddocs validate` will not object (`harness plan validate` does, as a contradiction). When the two disagree, trust the derived summary:
 it is the one backed by rows. Prefer not to store both as competing authorities.
 
 ## Schema resolution
@@ -80,20 +80,20 @@ A qualified name resolves by deep scan through four roots, first hit wins:
 
 Every hit is recorded: a duplicate name **inside one root** is a hard error (nothing can
 arbitrate it), while the same name in a lower-precedence root is a shadow — reported as a
-warning, with its path, by `dd schema list` and `dd schema show`. Local override is the feature;
+warning, with its path, by `ddocs schema list` and `ddocs schema show`. Local override is the feature;
 silently forking validation is not.
 
 ## The CLI
 
 ```bash
-dd validate <path> [--depth <n>]   # default depth 3: this doc, its links, their health
-dd schema list                     # every resolvable schema + shadowed duplicates
-dd schema show <pkg>/<schema>      # one schema, its path, enums, gate-terminal set
-dd docs list                       # this documentation, baked into the CLI
-dd docs get <id>
+ddocs validate <path> [--depth <n>]   # default depth 3: this doc, its links, their health
+ddocs schema list                     # every resolvable schema + shadowed duplicates
+ddocs schema show <pkg>/<schema>      # one schema, its path, enums, gate-terminal set
+ddocs docs list                       # this documentation, baked into the CLI
+ddocs docs get <id>
 ```
 
-`dd validate` exits `0` when clean, `0` with a `degraded` envelope when only WARN-class findings
+`ddocs validate` exits `0` when clean, `0` with a `degraded` envelope when only WARN-class findings
 exist, and `1` with an `error` envelope naming the first ERROR-class finding. Every finding
 carries its class, severity, location, and the **owner** — the document that must change to fix
 it, which is not always the one you ran the command on.
@@ -102,8 +102,8 @@ it, which is not always the one you ran the command on.
 
 ```bash
 jq -r '.sections[] | select(.name=="tasks") | .value[] | "\(.id) \(.state)"' plan.dd.json
-dd validate plan.dd.json --json | jq '.data.issues[] | {code, location, owner}'
-dd schema list --json | jq -r '.data.schemas[] | "\(.name)\t\(.path)"'
+ddocs validate plan.dd.json --json | jq '.data.issues[] | {code, location, owner}'
+ddocs schema list --json | jq -r '.data.schemas[] | "\(.name)\t\(.path)"'
 ```
 
 ## Going deeper

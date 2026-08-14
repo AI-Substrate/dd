@@ -6,11 +6,80 @@ import { DD_DOCS } from '../../src/docs/docs-content.js';
 import { RENDER_BANNER } from '../../src/render/renderer.js';
 import { ensureBuilt, parseEnvelope, repoRoot, runDd } from '../support/run-cli.js';
 
+const PACKAGE = JSON.parse(readFileSync(join(repoRoot, 'package.json'), 'utf8')) as {
+  bin: Record<string, string>;
+};
+const BINARY_NAMES = Object.keys(PACKAGE.bin);
+if (BINARY_NAMES.length !== 1) {
+  throw new Error(
+    `binary-name guard requires exactly one package bin, found ${BINARY_NAMES.length}`,
+  );
+}
+const BINARY_NAME = BINARY_NAMES[0];
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** `\bdd\b` must not match the prefix of `ddocs`; always match a whole executable token. */
+function binaryInvocation(verb: string): RegExp {
+  return new RegExp(`\\b${escapeRegExp(BINARY_NAME)}\\b\\s+${escapeRegExp(verb)}\\b`);
+}
+
+const SHIPPED_DOCS = [
+  'README.md',
+  'docs/how/dd/README.md',
+  ...DD_DOCS.map((doc) => `docs/how/dd/${doc.id}.md`),
+];
+
+/** Read command examples, not prose that happens to say "to validate". */
+function commandSamples(markdown: string): { line: number; text: string }[] {
+  const samples: { line: number; text: string }[] = [];
+  let fenced = false;
+  for (const [index, line] of markdown.split('\n').entries()) {
+    if (line.startsWith('```')) {
+      fenced = !fenced;
+      continue;
+    }
+    if (fenced) {
+      samples.push({ line: index + 1, text: line });
+      continue;
+    }
+    for (const match of line.matchAll(/`([^`]+)`/g)) {
+      samples.push({ line: index + 1, text: match[1] });
+    }
+  }
+  return samples;
+}
+
+const DD_COMMAND =
+  /^\s*(?:\$\s+)?(?:(?<harness>harness)\s+)?(?<binary>\b[a-z][a-z0-9-]*\b)\s+(?:--(?:json|no-json)\s+)?(?:add|address|build|docs|doctor|get|graph|link|links|rm|schema|set|status|validate|version|write)\b/;
+
+type CommandSampleInspection = { issue?: string };
+
+function inspectCommandSample(sample: string): CommandSampleInspection | undefined {
+  if (/^\s*(?:\$\s+)?harness\s+plan\b/.test(sample)) return undefined;
+  const match = DD_COMMAND.exec(sample);
+  const binary = match?.groups?.binary;
+  if (binary === undefined) return undefined;
+
+  const harnessPrefixed = match?.groups?.harness !== undefined;
+  if (binary !== BINARY_NAME) {
+    return {
+      issue: `expected ${BINARY_NAME}, found ${harnessPrefixed ? `harness ${binary}` : binary}`,
+    };
+  }
+  if (harnessPrefixed) {
+    return { issue: `invalid standalone command harness ${binary}; use ${binary} directly` };
+  }
+  return {};
+}
+
 /**
- * The binary is named `dd`, so what it SAYS must say `dd` (plan 001 tk-0003,
- * ruled 2026-08-07). Upstream reaches these same verbs as `harness dd <verb>`;
- * here `dd` IS the binary, and telling a user to run `harness dd build` is an
- * instruction that does not work in this package.
+ * The binary name comes from `package.json#bin`, so what the CLI SAYS and what
+ * its documentation teaches must use that same name (plan 001 tk-0003, ruled
+ * 2026-08-07). Upstream reaches these verbs as `harness dd <verb>`; that form
+ * does not work in this standalone package.
  *
  * This file is the ratchet for that rename. Two halves, deliberately different
  * in kind:
@@ -26,7 +95,7 @@ import { ensureBuilt, parseEnvelope, repoRoot, runDd } from '../support/run-cli.
 
 /** Source occurrences that are correct as they stand: upstream provenance, in comments. */
 const PROVENANCE_COMMENTS: Record<string, number> = {
-  // "upstream nests them beneath `harness dd …`, but here the binary IS `dd`."
+  // Upstream nests these beneath `harness dd …`; the standalone bin is package-derived above.
   'src/app.ts': 1,
   // The four E4xx block headers citing their upstream plan-065 allocation.
   'src/output/error-codes.ts': 4,
@@ -51,7 +120,7 @@ function isCommentLine(line: string): boolean {
   );
 }
 
-describe('the binary is named dd, and says so', () => {
+describe(`the binary is named ${BINARY_NAME}, and says so`, () => {
   it('leaves `harness dd` only in provenance comments, file by file', () => {
     const found: Record<string, number> = {};
     for (const relative of sourceFiles()) {
@@ -68,17 +137,45 @@ describe('the binary is named dd, and says so', () => {
     expect(found).toEqual(PROVENANCE_COMMENTS);
   });
 
-  it('bakes docs that tell the reader to run `dd`, not `harness dd`', () => {
-    expect(DD_DOCS.length).toBeGreaterThan(0);
-    for (const doc of DD_DOCS) {
-      expect(doc.content, `baked doc ${doc.id}`).not.toContain('harness dd');
+  it('uses the package binary in every shipped and baked command example', () => {
+    const issues: string[] = [];
+    const coveredCorpora = new Set<string>();
+    const surfaces = [
+      ...SHIPPED_DOCS.map((path) => ({
+        path,
+        markdown: readFileSync(join(repoRoot, path), 'utf8'),
+      })),
+      ...DD_DOCS.map((doc) => ({ path: `baked:${doc.id}`, markdown: doc.content })),
+    ];
+
+    for (const surface of surfaces) {
+      const corpus = surface.path.startsWith('baked:') ? 'baked' : 'shipped';
+      for (const sample of commandSamples(surface.markdown)) {
+        const inspection = inspectCommandSample(sample.text);
+        if (inspection === undefined) continue;
+        coveredCorpora.add(corpus);
+        if (inspection.issue !== undefined) {
+          issues.push(`${surface.path}:${sample.line}: ${inspection.issue}`);
+        }
+      }
     }
-    // Non-vacuity: the corpus really does carry command examples to get wrong.
-    expect(DD_DOCS.some((doc) => doc.content.includes('dd schema list'))).toBe(true);
+
+    expect([...coveredCorpora].sort()).toEqual(['baked', 'shipped']);
+    expect(issues, issues.join('\n')).toEqual([]);
+  });
+
+  it('rejects current and stale binaries behind the unreachable harness prefix', () => {
+    expect(inspectCommandSample(`harness ${BINARY_NAME} build`)).toEqual({
+      issue: `invalid standalone command harness ${BINARY_NAME}; use ${BINARY_NAME} directly`,
+    });
+    expect(inspectCommandSample('harness dd build')).toEqual({
+      issue: `expected ${BINARY_NAME}, found harness dd`,
+    });
+    expect(inspectCommandSample(`${BINARY_NAME} build`)).toEqual({});
   });
 
   it('stamps generated markdown with this package’s own binary name', () => {
-    expect(RENDER_BANNER).toContain('`dd build`');
+    expect(RENDER_BANNER).toContain(`\`${BINARY_NAME} build\``);
     expect(RENDER_BANNER).not.toContain('harness dd');
   });
 });
@@ -88,7 +185,9 @@ describe('the binary is named dd, and says so', () => {
  * output carries a command suggestion — the surfaces where a wrong binary name
  * would actually mislead someone.
  */
-const OUTPUT_CASES: { label: string; argv: string[] }[] = [
+type OutputCase = { label: string; argv: string[]; teachesBinary?: boolean };
+
+const OUTPUT_CASES: OutputCase[] = [
   { label: 'validate — missing document', argv: ['validate', 'no/such/file.dd.json'] },
   { label: 'schema — unknown schema', argv: ['schema', 'show', 'nope/nothing'] },
   { label: 'schema list — human listing', argv: ['schema', 'list'] },
@@ -100,10 +199,11 @@ const OUTPUT_CASES: { label: string; argv: string[] }[] = [
   { label: 'links — an unresolvable target', argv: ['links', 'no/such/file.dd.json'] },
   { label: 'set — an unresolvable address', argv: ['set', 'no/such/file.dd.json#a/b', 'x'] },
   { label: 'doctor — the repo sweep', argv: ['doctor'] },
-  { label: 'status — the port ledger', argv: ['status'] },
+  // Successful status has neither a next_action nor a binary-qualified command; keep it as a control.
+  { label: 'status — the port ledger', argv: ['status'], teachesBinary: false },
 ];
 
-describe('no invocation tells a user to run `harness dd`', () => {
+describe(`runtime suggestions use the package binary ${BINARY_NAME}`, () => {
   beforeAll(() => {
     ensureBuilt();
   }, 120_000);
@@ -111,12 +211,20 @@ describe('no invocation tells a user to run `harness dd`', () => {
   // Both output modes, because they are rendered by different code paths: the
   // envelope's `next_action` and the human writer's prose are separate surfaces,
   // and the rename had to land in both.
-  it.each(OUTPUT_CASES)('$label', ({ argv }) => {
+  it.each(OUTPUT_CASES)('$label', ({ argv, teachesBinary = true }) => {
     for (const flag of ['--json', '--no-json']) {
       const result = runDd([...argv, flag]);
-      expect(`${result.stdout}\n${result.stderr}`, `${argv.join(' ')} ${flag}`).not.toContain(
-        'harness dd',
-      );
+      const output = `${result.stdout}\n${result.stderr}`;
+      expect(output, `${argv.join(' ')} ${flag}`).not.toContain('harness dd');
+      if (teachesBinary) {
+        expect(output, `${argv.join(' ')} ${flag}`).toMatch(binaryInvocation(argv[0]));
+      } else {
+        expect(output, `${argv.join(' ')} ${flag}`).not.toMatch(binaryInvocation(argv[0]));
+      }
+    }
+    if (!teachesBinary) {
+      const envelope = parseEnvelope(runDd([...argv, '--json']));
+      expect(envelope.next_action).toBeUndefined();
     }
   });
 
@@ -124,7 +232,7 @@ describe('no invocation tells a user to run `harness dd`', () => {
     // If `next_action` ever stopped naming a command, the rows above would pass
     // for the wrong reason — so pin that the surface under guard is still there.
     const envelope = parseEnvelope(runDd(['validate', 'no/such/file.dd.json', '--json']));
-    expect(envelope.next_action).toContain('dd validate');
+    expect(envelope.next_action).toMatch(binaryInvocation('validate'));
     expect(envelope.next_action).not.toContain('harness dd');
   });
 });

@@ -108,7 +108,7 @@ describe('harness dd get/set/add/rm — live', () => {
   it('refuses the mutation and restores the source when the sibling cannot be written (dw-0283)', async () => {
     // Best-effort regeneration is what this replaces: the verb used to write the
     // source, warn that the sibling failed, and still report `written: true` —
-    // manufacturing exactly the source/sibling drift `dd build --check` exists to
+    // manufacturing exactly the source/sibling drift `ddocs build --check` exists to
     // catch. A directory parked on the sibling path makes that write fail for
     // real, on any platform, without chmod games.
     const source = corpus.taskFiles['ph-0001'] as string;
