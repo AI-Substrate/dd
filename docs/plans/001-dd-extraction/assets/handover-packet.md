@@ -942,7 +942,7 @@ number instead of living in one agent's memory.
 
 <!-- BEGIN GENERATED: constraints (scripts/gen-handover-embeds.mjs) -->
 
-**Reproduced verbatim as of `01a8fb7`** — 10 constraints,
+**Reproduced verbatim as of `e6015ac`** — 10 constraints,
 the commit that last changed the source. Cite them BY NUMBER. Stamped past-tense copy:
 check whether yours is stale, and re-pull, with:
 
@@ -1080,8 +1080,31 @@ Harness keeps **no fork and no private copies**.
 
 ## 10 — Never tear a seat down by pane id; the discriminator is PID, checked at execution time
 
-**In force from 2026-08-14. Raised by `pij-chief-roadrunner` (chainglass o-prime), measured
-independently by `pij-continuing-ermine` and by roadrunner — 10 of 18 panes affected.**
+**In force from 2026-08-14. Raised by `pij-chief-roadrunner` (chainglass o-prime).**
+
+**THE COUNT WAS CORRECTED 18x AND EVERY EARLIER FIGURE IN THIS CONSTRAINT WAS WRONG.** The
+first number — *10 of 18* — came from a probe that globbed `~/.pij/*.json` and stopped: **the
+hot tier only.** `~/.pij/archive/` holds **2,662 more descriptors**, and archived records
+*necessarily* fail to own any pane they name, because they are terminal.
+
+Three independent measurements, each stated with its scope and time because **the number moves
+under all of us**:
+
+| seat | collisions | `%0` claims | as at |
+|---|---|---|---|
+| ermine (corrected) | 186 | 134 | ~02:0xZ |
+| roadrunner (corrected) | 186 | 134 | 02:05:53Z |
+| **this seat** | **182** | **131** | **02:07Z** — 3,342 descriptors carrying a `paneId` (840 hot + 2,662 archive) |
+
+**`%0` IS THE OPERATOR'S OWN TERMINAL AND ~131 RECORDS POINT AT IT.** The danger is *not*
+spread evenly across dead seats — **it concentrates hard at the bottom of the range**, because
+a fresh tmux server always starts issuing from `%0` again, so low panes accumulate claims from
+every epoch the box has ever run. A fresh session's panes live exactly there.
+
+**And this kills the census idea harder than "it would expire":** a census would have been
+**WRONG WHEN TAKEN**, because the figure it produced depended on which directory the probe
+happened to look in. Per-execution PID check is not merely the durable form — at 182+ it is
+the only form that was ever correct.
 
 The reboot made tmux reissue pane ids from `%0`, so **stale `~/.pij` descriptors now
 name live panes they do not own.** **CORRECTED 2026-08-14: the reboot was `23:07:55Z`
@@ -1099,8 +1122,9 @@ pid from the descriptor and trust it — the descriptor is the thing that went s
 
 **WHERE THE DANGER ACTUALLY SITS, and it grows** (roadrunner): a descriptor's `paneId`
 **above** the new epoch's current maximum names no live pane and is harmlessly stale;
-**at or below** it names someone else's pane and collides. Measured here: the frontier is
-`%30` and climbing. So **the low-numbered dead seats are the ones to fear, and the collision
+**at or below** it names someone else's pane and collides. Measured, and **dated because it moved four times in ninety minutes** — `%28` at
+~00:52Z, `%30` when I measured, `%32`, then `%33` at 02:05:53Z. **A bare frontier number is a
+snapshot, never a fact.** So **the low-numbered dead seats are the ones to fear, and the collision
 set expands as new panes climb into the vacated range** — "we checked yesterday" does not stay
 true, which is precisely why this constraint is a per-execution PID check and not a one-off
 census.
