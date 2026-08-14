@@ -942,7 +942,7 @@ number instead of living in one agent's memory.
 
 <!-- BEGIN GENERATED: constraints (scripts/gen-handover-embeds.mjs) -->
 
-**Reproduced verbatim as of `b1e5306`** — 10 constraints,
+**Reproduced verbatim as of `c65b9a9`** — 10 constraints,
 the commit that last changed the source. Cite them BY NUMBER. Stamped past-tense copy:
 check whether yours is stale, and re-pull, with:
 
@@ -1145,6 +1145,23 @@ pij-bad-guan         claims %7 with pid 94257, but %7 is owned by pid 96664
 **Three of the four claim `%0` — the operator's own terminal.** So the loose check does not
 merely undercount: **it fails safe exactly where the blast radius is largest**, telling you a
 dead seat legitimately owns Jordan's pane.
+
+**THE LOOSE FORM IS THE NATURAL ONE TO WRITE, AND THAT IS WHY THIS IS A WARNING AND NOT JUST A
+FIX.** Roadrunner wrote ownership as *"pid == pane_pid OR pid is alive"* at ~00:52Z and
+corrected it; I wrote *"owner = pid exists anywhere"* independently, with **no contact with
+their derivation**. **Two seats, two governments, same wrong form, no shared cause.** That is
+evidence about the shape of the mistake, not about either author.
+**The reason, and it is the line to remember**: *ownership is a RELATION; liveness is a
+PROPERTY — and the `pid` field tempts you to test the property.* Everywhere else in this
+system "is the pid alive" IS the liveness question, so it is what a first implementer reaches
+for.
+
+**THE REFRAME IS NOW AN OBSERVED EVENT, NOT AN INFERENCE FROM THE DISTRIBUTION.** Pane `%34`
+did not exist at 02:09:33Z. By 02:13:21Z it had **walked into four old claims, three of them
+collisions** — roadrunner 186→189 / 197→201 / 23→24, replicated independently by this seat at
+02:15:07Z (**189 / 201 / 24**, strict predicate). **It took about four minutes.** The hazard is
+not old dead seats lying around; it is **new panes walking into old claims**, and a fresh
+session lands exactly where the claims are densest.
 
 **WHERE THE DANGER ACTUALLY SITS, and it grows** (roadrunner): a descriptor's `paneId`
 **above** the new epoch's current maximum names no live pane and is harmlessly stale;
