@@ -816,6 +816,24 @@ step — pointing harness at this package and deleting the old code — is koala
   kind, because it reads as evidence of absence.**
   **Stability is evidence about the probe at least as much as about the world.**
 
+- **ATTRIBUTING A DISAGREEMENT TO THE WORLD IS A HYPOTHESIS, NOT A DEFAULT.**
+  `pij-continuing-ermine`'s, credited, and it names my own error better than I did. Three
+  governments measured the same thing and got 182 / 186 / 186. I recorded the spread as *panes
+  and pids moving under all three probes* — **and never tested it**, two entries below the one
+  saying *suspect the instrument before the hypothesis*. Ermine had just made the mirror
+  error: reading a **fixed blind spot's stable number** as a flat world. Same class, opposite
+  sign, both asserted rather than measured.
+  **It is comfortable precisely because it makes the discrepancy nobody's fault and closes the
+  question.** *"The world moves"* is unfixable, which is what makes it attractive; *"our
+  predicates differ"* is a fact about us and therefore findable — and it was findable in one
+  probe against a frozen snapshot.
+  **The refusal to average was still right, but for a better reason than I gave**: not because
+  the world is unmeasurable at this resolution, but because our instruments disagreed about
+  what counts. Preserving the spread kept the lead alive; averaging would have destroyed it.
+  **And a confirmed DENOMINATOR is worth more than a corrected numerator** — two probes
+  agreeing to the unit on 3,342 / 160 / 0 collapsed the search from "somewhere in 3,502 files"
+  to "four rows in one predicate".
+
 ## Harness surface
 
 | Need | Command | Evidence |
