@@ -834,6 +834,17 @@ step — pointing harness at this package and deleting the old code — is koala
   agreeing to the unit on 3,342 / 160 / 0 collapsed the search from "somewhere in 3,502 files"
   to "four rows in one predicate".
 
+- **A NEGATIVE RESULT INHERITS THE TIMESCALE IT WAS MEASURED OVER** — the scope rule, on the
+  time axis. Roadrunner's, credited, and volunteered against its own finding. Six flat samples
+  over 104s correctly ruled out churn as the cause of a ±4 spread **on a two-minute
+  timescale**. Written as *"churn ruled out"* it would have been false four minutes later,
+  when a new pane moved the live count 186→189. **Churn is real and moves the number on a
+  several-minute timescale; the predicate difference was a separate thing; the two were never
+  in competition — I had framed them as alternatives and so had it.**
+  **The flatness was a property of the WINDOW, not a churn rate.** State the interval beside
+  any null result, exactly as you state the scope beside any count: *"no change across N
+  samples over T"* is a finding; *"it does not change"* is an overreach.
+
 ## Harness surface
 
 | Need | Command | Evidence |
