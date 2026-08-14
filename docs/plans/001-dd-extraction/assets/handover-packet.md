@@ -942,7 +942,7 @@ number instead of living in one agent's memory.
 
 <!-- BEGIN GENERATED: constraints (scripts/gen-handover-embeds.mjs) -->
 
-**Reproduced verbatim as of `e6015ac`** — 10 constraints,
+**Reproduced verbatim as of `b1e5306`** — 10 constraints,
 the commit that last changed the source. Cite them BY NUMBER. Stamped past-tense copy:
 check whether yours is stale, and re-pull, with:
 
@@ -1094,7 +1094,14 @@ under all of us**:
 |---|---|---|---|
 | ermine (corrected) | 186 | 134 | ~02:0xZ |
 | roadrunner (corrected) | 186 | 134 | 02:05:53Z |
-| **this seat** | **182** | **131** | **02:07Z** — 3,342 descriptors carrying a `paneId` (840 hot + 2,662 archive) |
+| **this seat, loose predicate — WRONG** | ~~182~~ | ~~131~~ | 02:07Z |
+| **this seat, strict predicate** | **186** | — | 02:11Z, frozen snapshot, 3,342 of 3,502 files carry a `paneId` |
+
+**The three counts AGREE once the predicate is fixed.** My 182 was not the world moving under
+three probes — that was my untested cause, and roadrunner disproved it by repeat-measuring six
+times across 104s spanning my reading: 186 every sample, 197 naming-a-live-pane every sample,
+23 live panes every sample. **Nothing moved.** *"The world moves" is a stopping point; "our
+predicates differ" is a lead* — and the lead was findable in one probe.
 
 **`%0` IS THE OPERATOR'S OWN TERMINAL AND ~131 RECORDS POINT AT IT.** The danger is *not*
 spread evenly across dead seats — **it concentrates hard at the bottom of the range**, because
@@ -1116,9 +1123,28 @@ dismissible boot-window transient; at boot+1h37m it does not.** Verified on this
 **96638** on **`%6`**; `pij-related-koala`'s descriptor also names `%6` carrying pid **56901**,
 and `ps -p 56901` returns nothing. Anything that closes koala *by pane id* kills the o-prime.
 
-**The rule**: no seat in this government closes, kills, or reattaches anything until a **PID
-check at execution time** confirms the target is the process it claims to be. Never read the
-pid from the descriptor and trust it — the descriptor is the thing that went stale.
+**The rule, SHARPENED 2026-08-14 after the loose form was proved a false-safe**: no seat in
+this government closes, kills, or reattaches anything until, at execution time,
+**`descriptor.pid == that pane's `pane_pid``**. Never read the pid from the descriptor and
+trust it, **and never settle for "the pid is alive" — that is not ownership.**
+
+**Why the loose form is dangerous, measured on a frozen snapshot**: chasing a 4-count
+disagreement with roadrunner (my 182 vs their 186) proved the entire gap was my predicate.
+We agreed *exactly* on 197 descriptors naming a live pane. I counted a record as a legitimate
+owner if its pid **existed anywhere** on the box; the correct test is whether the pid **is
+that pane's process**. The difference was **4 RECYCLED-PID GHOSTS** — dead seats whose
+recorded pid happens to match some unrelated live process:
+
+```
+pij-grieving-gibbon  claims %0 with pid 4054,  but %0 is owned by pid 19713
+pij-double-chicken   claims %0 with pid 733,   but %0 is owned by pid 19713
+pij-varied-thrush    claims %0 with pid 4396,  but %0 is owned by pid 19713
+pij-bad-guan         claims %7 with pid 94257, but %7 is owned by pid 96664
+```
+
+**Three of the four claim `%0` — the operator's own terminal.** So the loose check does not
+merely undercount: **it fails safe exactly where the blast radius is largest**, telling you a
+dead seat legitimately owns Jordan's pane.
 
 **WHERE THE DANGER ACTUALLY SITS, and it grows** (roadrunner): a descriptor's `paneId`
 **above** the new epoch's current maximum names no live pane and is harmlessly stale;
