@@ -734,6 +734,34 @@ step — pointing harness at this package and deleting the old code — is koala
   leaving the case quietly uncovered. It converts an uncoverable case into a DATED QUESTION.
   Reach for it wherever coverage is genuinely impossible: assert the shape of the hole.
 
+- **When you ask a peer for something, NAME THE CHANNEL — an answer written where you cannot
+  read it is indistinguishable from no answer, and BOTH ENDS read their own state as
+  complete.** I asked a PM for four canary answers, twice, and got nothing. I concluded it
+  could not recall and retired it. It had answered **both times** — into its response text,
+  which reaches the human's console and **never the wire**. A peer sees only what arrives by
+  `pij send`. So from its seat the answer looked delivered; from mine nothing existed; and
+  neither position could see the other's. **All four answers were correct** when it finally
+  put them on the wire — it was recall, not reconstruction, and the retirement was right on
+  the evidence I had and wrong about the seat.
+  **The operational half is the asker's**: "answer these four" is ambiguous about the
+  channel, and I wrote it twice. Say *reply by `pij send`*.
+  **Why this one is worth more than the instance**: that seat had ALREADY named this exact
+  shape to me — it carried a cancelled requirement into a review packet as a quoted
+  supersession precisely because *absence of a record is indistinguishable from an omission*.
+  It then produced a textbook instance of its own rule, about itself, under a direct request,
+  twice, without noticing. **The trap survives knowing about it**, which is why the remedy has
+  to be mechanical (name the channel) and not attentional (be careful).
+- **A fleet that records its decisions only in `.harness/temp` writes them somewhere
+  structurally guaranteed not to survive.** `.gitignore:148` excludes it, so a clean checkout
+  takes the lot. Recovered by hand on 2026-08-14, on the retiring PM's own warning: two run
+  rosters and a coder packet holding **the reasoning behind two shipped decisions** — both
+  canary strings with their five facts, the lazy-reviewer cost reasoning, a 10-of-12 sanity
+  pass, the npx latent gap *with its measurement*, and the full residue block (the
+  absolute-machine-path finding as PRIMARY, the fr-0019 widening, the supersession rule with
+  its precedent). None of it exists anywhere else in the repo. **A decision living only in a
+  message cannot be audited; a decision living only in a gitignored file cannot be
+  inherited** — the same defect one layer out.
+
 ## Harness surface
 
 | Need | Command | Evidence |
