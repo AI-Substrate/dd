@@ -9,6 +9,36 @@ This repo is governed by an o-prime whose durable state — doctrine
 first read for any new seat. Fleet operating doctrine (how PMs run workers)
 is `.harness/government/how-fleets-work.md`.
 
+## npm resolves through a corporate supply-chain proxy — do not route around it
+
+Every dependency in `package-lock.json` resolves through
+**`packagefeedproxy.microsoft.io`** — measured 2026-08-14: **166 of 166 resolved entries,
+zero from the public registry.** This is a **corporate supply-chain control on a managed
+system**, not a mirror chosen for speed. Packages are screened before they become visible
+here, which is why the feed lags `registry.npmjs.org` by up to about a week.
+
+**NEVER pass `--registry=https://registry.npmjs.org`, never edit a `resolved` URL to point
+at the public registry, and never suggest either as a way to unblock a build.** Doing so
+fetches a package that has not been screened and puts the first unproxied entry into a
+lockfile that is otherwise uniformly proxied. If a fix is only reachable publicly, the
+correct action is to **wait for the feed to screen it, or ask Jordan** — the wait is the
+control working, not a tool being slow.
+
+**The consequence agents keep re-discovering, so it is written down once here**: a local
+`npm audit` on this machine is **systematically more optimistic than CI's**, because CI
+resolves against the public registry and this machine cannot see what CI sees. A green
+local audit is evidence about the *screened* dependency set only. When `scripts/audit-gate.mjs`
+disagrees between local and CI, **CI is the one telling the truth about the wider world**
+and local is telling the truth about what is installable here. Both are right; they are
+answering different questions.
+
+*Live instance, 2026-08-14*: CI blocked on `nanoid` with a fix available; `nanoid@3.3.18`
+exists publicly, the proxy's latest 3.x is `3.3.17`, and the proxy returns **E404 for
+3.3.18 even when asked directly** — so the fix was genuinely unreachable from here. This
+is also the standing gap in the audit gate, now with a real instance: the gate cannot
+distinguish *"a fix exists somewhere"* from *"a fix is reachable by us"*, and on a proxied
+machine those differ by the screening window, by design.
+
 ## What this repo is
 
 This is the standalone home of **dd** (deterministic documents) — the tooling that
