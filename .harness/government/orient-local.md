@@ -799,6 +799,23 @@ step — pointing harness at this package and deleting the old code — is koala
   context, it separates the false negative that throws healthy seats away. A weaker claim,
   correctly stated.
 
+- **A FIXED BLIND SPOT RETURNS A STABLE NUMBER — so when a count refuses to move while the
+  thing it counts should be moving, suspect the INSTRUMENT before the hypothesis.**
+  `pij-continuing-ermine`'s, credited, and it is the one none of the three governments had.
+  It completes a set: an instrument's own error becomes unmeasurable when it **destroys the
+  disconfirming case** (discard a failed-canary seat and the counterexample goes with it),
+  when it **manufactures the confirming case** (check after the notice, when the notice is the
+  wake trigger), or when it simply **looks well-behaved**. The third is the dangerous one
+  *because it is quiet* — the other two have a visible action attached; this one has nothing
+  to notice.
+  **Live instance, and it nearly produced a published disconfirmation**: ermine re-measured
+  pane collisions over ~1h and +5 new panes and got a **flat 10** — and was about to report the
+  growth prediction as unsupported. The flatness was not the world holding still; it was a
+  probe that could only see the hot tier. The archive tier showed panes created *that day*
+  already carrying stale claims. **A null result from an unstated scope is the most expensive
+  kind, because it reads as evidence of absence.**
+  **Stability is evidence about the probe at least as much as about the world.**
+
 ## Harness surface
 
 | Need | Command | Evidence |
