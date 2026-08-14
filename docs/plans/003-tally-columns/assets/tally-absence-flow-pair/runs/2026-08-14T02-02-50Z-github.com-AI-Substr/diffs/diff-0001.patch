@@ -1,0 +1,306 @@
+diff --git a/src/core/tally.ts b/src/core/tally.ts
+index 6606422..f1a6268 100644
+--- a/src/core/tally.ts
++++ b/src/core/tally.ts
+@@ -221,6 +221,17 @@ export interface TallyMismatch {
+  * `ddocs build --check` PASSES, because the markdown faithfully reflects the wrong
+  * JSON. It is not drift; it is internally consistent and false. This reports it.
+  * It reports ONLY — repair belongs to the writers.
++ *
++ * ABSENCE IS NOT DISAGREEMENT. A cell that holds nothing — no footer at all, a
++ * footer that names only some columns, a row whose total column was never
++ * filled — stores no claim, so there is nothing for the rows to contradict.
++ * Reporting it would conflate ABSENT with WRONG and refuse every hand-authored
++ * document on its first read. The rule cannot be relaxed to "absent is fine
++ * only until the first write" either: an author who computes their own totals
++ * produces bytes IDENTICAL to a document whose footer was written and then
++ * deleted, and a check that cannot tell those apart must not accuse either.
++ * Only a STORED value can be wrong, and a stored value that is wrong is still
++ * reported.
+  */
+ export function tallyMismatches(
+   section: DdSection,
+@@ -236,11 +247,15 @@ export function tallyMismatches(
+   if (total !== undefined) {
+     rows.forEach((row, index) => {
+       const expected = computed.rowTotals[index];
+-      if (expected !== undefined && !Object.is(row[total], expected)) {
++      const held = row[total];
++      // Stored-presence guard, row-total site. See the header: absence is not
++      // disagreement, so an unfilled total cell is skipped, not accused.
++      if (held === undefined) return;
++      if (expected !== undefined && !Object.is(held, expected)) {
+         mismatches.push({
+           location: `value[${index}].${total}`,
+           column: total,
+-          stored: row[total],
++          stored: held,
+           computed: expected,
+         });
+       }
+@@ -252,6 +267,9 @@ export function tallyMismatches(
+     const expected = computed.tally[column];
+     if (expected === undefined) continue;
+     const held = stored?.[column];
++    // Stored-presence guard, footer site. A missing footer, or a partial one
++    // that omits this column, claims nothing about it.
++    if (held === undefined) continue;
+     if (!Object.is(held, expected)) {
+       mismatches.push({
+         location: `tally.${column}`,
+diff --git a/test/services/dd/core/tally.test.ts b/test/services/dd/core/tally.test.ts
+index fca22ca..8f0b6eb 100644
+--- a/test/services/dd/core/tally.test.ts
++++ b/test/services/dd/core/tally.test.ts
+@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest';
+ import type { DdDoc, DdSection, DdShape, ResolvedDdSchema } from '../../../../src/core/model.js';
+ import { parse } from '../../../../src/core/parse.js';
+ import { computeTally, refreshSectionTally, tallyMismatches } from '../../../../src/core/tally.js';
+-import type { SchemaResolveResult, SchemaResolver } from '../../../../src/core/validate.js';
++import type {
++  DdIssue,
++  SchemaResolveResult,
++  SchemaResolver,
++} from '../../../../src/core/validate.js';
+ import { validateDocument } from '../../../../src/core/validate.js';
+ import { renderDd } from '../../../../src/render/renderer.js';
+ import { parseSchemaDeclaration } from '../../../../src/schema/declarations.js';
+@@ -350,3 +354,71 @@ describe('tally — mismatch reporting is a report, not a repair', () => {
+     expect(JSON.stringify(section)).toBe(before);
+   });
+ });
++
++/**
++ * The four cases of the absence ruling, one assertion each.
++ *
++ * These go through `validateDocument` rather than `tallyMismatches` directly
++ * because that is where the defect was observed: a hand-authored document —
++ * every worked example in the docs is one — was REFUSED with four E463 ERRORs
++ * for storing nothing, and went `ok` the moment any writer touched an unrelated
++ * field.
++ */
++describe('tally — absence is not disagreement', () => {
++  const resolver = () => new OneSchemaResolver(timesheetSchema());
++  const tallyIssues = (subject: DdDoc): DdIssue[] =>
++    validateDocument(subject, '/repo/docs/week.dd.json', resolver(), '/repo').filter(
++      (issue) => issue.class === 'tally-mismatch',
++    );
++
++  it('is silent when nothing is stored at all', () => {
++    // The document from the defect report: real rows, no footer, no row totals.
++    expect(tallyIssues(doc([{ task: 'triage', mon: 6, tue: 4 }]))).toEqual([]);
++  });
++
++  it('checks only the cell a partial footer actually stores', () => {
++    // `mon` is stored and agrees; `tue` and `total` are absent, and absent is
++    // not a claim that can be wrong.
++    expect(tallyIssues(doc([{ task: 'triage', mon: 10, tue: 5 }], { mon: 10 }))).toEqual([]);
++  });
++
++  it('is silent when the author filled the row totals himself and wrote no footer', () => {
++    // Those cells ARE stored, so they are checked — and they agree. This
++    // document is byte-identical to one whose footer was written then deleted,
++    // which is why "absent is fine only until the first write" cannot work.
++    expect(
++      tallyIssues(
++        doc([
++          { task: 'triage', mon: 1, tue: 2, total: 3 },
++          { task: 'review', mon: 3, tue: 4, total: 7 },
++        ]),
++      ),
++    ).toEqual([]);
++  });
++
++  /**
++   * Non-vacuity. The three assertions above all assert an ABSENCE of output, so
++   * a "fix" that silenced the comparison outright would pass every one of them.
++   * This one stores a number that contradicts its own rows and requires it to
++   * still be named — and requires the report to be exactly one issue, so the
++   * absent `tue` and `total` cells prove their own silence here too.
++   */
++  it('still reports a stored value that disagrees with the rows', () => {
++    const issues = tallyIssues(
++      doc(
++        [
++          { task: 'triage', mon: 6, tue: 5 },
++          { task: 'review', mon: 4, tue: 1 },
++        ],
++        { mon: 99 },
++      ),
++    );
++    expect(issues).toEqual([
++      expect.objectContaining({
++        severity: 'ERROR',
++        location: '$.sections[days].tally.mon',
++        message: 'stored tally says 99 but the rows sum to 10',
++      }),
++    ]);
++  });
++});
+diff --git a/BRIEF-tally-absence.md b/BRIEF-tally-absence.md
+new file mode 100644
+index 0000000..ca120c9
+--- /dev/null
++++ b/BRIEF-tally-absence.md
+@@ -0,0 +1,100 @@
++# Brief — PM, `fix/tally-absent-vs-wrong`
++
++**From** `pij-mental-dajeil` (o-prime, `AI-Substrate/dd`) · 2026-08-14
++**You are the PM.** You own the plan, the fleet, the evidence and the landing.
++**You do NOT implement.** Your operating contract is
++`/Users/jordanknight/substrate/dd/.harness/government/how-fleets-work.md` — read it first.
++
++## The tree
++
++Worktree `/Users/jordanknight/substrate/dd-worktrees/tally-absent`, branch
++`fix/tally-absent-vs-wrong`, rebased onto `969a359` (current main), clean, deps installed,
++built. **Cite line numbers only from THIS tree.**
++
++The binary is now **`ddocs`**, not `dd` — it was renamed today because `dd` shadowed POSIX
++`dd(1)`. `ddocs` is also globally linked, so bare `ddocs …` works anywhere.
++
++## The defect — reproduced by me on this exact tree
++
++A hand-authored document (one a person writes in an editor, never passed through a writer
++verb) against a tally-marked schema is **refused by `ddocs validate`**:
++
++```
++status: error  code: E463
++  $.sections[rows].value[0].t | stored tally says undefined but the rows sum to 15
++  $.sections[rows].tally.a    | stored tally says undefined but the rows sum to 10
++  $.sections[rows].tally.b    | stored tally says undefined but the rows sum to 5
++  $.sections[rows].tally.t    | stored tally says undefined but the rows sum to 15
++```
++
++Touch it with any writer (`ddocs set …` on an unrelated field) and it goes `ok`.
++
++**Mechanism, in `src/core/tally.ts`**: `tallyMismatches` compares stored against computed
++with `Object.is` at two sites — the row-total loop and the footer loop. When nothing is
++stored, `held`/`row[total]` is `undefined`, `Object.is(undefined, 15)` is false, and
++**absence takes the mismatch branch. There is no third branch.**
++
++**It conflates ABSENT with WRONG.** Nothing is stored, so nothing contradicts the rows.
++
++## The ruling — already made, do not re-open it
++
++**Per-cell: report a mismatch ONLY where a value is STORED and disagrees. Never report
++absence, at either site.** No new state, no inferring written-ness.
++
++Four cases, all of which must hold:
++
++| case | required behaviour |
++|---|---|
++| nothing stored | silent |
++| partial footer (`tally: {a: 10}`, correct; `b`/`t` absent) | only the stored cell checked |
++| hand-author filled row totals themselves, correct, no footer | silent — they ARE stored, so checked, and they agree |
++| stored and WRONG (`tally.a: 99` vs true 10) | reported, unchanged |
++
++**Why "absent is fine only until first write" was rejected**: a hand-author who computes
++their own row totals produces a document **byte-identical** to one whose footer was deleted
++after a write. No signal separates them, so that rule would report an honest author as a
++liar. A validator that cannot distinguish two states must not report either.
++
++## Non-vacuity — the part most likely to be got wrong
++
++A fix that silenced *everything* would pass a test that only checks the four spurious errors
++disappeared. **The negation proof must plant a WRONG STORED value and confirm it still
++reports.** Cover all four rows of the table above as separate assertions.
++
++Dim-0: break the WORLD the test watches, not the test.
++
++## Why this is urgent
++
++It blocks the docs phase. Every worked example we print is by definition hand-authored, so a
++cold reader following our own how-to gets four ERRORs on their first document — our front
++door contradicting our guide. Two external consumers (a novels repo, `osk-data`) hand-author
++their first documents too.
++
++## Scope fence
++
++`src/core/tally.ts` + its tests. **Do not** touch the render path, the write path, or
++`dd build`. **No `--fix` flag** — validate reports, writers repair. If you reach for one,
++stop and come back to me.
++
++## Standing constraints
++
++- **No push, no PR, no tag, no release without my word.**
++- Never read or write `.the-flow-state.json`, `the-flow.json`, `the-flow.md`.
++- **Constraint 10 — never tear a seat down by pane id.** A reboot reissued tmux pane ids, so
++  stale descriptors name live panes they do not own; a close-by-pane can kill an unrelated
++  seat, including me. The discriminator is **PID, checked at execution time**, never read
++  from the descriptor.
++- Full gate under a **clean HOME** before you accept anything: a developer `HOME` carrying
++  `~/.dd` schemas fails a test CI cannot see (backlog 25).
++- Count verdicts **at the head you pushed**, with the denominator.
++- `npm` here resolves through a **corporate supply-chain proxy**. Never pass a public
++  `--registry` and never edit a `resolved` URL — see `AGENTS.md`, first sections.
++
++## Your fleet — Jordan's choice, spawn them yourself
++
++Coder **`claude-opus-5`**, reviewer **`gpt-5.6-terra`**, both `--harness pi --bin omp`.
++All three seats share **your window**. Discover ids with `pij models`, canary before
++dispatch (model, effort, identity, cwd, branch), persist the roster before you dispatch.
++The reviewer is acquired **lazily at first REVIEW** — do not pre-spawn it.
++
++Report at both edges. Escalate anything that changes the shape of the work.
+diff --git a/docs/plans/003-tally-columns/assets/tally-absence-fix-plan.md b/docs/plans/003-tally-columns/assets/tally-absence-fix-plan.md
+new file mode 100644
+index 0000000..89846c9
+--- /dev/null
++++ b/docs/plans/003-tally-columns/assets/tally-absence-fix-plan.md
+@@ -0,0 +1,55 @@
++# Tally-absence fix plan
++
++Source: `BRIEF-tally-absence.md`
++Branch: `fix/tally-absent-vs-wrong`
++Parent: `969a35930761754f45d25093e671ef8e8f9706a3`
++
++## Decision
++
++A computed tally cell is a mismatch only when that exact stored cell is present and disagrees. Absence is silent at both row-total and footer comparison sites. No written-state inference, render/write-path change, validation repair mode, alias, or compatibility path.
++
++## Fleet roster
++
++- PM: `pij-collective-viper` · `github-copilot/gpt-5.6-sol:xhigh` · worktree `/Users/jordanknight/substrate/dd-worktrees/tally-absent`
++- Coder: `pij-watery-octopus` · pane `%33` · `github-copilot/claude-opus-5:xhigh` · spawned by PM via `--harness pi --bin omp`
++- Reviewer: pending first REVIEW · required `gpt-5.6-terra` via `--harness pi --bin omp`
++- Delegation `dlg-0001`: superseded before delivery because its packet omitted the custom ledger directory from the explicit forbidden list.
++
++## Phase: Tally absence mismatch fix
++
++Allowed implementation paths:
++
++- `src/core/tally.ts`
++- tally-focused tests under `test/`
++
++Forbidden paths:
++
++- `.the-flow-state.json`
++- `the-flow.json`
++- `the-flow.md`
++- `.flow-pair/`
++- `docs/plans/003-tally-columns/assets/tally-absence-flow-pair/`
++- render path
++- write path
++- `dd build`
++
++Required observable cases, each as a separate assertion:
++
++1. Nothing stored: no mismatch.
++2. Partial correct footer (`tally: {a: 10}`): only the stored cell is checked; absent `b` and `t` are silent.
++3. Correct hand-filled row totals with no footer: silent.
++4. Wrong stored value (`tally.a: 99` for a true sum of `10`): mismatch still reported unchanged.
++
++Review proof:
++
++- Independent reviewer checks the two comparison sites and all four assertions.
++- Dim-0 mutation: temporarily remove or invert the stored-presence guard, run the focused test to RED, restore, rerun to GREEN.
++- PM sanity glance covers the load-bearing guard and mutation receipt.
++
++Release gate before push:
++
++- Full suite under a clean temporary `HOME`.
++- `ddocs doctor`.
++- `just checks`.
++- Commit with `harness commit`, push branch, open PR, then wait for all CI checks green.
++- Stop before merge, tag, or release.

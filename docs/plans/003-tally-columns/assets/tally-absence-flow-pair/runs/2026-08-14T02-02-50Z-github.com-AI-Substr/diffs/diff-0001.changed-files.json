@@ -1,0 +1,14 @@
+{
+  "diffId": "diff-0001",
+  "runId": "2026-08-14T02-02-50Z-github.com-AI-Substr",
+  "delegationId": "dlg-0002",
+  "changedFiles": [
+    "src/core/tally.ts",
+    "test/services/dd/core/tally.test.ts",
+    "BRIEF-tally-absence.md",
+    "docs/plans/003-tally-columns/assets/tally-absence-fix-plan.md",
+    "docs/plans/003-tally-columns/assets/tally-absence-flow-pair/",
+    "docs/plans/003-tally-columns/assets/tasks/tally-absence-fix/"
+  ],
+  "at": "2026-08-14T02:11:52.517Z"
+}

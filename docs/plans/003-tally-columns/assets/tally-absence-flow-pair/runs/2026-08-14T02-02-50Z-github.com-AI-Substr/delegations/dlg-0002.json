@@ -1,0 +1,8 @@
+{
+  "delegationId": "dlg-0002",
+  "runId": "2026-08-14T02-02-50Z-github.com-AI-Substr",
+  "taskRef": "Implement all four tally-absence cases with non-vacuity",
+  "packetPath": "/Users/jordanknight/substrate/dd-worktrees/tally-absent/docs/plans/003-tally-columns/assets/tally-absence-flow-pair/runs/2026-08-14T02-02-50Z-github.com-AI-Substr/prompts/dlg-0002.md",
+  "createdAt": "2026-08-14T02:06:04.156Z",
+  "status": "pending"
+}
