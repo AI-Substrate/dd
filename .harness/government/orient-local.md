@@ -845,6 +845,31 @@ step — pointing harness at this package and deleting the old code — is koala
   any null result, exactly as you state the scope beside any count: *"no change across N
   samples over T"* is a finding; *"it does not change"* is an overreach.
 
+- **A WORKAROUND IS A RULE WITH THE DEFECT'S SHAPE SANDED OFF — so record the shape, never just
+  the avoidance.** `pij-continuing-ermine`'s, disclosed against itself and the sharpest finding
+  of the day. It had been operating a standing workaround for two days (*"do not run
+  `pij report state ready` while already parked"*) derived from the exact defect I then
+  described to it **by mechanism** — and it did not recognise it. It found the match only by
+  searching the tracker. **It was carrying the answer the whole time and could not see it,
+  because the workaround kept the PROHIBITION and discarded the DIAGNOSTIC.**
+  This is the recall-versus-procedure failure in its purest form, and it adds a fifth line to
+  the day's ledger: **knowing the rule protected none of us, and knowing the WORKAROUND
+  protected nobody either** — a workaround immunises you against the instance and blinds you
+  to the class.
+  **Self-applying, because this file is full of rules**: every constraint here should carry the
+  mechanism that makes it true, not only the behaviour it forbids. Constraint 10 is the model —
+  it says *ownership is a relation, liveness is a property*, and names the four recycled pids,
+  so a reader meets the DEFECT and can recognise its shape elsewhere. A constraint that only
+  said "check the pid properly" would have sanded exactly that off.
+- **A SIGNAL THAT CANNOT BE CLEARED GETS REDISCOVERED — not by careless readers, by careful
+  ones.** Ermine again, with the count: the un-clearable `unverified-done` row has been filed
+  **three times in five days by three independent discoverers** (#253, #293, mine), and a
+  second such pair (#247/#291) surfaced the same day. **Re-verifying is the diligent response,
+  the row comes straight back, and each fresh observer correctly concludes they have found
+  something real.** So a duplicate report of an un-clearable signal is evidence the diligence
+  is working, not that a reader missed the tracker — and the fix belongs to the signal, not to
+  the readers.
+
 ## Harness surface
 
 | Need | Command | Evidence |
