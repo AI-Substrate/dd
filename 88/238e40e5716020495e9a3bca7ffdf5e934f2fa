@@ -1,0 +1,19 @@
+docs/plans/001-dd-extraction/assets/handover-packet.md
+  s_f5a59eaabcfb7d::t_19791e9acc98d9 945,1097-1104,1126-1147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "88238e40e5716020495e9a3bca7ffdf5e934f2fa",
+  "prompts": {},
+  "sessions": {
+    "s_f5a59eaabcfb7d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c1a8ee5f-0c77-4a73-9109-a12db9cd18a8",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
