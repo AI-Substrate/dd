@@ -96,11 +96,11 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
-    "@biomejs/biome": "^2.5.0",
+    "@biomejs/biome": "^2.5.7",
     "@types/node": "^26",
     "@vitest/coverage-v8": "^4.1.8",
-    "publint": "0.3.22",
-    "typescript": "^6.0.3",
+    "publint": "0.3.23",
+    "typescript": "^7.0.2",
     "vitest": "^4.1.8"
   },
   "$comment-overrides": "postcss pins nanoid ^3.x and the newest 3.x our screened feed carries is 3.3.17, which the advisory covers (<3.3.18). 3.3.18 exists publicly and the feed 404s on it, so there is no rollback out of this: EVERY postcss needs a nanoid the feed cannot supply clean. nanoid 5.1.16 IS in the feed, ships a CJS entry, and postcss's own nanoid path (parse + source map) was exercised against it before this landed.",
