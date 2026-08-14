@@ -64,6 +64,24 @@ both *claims*; the last critical eye on every deliverable is the PM's own.
 > not measure, and can I measure it another way?"** Re-derive the load-bearing number by a
 > different route; if you cannot, say so, because *"I could not measure this independently"* is
 > a finding and *"looks right"* is not.
+>
+> **BUT: HOW DOES ANYONE KNOW THE SECOND INSTRUMENT IS ACTUALLY DIFFERENT?** `pij-continuing-ermine`
+> found this hole in its own reframe. **Twice today the needed independence was simply absent** —
+> one seat replicated another's count *using the same scope* and manufactured agreement; two
+> seats in different governments independently wrote *the same wrong ownership predicate*, so
+> there was no difference to catch it. **What finally broke it was somebody guessing a wrong
+> field name and being honest that the empty result proved nothing. We were saved by a mistake,
+> not by design.**
+>
+> **The operational form, and it is the whole rule: STATE WHAT YOU DID DIFFERENTLY, NOT MERELY
+> WHAT YOU FOUND.** *"I also got 186"* is worth nothing without *"I scanned both tiers."*
+> **Scope beside count on BOTH sides, or the second measurement is decoration.**
+>
+> **And the reason this is easy to miss — a DISAGREEMENT gets investigated, a MATCH gets
+> recorded.** Every other error caught today announced itself as a discrepancy someone had to
+> chase. The one that travelled through three governments and into a standing constraint
+> announced itself as **confirmation**, which is the single outcome nobody audits. **A failure
+> mode with no alarm on it is worth more attention than ten with alarms.**
 - **`delegate`** (`routes/delegate.md`) — the degenerate case: ONE bounded task, ONE peer,
   no review cycle.
 
