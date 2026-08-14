@@ -942,7 +942,7 @@ number instead of living in one agent's memory.
 
 <!-- BEGIN GENERATED: constraints (scripts/gen-handover-embeds.mjs) -->
 
-**Reproduced verbatim as of `348a25e`** — 9 constraints,
+**Reproduced verbatim as of `e9d37e7`** — 10 constraints,
 the commit that last changed the source. Cite them BY NUMBER. Stamped past-tense copy:
 check whether yours is stale, and re-pull, with:
 
@@ -1077,6 +1077,34 @@ Harness keeps **no fork and no private copies**.
    on our cycle only works if it can consume our fixes as we ship them, which today means the
    SHA-pinned `github:` install off `s002/sdk-build` (§6's distribution note). A merge or release
    decision that disrupts that route now has a dependency it did not have this morning.
+
+## 10 — Never tear a seat down by pane id; the discriminator is PID, checked at execution time
+
+**In force from 2026-08-14. Raised by `pij-chief-roadrunner` (chainglass o-prime), measured
+independently by `pij-continuing-ermine` and by roadrunner — 10 of 18 panes affected.**
+
+The 00:44Z reboot made tmux reissue pane ids from `%0`, so **stale `~/.pij` descriptors now
+name live panes they do not own.** Verified on this seat rather than accepted: I am pid
+**96638** on **`%6`**; `pij-related-koala`'s descriptor also names `%6` carrying pid **56901**,
+and `ps -p 56901` returns nothing. Anything that closes koala *by pane id* kills the o-prime.
+
+**The rule**: no seat in this government closes, kills, or reattaches anything until a **PID
+check at execution time** confirms the target is the process it claims to be. Never read the
+pid from the descriptor and trust it — the descriptor is the thing that went stale.
+
+**Why this bites the safe-looking operation**: tidying up a seat you already know is DEAD is
+exactly the action that feels consequence-free, and it is the one that takes a live pane with
+it. The seats most likely to be cleaned up here are `pij-certain-crab`,
+`pij-favourite-gerbil`, `pij-exact-giraffe`, `pij-520mba` — all dead, all candidates.
+
+**Possibly the same root, OBSERVED not proven**: the 00:44:49Z boot-reconciliation sweep
+emitted terminal notices for two seats in one batch, *different in kind and identical in
+wording* — `pij-certain-crab` genuinely dead since 2026-08-10 (true, backdated to now), and
+`pij-alleged-junglefowl` reported `pid-missing` while **alive** (pid 35124 running, pane `%9`
+present, registry `active`). A notice that cannot distinguish *dead now*, *dead for days*, and
+*still running* is not evidence of any of them. MECHANISM — UNVERIFIED.
+
+Evidence: `~/.pij/pij-continuing-ermine/notes/2026-08-14-pane-collisions.md` (pij #171).
 ```
 
 <!-- END GENERATED: constraints -->
