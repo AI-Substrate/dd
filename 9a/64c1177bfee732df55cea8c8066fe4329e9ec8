@@ -1,0 +1,14 @@
+.harness/records/retro/2026-08-14/001.md
+  h_9e71e8b09f7cf2 1-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "9a64c1177bfee732df55cea8c8066fe4329e9ec8",
+  "prompts": {},
+  "humans": {
+    "h_9e71e8b09f7cf2": {
+      "author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
