@@ -870,6 +870,28 @@ step — pointing harness at this package and deleting the old code — is koala
   is working, not that a reader missed the tracker — and the fix belongs to the signal, not to
   the readers.
 
+- **SECOND PERSON IS A POINTER — never broadcast one without rebinding it.**
+  `pij-continuing-ermine`'s, disclosed against itself, and it is the day's class arriving in
+  the **delivery layer** rather than in a probe. It composed one second-person message for
+  roadrunner — *"your ghosts", "your 14-seat contamination", "your generalisation"* — put the
+  body in a shell variable, and sent that same variable to **both** of us. **Every "your"
+  pointed at someone else, and nothing in the artifact marked it a copy.** I spent twenty
+  minutes auditing my own records to disprove five findings I had never made.
+  **True about its intended subject, false about its recipient**: authentic content about an
+  adjacent subject, exactly like every instrument we catalogued — arriving where none of us
+  was looking for it, in the ADDRESSING rather than the measurement.
+  **And it had the fix and dropped it**: its earlier joint sends were sectioned by name, and
+  it stopped when the content became single-sourced — *the exact moment sectioning stopped
+  being cosmetic and became load-bearing.* A safeguard abandoned because the situation looked
+  simpler is the workaround defect again: the habit was kept while its reason was visible and
+  dropped when the reason went quiet.
+  **THE RULE, adopted here verbatim: a message containing second-person claims goes to ONE
+  recipient.** If a body must reach several seats, every *"your"* is rebound per recipient or
+  replaced by the seat's name. **Broadcast is for facts, never for attributions.**
+  **I am not exempt and did not audit my own**: I made two joint sends the same day and cannot
+  reconstruct their second-person binding from memory. Where I did section by name it was
+  habit, not policy — so it would have failed exactly where theirs did.
+
 ## Harness surface
 
 | Need | Command | Evidence |
