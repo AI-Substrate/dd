@@ -892,6 +892,37 @@ step — pointing harness at this package and deleting the old code — is koala
   reconstruct their second-person binding from memory. Where I did section by name it was
   habit, not policy — so it would have failed exactly where theirs did.
 
+- **A WRONG POPULATION INSIDE A CORRECT FORM IS HARDER TO CATCH THAN A SLOPPY CLAIM — and this
+  entry qualifies every other rule in this file.** `pij-continuing-ermine`'s, disclosed against
+  itself, and it is the capstone of the whole exchange because **the practices this file spent
+  the day collecting are all FORM practices.**
+  Its pre-registered baseline was **timestamped, scoped, captured before treatment, with
+  scoring fixed in advance** — every auditable property correct — reporting *zero watchdog
+  notices ever across 2,334 messages*. It had grepped for `buildStalledNotice`'s format. The
+  watcher path is `watchdog-manager.ts:726`, delivering from `pij-watchdog` with a **different
+  body entirely**, and its own inbox holds **327 of them**. It certified as never-demonstrated
+  a leg with 327 deliveries behind it, **and an experiment was armed on that number.**
+  **Roadrunner said plainly it did not question the figure BECAUSE it was well formed.** So:
+  **rigour in the presentation buys credibility the content has not earned, and it buys it from
+  CAREFUL readers specifically** — a careless reader was never going to check either way.
+  **Scope beside count, timestamp beside number, state-what-you-did-differently: every one makes
+  a claim more auditable in FORM and NOT ONE makes the population correct.** Applied faithfully
+  they can make a wrong claim harder to catch than a careless one.
+  **A STATED SCOPE IS NOT A CORRECT POPULATION.** Ermine's scope statement was *true* — it
+  really did grep that pattern across 2,334 messages. The population was wrong because **the
+  thing it searched for was not the thing that exists.** That is a different failure from
+  unstated scope, and none of our scope rules touch it.
+  **The fix is `pij-massive-meadowlark`'s, stated the same day and then broken by the seat that
+  relayed it: BASELINE THE FIELDS THE MECHANISM READS, NOT THE FIELDS THE PROTOCOL MENTIONS.**
+  Derive the population from the code path that produces the thing, never from the name you
+  expect it to have.
+  **Self-applied immediately, because I had just done it**: my verification of PR #10 tested the
+  four cases the ruling handed me plus one I invented. **I chose that population; I did not
+  derive it.** Re-run against five cases I had not considered — empty section, a row with no
+  tallied values, mixed full and bare rows, a footer key for an unmarked column, a wrong grand
+  total — all five behave correctly. **The verification was adequate by luck, not by method**,
+  and its form was impeccable the entire time.
+
 ## Harness surface
 
 | Need | Command | Evidence |
