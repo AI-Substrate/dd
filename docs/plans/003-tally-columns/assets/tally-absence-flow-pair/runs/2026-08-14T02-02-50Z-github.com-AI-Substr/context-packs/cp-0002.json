@@ -1,0 +1,45 @@
+{
+  "packId": "cp-0002",
+  "runId": "2026-08-14T02-02-50Z-github.com-AI-Substr",
+  "delegationId": "dlg-0002",
+  "phase": "Phase: Tally absence mismatch fix",
+  "cluster": "implement-code",
+  "entries": [
+    {
+      "path": "/Users/jordanknight/substrate/dd-worktrees/tally-absent/docs/plans/003-tally-columns/assets/tally-absence-fix-plan.md",
+      "section": "Phase: Tally absence mismatch fix",
+      "content": "## Phase: Tally absence mismatch fix\n\nAllowed implementation paths:\n\n- `src/core/tally.ts`\n- tally-focused tests under `test/`\n\nForbidden paths:\n\n- `.the-flow-state.json`\n- `the-flow.json`\n- `the-flow.md`\n- `.flow-pair/`\n- `docs/plans/003-tally-columns/assets/tally-absence-flow-pair/`\n- render path\n- write path\n- `dd build`\n\nRequired observable cases, each as a separate assertion:\n\n1. Nothing stored: no mismatch.\n2. Partial correct footer (`tally: {a: 10}`): only the stored cell is checked; absent `b` and `t` are silent.\n3. Correct hand-filled row totals with no footer: silent.\n4. Wrong stored value (`tally.a: 99` for a true sum of `10`): mismatch still reported unchanged.\n\nReview proof:\n\n- Independent reviewer checks the two comparison sites and all four assertions.\n- Dim-0 mutation: temporarily remove or invert the stored-presence guard, run the focused test to RED, restore, rerun to GREEN.\n- PM sanity glance covers the load-bearing guard and mutation receipt.\n\nRelease gate before push:\n\n- Full suite under a clean temporary `HOME`.\n- `ddocs doctor`.\n- `just checks`.\n- Commit with `harness commit`, push branch, open PR, then wait for all CI checks green.\n- Stop before merge, tag, or release.",
+      "hash": "c0edac69",
+      "role": "plan-phase"
+    },
+    {
+      "path": "/Users/jordanknight/substrate/dd-worktrees/tally-absent/docs/plans/003-tally-columns/assets/tasks/tally-absence-fix/tasks.md",
+      "content": "# Tally-absence implementation tasks\n\n## Phase: Tally absence mismatch fix\n\n1. In `src/core/tally.ts`, change both mismatch comparisons so absence is silent and stored disagreement is still reported.\n2. Add four separate behavioral assertions: nothing stored; partial correct footer; correct hand-filled row totals without footer; wrong stored value still reports.\n3. Run the focused tally tests and report the exact command and result.\n4. Do not commit, push, modify plan/ledger files, or touch paths outside the packet allowlist.\n",
+      "hash": "f0cce1dd",
+      "role": "tasks"
+    },
+    {
+      "path": "/Users/jordanknight/pi-hacking/pij/skills/flow-pair/prompt-lab/clusters/implement-code/active.md",
+      "content": "# implement-code active\n\nCurrent prompt guidance for implementation workers. Candidate learnings must be written to `candidates/` and manually reviewed before promotion here.\n",
+      "hash": "d31899ef",
+      "role": "learning"
+    }
+  ],
+  "exclusions": [
+    {
+      "path": "/Users/jordanknight/substrate/dd-worktrees/tally-absent/docs/plans/003-tally-columns/assets/tasks/tally-absence-fix/execution.log.md",
+      "reason": "not found"
+    }
+  ],
+  "allowedPaths": [
+    "src/core/tally.ts",
+    "test/services/dd/core/tally.test.ts"
+  ],
+  "forbiddenPaths": [
+    ".the-flow-state.json",
+    "the-flow.json",
+    "the-flow.md",
+    ".flow-pair/"
+  ],
+  "createdAt": "2026-08-14T02:06:04.227Z"
+}

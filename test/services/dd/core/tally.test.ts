@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest';
 import type { DdDoc, DdSection, DdShape, ResolvedDdSchema } from '../../../../src/core/model.js';
 import { parse } from '../../../../src/core/parse.js';
 import { computeTally, refreshSectionTally, tallyMismatches } from '../../../../src/core/tally.js';
-import type { SchemaResolveResult, SchemaResolver } from '../../../../src/core/validate.js';
+import type {
+  DdIssue,
+  SchemaResolveResult,
+  SchemaResolver,
+} from '../../../../src/core/validate.js';
 import { validateDocument } from '../../../../src/core/validate.js';
 import { renderDd } from '../../../../src/render/renderer.js';
 import { parseSchemaDeclaration } from '../../../../src/schema/declarations.js';
@@ -348,5 +352,73 @@ describe('tally — mismatch reporting is a report, not a repair', () => {
     const before = JSON.stringify(section);
     expect(tallyMismatches(section, ITEM_SHAPE()).length).toBeGreaterThan(0);
     expect(JSON.stringify(section)).toBe(before);
+  });
+});
+
+/**
+ * The four cases of the absence ruling, one assertion each.
+ *
+ * These go through `validateDocument` rather than `tallyMismatches` directly
+ * because that is where the defect was observed: a hand-authored document —
+ * every worked example in the docs is one — was REFUSED with four E463 ERRORs
+ * for storing nothing, and went `ok` the moment any writer touched an unrelated
+ * field.
+ */
+describe('tally — absence is not disagreement', () => {
+  const resolver = () => new OneSchemaResolver(timesheetSchema());
+  const tallyIssues = (subject: DdDoc): DdIssue[] =>
+    validateDocument(subject, '/repo/docs/week.dd.json', resolver(), '/repo').filter(
+      (issue) => issue.class === 'tally-mismatch',
+    );
+
+  it('is silent when nothing is stored at all', () => {
+    // The document from the defect report: real rows, no footer, no row totals.
+    expect(tallyIssues(doc([{ task: 'triage', mon: 6, tue: 4 }]))).toEqual([]);
+  });
+
+  it('checks only the cell a partial footer actually stores', () => {
+    // `mon` is stored and agrees; `tue` and `total` are absent, and absent is
+    // not a claim that can be wrong.
+    expect(tallyIssues(doc([{ task: 'triage', mon: 10, tue: 5 }], { mon: 10 }))).toEqual([]);
+  });
+
+  it('is silent when the author filled the row totals himself and wrote no footer', () => {
+    // Those cells ARE stored, so they are checked — and they agree. This
+    // document is byte-identical to one whose footer was written then deleted,
+    // which is why "absent is fine only until the first write" cannot work.
+    expect(
+      tallyIssues(
+        doc([
+          { task: 'triage', mon: 1, tue: 2, total: 3 },
+          { task: 'review', mon: 3, tue: 4, total: 7 },
+        ]),
+      ),
+    ).toEqual([]);
+  });
+
+  /**
+   * Non-vacuity. The three assertions above all assert an ABSENCE of output, so
+   * a "fix" that silenced the comparison outright would pass every one of them.
+   * This one stores a number that contradicts its own rows and requires it to
+   * still be named — and requires the report to be exactly one issue, so the
+   * absent `tue` and `total` cells prove their own silence here too.
+   */
+  it('still reports a stored value that disagrees with the rows', () => {
+    const issues = tallyIssues(
+      doc(
+        [
+          { task: 'triage', mon: 6, tue: 5 },
+          { task: 'review', mon: 4, tue: 1 },
+        ],
+        { mon: 99 },
+      ),
+    );
+    expect(issues).toEqual([
+      expect.objectContaining({
+        severity: 'ERROR',
+        location: '$.sections[days].tally.mon',
+        message: 'stored tally says 99 but the rows sum to 10',
+      }),
+    ]);
   });
 });

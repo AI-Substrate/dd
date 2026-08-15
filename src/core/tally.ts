@@ -221,6 +221,17 @@ export interface TallyMismatch {
  * `ddocs build --check` PASSES, because the markdown faithfully reflects the wrong
  * JSON. It is not drift; it is internally consistent and false. This reports it.
  * It reports ONLY — repair belongs to the writers.
+ *
+ * ABSENCE IS NOT DISAGREEMENT. A cell that holds nothing — no footer at all, a
+ * footer that names only some columns, a row whose total column was never
+ * filled — stores no claim, so there is nothing for the rows to contradict.
+ * Reporting it would conflate ABSENT with WRONG and refuse every hand-authored
+ * document on its first read. The rule cannot be relaxed to "absent is fine
+ * only until the first write" either: an author who computes their own totals
+ * produces bytes IDENTICAL to a document whose footer was written and then
+ * deleted, and a check that cannot tell those apart must not accuse either.
+ * Only a STORED value can be wrong, and a stored value that is wrong is still
+ * reported.
  */
 export function tallyMismatches(
   section: DdSection,
@@ -236,11 +247,15 @@ export function tallyMismatches(
   if (total !== undefined) {
     rows.forEach((row, index) => {
       const expected = computed.rowTotals[index];
-      if (expected !== undefined && !Object.is(row[total], expected)) {
+      const held = row[total];
+      // Stored-presence guard, row-total site. See the header: absence is not
+      // disagreement, so an unfilled total cell is skipped, not accused.
+      if (held === undefined) return;
+      if (expected !== undefined && !Object.is(held, expected)) {
         mismatches.push({
           location: `value[${index}].${total}`,
           column: total,
-          stored: row[total],
+          stored: held,
           computed: expected,
         });
       }
@@ -252,6 +267,9 @@ export function tallyMismatches(
     const expected = computed.tally[column];
     if (expected === undefined) continue;
     const held = stored?.[column];
+    // Stored-presence guard, footer site. A missing footer, or a partial one
+    // that omits this column, claims nothing about it.
+    if (held === undefined) continue;
     if (!Object.is(held, expected)) {
       mismatches.push({
         location: `tally.${column}`,

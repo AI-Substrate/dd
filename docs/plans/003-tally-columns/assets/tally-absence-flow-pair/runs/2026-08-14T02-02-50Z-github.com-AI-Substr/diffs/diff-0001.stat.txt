@@ -1,0 +1,3 @@
+ src/core/tally.ts                   | 22 ++++++++++-
+ test/services/dd/core/tally.test.ts | 74 ++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 93 insertions(+), 3 deletions(-)
