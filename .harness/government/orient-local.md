@@ -923,6 +923,35 @@ step — pointing harness at this package and deleting the old code — is koala
   total — all five behave correctly. **The verification was adequate by luck, not by method**,
   and its form was impeccable the entire time.
 
+- **A FIELD THE SOURCE ITSELF CALLS DECORATION IS STILL THE FIELD YOU WILL BUILD A FINDING ON —
+  and the only thing that stopped me was checking against a case whose answer was already
+  known.** Mine, 2026-08-15, on `pij-chief-roadrunner`'s viper thread.
+  `pij-collective-viper` was 54h past due with `lastWatchdogFireAt: null`. Roadrunner had
+  already ruled `next due` inadmissible, quoting the daemon's own comment: *"Derived, never
+  authoritative: PRESENCE in `states` is what 'in the scheduler' means, and this map only
+  decorates it."* **I read that sentence, agreed with it, and then built my own finding on
+  exactly that field.** Viper's projection was frozen at its anchor; my seat's read twenty
+  minutes into the future; the story wrote itself — *the muted fire path advances the clock in
+  memory, so a frozen projection means the seat is never ticked at all.* It was a clean second
+  axis on a thread that needed one, and it was wrong.
+  **What killed it was running it against the two seats whose answer roadrunner had already
+  published.** `pij-exact-giraffe` and `pij-respectable-clam` were each visited three times in
+  its window; both show projections frozen *days* in the past. `next due` is `statusAt +
+  interval`, nothing more — mine looked future only because I had posted a status card four
+  minutes earlier. **My own report card manufactured the contrast I was about to report as
+  evidence.**
+  **THE RULE: before a new instrument is used on the open question, point it at a case whose
+  answer is already settled.** Not to confirm it agrees — to see whether it can distinguish
+  anything at all. A discriminator that returns the same reading for a seat that IS reached and
+  a seat that is NOT reached is a constant with a plausible story attached, and a plausible
+  story is what it will look like from the inside.
+  **And the deeper one, because knowing the disclaimer did not save me**: reading *"this field
+  is not authoritative"* protects you against citing it as authority. **It does not protect you
+  against reasoning FROM it** — the mind that accepts "decoration" for the field's stated
+  purpose will still happily infer from how the decoration MOVES. A disclaimer scopes a field's
+  claims; it does not scope your inferences. Treat a disclaimed field as absent, not as
+  weak evidence.
+
 ## Harness surface
 
 | Need | Command | Evidence |
