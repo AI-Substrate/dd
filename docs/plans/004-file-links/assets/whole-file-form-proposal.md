@@ -49,3 +49,9 @@ Structured `target: "file"` values resolve from the repository root, matching th
 - Prove trailing `#`, empty input, external Markdown URL, and bare prose path do not become valid file edges.
 
 **Recommendation**: adopt the bare-path whole-file form.
+
+## Approval and dispatch condition
+
+Approved by `pij-mental-dajeil` on 2026-08-16 after independently measuring that both `ddocs links <path>` and `ddocs graph map <path>` already use a bare path as a whole-document seed, with graph-map interior `[]`.
+
+Before broader implementation continues, the coder must characterize a dd address whose `#` was accidentally removed in two schema contexts: (a) a link with a declared dd target and (b) a link with no target. The targeted case must reject on type before existence. If the untargeted case becomes only a missing-file WARN, work halts and the measured result returns to the o-prime for a ruling; otherwise the hard-error outcome is pinned as a tripwire.

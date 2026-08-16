@@ -90,6 +90,11 @@
           "id": "ac-0009",
           "claim": "`ddocs status --json` remains 10/10, forbidden files remain untouched, targeted mutation proofs show the new guards fail on plausible regressions, and `just checks` passes before the PR is opened.",
           "state": "unchecked"
+        },
+        {
+          "id": "ac-000a",
+          "claim": "After bare-path parsing lands, a missing-`#` dd-address typo is mechanically characterized in both a link field with a declared dd target and a link field with no target. The typed case errors on type before existence. If the untyped case degrades to a missing-file WARN, implementation halts and returns the measured result to the o-prime for a ruling before product-surface work continues; otherwise the hard-error tripwire is pinned.",
+          "state": "unchecked"
         }
       ]
     },
@@ -109,7 +114,7 @@
             "Explicit repo-vs-document path bases and existence-only validation",
             "Public type delta with no fake dd metadata"
           ],
-          "key_risks": "`parseAddress` is public and has 30 references; a broad Markdown matcher or shared path base would silently classify the wrong population."
+          "key_risks": "`parseAddress` is public and has 30 references; a broad Markdown matcher or shared path base would silently classify the wrong population. Approval condition: after bare-path parsing, prove a missing-`#` dd-address typo in both dd-targeted and untargeted link fields. Typed must error before existence; if untargeted becomes WARN-only, halt and return the measured result to the o-prime before continuing."
         },
         {
           "id": "ph-62e4",

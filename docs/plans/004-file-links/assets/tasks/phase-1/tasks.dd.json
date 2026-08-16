@@ -27,11 +27,12 @@
           "domain": "core/address",
           "phase": "ph-252f",
           "state": "unchecked",
-          "success": "Parser tests prove bare path -> file form with zero segments, canonical round-trip, empty/trailing-# refusal, every old worked example unchanged, and `file#method` still syntax-valid. The property test includes both whole-file and interior forms.",
+          "success": "Parser tests prove bare path -> file form with zero segments, canonical round-trip, empty/trailing-# refusal, every old worked example unchanged, and `file#method` still syntax-valid. Two validation fixtures then exercise `plan.dd.json#tasks` typoed as `plan.dd.jsontasks`: one link shape with a declared dd target and one with no target, asserting the exact severity/class and that the typed case rejects on type before any existence probe.",
           "notes": "Break the parser or formatter and confirm the targeted test names the planted form before restoring.",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0001",
-            "../../../plan.dd.json#acceptance_criteria/ac-0008"
+            "../../../plan.dd.json#acceptance_criteria/ac-0008",
+            "../../../plan.dd.json#acceptance_criteria/ac-000a"
           ]
         },
         {
@@ -41,10 +42,11 @@
           "phase": "ph-252f",
           "state": "unchecked",
           "success": "`parseAddress`, `formatAddress`, normalization, CLI syntax output, and all LSP-discovered callers compile against an explicit file form without changing existing interior results or inventing empty-fragment output.",
-          "notes": "Use LSP references before edits. Keep parseAddress public; do not add an alias or compatibility parser.",
+          "notes": "Use LSP references before edits. Keep `parseAddress` public; do not add an alias or compatibility parser. APPROVAL CONDITION: as soon as bare-path parsing compiles, run the two typo fixtures from tk-0001. If the untargeted link becomes only a missing-file WARN, stop immediately and report the command/output to the PM for o-prime ruling; do not continue to tk-0003 or any Phase 2 work. If it remains a hard error, pin that outcome as a tripwire.",
           "satisfies": [
             "../../../plan.dd.json#acceptance_criteria/ac-0001",
-            "../../../plan.dd.json#acceptance_criteria/ac-0008"
+            "../../../plan.dd.json#acceptance_criteria/ac-0008",
+            "../../../plan.dd.json#acceptance_criteria/ac-000a"
           ]
         },
         {
