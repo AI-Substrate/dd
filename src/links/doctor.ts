@@ -98,7 +98,12 @@ export function runDoctor(
   options: DdDoctorOptions,
 ): DdDoctorReport {
   const docLoader = new MemoizingDocLoader(deps.docLoader);
-  const walkDeps = { schemaResolver: deps.schemaResolver, docLoader };
+  // `SchemaFs` already IS a `FileExistence` — one `exists(path): boolean`, and
+  // deliberately nothing more. Handing it over is what keeps the promise this
+  // traversal is built on: `ddocs graph`, `ddocs links` and this sweep are three
+  // readings of ONE walk, so a corpus cannot have an ordinary-file node in the
+  // graph verb and not in the doctor's copy of the same graph.
+  const walkDeps = { schemaResolver: deps.schemaResolver, docLoader, fileExistence: fs };
   const scan = scanCorpus(fs, options.root);
   const findings: DdDoctorFinding[] = [...scan.issues];
 
@@ -108,7 +113,9 @@ export function runDoctor(
   });
   findings.push(...graph.issues);
 
-  const swept = graph.nodes.filter((node) => !node.external).map((node) => node.path);
+  const swept = graph.nodes
+    .filter((node) => node.kind === 'document' && !node.external)
+    .map((node) => node.path);
   const covered = new Set<string>();
   const walkIssues: DdIssue[] = [];
   for (const path of swept) {
@@ -126,15 +133,26 @@ export function runDoctor(
   }
   findings.push(...walkIssues);
 
-  // Radius ∞ means every document the traversal REACHED, not only the ones the
+  // Radius ∞ means every DOCUMENT the traversal reached, not only the ones the
   // root set named. `--path` scopes which documents seed the sweep; it does not
   // cap the walk, so an invalid interior in a document reached beyond the scoped
-  // subtree is still this doctor's finding. `graph.nodes` is exactly the reached
-  // and non-excluded set — a document skipped by `sweep_exclude` never became a
-  // node, so the exclusion contract survives unchanged. `swept` stays the
-  // root-set metric the envelope reports.
-  const reached = new Set(graph.nodes.map((node) => node.path));
+  // subtree is still this doctor's finding. A document skipped by `sweep_exclude`
+  // never became a node, so the exclusion contract survives unchanged. `swept`
+  // stays the root-set metric the envelope reports.
+  //
+  // Ordinary-file nodes are excluded because this set feeds `adapterGaps`, which
+  // asks a render-layer question about dd documents: handing it a `.ts` path
+  // would ask for the custom types of a file that has none.
+  const reached = new Set(
+    graph.nodes.filter((node) => node.kind === 'document').map((node) => node.path),
+  );
   for (const edge of graph.edges) {
+    // An ordinary file has no interior, so it has no interior failure — and this
+    // loop's whole output is interior failures. `resolveLink` would answer
+    // `no-interior` for every one of them, which is correct and says nothing the
+    // doctor owns; before the reason existed it answered `section-unknown`, and
+    // the doctor promoted every ordinary-file citation in the corpus to an ERROR.
+    if (edge.kind === 'file') continue;
     if (!reached.has(edge.from)) continue;
     const resolution = resolveLink(edge.address, walkDeps, {
       repoRoot: options.repoRoot,

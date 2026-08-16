@@ -392,12 +392,7 @@ interface CellSink {
   texts: DdTextCell[];
 }
 
-function collectShapeCells(
-  value: unknown,
-  shape: DdShape,
-  location: string,
-  sink: CellSink,
-): void {
+function collectShapeCells(value: unknown, shape: DdShape, location: string, sink: CellSink): void {
   if (shape.type === 'link') {
     // The pressure escape is not an address and must not become an edge: a
     // consumer reading the graph would see an outbound link to a file called
@@ -499,9 +494,66 @@ const INLINE_MARKDOWN_LINK = /(!?)\[[^\]\n]*\]\(([^()\s]*)(?:\s+(?:"[^"]*"|'[^']
 /** Any URI scheme — `https:`, `mailto:`, `ftp:`, and every other non-local one. */
 const URI_SCHEME = /^[A-Za-z][A-Za-z0-9+.-]*:/;
 
+/** One run of backticks — the delimiter of an inline code span. */
+const BACKTICK_RUN = /`+/g;
+
+/**
+ * The half-open ranges of `text` that a Markdown renderer shows as CODE.
+ *
+ * A document that talks about link syntax writes that syntax down, and the
+ * only thing separating an example from a citation is the backticks around it
+ * — this repository's own plan says an inline `` [label](local/path) `` produces
+ * an edge, and meant the sentence to be prose about the form, not a link to a
+ * file called `local/path`.
+ *
+ * The CommonMark rule is followed exactly as far as it is modelled: a run of N
+ * backticks opens a span, and the closer is the next run of EXACTLY N. An
+ * unmatched run is literal text rather than an opener, so scanning resumes at
+ * the run after it instead of swallowing the rest of the value — otherwise one
+ * stray backtick anywhere would silently blind the extractor to every real
+ * link that followed it.
+ *
+ * Nothing else about Markdown is modelled here, and nothing else needs to be:
+ * the population this filters is already only the explicit inline links that
+ * {@link INLINE_MARKDOWN_LINK} matched.
+ */
+function codeSpans(text: string): Array<readonly [number, number]> {
+  const runs = [...text.matchAll(BACKTICK_RUN)];
+  const spans: Array<readonly [number, number]> = [];
+  let open = 0;
+  while (open < runs.length) {
+    const opener = runs[open];
+    let close = open + 1;
+    while (close < runs.length && runs[close][0].length !== opener[0].length) close += 1;
+    if (close === runs.length) {
+      open += 1;
+      continue;
+    }
+    spans.push([opener.index, runs[close].index + runs[close][0].length]);
+    open = close + 1;
+  }
+  return spans;
+}
+
 function markdownFileDestinations(text: string): string[] {
   const destinations: string[] = [];
+  const spans = codeSpans(text);
   for (const match of text.matchAll(INLINE_MARKDOWN_LINK)) {
+    // Inside a code span the author wrote CHARACTERS, not a link. BOTH
+    // structural delimiters are tested, and they are tested SEPARATELY rather
+    // than as a range, because those are different questions. A candidate that
+    // merely OVERLAPS a span can still be a real link — `[label with `code`]
+    // (real.ts)` puts code in the LABEL, and rejecting on overlap would drop
+    // it. What is not a link is one whose `[` or whose `](` was itself written
+    // as code: in ``[label` code](crossing.ts)` `` the bracket is prose and the
+    // `](` is inside the span, so the form only LOOKS closed.
+    //
+    // The closing delimiter is located, not searched for: the label pattern
+    // excludes `]`, so the first `]` in the match IS the structural one.
+    const closing = match.index + match[0].indexOf(']');
+    const coded = ([start, end]: readonly [number, number]): boolean =>
+      (match.index >= start && match.index < end) || (closing >= start && closing < end);
+    if (spans.some(coded)) continue;
     const destination = match[2] ?? '';
     if (match[1] === '!') continue;
     if (destination.length === 0) continue;

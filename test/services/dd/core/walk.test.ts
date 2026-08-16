@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { DdDoc, ResolvedDdSchema } from '../../../../src/core/model.js';
 import type {
+  FileExistence,
   SchemaResolveResult,
   SchemaResolver,
 } from '../../../../src/core/validate.js';
@@ -376,5 +377,187 @@ describe('dd-core whole-file grammar — the removed-# typo stays a hard error',
         location: '$.sections[rows].value.dependency',
       }),
     ]);
+  });
+});
+
+/**
+ * The walk is what `ddocs validate` and the doctor's sweep both run, and until
+ * now it was the one surface that KNEW about ordinary files (it refuses to load
+ * them) without ever REPORTING on them — so a missing target degraded `ddocs
+ * build` and left `ddocs validate` and `ddocs doctor` saying `ok` about the same
+ * document. These pin the agreement.
+ */
+describe('dd-core validate walk — ordinary file targets are reported, never opened', () => {
+  const SCHEMA: ResolvedDdSchema = {
+    name: 'files/plan',
+    sections: {
+      tasks: { shape: { type: 'array', items: { type: 'object', fields: {} } } },
+      rows: {
+        shape: {
+          type: 'object',
+          fields: {
+            implemented_by: { type: 'link', target: 'file', rel: 'implemented_by' },
+            note: { type: 'text' },
+            dependency: { type: 'link', target: 'files/plan/section/tasks' },
+          },
+        },
+      },
+    },
+  };
+
+  const SUBJECT = '/repo/docs/plan.dd.json';
+  const NEIGHBOUR = '/repo/docs/other.dd.json';
+  const LIBRARY = '/repo/src/library.ts';
+  const HANDBOOK = '/repo/docs/handbook.md';
+
+  function docFor(schemaName: string): DdDoc {
+    return {
+      dd: { schema: schemaName },
+      sections: [
+        { name: 'tasks', value: [] },
+        {
+          name: 'rows',
+          value: {
+            implemented_by: 'src/library.ts',
+            note: 'read the [handbook](handbook.md) first',
+            dependency: 'other.dd.json#tasks',
+          },
+        },
+      ],
+      references: [],
+    };
+  }
+
+  /** A real dd neighbour, so an empty finding list cannot come from a dead walk. */
+  class NeighbourLoader implements DocLoader {
+    readonly calls: string[] = [];
+    load(path: string): DocLoadResult {
+      this.calls.push(path);
+      if (path !== NEIGHBOUR) {
+        return { ok: false, path, reason: 'missing', message: `missing: ${path}` };
+      }
+      return {
+        ok: true,
+        path,
+        doc: {
+          dd: { schema: SCHEMA.name },
+          sections: [{ name: 'tasks', value: [] }],
+          references: [],
+        },
+        sha: 'sha-neighbour',
+        tracked: true,
+      };
+    }
+  }
+
+  /**
+   * The whole port, and deliberately nothing else: an ordinary file may be
+   * asked ONE question. If the walk ever needed to read, hash or stat a file,
+   * there would be no method here to do it with.
+   */
+  class Recorder implements FileExistence {
+    readonly probed: string[] = [];
+    constructor(private readonly present: readonly string[]) {}
+    exists(path: string): boolean {
+      this.probed.push(path);
+      return this.present.includes(path);
+    }
+  }
+
+  const schemaResolver: SchemaResolver = {
+    resolve: (ref: string) =>
+      ref === SCHEMA.name
+        ? { ok: true as const, schema: SCHEMA }
+        : { ok: false as const, message: `schema not found: ${ref}` },
+  };
+
+  function run(present: readonly string[] | null, depth = 3) {
+    const loader = new NeighbourLoader();
+    const probe = present === null ? null : new Recorder(present);
+    const issues = validateWalk(
+      docFor(SCHEMA.name),
+      SUBJECT,
+      { schemaResolver, docLoader: loader, ...(probe && { fileExistence: probe }) },
+      { repoRoot: '/repo', depth, mode: 'direct' },
+    );
+    return {
+      loader,
+      probe,
+      issues,
+      files: issues.filter(
+        (issue) =>
+          issue.class.startsWith('address-path') || issue.class === 'address-target-missing',
+      ),
+    };
+  }
+
+  it('reports nothing when both targets are there, having probed both', () => {
+    const { probe, issues, loader } = run([LIBRARY, HANDBOOK]);
+    expect(probe?.probed).toEqual([LIBRARY, HANDBOOK]);
+    expect(issues).toEqual([]);
+    // The dd neighbour WAS followed, so "no findings" is a clean walk and not a
+    // walk that never started.
+    expect(loader.calls).toEqual([NEIGHBOUR]);
+  });
+
+  it('reports one WARN per missing target, owned by the citing document', () => {
+    const { issues } = run([HANDBOOK]);
+    expect(issues).toEqual([
+      {
+        class: 'address-target-missing',
+        severity: 'WARN',
+        location: '$.sections[rows].value.implemented_by',
+        message: 'file link target is missing: src/library.ts',
+        owner: SUBJECT,
+      },
+    ]);
+  });
+
+  it('never hands an ordinary file to the loader, whether it exists or not', () => {
+    for (const present of [[LIBRARY, HANDBOOK], []]) {
+      expect(run(present).loader.calls).toEqual([NEIGHBOUR]);
+    }
+  });
+
+  it('still answers for the document itself at depth 0', () => {
+    // A file target is TERMINAL — it is not a hop, so the hop budget does not
+    // govern it. `--depth 0` means "just this document", and the file this
+    // document cites is part of this document.
+    const { issues, loader } = run([], 0);
+    expect(issues.map((issue) => issue.location)).toEqual([
+      '$.sections[rows].value.implemented_by',
+      '$.sections[rows].value.note',
+    ]);
+    expect(loader.calls).toEqual([]);
+  });
+
+  it('reports nothing at all when no probe was supplied', () => {
+    // Absence of the seam means UNMEASURED. The alternative — defaulting the
+    // answer to "exists" — would let a host that never wired the probe publish
+    // a clean bill of health it never earned.
+    const { issues, loader } = run(null);
+    expect(issues).toEqual([]);
+    expect(loader.calls).toEqual([NEIGHBOUR]);
+  });
+
+  it('reports a file cited by two documents once per citing document', () => {
+    // The dedupe that matters is `visited`, which is keyed by DOCUMENT. Two
+    // documents naming the same missing file is two findings, because each
+    // document is separately wrong about it.
+    const probe = new Recorder([HANDBOOK]);
+    const loader = new NeighbourLoader();
+    const issues = [SUBJECT, NEIGHBOUR].flatMap((path) =>
+      validateWalk(
+        docFor(SCHEMA.name),
+        path,
+        { schemaResolver, docLoader: loader, fileExistence: probe },
+        { repoRoot: '/repo', depth: 0, mode: 'direct' },
+      ),
+    );
+    expect(
+      issues
+        .filter((issue) => issue.class === 'address-target-missing')
+        .map((issue) => issue.owner),
+    ).toEqual([SUBJECT, NEIGHBOUR]);
   });
 });

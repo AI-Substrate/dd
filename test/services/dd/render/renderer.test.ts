@@ -369,3 +369,126 @@ describe('renderDd — render rules', () => {
     expect(output).toContain('no-boundary-here');
   });
 });
+
+describe('renderDd — an ordinary file link renders as a working href', () => {
+  const REPO_ROOT = '/repo';
+  /** Deliberately deep: a sibling-relative href only differs from the authored one below the root. */
+  const NESTED = '/repo/docs/plans/004-file-links/plan.dd.json';
+
+  const SCHEMA = {
+    name: 'test/filelinks',
+    sections: {
+      meta: {
+        shape: {
+          type: 'object',
+          fields: { title: { type: 'string' }, spec: { type: 'link', target: 'file' } },
+        },
+      },
+      tasks: {
+        shape: {
+          type: 'array',
+          items: {
+            type: 'object',
+            fields: {
+              id: { type: 'string' },
+              implemented_by: { type: 'link', target: 'file' },
+              sources: { type: 'array', items: { type: 'link', target: 'file' } },
+              notes: { type: 'text' },
+            },
+          },
+        },
+      },
+    },
+  } as unknown as ResolvedDdSchema;
+
+  const DOC: DdDoc = {
+    dd: { schema: 'test/filelinks' },
+    sections: [
+      { name: 'meta', value: { title: 'File links', spec: 'docs/spec.md' } },
+      {
+        name: 'tasks',
+        value: [
+          {
+            id: 'tk-a1b2',
+            implemented_by: 'src/search/index.ts',
+            sources: ['src/a.ts', 'src/b.ts'],
+            notes: 'Read the [handbook](../handbook.md) first.',
+          },
+        ],
+      },
+    ],
+    references: [],
+  };
+
+  function render(repoRoot?: string): string {
+    return renderDd(DOC, {
+      path: NESTED,
+      schema: SCHEMA,
+      ...(repoRoot !== undefined && { repoRoot }),
+    });
+  }
+
+  it('rebases a repository-relative path onto the generated sibling, with no trailing #', () => {
+    const markdown = render(REPO_ROOT);
+    // The sibling is `docs/plans/004-file-links/plan.dd.md`, so reaching the
+    // repository root costs exactly three levels. The href bytes ARE the
+    // contract: a reader clicks this, and `../../../` is what makes it open.
+    expect(markdown).toContain('[src/search/index.ts](../../../src/search/index.ts)');
+    expect(markdown).not.toContain('src/search/index.ts#');
+    expect(markdown).not.toContain('](src/search/index.ts)');
+  });
+
+  it('rebases a file link in a field table as well as in a row', () => {
+    expect(render(REPO_ROOT)).toContain('[docs/spec.md](../../../docs/spec.md)');
+  });
+
+  it('rebases every member of a declared array of file links', () => {
+    const markdown = render(REPO_ROOT);
+    expect(markdown).toContain('[src/a.ts](../../../src/a.ts)');
+    expect(markdown).toContain('[src/b.ts](../../../src/b.ts)');
+  });
+
+  it('leaves an authored Markdown link exactly as written', () => {
+    // Document-relative already, because that is what an href in the sibling
+    // means. Rebasing it would break the link AND disagree with the existence
+    // check, which resolves the same bytes against the same directory.
+    expect(render(REPO_ROOT)).toContain('Read the [handbook](../handbook.md) first.');
+  });
+
+  it('renders the authored path as plain text when no repository root was given', () => {
+    // Without a root there is no honest href to compute — `src/search/index.ts`
+    // relative to the sibling names a file that is not there. Say the path,
+    // rather than link to the wrong one.
+    const markdown = render();
+    expect(markdown).toContain('src/search/index.ts');
+    expect(markdown).not.toContain('](src/search/index.ts)');
+    expect(markdown).not.toContain('[src/search/index.ts](');
+  });
+
+  it('drops the separator for an address with a file and no interior', () => {
+    // Reachable through the UNDECLARED-address inference, not through a
+    // `target: "file"` cell: the grammar now accepts a bare `.dd.json`, and `#`
+    // with nothing after it is not an anchor — it is a link to the top of the
+    // page, which is a different destination from the page itself.
+    const schema = {
+      name: 'test/bare',
+      sections: { meta: { shape: { type: 'object', fields: { cite: { type: 'link' } } } } },
+    } as unknown as ResolvedDdSchema;
+    const doc: DdDoc = {
+      dd: { schema: 'test/bare' },
+      sections: [{ name: 'meta', value: { cite: 'other.dd.json' } }],
+      references: [],
+    };
+    const markdown = renderDd(doc, { path: '/repo/docs/plan.dd.json', schema });
+    expect(markdown).toContain('[other.dd.json](other.dd.md)');
+    expect(markdown).not.toContain('other.dd.md#');
+  });
+
+  it('emits a document-rooted document the same href it authored', () => {
+    // The degenerate arm: with the document AT the repository root the rebase is
+    // the identity, so a test that only ever runs deep could pass on a helper
+    // that returns its input.
+    const flat = renderDd(DOC, { path: '/repo/plan.dd.json', schema: SCHEMA, repoRoot: REPO_ROOT });
+    expect(flat).toContain('[src/search/index.ts](src/search/index.ts)');
+  });
+});

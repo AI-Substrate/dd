@@ -299,6 +299,54 @@ describe('dd-core file references', () => {
     expect(findingsFor({ label: markdown }).refs).toEqual([]);
   });
 
+  it('reads a backticked example as code and the real link beside it as a link', () => {
+    // Both spellings in ONE value, so this cannot pass by discovering nothing:
+    // the assertion is that the extractor tells them apart, not that it is quiet.
+    const { refs } = findingsFor({
+      note: 'An inline `[label](local/path)` in declared text links, as [notes](../notes.md) does.',
+    });
+    expect(refs.map((ref) => ref.raw)).toEqual(['../notes.md']);
+  });
+
+  it.each([
+    ['a single-backtick span', 'see `[label](local/path)` for the form'],
+    ['a double-backtick span', 'see ``[label](local/path)`` for the form'],
+    ['a fenced block', 'the form is:\n```\n[label](local/path)\n```\nand nothing more'],
+    ['a span holding several links', '`[a](a.ts) and [b](b.ts)` are both examples'],
+  ])('ignores Markdown inside %s', (_label, note) => {
+    expect(findingsFor({ note }).refs).toEqual([]);
+  });
+
+  it('rejects a candidate whose closing delimiter was written as code', () => {
+    // The form LOOKS closed and is not: the `[` is prose, but the `](` that
+    // would close it sits inside the span opened after `label`. An
+    // opening-bracket-only test collects `crossing.ts` here, so the real link
+    // beside it is the control that keeps this from passing by silence.
+    const { refs } = findingsFor({
+      note: 'the [label` code](crossing.ts)` example, and [notes](../notes.md) beside it',
+    });
+    expect(refs.map((ref) => ref.raw)).toEqual(['../notes.md']);
+  });
+
+  it('keeps a link whose label merely contains code', () => {
+    // This OVERLAPS a code span and is still a link — the span is label
+    // CONTENT, and both structural delimiters are outside it. Rejecting on
+    // overlap rather than on the delimiters would drop this one, which is why
+    // the boundary is drawn at the delimiters and not at the match range.
+    const { refs } = findingsFor({ note: '[label with `code`](real.ts) is a link' });
+    expect(refs.map((ref) => ref.raw)).toEqual(['real.ts']);
+  });
+
+  it('treats an unmatched backtick as prose, not as a span that runs to the end', () => {
+    // The failure this forbids is silent: if a stray backtick opened a span with
+    // no closer, every real link after it would vanish from the population and
+    // the document would look clean because nothing was looked at.
+    const { refs } = findingsFor({
+      note: 'the ` is a backtick, and [notes](../notes.md) is still a link',
+    });
+    expect(refs.map((ref) => ref.raw)).toEqual(['../notes.md']);
+  });
+
   /**
    * The path-base mismatch (dossier § Risks). Both cells name the SAME spelling
    * from a document nested two directories deep, and they must resolve to two

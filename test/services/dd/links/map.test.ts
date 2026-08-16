@@ -1274,6 +1274,7 @@ describe('nodeId — F1 identity spelling on the public map surface (S-1a)', () 
     ]);
     const edges: DdLinkEdge[] = [
       {
+        kind: 'document',
         from: seedPath,
         to: at(PRESSURE_REL),
         address: 'x#rows/bp-0001',
@@ -1282,6 +1283,7 @@ describe('nodeId — F1 identity spelling on the public map surface (S-1a)', () 
         sameDocument: false,
       },
       {
+        kind: 'document',
         from: seedPath,
         to: CANONICAL_PRESSURE,
         address: 'x#rows/bp-0001',
@@ -1349,5 +1351,72 @@ describe('nodeId — F1 identity spelling on the public map surface (S-1a)', () 
     });
 
     expect(seeds).toEqual(['docs/plan.dd.json', 'docs/plan.dd.json', 'docs/plan.dd.json']);
+  });
+});
+
+describe('ddocs graph map — an ordinary file is not an addressable place', () => {
+  const FILE_SCHEMA: ResolvedDdSchema = {
+    name: 'map/files',
+    sections: {
+      rows: {
+        shape: {
+          type: 'array',
+          items: {
+            type: 'object',
+            fields: {
+              id: { type: 'string' },
+              claim: { type: 'text' },
+              implemented_by: { type: 'link', target: 'file', rel: 'implemented_by' },
+              proven_by: { type: 'link' },
+            },
+          },
+        },
+      },
+    },
+  };
+  SCHEMAS.set(FILE_SCHEMA.name, FILE_SCHEMA);
+
+  const LIBRARY = `${REPO}/src/library.ts`;
+
+  function fileCorpus() {
+    return corpus({
+      [`${REPO}/docs/plan.dd.json`]: doc('map/files', [
+        {
+          name: 'rows',
+          value: [
+            {
+              id: 'ac-0001',
+              claim: 'The claim that cites code',
+              implemented_by: 'src/library.ts',
+              proven_by: 'log.dd.json#entries/lg-0001',
+            },
+          ],
+        },
+      ]),
+      [`${REPO}/docs/log.dd.json`]: doc('map/log', [
+        { name: 'entries', value: [{ id: 'lg-0001', text: 'Proved it' }] },
+      ]),
+    });
+  }
+
+  it('never opens the ordinary file it walked past, and keeps the dd edge beside it', () => {
+    const built = fileCorpus();
+    // The edge exists — this is a fence in the MAP, not a hole in the graph.
+    expect(built.edges).toContainEqual(expect.objectContaining({ kind: 'file', to: LIBRARY }));
+
+    const before = [...built.deps.docLoader.loads];
+    const result = mapFrom(`${REPO}/docs/plan.dd.json#rows/ac-0001`, built, {
+      direction: 'out',
+      depth: 2,
+    });
+    const during = built.deps.docLoader.loads.slice(before.length);
+
+    // The map indexes addressable interiors, and an ordinary file has none —
+    // reading one to discover that would be the one thing the file contract
+    // forbids. The dd sibling IS opened, so the loader is demonstrably live.
+    expect(during).not.toContain(LIBRARY);
+    expect(during).toContain(`${REPO}/docs/log.dd.json`);
+    expect(addresses(result, 'out')).toEqual(['docs/log.dd.json#entries/lg-0001']);
+    expect(result.nodes.map((node) => node.address)).not.toContain('src/library.ts');
   });
 });

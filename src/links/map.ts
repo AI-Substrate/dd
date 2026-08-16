@@ -528,6 +528,13 @@ export function mapAddress(
     const steps: { key: string; edge: DdMapEdge }[] = [];
     for (const edge of edges) {
       if (edge.from !== from.path) continue;
+      // An ordinary file is a target, not an addressable place: this map is built
+      // over document INTERIORS, and finding out that a `.ts` file has none would
+      // mean opening it — the one thing the file contract forbids. The edge is
+      // still in the graph; `ddocs links <file>` and `ddocs graph` are where it is
+      // read. Giving the map a node kind of its own is a design question this
+      // phase deliberately leaves open rather than answering by accident.
+      if (edge.kind === 'file') continue;
       if (options.rels !== undefined && !options.rels.includes(edge.rel)) continue;
       if (!isWithinLocation(edge.location, anchor.location)) continue;
       const parsed = parseAddress(edge.address);

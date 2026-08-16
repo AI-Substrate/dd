@@ -5,8 +5,9 @@ import {
   normalizeAddress,
   parseAddress,
 } from '../core/address.js';
+import { isPathWithinRepo, resolveRepoFile } from '../core/validate.js';
 import { resolveLink } from '../links/index.js';
-import { formatError, formatOk } from '../output/envelope.js';
+import { formatDegraded, formatError, formatOk } from '../output/envelope.js';
 import { ErrorCodes } from '../output/error-codes.js';
 import { exitWithEnvelope } from '../output/exit.js';
 import type { CliIo } from '../output/output-port.js';
@@ -118,6 +119,57 @@ export function registerAddressCommands(dd: Command, io: CliIo, deps: DdActDeps)
                 'Syntax is valid. Add `--resolve` to check the target exists and classify each segment against its schema.',
             },
           ),
+          ctx.port,
+        );
+      }
+
+      // The file form resolves to a FILE, so existence is the entire answer — and
+      // the entire question dd is allowed to ask about a path it does not own.
+      // Routing it through `resolveLink` would report `link-unresolved` for a
+      // perfectly good reference, because that resolver's whole job is to descend
+      // an interior this address deliberately has none of.
+      if (form === 'file') {
+        const target = resolveRepoFile(ctx.repoRoot, normalized.file as string);
+        if (!isPathWithinRepo(target, ctx.repoRoot)) {
+          exitWithEnvelope(
+            formatError(
+              'ddocs address validate',
+              ErrorCodes.DD_LINK_PATH_ESCAPE,
+              `address resolves outside the repository: ${target}`,
+              ctx.clock,
+              {
+                details: { ...syntax, classified: false },
+                next_action: 'Address a file inside this repository, relative to its root.',
+              },
+            ),
+            ctx.port,
+          );
+        }
+        // No `schema`, `sha` or `tracked`: nothing read the file, so there is no
+        // honest value for any of them. `classified` stays false because an
+        // ordinary file has no segments to classify.
+        const exists = ctx.fs.exists(target);
+        const data = {
+          ...syntax,
+          classified: false,
+          segments: [],
+          target: { path: target, exists },
+        };
+        if (!exists) {
+          exitWithEnvelope(
+            formatDegraded(
+              'ddocs address validate',
+              data,
+              `Nothing is at ${target}. Fix the path, or create the file it names.`,
+              ctx.clock,
+            ),
+            ctx.port,
+          );
+        }
+        exitWithEnvelope(
+          formatOk('ddocs address validate', data, ctx.clock, {
+            next_action: `Run \`ddocs links ${normalized.file}\` to see what points at it.`,
+          }),
           ctx.port,
         );
       }

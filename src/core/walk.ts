@@ -1,13 +1,16 @@
 import { isAddressFailure, parseAddress } from './address.js';
 import type { DdDoc } from './model.js';
 import {
+  collectFileRefs,
   collectLinkCells,
   type DdIssue,
   FILE_LINK_TARGET,
+  type FileExistence,
   isPathWithinRepo,
   resolveAddressFile,
   type SchemaResolver,
   validateDocument,
+  validateFileRefs,
 } from './validate.js';
 
 export type DocLoadResult =
@@ -22,6 +25,18 @@ export interface DocLoader {
 export interface ValidateWalkDeps {
   schemaResolver: SchemaResolver;
   docLoader: DocLoader;
+  /**
+   * The existence probe for ordinary file targets — the SAME seam the corpus
+   * traversal takes, so the walk and the graph cannot disagree about which
+   * files are there.
+   *
+   * Optional, and its absence means UNMEASURED rather than present: with no
+   * probe the walk reports no file findings at all, exactly as a traversal with
+   * no probe emits no file nodes. dd does not report a measurement it declined
+   * to take, and it never defaults one to "exists" — that would turn silence
+   * into a claim.
+   */
+  fileExistence?: FileExistence;
 }
 
 export interface ValidateWalkOptions {
@@ -99,10 +114,29 @@ export function validateWalk(
     issues.push(
       ...validateDocument(current.doc, current.path, deps.schemaResolver, options.repoRoot),
     );
-    if (current.remaining === 0) continue;
 
     const resolvedSchema = deps.schemaResolver.resolve(current.doc.dd.schema, current.path);
     if (!resolvedSchema.ok) continue;
+
+    // Once per VISITED document, before the depth gate: an ordinary file is a
+    // terminal target, not a hop, so `--depth 0` still answers for the cells
+    // this document itself declares. The `visited` set is what makes it once —
+    // a file cited by two documents is reported by each of them, because the
+    // finding is owned by the citing document.
+    if (deps.fileExistence) {
+      // `validateFileRefs` already stamps `owner` with the path it was handed,
+      // so these arrive attributed to the citing document — the same attribution
+      // `ddocs build` reports, from the same call.
+      issues.push(
+        ...validateFileRefs(
+          collectFileRefs(current.doc, resolvedSchema.schema),
+          current.path,
+          options.repoRoot,
+          deps.fileExistence,
+        ),
+      );
+    }
+    if (current.remaining === 0) continue;
 
     for (const link of collectLinkCells(current.doc, resolvedSchema.schema)) {
       // A `target: "file"` cell names an ordinary file. It must never be loaded,

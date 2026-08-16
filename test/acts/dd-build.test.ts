@@ -1,4 +1,12 @@
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  cpSync,
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -271,5 +279,151 @@ describe('autoRegenerateSibling — the mutating-verb seam', () => {
   it('puts the sibling beside the document, whatever the document is called', () => {
     expect(siblingPath('/a/b/plan.dd.json')).toBe('/a/b/plan.dd.md');
     expect(siblingPath('/a/b/plain.json')).toBe('/a/b/plain.md');
+  });
+});
+
+/**
+ * The present / remove / restore arm, over a REAL nested corpus.
+ *
+ * The subject is a claim about the world, so the world is what moves: the target
+ * file is deleted and put back on disk, and no assertion is edited between the
+ * arms. A test that reached its red by changing what it expected would prove
+ * only that the expectation is editable.
+ */
+describe('harness dd build — ordinary file targets', () => {
+  let previousCwd = '';
+  let repo = '';
+  const DOCUMENT = 'docs/plans/nested/notes.dd.json';
+  /** Repo-root anchored, exactly as the structured cell declares it. */
+  const STRUCTURED = 'src/library.ts';
+  /** Document-relative, exactly as the Markdown href in the `notes` cell reads. */
+  const INCIDENTAL = 'docs/plans/handbook.md';
+
+  interface FileFinding {
+    class: string;
+    severity: string;
+    location: string;
+    message: string;
+    owner: string;
+    code: string;
+  }
+
+  function findings(envelope: Envelope): FileFinding[] {
+    return (envelope.data as { file_findings: FileFinding[] }).file_findings;
+  }
+
+  beforeEach(() => {
+    previousCwd = process.cwd();
+    repo = mkdtempSync(join(tmpdir(), 'dd-filelinks-'));
+    cpSync(join(CLI_ROOT, FIXTURES, 'filelinks/repo'), repo, { recursive: true });
+    process.chdir(repo);
+  });
+
+  afterEach(() => {
+    process.chdir(previousCwd);
+    rmSync(repo, { recursive: true, force: true });
+    vi.restoreAllMocks();
+  });
+
+  it('renders working sibling-relative hrefs and reports nothing when both targets are there', async () => {
+    const result = await runDd(['dd', 'build', DOCUMENT, '--check']);
+    expect(result.code).toBe(0);
+    expect(result.envelope.status).toBe('ok');
+    expect(findings(result.envelope)).toEqual([]);
+
+    // The committed golden IS the href contract; `--check` passing means the
+    // renderer produced those exact bytes. Then follow the href from the sibling's
+    // own directory and prove it lands on a file that exists — a link that
+    // resolves is the only definition of "working" that matters to a reader.
+    const sibling = join(repo, 'docs/plans/nested/notes.dd.md');
+    const markdown = readFileSync(sibling, 'utf8');
+    const structured = markdown.match(/\[src\/library\.ts\]\(([^)]+)\)/)?.[1];
+    const incidental = markdown.match(/\[handbook\]\(([^)]+)\)/)?.[1];
+    expect(structured).toBe('../../../src/library.ts');
+    expect(incidental).toBe('../handbook.md');
+    expect(existsSync(join(repo, 'docs/plans/nested', structured ?? ''))).toBe(true);
+    expect(existsSync(join(repo, 'docs/plans/nested', incidental ?? ''))).toBe(true);
+  });
+
+  it('degrades with exit 0 and exactly one WARN naming the authored path and owner', async () => {
+    rmSync(join(repo, STRUCTURED));
+    const missing = await runDd(['dd', 'build', DOCUMENT, '--check']);
+    expect(missing.code).toBe(0);
+    expect(missing.envelope.status).toBe('degraded');
+    expect(findings(missing.envelope)).toEqual([
+      {
+        class: 'address-target-missing',
+        severity: 'WARN',
+        location: '$.sections[tasks].value[0].implemented_by',
+        message: `file link target is missing: ${STRUCTURED}`,
+        // `realpathSync`, because macOS hands `mkdtemp` a `/var` symlink and the
+        // act reports the resolved path it actually read.
+        owner: join(realpathSync(repo), DOCUMENT),
+        code: 'E431',
+      },
+    ]);
+    expect(missing.envelope.next_action).toContain('file link');
+  });
+
+  it('warns for the document-relative Markdown href on its own terms', async () => {
+    rmSync(join(repo, INCIDENTAL));
+    const missing = await runDd(['dd', 'build', DOCUMENT, '--check']);
+    expect(missing.envelope.status).toBe('degraded');
+    // The finding quotes what the AUTHOR wrote, not the absolute path dd
+    // computed: `../handbook.md` is the string to go and fix.
+    expect(findings(missing.envelope)).toEqual([
+      expect.objectContaining({
+        class: 'address-target-missing',
+        message: 'file link target is missing: ../handbook.md',
+        location: '$.sections[tasks].value[0].notes',
+      }),
+    ]);
+  });
+
+  it('clears the warning when the target is restored, with nothing else edited', async () => {
+    const target = join(repo, STRUCTURED);
+    const contents = readFileSync(target, 'utf8');
+    rmSync(target);
+    expect((await runDd(['dd', 'build', DOCUMENT, '--check'])).envelope.status).toBe('degraded');
+    writeFileSync(target, contents);
+    const restored = await runDd(['dd', 'build', DOCUMENT, '--check']);
+    expect(restored.envelope.status).toBe('ok');
+    expect(findings(restored.envelope)).toEqual([]);
+  });
+
+  it('keeps drift an error even while a file target is missing', async () => {
+    // Precedence, stated as an ordering rather than assumed: a WARN degrades, and
+    // drift still fails, so a degraded render can never mask stale committed
+    // markdown.
+    rmSync(join(repo, STRUCTURED));
+    writeFileSync(join(repo, 'docs/plans/nested/notes.dd.md'), 'hand-edited\n');
+    const result = await runDd(['dd', 'build', DOCUMENT, '--check']);
+    expect(result.code).toBe(1);
+    expect(result.envelope.status).toBe('error');
+    expect(result.envelope.error?.code).toBe('E422');
+  });
+
+  it('degrades the WRITING path too, and still writes the sibling', async () => {
+    rmSync(join(repo, STRUCTURED));
+    const written = await runDd(['dd', 'build', DOCUMENT]);
+    expect(written.code).toBe(0);
+    expect(written.envelope.status).toBe('degraded');
+    expect(findings(written.envelope)).toHaveLength(1);
+    expect(readFileSync(join(repo, 'docs/plans/nested/notes.dd.md'), 'utf8')).toContain(
+      '../../../src/library.ts',
+    );
+  });
+
+  it('stays silent for a URL, a bare prose path, a fragment and an image', async () => {
+    // All four live in the `summary` section of the same document, so this row is
+    // green in every arm above as well — it is stated once, alone, so a failure
+    // names the negative population instead of the positive one.
+    rmSync(join(repo, STRUCTURED));
+    rmSync(join(repo, INCIDENTAL));
+    const result = await runDd(['dd', 'build', DOCUMENT, '--check']);
+    expect(findings(result.envelope).map((finding) => finding.location).sort()).toEqual([
+      '$.sections[tasks].value[0].implemented_by',
+      '$.sections[tasks].value[0].notes',
+    ]);
   });
 });

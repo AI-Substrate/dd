@@ -2,6 +2,7 @@ import { NodeEnv } from '../adapters/env/node-env.js';
 import { NodeHash } from '../adapters/hash/node-hash.js';
 import { JitiLoader } from '../adapters/loader/jiti-loader.js';
 import { parse } from '../core/parse.js';
+import { collectFileRefs, type DdIssue, validateFileRefs } from '../core/validate.js';
 import { ErrorCodes } from '../output/error-codes.js';
 import { collectCustomTypes, loadAdapters } from '../render/adapters.js';
 import type { DdAdapterIssue } from '../render/contract.js';
@@ -13,6 +14,7 @@ import {
 import { renderDd } from '../render/renderer.js';
 import { ConventionSchemaResolver } from '../schema/resolve.js';
 import { isWithin, toPosix } from '../shared/posix-path.js';
+import { DD_ISSUE_CODES } from './issue-codes.js';
 import { NodeSchemaFs } from './schema-fs.js';
 
 /**
@@ -51,6 +53,12 @@ export interface BuildSuccess {
   /** Live bases whose target has moved since the ledger recorded it. */
   refreshed: DdRefreshedBasis[];
   refreshIssues: Array<DdRefreshIssue & { code: string }>;
+  /**
+   * Ordinary-file references that did not check out — always WARN, by ruling.
+   * This is the first dd check whose answer depends on files dd does not own, so
+   * a sparse clone must not fail a gate over something that is not wrong.
+   */
+  fileIssues: Array<DdIssue & { code: string }>;
 }
 
 export type BuildResult = BuildSuccess | BuildFailure;
@@ -152,6 +160,7 @@ export async function renderDocument(
   try {
     markdown = renderDd(doc, {
       path: documentPath,
+      repoRoot,
       schema: record.schema,
       gateTerminal: record.gateTerminal,
       adapters,
@@ -169,6 +178,22 @@ export async function renderDocument(
     };
   }
 
+  // Existence, and nothing else (BRIEF ruling 2). `NodeSchemaFs.exists` already
+  // satisfies the seam structurally, so this is the whole of the wiring: the port
+  // has no `readText` on it, which is what makes read/parse/hash unreachable here
+  // by accident rather than by discipline.
+  //
+  // It runs after the render on purpose. The two are independent — a missing
+  // target does not change a single byte of markdown — and putting the probe
+  // downstream keeps a filesystem answer out of the render's inputs, so
+  // `ddocs build --check` stays byte-stable whether or not the target is there.
+  const fileIssues = validateFileRefs(
+    collectFileRefs(doc, record.schema),
+    documentPath,
+    repoRoot,
+    fs,
+  ).map((issue) => ({ ...issue, code: DD_ISSUE_CODES[issue.class] }));
+
   return {
     ok: true,
     path: documentPath,
@@ -181,5 +206,6 @@ export async function renderDocument(
       ...issue,
       code: ErrorCodes.DD_LIVE_BASIS_REFRESH_FAILED,
     })),
+    fileIssues,
   };
 }

@@ -171,8 +171,12 @@ export function resolveLink(
   // readable, and so a `target: "file"` path is never opened and parsed just to
   // be told it named no section. Existence for those cells is
   // `validateFileRefs`' job and it reads nothing.
+  //
+  // `no-interior` and not `section-unknown`: the doctor treats the latter as an
+  // interior defect it owns, so reusing it turned every correct ordinary-file
+  // citation in the corpus into an ERROR.
   if (address.segments.length === 0) {
-    return fail('section-unknown', 'address names a whole file and no interior');
+    return fail('no-interior', 'address names a whole file and no interior');
   }
 
   if (address.file === null && options.fromPath === null) {

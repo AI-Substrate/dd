@@ -113,8 +113,10 @@ describe('ddocs links resolver — every unresolved reason', () => {
     ['../../../outside.dd.json#entries', 'path-escape'],
     // wl-0023: a bare path is now valid SYNTAX, so this stops being a grammar
     // failure. It is still refused, and refused before the loader is touched —
-    // the resolver descends interiors and this address names none.
-    ['no-hash-at-all', 'section-unknown'],
+    // the resolver descends interiors and this address names none. `no-interior`
+    // rather than `section-unknown`, because the doctor reads that reason as an
+    // interior DEFECT it owns and would call a correct file citation an ERROR.
+    ['no-hash-at-all', 'no-interior'],
     ['plan.dd.json#entries@abcd', 'malformed'],
   ] as const)('%s fails with reason %s', (raw, reason) => {
     const result = resolve(raw);
@@ -143,7 +145,7 @@ describe('ddocs links resolver — every unresolved reason', () => {
       const result = resolveLink(raw, deps(loader), { repoRoot: REPO, fromPath: PLAN });
       expect(result.ok).toBe(false);
       expect(result.issues[0]).toMatchObject({
-        reason: 'section-unknown',
+        reason: 'no-interior',
         message: 'address names a whole file and no interior',
       });
     }

@@ -4,6 +4,7 @@ import { DEFAULT_GATE_TERMINAL_STATES } from '../core/constants.js';
 import { type DdDerivedState, deriveState } from '../core/derive.js';
 import type { DdDoc, DdSection, DdShape, ResolvedDdSchema } from '../core/model.js';
 import { tallyPlan } from '../core/tally.js';
+import { FILE_LINK_TARGET } from '../core/validate.js';
 import { isRecord } from '../core/value.js';
 import type { DdAdapterContext, DdRenderContext } from './contract.js';
 
@@ -56,6 +57,32 @@ const PIP_PARTIAL = '[~]';
 function basename(path: string): string {
   const parts = path.replaceAll('\\', '/').split('/');
   return parts[parts.length - 1] ?? path;
+}
+
+/**
+ * The href that reaches `<repoRoot>/<target>` from the sibling of `documentPath`.
+ *
+ * Written here, over POSIX-logical strings, rather than taken from
+ * `shared/posix-path.ts`: that module reaches `node:path`, and the render layer
+ * is transitively forbidden every Node builtin — `renderer-purity.test.ts` walks
+ * the import graph and fails on one. The same constraint is why `basename` above
+ * is local. Every path this sees has already been normalised at the host
+ * boundary, so the work left is a segment diff and nothing else.
+ */
+function siblingRelative(repoRoot: string, documentPath: string, target: string): string {
+  const parts = (path: string): string[] => path.split('/').filter((part) => part.length > 0);
+  const root = parts(repoRoot);
+  const directory = parts(documentPath).slice(0, -1);
+  let shared = 0;
+  while (shared < root.length && shared < directory.length && root[shared] === directory[shared]) {
+    shared += 1;
+  }
+  const up = Array.from({ length: directory.length - shared }, () => '..');
+  const down = [...root.slice(shared), ...parts(target)];
+  const href = [...up, ...down].join('/');
+  // A target that resolves to the document's own directory has no path left at
+  // all; `.` is what a Markdown href needs there, and an empty `()` is not a link.
+  return href.length > 0 ? href : '.';
 }
 
 /**
@@ -186,13 +213,42 @@ export function sectionForAddress(doc: DdDoc, address: DdAddress): DdSection | n
 }
 
 /**
+ * Render an ordinary repository file as a link a reader can actually click.
+ *
+ * The authored path is anchored on the REPOSITORY ROOT; the href lives in the
+ * generated sibling, which sits beside the source document. Those are the same
+ * file only for a document at the root, so the path is rebased — a plan three
+ * folders down emits `../../../src/foo.ts`, and echoing the authored bytes back
+ * would produce a link that opens nothing.
+ *
+ * No anchor and therefore no `#`: an ordinary file has no dd interior, and a
+ * trailing `#` is a fragment reference to the top of a page that the target may
+ * not even render as one.
+ */
+function renderFileLink(raw: string, resolved: DdRenderContext): string {
+  // Without a root there is no honest href — reading a repo-relative path as
+  // document-relative names a DIFFERENT file. Say the path instead of linking to
+  // the wrong one.
+  if (resolved.repoRoot === undefined) return escapeCell(raw);
+  const href = siblingRelative(resolved.repoRoot, resolved.path, raw);
+  return `[${escapeCell(raw)}](${escapeCell(href)})`;
+}
+
+/**
  * Render a link cell: the id stays visible in the link text, the target is the
  * NEAREST HEADING — never a synthetic HTML anchor. A same-document map entry owns
  * its own `###` heading, so it anchors there; everything else anchors on its
  * section heading. Cross-file targets point at the sibling `.dd.md`, because that
  * is the artifact a human clicking the link can actually read.
  */
-function renderLink(raw: string, doc: DdDoc, resolved: DdRenderContext): string {
+function renderLink(
+  raw: string,
+  doc: DdDoc,
+  resolved: DdRenderContext,
+  declaredTarget?: string,
+): string {
+  if (declaredTarget === FILE_LINK_TARGET) return renderFileLink(raw, resolved);
+
   const address = parseAddress(raw);
   if (isAddressFailure(address)) return escapeCell(raw);
 
@@ -215,7 +271,11 @@ function renderLink(raw: string, doc: DdDoc, resolved: DdRenderContext): string 
   }
 
   const file = address.file === null ? '' : address.file.replace(/\.dd\.json$/, '.dd.md');
-  const link = `[${escapeCell(text)}](${file}#${anchor})`;
+  // An UNDECLARED whole-file address reaches here too, and it has no interior to
+  // anchor on. `#` with nothing after it is not an anchor, it is a link to the
+  // top of the page — so the separator is emitted only when there is something
+  // for it to separate.
+  const link = `[${escapeCell(text)}](${anchor.length > 0 ? `${file}#${anchor}` : file})`;
   const summary = derived ? summarise(derived) : null;
   return summary ? `${summary} ${link}` : link;
 }
@@ -274,7 +334,7 @@ function renderContainer(value: unknown, depth: number, deps: CellDeps, shape?: 
     typeof value === 'string' &&
     (shape?.type === 'link' || (!shape && looksLikeAddress(value)))
   ) {
-    return renderLink(value, deps.doc, deps.resolved);
+    return renderLink(value, deps.doc, deps.resolved, shape?.target);
   }
   return renderScalar(value);
 }
@@ -325,7 +385,7 @@ function renderCell(
     typeof value === 'string' &&
     (shape?.type === 'link' || (!shape && looksLikeAddress(value)))
   ) {
-    return renderLink(value, deps.doc, deps.resolved);
+    return renderLink(value, deps.doc, deps.resolved, shape?.target);
   }
 
   if (Array.isArray(value) || isRecord(value)) return renderContainer(value, 1, deps, shape);

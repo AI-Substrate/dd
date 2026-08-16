@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createSyntheticPlan, type SyntheticCorpus } from '../support/dd-corpus.js';
@@ -114,5 +114,78 @@ describe('ddocs validate — byte-for-byte mechanical (dw-0261)', () => {
     const broken = await runCli(['dd', 'validate', corpus.planRelative, '--depth', '0']);
     expect(broken.code).toBe(1);
     expect(broken.envelope?.error?.code).toBe('E407');
+  });
+});
+
+/**
+ * The agreement F2 exists to enforce: `ddocs build`, `ddocs validate` and
+ * `ddocs doctor` are three questions asked of ONE corpus, and a missing ordinary
+ * file must be visible to all three. Before this, only `build` reported it —
+ * `validate` answered `ok` about a document it had already refused to follow a
+ * file link out of, which is the worst shape available: a clean bill of health
+ * that was never earned.
+ *
+ * Existence is also exactly the kind of finding this verb is allowed to have.
+ * It is MECHANICAL — the answer is a `stat`, not a judgement — so it belongs
+ * here and the semantic-key pin above still holds.
+ */
+describe('ddocs validate — a missing ordinary file target is a WARN, not silence', () => {
+  let corpus: SyntheticCorpus;
+  let previousCwd = '';
+  const GOAL_LINK = 'ship [the library](../../../src/library.ts)';
+
+  beforeEach(() => {
+    corpus = createSyntheticPlan();
+    const doc = JSON.parse(readFileSync(corpus.plan, 'utf8')) as {
+      sections: Array<{ name: string; value: unknown }>;
+    };
+    doc.sections.push({ name: 'goals', value: [GOAL_LINK] });
+    writeFileSync(corpus.plan, `${JSON.stringify(doc, null, 2)}\n`, 'utf8');
+    previousCwd = process.cwd();
+    process.chdir(corpus.root);
+  });
+
+  afterEach(() => {
+    if (previousCwd.length > 0) process.chdir(previousCwd);
+    previousCwd = '';
+    corpus?.cleanup();
+  });
+
+  async function validate() {
+    const result = await runCli(['dd', 'validate', corpus.planRelative, '--depth', '0']);
+    const data = result.envelope?.data as {
+      counts: { error: number; warn: number };
+      issues: Array<Record<string, unknown>>;
+    };
+    return { result, data };
+  }
+
+  it('reports the missing target once, degraded, and still exits 0', async () => {
+    const { result, data } = await validate();
+    expect(result.code).toBe(0);
+    expect(result.envelope?.status).toBe('degraded');
+    expect(data.counts).toStrictEqual({ error: 0, warn: 1 });
+    expect(data.issues).toStrictEqual([
+      {
+        class: 'address-target-missing',
+        severity: 'WARN',
+        location: '$.sections[goals].value[0]',
+        message: 'file link target is missing: ../../../src/library.ts',
+        // macOS hands `mkdtemp` a `/var` symlink and the CLI answers in real paths.
+        owner: realpathSync(corpus.plan),
+        code: 'E431',
+      },
+    ]);
+  });
+
+  it('says nothing once the file is there', async () => {
+    // The SAME corpus, one file different — so the WARN above is about existence
+    // and not about the link's shape, which did not change.
+    mkdirSync(join(corpus.root, 'src'), { recursive: true });
+    writeFileSync(join(corpus.root, 'src', 'library.ts'), 'export const LIBRARY = 1;\n', 'utf8');
+    const { result, data } = await validate();
+    expect(result.code).toBe(0);
+    expect(result.envelope?.status).toBe('ok');
+    expect(data.issues).toStrictEqual([]);
   });
 });

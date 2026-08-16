@@ -44,7 +44,7 @@ export function registerGraphCommand(dd: Command, io: CliIo, deps: DdActDeps): v
 
       const graphed = traverseCorpus(
         scan.paths,
-        { schemaResolver: ctx.resolver, docLoader: ctx.loader },
+        { schemaResolver: ctx.resolver, docLoader: ctx.loader, fileExistence: ctx.fs },
         { repoRoot: ctx.repoRoot, mode: 'sweep' },
       );
       // Emitted directly, never through the render layer: `ddocs graph` is what
