@@ -406,3 +406,38 @@ negative guard against `harness dd` stays valuable after the `ddocs` rename land
 is the cheapest thing to read and the most expensive to trust; read the body before you cite the
 file, with no exemption for files you have already seen. **This row is the actionable residue** —
 two names in this repo that currently earn that distrust.
+
+## 28 — The address grammar does not constrain the FILE half, so an English sentence parses as an address · UNASSIGNED · **ADDED 2026-08-16**
+
+**Found by** `pij-yabbering-cod`'s fleet while fixing the `wl-0023` sentinel blocker, and
+**correctly kept out of that PR** — it is pre-existing on `main` and unrelated to file links.
+**Reproduced independently by the o-prime before filing**, against `main`'s shipped bin:
+
+```bash
+ddocs --json address validate "see the open questions in plan.dd.json#open_questions"
+# → status ok, file: "see the open questions in plan.dd.json"
+```
+
+`parseAddress` (`src/core/address.ts`) validates the INTERIOR segments against
+`SEGMENT_PATTERN` and applies **no pattern at all to the file half** — spaces, prose, anything.
+Whatever precedes the single `#` is taken as a path.
+
+**Why it is not merely cosmetic.** `looksLikeAddress` (`src/render/renderer.ts:298`) returns true
+when the parse succeeds and `file` ends in `.dd.json`. A cell whose schema declares **nothing** is
+then rendered as a link (`renderCell` → `renderLink(…, 'inferred')`). So an ordinary prose
+sentence that happens to end in `<something>.dd.json#<word>` — a plausible thing to write in a
+`note` or `why` field, since this repo's own documents reference addresses in prose constantly —
+becomes a link whose href is a filename with spaces in it. One row on `main` already reproduces it.
+
+**Why this row exists rather than a fix.** The `wl-0023` stream's `LinkOrigin` guard deliberately
+left `inferred` alone: nothing declared those values, so nothing is type-wrong, and narrowing the
+inference is a different question from honouring a declaration. That reasoning is right and the
+scope discipline was correct — this is the residue it correctly refused to absorb.
+
+**The decision this needs** (not the o-prime's to make alone, since it touches the grammar):
+constrain the file half with a pattern, narrow `looksLikeAddress` beyond a suffix test, or accept
+that undeclared inference is best-effort and say so in the docs. Note the third option has a cost
+the first two do not: the renderer would keep emitting hrefs it knows may be wrong.
+
+**Do NOT fix this by deleting the inference** — an undeclared `.dd.json#…` value rendering as a
+link is a real convenience that predates the defect.
