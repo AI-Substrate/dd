@@ -9,7 +9,7 @@
 **Backpressure selection**: `docs/plans/004-file-links/assets/backpressure-coverage.md`
 **Worktree**: `/Users/jordanknight/substrate/dd-worktrees/file-links`
 **Branch**: `feat/file-links`
-**Parent SHA**: `13f03f38acfde68ff11da0c32209c0815e7e9213`
+**Code/content basis before packet-only commits**: `13f03f38acfde68ff11da0c32209c0815e7e9213`
 
 ## Whole-phase assignment
 
