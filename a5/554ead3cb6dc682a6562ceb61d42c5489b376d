@@ -1,0 +1,80 @@
+scripts/exports-reachability-probe.mjs
+  h_9e71e8b09f7cf2 194,199-208,225,227-232
+src/acts/address.ts
+  h_9e71e8b09f7cf2 8,10,126-176
+src/acts/build.ts
+  h_9e71e8b09f7cf2 229-237,246,267-269,309
+src/acts/graph.ts
+  h_9e71e8b09f7cf2 47
+src/acts/links.ts
+  h_9e71e8b09f7cf2 2-8,40,48-54,56-66
+src/acts/shared.ts
+  h_9e71e8b09f7cf2 36-38
+src/acts/validate.ts
+  h_9e71e8b09f7cf2 98
+src/core/validate.ts
+  h_9e71e8b09f7cf2 395,497-537,540,542-556
+src/core/walk.ts
+  h_9e71e8b09f7cf2 4,8,13,28-39,121-140
+src/links/doctor.ts
+  h_9e71e8b09f7cf2 101-106,116-118,136,139-148,150-155
+src/links/map.ts
+  h_9e71e8b09f7cf2 531-537
+src/links/model.ts
+  h_9e71e8b09f7cf2 20-27,34,95-108,110,113,115,131-133,144-162,167
+src/links/resolver.ts
+  h_9e71e8b09f7cf2 174-177,179
+src/links/traverse.ts
+  h_9e71e8b09f7cf2 3,5,7,10,25-31,46-66,102-103,146,169-173,175-178,183,198,212-238
+src/node/render-document.ts
+  h_9e71e8b09f7cf2 5,17,56-61,163,181-196,209
+src/render/contract.ts
+  h_9e71e8b09f7cf2 67-76
+src/render/renderer.ts
+  h_9e71e8b09f7cf2 7,62-87,215-236,244-251,274-278,337,388
+test/acts/dd-build.test.ts
+  h_9e71e8b09f7cf2 1-9,284-429
+test/acts/dd-links-live.test.ts
+  h_9e71e8b09f7cf2 2-10,650-898
+test/acts/dd-validate-mechanical.test.ts
+  h_9e71e8b09f7cf2 1,119-191
+test/services/dd/core/validate.test.ts
+  h_9e71e8b09f7cf2 302-349
+test/services/dd/core/walk.test.ts
+  h_9e71e8b09f7cf2 4,382-563
+test/services/dd/links/doctor.test.ts
+  h_9e71e8b09f7cf2 2-4,7,215-422
+test/services/dd/links/graph.test.ts
+  h_9e71e8b09f7cf2 3,92-180
+test/services/dd/links/map.test.ts
+  h_9e71e8b09f7cf2 1277,1286,1356-1422
+test/services/dd/links/resolver.test.ts
+  h_9e71e8b09f7cf2 116-119,148
+test/services/dd/links/traverse.test.ts
+  h_9e71e8b09f7cf2 3-9,197-200,203-205,214-218,228,247-252,260-272,274-283,285-290,292-293,296-297,299-300,302-330,333-403,438,474-557
+test/services/dd/render/fixtures/README.md
+  h_9e71e8b09f7cf2 36
+test/services/dd/render/fixtures/filelinks/repo/.dd/schemas/render/filelinks/schema.json
+  h_9e71e8b09f7cf2 1-33
+test/services/dd/render/fixtures/filelinks/repo/docs/plans/handbook.md
+  h_9e71e8b09f7cf2 1-6
+test/services/dd/render/fixtures/filelinks/repo/docs/plans/nested/notes.dd.json
+  h_9e71e8b09f7cf2 1-21
+test/services/dd/render/fixtures/filelinks/repo/docs/plans/nested/notes.dd.md
+  h_9e71e8b09f7cf2 1-26
+test/services/dd/render/fixtures/filelinks/repo/src/library.ts
+  h_9e71e8b09f7cf2 1-7
+test/services/dd/render/renderer.test.ts
+  h_9e71e8b09f7cf2 372-494
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "a5554ead3cb6dc682a6562ceb61d42c5489b376d",
+  "prompts": {},
+  "humans": {
+    "h_9e71e8b09f7cf2": {
+      "author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
