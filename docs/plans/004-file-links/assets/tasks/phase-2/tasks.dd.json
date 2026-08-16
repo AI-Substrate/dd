@@ -1,0 +1,100 @@
+{
+  "dd": {
+    "schema": "builder/plan"
+  },
+  "sections": [
+    {
+      "name": "meta",
+      "value": {
+        "title": "Product surfaces and end-to-end proof",
+        "slug": "phase-2",
+        "status": "ready",
+        "summary": "Expose truthful ordinary-file edges through render, build, links, graph, and CLI envelopes, then prove the full contract.",
+        "mode": "Full",
+        "complexity": "CS-4"
+      }
+    },
+    {
+      "name": "summary",
+      "value": "Integrate Phase 1’s file-cell contract without teaching ordinary files to pretend to be ddocs. Existing files are resolved terminal nodes, missing files are unresolved warnings, and neither is traversed. Structured paths render relative to the sibling; literal Markdown keeps its own href. Build aggregates the same file findings into degraded exit-0 envelopes. Finish with independent mutation proof, the exact targeted suites, `ddocs status`, and `just checks`."
+    },
+    {
+      "name": "tasks",
+      "value": [
+        {
+          "id": "tk-0001",
+          "title": "Pin render, build, links, and graph behavior before integration",
+          "domain": "links/render/acts",
+          "phase": "ph-62e4",
+          "state": "unchecked",
+          "success": "Targeted tests assert nested-doc hrefs, build ok/degraded/error precedence, inbound `ddocs links` output, resolved-vs-missing graph node kind and Mermaid line style, ordinary-file non-traversal, and address/link CLI JSON shape.",
+          "notes": "Use real temp files. Existing file and missing file must be two arms of the same fixture.",
+          "satisfies": [
+            "../../../plan.dd.json#acceptance_criteria/ac-0005",
+            "../../../plan.dd.json#acceptance_criteria/ac-0006",
+            "../../../plan.dd.json#acceptance_criteria/ac-0007"
+          ]
+        },
+        {
+          "id": "tk-0002",
+          "title": "Integrate terminal ordinary-file nodes into traversal, links, and graph",
+          "domain": "links",
+          "phase": "ph-62e4",
+          "state": "unchecked",
+          "success": "Traversal emits file edges from both cell origins, adds existing file leaf nodes with an honest discriminant, never queues them, leaves missing targets unresolved, and makes `linksFor`/Mermaid report the same edge set deterministically.",
+          "notes": "Do not fabricate `schema`, `sha`, `tracked`, or interior values for ordinary files. Review the public `.d.ts` delta.",
+          "satisfies": [
+            "../../../plan.dd.json#acceptance_criteria/ac-0007",
+            "../../../plan.dd.json#acceptance_criteria/ac-0008"
+          ]
+        },
+        {
+          "id": "tk-0003",
+          "title": "Render working file hrefs and surface build degradation",
+          "domain": "render/node/acts",
+          "phase": "ph-62e4",
+          "state": "unchecked",
+          "success": "Structured repo-relative paths become sibling-relative Markdown hrefs without `#`; incidental Markdown remains literal; `renderDocument` returns named file findings; build and check envelopes degrade on WARN with exit 0 while drift/error behavior and adapter/live-reference reporting stay intact.",
+          "notes": "Keep renderer pure by passing repo-root/path context; do not import Node APIs into render/core/links.",
+          "satisfies": [
+            "../../../plan.dd.json#acceptance_criteria/ac-0005",
+            "../../../plan.dd.json#acceptance_criteria/ac-0006",
+            "../../../plan.dd.json#acceptance_criteria/ac-0008"
+          ]
+        },
+        {
+          "id": "tk-0004",
+          "title": "Exercise the shipped CLI and prove guards by mutation",
+          "domain": "acts/tests",
+          "phase": "ph-62e4",
+          "state": "unchecked",
+          "success": "A real nested fixture runs build, validate, links, graph, and address commands in both present/missing states. The reviewer removes or misclassifies the planted target, observes the targeted test fail naming the path/node, restores it, and observes green. External URL and bare prose controls stay silent.",
+          "notes": "Break the world, not the assertion. Record RED and GREEN commands/output for the reviewer packet.",
+          "satisfies": [
+            "../../../plan.dd.json#acceptance_criteria/ac-0003",
+            "../../../plan.dd.json#acceptance_criteria/ac-0004",
+            "../../../plan.dd.json#acceptance_criteria/ac-0005",
+            "../../../plan.dd.json#acceptance_criteria/ac-0007"
+          ]
+        },
+        {
+          "id": "tk-0005",
+          "title": "Run surface, status, and repository completion gates",
+          "domain": "verification",
+          "phase": "ph-62e4",
+          "state": "unchecked",
+          "success": "Targeted tests pass, LSP diagnostics are clean, emitted public declarations match the intended discriminated shapes, `node bin/ddocs.js --json status` reports 10/10, forbidden paths have no diff, `just checks` passes, and the branch is ready for independent cross-model review.",
+          "notes": "Read the gate output and exit status; a second run must not replace a red without first inspecting worktree state.",
+          "satisfies": [
+            "../../../plan.dd.json#acceptance_criteria/ac-0008",
+            "../../../plan.dd.json#acceptance_criteria/ac-0009"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "done_when",
+      "value": {}
+    }
+  ]
+}
