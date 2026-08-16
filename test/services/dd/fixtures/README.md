@@ -19,6 +19,13 @@ filesystem.
 | `invalid/link-type-mismatch.dd.json` | `link-type-mismatch` | `valid/base.dd.json` |
 | `graph/chain-d-invalid.dd.json` | `enum-invalid` | `graph/chain-d-valid.dd.json` |
 
+`invalid/malformed-address.dd.json` holds `#tasks//tk-a1b2` — an EMPTY INTERIOR SEGMENT,
+which the grammar refuses. It must stay a spelling the PARSER rejects. It used to hold
+`tasks/tk-a1b2`, and wl-0023's whole-file form made that a valid bare path: the fixture
+would then be rejected on its declared TYPE instead, and this row would have gone quietly
+wrong while the file name still read `malformed-address`. The typed removed-`#` case it
+briefly became is pinned on its own, in `core/walk.test.ts`.
+
 ## WARN-only path fixtures
 
 | Fixture | Expected WARN class |

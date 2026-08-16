@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import type { DdDoc, ResolvedDdSchema } from '../../../../src/core/model.js';
+import { FILE_LINK_TARGET, type SchemaResolver } from '../../../../src/core/validate.js';
+import type { DocLoader, DocLoadResult } from '../../../../src/core/walk.js';
 import type { DdLinkEdge } from '../../../../src/links/model.js';
 import { reachableFrom, traverseCorpus } from '../../../../src/links/traverse.js';
 import { deps, docPath, FixtureDocLoader, REPO } from './helpers.js';
@@ -179,6 +182,84 @@ describe('ddocs links traversal — edges and nodes', () => {
     const neighbour = traverse([docPath('docs/target-missing.dd.json')]);
     expect(neighbour.graph.issues).toEqual([]);
     expect(neighbour.graph.edges[0]?.to).toBe(docPath('docs/missing.dd.json'));
+  });
+});
+
+describe('ddocs links traversal — an ordinary file is not a document', () => {
+  const CITING = docPath('docs/nested/citing.dd.json');
+  const CHILD = docPath('docs/nested/child.dd.json');
+  /**
+   * The path a document-relative resolution would INVENT for `src/library.ts`
+   * cited from `docs/nested/`. Naming it makes the failure legible: if the fence
+   * goes, this is the string that shows up in `loads`, and it is a file that does
+   * not exist anywhere in the repository.
+   */
+  const INVENTED = docPath('docs/nested/src/library.ts');
+
+  const SCHEMA: ResolvedDdSchema = {
+    name: 'test/citing',
+    sections: {
+      // Repo-root relative, by the file-target contract.
+      implemented_by: { shape: { type: 'link', target: FILE_LINK_TARGET } },
+      // An ordinary dd edge beside it. Without this the loader instrument proves
+      // nothing: an empty `loads` is also what a traversal that never ran looks
+      // like.
+      dependency: { shape: { type: 'link', target: 'test/citing/section/phases' } },
+    },
+  } as ResolvedDdSchema;
+
+  const WORLD: Record<string, DdDoc> = {
+    [CITING]: {
+      dd: { schema: 'test/citing' },
+      sections: [
+        { name: 'implemented_by', value: 'src/library.ts' },
+        { name: 'dependency', value: 'child.dd.json#phases' },
+      ],
+      references: [],
+    },
+    [CHILD]: {
+      dd: { schema: 'test/citing' },
+      sections: [{ name: 'phases', value: [] }],
+      references: [],
+    },
+  };
+
+  class WorldLoader implements DocLoader {
+    readonly loads: string[] = [];
+
+    load(path: string): DocLoadResult {
+      this.loads.push(path);
+      const found = WORLD[path];
+      if (found === undefined) {
+        return { ok: false, path, reason: 'missing', message: `address target is missing: ${path}` };
+      }
+      return { ok: true, path, doc: found, sha: `sha-${path}`, tracked: true };
+    }
+  }
+
+  const WORLD_SCHEMAS: SchemaResolver = { resolve: () => ({ ok: true, schema: SCHEMA }) };
+
+  it('never loads, queues or resolves an ordinary file named by a target:file cell', () => {
+    const loader = new WorldLoader();
+    const graph = traverseCorpus([CITING], { schemaResolver: WORLD_SCHEMAS, docLoader: loader }, {
+      repoRoot: REPO,
+      mode: 'sweep',
+    });
+
+    // The whole finding, in one assertion: the ordinary file is absent, and the
+    // dd neighbour beside it is present, so the traversal demonstrably ran.
+    expect(loader.loads).toEqual([CITING, CHILD]);
+    expect(loader.loads).not.toContain(INVENTED);
+    expect(graph.visited).toEqual([CITING, CHILD]);
+
+    // Phase 1 defers the ordinary-file edge rather than emitting a wrong one.
+    // A document-relative edge here would be worse than no edge: every reader of
+    // the graph would take `docs/nested/src/library.ts` for the cited file.
+    expect(graph.edges).toEqual([
+      expect.objectContaining({ from: CITING, to: CHILD, address: 'child.dd.json#phases' }),
+    ]);
+    expect(graph.edges.map((edge) => edge.to)).not.toContain(INVENTED);
+    expect(graph.issues).toEqual([]);
   });
 });
 

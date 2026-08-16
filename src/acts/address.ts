@@ -89,11 +89,15 @@ export function registerAddressCommands(dd: Command, io: CliIo, deps: DdActDeps)
       }
 
       const normalized = normalizeAddress(parsed);
-      const syntax = {
-        address: formatAddress(normalized),
-        file: normalized.file,
-        form: normalized.file === null ? ('bare' as const) : ('qualified' as const),
-      };
+      // Three forms, one per shape the grammar admits: `bare` names an interior
+      // in the current document, `file` names a whole file and NO interior, and
+      // `qualified` names both. `file` is not a sub-case of `qualified` — a
+      // caller that branches on the form to read `segments` would find it empty,
+      // so the distinction has to be visible in the answer, not inferred from it.
+      let form: 'bare' | 'file' | 'qualified' = 'qualified';
+      if (normalized.file === null) form = 'bare';
+      else if (normalized.segments.length === 0) form = 'file';
+      const syntax = { address: formatAddress(normalized), file: normalized.file, form };
 
       if (!opts.resolve) {
         // Without a repository to look in, the parser's `name`/`id` kinds are

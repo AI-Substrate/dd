@@ -3,6 +3,7 @@ import type { DdDoc } from './model.js';
 import {
   collectLinkCells,
   type DdIssue,
+  FILE_LINK_TARGET,
   isPathWithinRepo,
   resolveAddressFile,
   type SchemaResolver,
@@ -104,8 +105,17 @@ export function validateWalk(
     if (!resolvedSchema.ok) continue;
 
     for (const link of collectLinkCells(current.doc, resolvedSchema.schema)) {
+      // A `target: "file"` cell names an ordinary file. It must never be loaded,
+      // parsed, hashed or queued as a dd document — its existence is
+      // `validateFileRefs`'s job, through a probe that reads nothing.
+      if (link.target === FILE_LINK_TARGET) continue;
       const address = parseAddress(link.raw);
       if (isAddressFailure(address) || address.file === null) continue;
+      // A dd link with no interior is the whole-file form in a cell that may not
+      // hold one; `validateDocument` has already reported it as an ERROR. Walking
+      // it anyway would probe the filesystem for a path the author never meant to
+      // write and add a missing-file WARN on top of the real finding.
+      if (address.segments.length === 0) continue;
       const targetPath = resolveAddressFile(current.path, address.file);
       if (!isPathWithinRepo(targetPath, options.repoRoot)) continue;
 

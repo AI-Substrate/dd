@@ -1,6 +1,7 @@
 import { isAddressFailure, parseAddress } from '../core/address.js';
 import {
   collectLinkCells,
+  FILE_LINK_TARGET,
   isPathWithinRepo,
   resolveAddressFile,
   type SchemaResolver,
@@ -130,6 +131,17 @@ export function traverseCorpus(
     }
 
     for (const cell of collectLinkCells(result.doc, resolved.schema)) {
+      // An ordinary file is not a dd document, so it has no place in a dd
+      // traversal: its path is anchored on the REPOSITORY ROOT, and every line
+      // below anchors on the CITING DOCUMENT. Resolving one here does not merely
+      // fail — it invents `<doc-dir>/<repo-relative-path>`, a file that usually
+      // does not exist, and then asks the loader to open it. Existence for these
+      // targets is `validateFileRefs`'s job, through a probe that reads nothing.
+      //
+      // The edge and node for ordinary files are Phase 2's to design. Emitting
+      // nothing defers that decision; emitting a document-relative edge would
+      // pre-empt it with a wrong answer that graph readers would consume.
+      if (cell.target === FILE_LINK_TARGET) continue;
       const address = parseAddress(cell.raw);
       if (isAddressFailure(address)) {
         edges.push({

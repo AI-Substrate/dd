@@ -8,7 +8,7 @@
           "id": "tk-a1b2",
           "title": "Bad address",
           "state": "checked",
-          "dependency": "tasks/tk-a1b2"
+          "dependency": "#tasks//tk-a1b2"
         }
       ]
     }

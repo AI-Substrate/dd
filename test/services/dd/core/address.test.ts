@@ -52,10 +52,41 @@ describe('dd-core address grammar', () => {
     );
   });
 
+  it('parses the bare path as the whole-file form and round-trips it undecorated', () => {
+    for (const raw of ['src/search/index.ts', 'notes.md', '../other/backpressure.dd.json']) {
+      const address = parsed(raw);
+      expect(address).toEqual({ file: raw, segments: [] });
+      // No trailing "#": the author never wrote a fragment, so formatting must
+      // not invent one — an empty interior is the spelling this grammar refuses.
+      expect(formatAddress(address)).toBe(raw);
+    }
+  });
+
+  /**
+   * BRIEF ruling 4: `file#method` is out of scope and must stay POSSIBLE. It is
+   * asserted here rather than left to the CLI because "we did not foreclose it"
+   * is exactly the kind of claim that decays silently — nothing else in the
+   * suite would fail if the fragment namespace were taken.
+   */
+  it('keeps file#method syntax-valid and leaves the fragment free', () => {
+    expect(parsed('src/foo.ts#parseThing')).toEqual({
+      file: 'src/foo.ts',
+      segments: [{ kind: 'name', value: 'parseThing' }],
+    });
+  });
+
+  it('normalizes a whole-file path with no interior to walk through', () => {
+    expect(formatAddress(normalizeAddress(parsed('./docs/../src/a.ts')))).toBe('src/a.ts');
+    expect(formatAddress(normalizeAddress(parsed('..\\other\\notes.md')))).toBe(
+      '../other/notes.md',
+    );
+  });
+
   it('rejects malformed, positional, or reserved forms without throwing', () => {
     for (const raw of [
-      'plan.dd.json',
+      '',
       'plan.dd.json#',
+      '#',
       'plan.dd.json#phases//tasks',
       'plan.dd.json#phases/2/tasks',
       'plan.dd.json#phases/@sha',
