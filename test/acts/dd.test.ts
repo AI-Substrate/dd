@@ -37,6 +37,24 @@ async function runDd(argv: string[]): Promise<{ envelope: Envelope; code: number
   return { envelope: JSON.parse(out.trim()) as Envelope, code };
 }
 
+/**
+ * This package's OWN verbs — native to `ddocs`, with no counterpart upstream in
+ * `AI-Substrate/harness-engineering`. They are removed before the frozen family
+ * is compared below, which is precisely what lets that comparison stay an exact
+ * `toEqual` instead of decaying into a `toContain` that every new verb weakens.
+ *
+ * `agents-start-here` joined this set on 2026-08-16 (stream brief, ruling 1:
+ * *"this is wholly new. the port is finished"*). It belongs here for the same
+ * reason it is absent from `PLANNED_VERBS`: that roster records a historical
+ * fact which finished at 10/10, and a verb dd grew on its own must not move it.
+ *
+ * SO ADDING A NAME HERE IS A CLAIM, not a way to quiet this test. It asserts the
+ * verb is native. A verb ported from upstream belongs in the frozen list inside
+ * the row below, where its position is pinned — putting it here instead would
+ * hide exactly the surface change this row exists to catch.
+ */
+const NATIVE_VERBS = new Set(['version', 'status', 'agents-start-here']);
+
 describe('harness dd act surface', () => {
   // The two live `ddocs validate` rows below hand the act repo-relative fixture
   // paths, and the act resolves them against process.cwd() (house repo-root
@@ -63,12 +81,16 @@ describe('harness dd act surface', () => {
     );
     // ADAPTED: upstream the family hangs off a `dd` sub-command of `harness`.
     // Here the binary IS `ddocs`, so the program itself is the family root — and
-    // `version`/`status` are this package's own verbs, which upstream has no
-    // equivalent of, so the frozen family is asserted as a SUBSET in order.
+    // this package's own verbs (see NATIVE_VERBS) have no upstream equivalent,
+    // so the frozen family is asserted as a SUBSET in order.
     const dd = program;
-    const family = dd.commands
-      .map((command) => command.name())
-      .filter((name) => name !== 'version' && name !== 'status');
+    const registered = dd.commands.map((command) => command.name());
+    // The exclusion must not be able to hide a DISAPPEARANCE. Filtering a name
+    // out is indistinguishable from that name never having been registered, so
+    // each native verb is confirmed present before it is dropped — otherwise
+    // deleting `agents-start-here` outright would leave this row green.
+    for (const native of NATIVE_VERBS) expect(registered, native).toContain(native);
+    const family = registered.filter((name) => !NATIVE_VERBS.has(name));
     expect(family).toEqual([
       'validate',
       'schema',

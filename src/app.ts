@@ -1,5 +1,6 @@
 import { Command, CommanderError } from 'commander';
 import { registerAddressCommands } from './acts/address.js';
+import { registerAgentsStartHereCommand } from './acts/agents-start-here.js';
 import { registerBuildCommand } from './acts/build.js';
 import { registerDocsCommands } from './acts/docs.js';
 import { registerDoctorCommand } from './acts/doctor.js';
@@ -86,6 +87,14 @@ export function buildProgram(io: CliIo, deps: ActDeps): Command {
       writeErr: (text) => io.writers.err(text),
     })
     .exitOverride();
+
+  // FIRST, and the position is the feature. Commander lists commands in
+  // registration order, so this is the first row of `ddocs --help` and of the
+  // bare-`ddocs` verb map — which is the whole point of a verb whose job is to
+  // be found by someone who does not yet know what to look for. It is native to
+  // dd, not a ported verb, so it sits ABOVE the frozen block below and leaves
+  // that block's order untouched.
+  registerAgentsStartHereCommand(program, io, deps);
 
   registerVersionAct(program, io, deps);
   registerStatusAct(program, io, deps);
