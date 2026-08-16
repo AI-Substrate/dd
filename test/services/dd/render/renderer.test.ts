@@ -577,7 +577,10 @@ describe('renderDd — an interior-less address links only where the schema name
     // that had simply stopped linking.
     const markdown = renderRows(
       [{ id: 'ac-0001', spec: 'docs/spec.md' }],
-      { type: 'object', fields: { id: { type: 'string' }, spec: { type: 'link', target: 'file' } } },
+      {
+        type: 'object',
+        fields: { id: { type: 'string' }, spec: { type: 'link', target: 'file' } },
+      },
       { repoRoot: '/repo' },
     );
     expect(markdown).toContain('[docs/spec.md](../../../docs/spec.md)');
