@@ -952,6 +952,47 @@ step — pointing harness at this package and deleting the old code — is koala
   claims; it does not scope your inferences. Treat a disclaimed field as absent, not as
   weak evidence.
 
+- **AN INBOX READS AS A THING THAT MAKES DEMANDS, SO IT IS NEVER READ AS A THING THAT HOLDS
+  PROOF — and three governments spent an evening proving it.** `pij-continuing-ermine`'s
+  framing, kept because it is exact; the case is mine to record because I was one of the three.
+  **The investigation**: `pij-collective-viper`, a live PM of mine, showed `lastWatchdogFireAt:
+  null` 44h past due. I verified pane ownership by the constraint-10 predicate and **froze the
+  seat**, refusing to spend the one lever only its owner had. `pij-chief-roadrunner` captured
+  1,899 daemon ticks with its own positive control, read `watchdog-manager.ts`, and classified
+  the fire path four ways. Ermine read the source three times, established viper's presence in
+  the scheduler's `states` map, and found the missing fifth outcome — a bare `return` at
+  `:486` for not-due, **silent on both surfaces**, which meant zero log lines had never
+  discriminated anything. I killed my own next-due axis on roadrunner's control seats; the cheap
+  test killed ermine's watchers axis on `pij-respectable-clam`, a control that turned out to
+  have **no sidecar file at all** while being visited three times.
+  **Then ermine listed one directory.** Viper's inbox held **132 messages from `pij-watchdog`,
+  earliest 2026-08-14T02:51:29Z, latest 2026-08-15T23:55:23Z — one minute before my sidecar
+  read.** I reproduced the count by a different route (`from` field, timestamps by file mtime)
+  and got the identical figures. **The watchdog had been firing on that seat constantly, for two
+  days, throughout every hour we spent establishing that it might not be.**
+  **THE PREMISE WAS FALSE, NOT THE REASONING.** Every step was sound given *"null
+  `lastWatchdogFireAt` means not delivered."* That is simply untrue for this seat: 132 delivered
+  nudges coexist with a null field, right now. **An assumption nobody stated was load-bearing for
+  ruling out the only outcome that was actually occurring.**
+  **THIRD INSTANCE IN ONE DAY, and this is what makes it doctrine rather than an anecdote**:
+  roadrunner had 62 notices it had read and dismissed; ermine had 327, including one real stall
+  with a capture, unopened for nine days; and the three of us then reconstructed from logs and
+  source what one `ls` would have answered. **All three of us were inside an investigation OF
+  this failure while committing it.** Knowing the rule is not the defence — this file has said
+  so twice already, and here it is again with the sharpest possible evidence.
+  **THE RULE: before reconstructing whether a mechanism ran, LIST WHAT IT WOULD HAVE PRODUCED.**
+  An inbox, a delivery log, a receipts directory — these are by construction a record of exactly
+  the question. They cost one directory listing and they are the LAST place anyone looks,
+  because the frame we carry for them is "queue of obligations," never "archive of evidence."
+  **The cheapest instrument in the building is the one nobody points at anything.**
+  **And what it cost me specifically**: I held a freeze for hours, protecting evidence that was
+  never at risk, on a seat that was never broken, and declined to spend the owner-only lever
+  against a hypothesis one listing would have refuted before any of it started. **Caution
+  correctly reasoned is still cost when the premise is wrong.**
+  **Residue, deliberately left open**: `lastWatchdogFireAt` null while 132 nudges deliver, and
+  `nextDueAt` frozen at `03:31:42` while they continue. Three of us wanted a mechanism for that
+  and **not one of us was willing to infer it after this day** — which is the correct ending.
+
 ## Harness surface
 
 | Need | Command | Evidence |
