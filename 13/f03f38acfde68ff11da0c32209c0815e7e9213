@@ -1,0 +1,24 @@
+docs/plans/004-file-links/assets/backpressure-coverage.md
+  h_9e71e8b09f7cf2 1-77
+docs/plans/004-file-links/assets/tasks/phase-1/tasks.dd.json
+  h_9e71e8b09f7cf2 30,34-35,45,48-49
+docs/plans/004-file-links/assets/tasks/phase-1/tasks.dd.md
+  h_9e71e8b09f7cf2 38-39
+docs/plans/004-file-links/assets/whole-file-form-proposal.md
+  h_9e71e8b09f7cf2 52-57
+docs/plans/004-file-links/plan.dd.json
+  h_9e71e8b09f7cf2 93-97,117
+docs/plans/004-file-links/plan.dd.md
+  h_9e71e8b09f7cf2 85,93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "13f03f38acfde68ff11da0c32209c0815e7e9213",
+  "prompts": {},
+  "humans": {
+    "h_9e71e8b09f7cf2": {
+      "author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
