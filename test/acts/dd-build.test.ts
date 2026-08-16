@@ -421,9 +421,10 @@ describe('harness dd build — ordinary file targets', () => {
     rmSync(join(repo, STRUCTURED));
     rmSync(join(repo, INCIDENTAL));
     const result = await runDd(['dd', 'build', DOCUMENT, '--check']);
-    expect(findings(result.envelope).map((finding) => finding.location).sort()).toEqual([
-      '$.sections[tasks].value[0].implemented_by',
-      '$.sections[tasks].value[0].notes',
-    ]);
+    expect(
+      findings(result.envelope)
+        .map((finding) => finding.location)
+        .sort(),
+    ).toEqual(['$.sections[tasks].value[0].implemented_by', '$.sections[tasks].value[0].notes']);
   });
 });
