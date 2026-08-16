@@ -1,7 +1,11 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import type { DdDoc, ResolvedDdSchema } from '../../../../src/core/model.js';
-import type { SchemaResolveResult, SchemaResolver } from '../../../../src/core/validate.js';
+import type {
+  FileExistence,
+  SchemaResolveResult,
+  SchemaResolver,
+} from '../../../../src/core/validate.js';
 import type { DocLoader, DocLoadResult } from '../../../../src/core/walk.js';
 import {
   addressableAt,
@@ -121,11 +125,13 @@ class MapDocLoader implements DocLoader {
   }
 }
 
-function corpus(docs: Record<string, DdDoc>): {
+interface MapCorpus {
   deps: { schemaResolver: SchemaResolver; docLoader: MapDocLoader };
   edges: DdLinkEdge[];
   paths: string[];
-} {
+}
+
+function corpus(docs: Record<string, DdDoc>): MapCorpus {
   const map = new Map(Object.entries(docs));
   const deps = { schemaResolver: new MapSchemaResolver(), docLoader: new MapDocLoader(map) };
   const paths = [...map.keys()].sort();
@@ -188,17 +194,29 @@ function twoRowCorpus() {
 
 function mapFrom(
   seedAddress: string,
-  built: ReturnType<typeof corpus>,
-  options: Partial<{ depth: number; maxNodes: number; direction: DdMapDirection }> = {},
+  built: MapCorpus,
+  options: Partial<{
+    depth: number;
+    maxNodes: number;
+    direction: DdMapDirection;
+    rels: readonly string[];
+    fileExistence: FileExistence;
+  }> = {},
 ): DdMapResult {
   const seed = resolveMapSeed(seedAddress, built.deps, { repoRoot: REPO });
   if (!seed.ok) throw new Error(`seed did not resolve: ${JSON.stringify(seed.issues)}`);
-  return mapAddress(seed, built.edges, built.deps, {
-    repoRoot: REPO,
-    depth: options.depth ?? 3,
-    maxNodes: options.maxNodes ?? 20,
-    direction: options.direction ?? 'both',
-  });
+  return mapAddress(
+    seed,
+    built.edges,
+    { ...built.deps, ...(options.fileExistence && { fileExistence: options.fileExistence }) },
+    {
+      repoRoot: REPO,
+      depth: options.depth ?? 3,
+      maxNodes: options.maxNodes ?? 20,
+      direction: options.direction ?? 'both',
+      ...(options.rels && { rels: options.rels }),
+    },
+  );
 }
 
 function addresses(result: DdMapResult, arm: 'in' | 'out'): string[] {
@@ -1354,7 +1372,21 @@ describe('nodeId — F1 identity spelling on the public map surface (S-1a)', () 
   });
 });
 
-describe('ddocs graph map — an ordinary file is not an addressable place', () => {
+/**
+ * An ordinary file is an EXTERNAL DEPENDENCY of the corpus, and a leaf of it.
+ *
+ * The map used to drop these edges on the floor, so `ddocs links <doc>` reported
+ * five outbound file edges and `ddocs graph map <doc> --direction out` reported
+ * none — a false absence, and the worst kind, because the map is the surface a
+ * reader trusts to be complete. The fence that dropped them was real about one
+ * thing: dd must never OPEN the file. Both hold at once — the edge is shown, the
+ * node is terminal, and the loader is never asked about it.
+ *
+ * Existence is measured through the injected {@link FileExistence} seam or not at
+ * all. Unmeasured renders as unresolved, never as resolved: a solid arrow into a
+ * file nobody looked for is a lie a map cannot afford.
+ */
+describe('ddocs graph map — ordinary files are external dependencies (wl-0023)', () => {
   const FILE_SCHEMA: ResolvedDdSchema = {
     name: 'map/files',
     sections: {
@@ -1365,8 +1397,12 @@ describe('ddocs graph map — an ordinary file is not an addressable place', () 
             type: 'object',
             fields: {
               id: { type: 'string' },
-              claim: { type: 'text' },
-              implemented_by: { type: 'link', target: 'file', rel: 'implemented_by' },
+              claim: { type: 'string' },
+              implemented_by: {
+                type: 'array',
+                items: { type: 'link', target: 'file', rel: 'implemented_by' },
+              },
+              note: { type: 'text' },
               proven_by: { type: 'link' },
             },
           },
@@ -1376,47 +1412,273 @@ describe('ddocs graph map — an ordinary file is not an addressable place', () 
   };
   SCHEMAS.set(FILE_SCHEMA.name, FILE_SCHEMA);
 
-  const LIBRARY = `${REPO}/src/library.ts`;
+  const PLAN = `${REPO}/plan.dd.json`;
+  const SEARCH = `${REPO}/src/search.ts`;
+  const HANDBOOK = `${REPO}/docs/handbook.md`;
+  const REBUILD = `${REPO}/src/rebuild.ts`;
+  const DESIGN = `${REPO}/docs/design.md`;
 
-  function fileCorpus() {
+  /** Only these two are on disk — the other two are cited and absent. */
+  const PRESENT: readonly string[] = [SEARCH, HANDBOOK];
+
+  class FakeExistence implements FileExistence {
+    readonly probes: string[] = [];
+
+    constructor(private readonly present: readonly string[]) {}
+
+    exists(path: string): boolean {
+      this.probes.push(path);
+      return this.present.includes(path);
+    }
+  }
+
+  /**
+   * The demo corpus, in memory: two rows, five file edges across structured and
+   * incidental origins, and one dd edge beside them so the loader stays visible.
+   */
+  function fileCorpus(): MapCorpus {
     return corpus({
-      [`${REPO}/docs/plan.dd.json`]: doc('map/files', [
+      [PLAN]: doc('map/files', [
         {
           name: 'rows',
           value: [
             {
               id: 'ac-0001',
-              claim: 'The claim that cites code',
-              implemented_by: 'src/library.ts',
+              claim: 'Queries are fast',
+              implemented_by: ['src/search.ts', 'docs/handbook.md'],
+              note: 'background in [the handbook](docs/handbook.md)',
               proven_by: 'log.dd.json#entries/lg-0001',
+            },
+            {
+              id: 'ac-0002',
+              claim: 'Index rebuild is idempotent',
+              implemented_by: ['src/rebuild.ts'],
+              note: 'see [the missing design note](docs/design.md)',
             },
           ],
         },
       ]),
-      [`${REPO}/docs/log.dd.json`]: doc('map/log', [
+      [`${REPO}/log.dd.json`]: doc('map/log', [
         { name: 'entries', value: [{ id: 'lg-0001', text: 'Proved it' }] },
       ]),
     });
   }
 
-  it('never opens the ordinary file it walked past, and keeps the dd edge beside it', () => {
-    const built = fileCorpus();
-    // The edge exists — this is a fence in the MAP, not a hole in the graph.
-    expect(built.edges).toContainEqual(expect.objectContaining({ kind: 'file', to: LIBRARY }));
+  /** `address+rel+location` — the three fields that identify an edge as AUTHORED. */
+  function authored(edges: readonly { address: string; rel: string; location: string }[]) {
+    return edges.map((edge) => [edge.address, edge.rel, edge.location]);
+  }
 
-    const before = [...built.deps.docLoader.loads];
-    const result = mapFrom(`${REPO}/docs/plan.dd.json#rows/ac-0001`, built, {
+  function fileNodes(result: DdMapResult) {
+    return result.nodes.filter((node) => node.kind === 'file');
+  }
+
+  /** Every map edge that lands on a file node, in walk order. */
+  function fileEdgesOf(result: DdMapResult) {
+    const keys = new Set(fileNodes(result).map((node) => node.key));
+    return result.edges.filter((edge) => keys.has(edge.to));
+  }
+
+  it('shows every outbound file edge `ddocs links` shows, edge for edge', () => {
+    const built = fileCorpus();
+    // What `ddocs links <doc>` answers with: `linksFor` is a filter over exactly
+    // this edge list, so the left-hand side of the parity IS the links report.
+    const linked = built.edges.filter((edge) => edge.from === PLAN && edge.kind === 'file');
+    expect(linked).toHaveLength(5);
+
+    const result = mapFrom(PLAN, built, {
       direction: 'out',
-      depth: 2,
+      fileExistence: new FakeExistence(PRESENT),
     });
+
+    // Same five, same order, matched on what the author wrote rather than on
+    // anything the walk derived.
+    expect(authored(fileEdgesOf(result))).toEqual(authored(linked));
+    // Four nodes, not five: two edges cite the same handbook, and one file is one
+    // dependency however many rows point at it — the dedup `traverseCorpus` already
+    // does for its own file nodes.
+    expect(fileNodes(result).map((node) => node.address)).toEqual([
+      'src/search.ts',
+      'docs/handbook.md',
+      'src/rebuild.ts',
+      'docs/design.md',
+    ]);
+  });
+
+  it('marks a file that is there as a resolved terminal dependency, without opening it', () => {
+    const built = fileCorpus();
+    const probe = new FakeExistence(PRESENT);
+    const before = [...built.deps.docLoader.loads];
+    const result = mapFrom(PLAN, built, { direction: 'out', depth: 3, fileExistence: probe });
     const during = built.deps.docLoader.loads.slice(before.length);
 
-    // The map indexes addressable interiors, and an ordinary file has none —
-    // reading one to discover that would be the one thing the file contract
-    // forbids. The dd sibling IS opened, so the loader is demonstrably live.
-    expect(during).not.toContain(LIBRARY);
-    expect(during).toContain(`${REPO}/docs/log.dd.json`);
-    expect(addresses(result, 'out')).toEqual(['docs/log.dd.json#entries/lg-0001']);
-    expect(result.nodes.map((node) => node.address)).not.toContain('src/library.ts');
+    const search = fileNodes(result).find((node) => node.address === 'src/search.ts');
+    expect(search).toMatchObject({
+      kind: 'file',
+      resolved: true,
+      interior: [],
+      mark: '',
+      progress: null,
+      label: null,
+      arm: 'out',
+    });
+    // A leaf: nothing hangs off it, at any depth.
+    expect(result.edges.some((edge) => edge.from === search?.key)).toBe(false);
+
+    // The existence seam is the ONLY question dd asked about it, and the loader
+    // was never asked at all. The dd sibling IS loaded, so the control is live.
+    expect(probe.probes).toContain(SEARCH);
+    expect(during).not.toContain(SEARCH);
+    expect(during).not.toContain(HANDBOOK);
+    expect(during).toContain(`${REPO}/log.dd.json`);
+  });
+
+  it('shows a cited file that is missing as an unresolved dependency, still visible', () => {
+    const built = fileCorpus();
+    const probe = new FakeExistence(PRESENT);
+    const result = mapFrom(PLAN, built, { direction: 'out', fileExistence: probe });
+
+    const missing = fileNodes(result).filter((node) => !node.resolved);
+    expect(missing.map((node) => node.address)).toEqual(['src/rebuild.ts', 'docs/design.md']);
+    for (const node of missing) expect(node.kind).toBe('file');
+    expect(probe.probes).toContain(REBUILD);
+    expect(probe.probes).toContain(DESIGN);
+  });
+
+  it('without an existence probe every file is unmeasured — shown, and never resolved', () => {
+    const built = fileCorpus();
+    const result = mapFrom(PLAN, built, { direction: 'out' });
+
+    // Absence of a probe is absence of a MEASUREMENT. The dependency is still on
+    // the map, because dropping it would be the false absence this fixes; it is
+    // never resolved, because defaulting to "exists" would invent the answer.
+    expect(fileNodes(result)).toHaveLength(4);
+    expect(fileNodes(result).every((node) => node.resolved)).toBe(false);
+    expect(fileNodes(result).some((node) => node.resolved)).toBe(false);
+    expect(authored(fileEdgesOf(result))).toHaveLength(5);
+  });
+
+  it('filters file edges by relation exactly as it filters dd edges', () => {
+    const built = fileCorpus();
+    const structured = mapFrom(PLAN, built, {
+      direction: 'out',
+      rels: ['implemented_by'],
+      fileExistence: new FakeExistence(PRESENT),
+    });
+    expect(authored(fileEdgesOf(structured))).toEqual([
+      ['src/search.ts', 'implemented_by', '$.sections[rows].value[0].implemented_by[0]'],
+      ['docs/handbook.md', 'implemented_by', '$.sections[rows].value[0].implemented_by[1]'],
+      ['src/rebuild.ts', 'implemented_by', '$.sections[rows].value[1].implemented_by[0]'],
+    ]);
+
+    const incidental = mapFrom(PLAN, built, {
+      direction: 'out',
+      rels: ['ref'],
+      fileExistence: new FakeExistence(PRESENT),
+    });
+    expect(authored(fileEdgesOf(incidental))).toEqual([
+      ['docs/handbook.md', 'ref', '$.sections[rows].value[0].note'],
+      ['docs/design.md', 'ref', '$.sections[rows].value[1].note'],
+    ]);
+
+    // A relation nothing carries excludes every file edge rather than falling
+    // back to all of them.
+    const none = mapFrom(PLAN, built, {
+      direction: 'out',
+      rels: ['nothing_carries_this'],
+      fileExistence: new FakeExistence(PRESENT),
+    });
+    expect(fileNodes(none)).toEqual([]);
+  });
+
+  it('counts file nodes against the budget and reports the cut honestly', () => {
+    const built = fileCorpus();
+    const result = mapFrom(PLAN, built, {
+      direction: 'out',
+      maxNodes: 3,
+      fileExistence: new FakeExistence(PRESENT),
+    });
+
+    // Seed plus two, and the rest named as cut rather than quietly missing.
+    expect(result.nodes).toHaveLength(3);
+    expect(result.truncated.cut).toBe(true);
+    expect(result.truncated.nodes.map((cut) => cut.reason)).toContain('max-nodes');
+    expect(result.truncated.nodes.map((cut) => cut.address)).toContain('docs/handbook.md');
+  });
+
+  it('is scoped to the row, exactly as a dd edge is', () => {
+    const built = fileCorpus();
+    const result = mapFrom(`${PLAN}#rows/ac-0002`, built, {
+      direction: 'out',
+      fileExistence: new FakeExistence(PRESENT),
+    });
+    // Only the second row's files: an item-scoped answer that included the first
+    // row's dependencies would be answering about the file, not the row.
+    expect(fileNodes(result).map((node) => node.address)).toEqual([
+      'src/rebuild.ts',
+      'docs/design.md',
+    ]);
+  });
+
+  it('labels both external states at a glance in the human render', () => {
+    const built = fileCorpus();
+    const result = mapFrom(PLAN, built, {
+      direction: 'out',
+      fileExistence: new FakeExistence(PRESENT),
+    });
+    const rendered = renderMapTree(result, PLAIN_MAP_PALETTE);
+
+    // Two states, two visibly different lines — legible without colour, because
+    // this render has to survive a pipe.
+    expect(rendered).toContain('src/search.ts  (external file)');
+    expect(rendered).toContain('src/rebuild.ts  (external file, unresolved)');
+    expect(rendered).toContain('docs/design.md  (external file, unresolved)');
+    // The relation still rides the arrow, and the tree connector is the ordinary
+    // solid one — an external dependency is a normal member of the drawing.
+    expect(rendered).toContain('implemented_by');
+    expect(rendered).toMatch(/[\u251c\u2514]\u2500.*src\/search\.ts/);
+    // The bare `(unresolved)` flag stays the dd-node vocabulary, never a file's.
+    expect(rendered).not.toContain('src/rebuild.ts  (unresolved)');
+    for (const line of rendered.split('\n')) expect(cellWidth(line)).toBeLessThanOrEqual(80);
+  });
+
+  it('shows a reference that escapes the repository, and never probes it', () => {
+    const built = corpus({
+      [PLAN]: doc('map/files', [
+        {
+          name: 'rows',
+          value: [
+            {
+              id: 'ac-0001',
+              claim: 'Cites something outside the tree',
+              implemented_by: ['../../etc/passwd'],
+            },
+          ],
+        },
+      ]),
+    });
+    const probe = new FakeExistence(PRESENT);
+    const result = mapFrom(PLAN, built, { direction: 'out', fileExistence: probe });
+
+    // The probe is a host call, and dd does not make one about a path outside the
+    // tree it was asked about — the same refusal `traverseCorpus` makes. The edge
+    // is still drawn, quoting what the author wrote, and it is never resolved.
+    expect(probe.probes).toEqual([]);
+    expect(fileNodes(result).map((node) => [node.address, node.resolved, node.path])).toEqual([
+      ['../../etc/passwd', false, null],
+    ]);
+    expect(renderMapTree(result, PLAIN_MAP_PALETTE)).toContain(
+      '../../etc/passwd  (external file, unresolved)',
+    );
+  });
+
+  it('leaves an ordinary-file SEED exactly as it was — out of scope, unchanged', () => {
+    const built = fileCorpus();
+    // Jordan's ruling: inbound map queries seeded on an ordinary file are out of
+    // scope. This pins the pre-existing refusal so the outbound work cannot move
+    // it by accident.
+    const seed = resolveMapSeed(SEARCH, built.deps, { repoRoot: REPO });
+    expect(seed.ok).toBe(false);
+    if (!seed.ok) expect(seed.issues[0]?.reason).toBe('file-unreadable');
   });
 });
