@@ -105,7 +105,7 @@
           "id": "ph-252f",
           "title": "Address and discovery contract",
           "brief": "Change the public grammar to represent whole files as bare paths; introduce one explicit file-reference cell contract covering structured `target: file` values and narrow Markdown links in `text`; preserve dd-interior behavior and keep existence as an injected pure question.",
-          "state": "unchecked",
+          "state": "checked",
           "tasks": "assets/tasks/phase-1/tasks.dd.json#tasks",
           "objective": "Establish canonical syntax, collection, path-base, and existence contracts before any product surface consumes them.",
           "delivers": [
