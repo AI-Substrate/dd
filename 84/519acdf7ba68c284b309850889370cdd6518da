@@ -1,0 +1,18 @@
+docs/plans/001-dd-extraction/plan.dd.md
+  h_9e71e8b09f7cf2 64-73
+src/render/renderer.ts
+  h_9e71e8b09f7cf2 237-244,256,264-279,299-303,359-365,412-418,467
+test/services/dd/render/renderer.test.ts
+  h_9e71e8b09f7cf2 468-499,501-502,505-506,509-530,533-611
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "84519acdf7ba68c284b309850889370cdd6518da",
+  "prompts": {},
+  "humans": {
+    "h_9e71e8b09f7cf2": {
+      "author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
