@@ -235,6 +235,14 @@ function renderFileLink(raw: string, resolved: DdRenderContext): string {
 }
 
 /**
+ * Where a link cell came from. `target` presence cannot answer this: an absent
+ * target means "declared link, dd target by default" in a schema, and also means
+ * "bucket entry" and "no schema said anything at all" at the other two call
+ * sites. Only the caller knows which, so the caller says so.
+ */
+type LinkOrigin = 'declared' | 'bucket' | 'inferred';
+
+/**
  * Render a link cell: the id stays visible in the link text, the target is the
  * NEAREST HEADING — never a synthetic HTML anchor. A same-document map entry owns
  * its own `###` heading, so it anchors there; everything else anchors on its
@@ -245,12 +253,29 @@ function renderLink(
   raw: string,
   doc: DdDoc,
   resolved: DdRenderContext,
+  origin: LinkOrigin,
   declaredTarget?: string,
 ): string {
   if (declaredTarget === FILE_LINK_TARGET) return renderFileLink(raw, resolved);
 
   const address = parseAddress(raw);
   if (isAddressFailure(address)) return escapeCell(raw);
+
+  // An interior-less address names a FILE and nothing inside it, and the only
+  // cell allowed to emit an href to a file is one whose schema declared
+  // `target: "file"` — which returned above. So a SCHEMA-DIRECTED link with an
+  // empty interior is type-wrong for its declaration: the `pressure` escape
+  // `not-applicable`, a typo, a bare path authored into a dd-target cell, a
+  // bucket entry the schema never gave a file target. Say the authored value;
+  // never invent an href to a file the schema did not name.
+  //
+  // Inferred links are NOT schema-directed and keep their existing behaviour:
+  // nothing declared them, so nothing is type-wrong, and `looksLikeAddress` has
+  // already decided the value is an address. Narrowing that inference is a
+  // separate question from honouring a declaration.
+  if (address.segments.length === 0 && origin !== 'inferred') {
+    return escapeCell(raw);
+  }
 
   const segments = address.segments;
   const text = segments[segments.length - 1]?.value ?? raw;
@@ -271,10 +296,11 @@ function renderLink(
   }
 
   const file = address.file === null ? '' : address.file.replace(/\.dd\.json$/, '.dd.md');
-  // An UNDECLARED whole-file address reaches here too, and it has no interior to
-  // anchor on. `#` with nothing after it is not an anchor, it is a link to the
-  // top of the page — so the separator is emitted only when there is something
-  // for it to separate.
+  // Every address reaching here HAS an interior, so the separator is normally
+  // earned. It is still conditional because a slug can come back empty — a
+  // same-document address resolves to a section whose name is all punctuation —
+  // and `#` with nothing after it is not an anchor, it is a link to the top of
+  // the page, which is a different destination from the page itself.
   const link = `[${escapeCell(text)}](${anchor.length > 0 ? `${file}#${anchor}` : file})`;
   const summary = derived ? summarise(derived) : null;
   return summary ? `${summary} ${link}` : link;
@@ -330,11 +356,13 @@ function renderContainer(value: unknown, depth: number, deps: CellDeps, shape?: 
   // by its DECLARED `link` shape, or by the same undeclared-address inference
   // `renderCell` applies (A3 / workshop-002 Ruling 3). Without this, a schema
   // that says `array of link` silently renders plain text.
-  if (
-    typeof value === 'string' &&
-    (shape?.type === 'link' || (!shape && looksLikeAddress(value)))
-  ) {
-    return renderLink(value, deps.doc, deps.resolved, shape?.target);
+  if (typeof value === 'string') {
+    if (shape?.type === 'link') {
+      return renderLink(value, deps.doc, deps.resolved, 'declared', shape.target);
+    }
+    if (!shape && looksLikeAddress(value)) {
+      return renderLink(value, deps.doc, deps.resolved, 'inferred');
+    }
   }
   return renderScalar(value);
 }
@@ -381,11 +409,13 @@ function renderCell(
     return `${pipFor(value, terminal)} ${escapeCell(value)}`;
   }
 
-  if (
-    typeof value === 'string' &&
-    (shape?.type === 'link' || (!shape && looksLikeAddress(value)))
-  ) {
-    return renderLink(value, deps.doc, deps.resolved, shape?.target);
+  if (typeof value === 'string') {
+    if (shape?.type === 'link') {
+      return renderLink(value, deps.doc, deps.resolved, 'declared', shape.target);
+    }
+    if (!shape && looksLikeAddress(value)) {
+      return renderLink(value, deps.doc, deps.resolved, 'inferred');
+    }
   }
 
   if (Array.isArray(value) || isRecord(value)) return renderContainer(value, 1, deps, shape);
@@ -434,7 +464,7 @@ function renderBucket(value: unknown, location: string, deps: CellDeps): string 
   if (bucket.entries.length === 0) return EMPTY_CELL;
   return bucket.entries
     .map((entry) => {
-      const link = renderLink(entry.ref, deps.doc, deps.resolved);
+      const link = renderLink(entry.ref, deps.doc, deps.resolved, 'bucket');
       const text = entry.label === undefined ? link : `${escapeCell(entry.label)} ${link}`;
       return `${escapeCell(entry.rel)}: ${text}`;
     })

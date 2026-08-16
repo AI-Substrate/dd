@@ -465,30 +465,149 @@ describe('renderDd — an ordinary file link renders as a working href', () => {
     expect(markdown).not.toContain('[src/search/index.ts](');
   });
 
-  it('drops the separator for an address with a file and no interior', () => {
-    // Reachable through the UNDECLARED-address inference, not through a
-    // `target: "file"` cell: the grammar now accepts a bare `.dd.json`, and `#`
-    // with nothing after it is not an anchor — it is a link to the top of the
-    // page, which is a different destination from the page itself.
-    const schema = {
-      name: 'test/bare',
-      sections: { meta: { shape: { type: 'object', fields: { cite: { type: 'link' } } } } },
-    } as unknown as ResolvedDdSchema;
-    const doc: DdDoc = {
-      dd: { schema: 'test/bare' },
-      sections: [{ name: 'meta', value: { cite: 'other.dd.json' } }],
-      references: [],
-    };
-    const markdown = renderDd(doc, { path: '/repo/docs/plan.dd.json', schema });
-    expect(markdown).toContain('[other.dd.json](other.dd.md)');
-    expect(markdown).not.toContain('other.dd.md#');
-  });
-
   it('emits a document-rooted document the same href it authored', () => {
     // The degenerate arm: with the document AT the repository root the rebase is
     // the identity, so a test that only ever runs deep could pass on a helper
     // that returns its input.
     const flat = renderDd(DOC, { path: '/repo/plan.dd.json', schema: SCHEMA, repoRoot: REPO_ROOT });
     expect(flat).toContain('[src/search/index.ts](src/search/index.ts)');
+  });
+});
+
+describe('renderDd — an interior-less address links only where the schema named a file', () => {
+  // wl-0023. A whole-file address has no interior, so there is nothing to anchor
+  // on and nothing but the authored bytes to point at. Emitting a link anyway
+  // produced ten dead `[not-applicable](not-applicable)` hrefs in the shipped
+  // plan corpus: the `pressure` escape is a SENTINEL, not an address, and the
+  // renderer is the third independent consumer that never learned so. The rule
+  // is general over SCHEMA-DIRECTED links — declared cells and bucket entries,
+  // zero segments, no declared file target — because the escape is only the
+  // instance that was noticed; a typo and a bare path authored into a dd-target
+  // cell are the same type error and rendered the same dead href.
+  //
+  // It stops at the schema. A genuinely undeclared scalar is not type-wrong,
+  // because no type was given; `looksLikeAddress` alone decides those and its
+  // behaviour is unchanged here — the last test holds that boundary. The legacy
+  // test this block replaced looked like it held it but did not: its
+  // `cite: { type: 'link' }` was a DECLARED link with an implicit dd target, and
+  // its comment calling it undeclared inference was simply wrong.
+
+  function renderRows(
+    rows: readonly unknown[],
+    itemShape: Record<string, unknown>,
+    context: { path?: string; repoRoot?: string } = {},
+  ): string {
+    const schema = {
+      name: 'test/sentinel',
+      sections: { acceptance_criteria: { shape: { type: 'array', items: itemShape } } },
+    } as unknown as ResolvedDdSchema;
+    const doc: DdDoc = {
+      dd: { schema: 'test/sentinel' },
+      sections: [{ name: 'acceptance_criteria', value: rows }],
+      references: [],
+    };
+    return renderDd(doc, {
+      path: context.path ?? '/repo/docs/plans/001-dd-extraction/plan.dd.json',
+      schema,
+      ...(context.repoRoot !== undefined && { repoRoot: context.repoRoot }),
+    });
+  }
+
+  const AC_ITEM = {
+    type: 'object',
+    fields: {
+      id: { type: 'string' },
+      pressure: { type: 'link', rel: 'pressure' },
+    },
+  };
+
+  it('renders the pressure escape in a declared dd-target cell as plain text', () => {
+    const markdown = renderRows([{ id: 'ac-0001', pressure: 'not-applicable' }], AC_ITEM);
+    expect(markdown).toContain('| ac-0001 | not-applicable |');
+    // The href BYTES are the defect. Asserting the text alone would pass on the
+    // broken renderer, whose output also contains `not-applicable`.
+    expect(markdown).not.toContain('[not-applicable]');
+    expect(markdown).not.toContain('](not-applicable)');
+  });
+
+  it('renders a links-bucket pressure escape as plain text', () => {
+    // The bucket carries its relation in the DATA and reaches `renderLink` with
+    // no declared target at all, so it is an independent arm: a fix that only
+    // read declared shapes would leave this one emitting the dead href.
+    const markdown = renderRows(
+      [{ id: 'ac-0001', links: [{ rel: 'pressure', ref: 'not-applicable' }] }],
+      { type: 'object', fields: { id: { type: 'string' } } },
+    );
+    expect(markdown).toContain('pressure: not-applicable');
+    expect(markdown).not.toContain('[not-applicable]');
+    expect(markdown).not.toContain('](not-applicable)');
+  });
+
+  it('renders any other bare-path-shaped value in a dd-target cell as plain text', () => {
+    // The general class the sentinel belongs to. `docs/spec.md` is a typo or a
+    // missing `target: "file"`; `other.dd.json` is a real document the schema
+    // still never authorised an href to — and it used to render one, aimed at a
+    // sibling `.dd.md` this cell never declared. Both say the value instead.
+    //
+    // Both declared spellings are on this row: `pressure` leaves the target
+    // implicit, `cite` names it. A dd target is a dd target however it was
+    // written, and the guard must not be reading the absence of the key.
+    const markdown = renderRows(
+      [{ id: 'ac-0001', pressure: 'docs/spec.md', cite: 'other.dd.json' }],
+      {
+        type: 'object',
+        fields: {
+          id: { type: 'string' },
+          pressure: { type: 'link', rel: 'pressure' },
+          cite: { type: 'link', target: 'dd' },
+        },
+      },
+    );
+    expect(markdown).toContain('| ac-0001 | docs/spec.md | other.dd.json |');
+    expect(markdown).not.toContain('](docs/spec.md)');
+    expect(markdown).not.toContain('other.dd.md');
+    // No trailing-`#` form either: absence of a link subsumes the older
+    // separator rule this block replaced.
+    expect(markdown).not.toContain('other.dd.json#');
+  });
+
+  it('still links a declared target:file whole-file path, rebased onto the sibling', () => {
+    // Positive control. The guard must not swallow the ONE declaration that
+    // authorises a file href — if it did, tests 1-3 would pass on a renderer
+    // that had simply stopped linking.
+    const markdown = renderRows(
+      [{ id: 'ac-0001', spec: 'docs/spec.md' }],
+      { type: 'object', fields: { id: { type: 'string' }, spec: { type: 'link', target: 'file' } } },
+      { repoRoot: '/repo' },
+    );
+    expect(markdown).toContain('[docs/spec.md](../../../docs/spec.md)');
+  });
+
+  it('still links a dd-target address that carries a real interior', () => {
+    // The second positive control: an address WITH an interior is untouched, so
+    // the guard is proven to key on the empty interior and not on the cell.
+    const markdown = renderRows(
+      [{ id: 'ac-0001', pressure: 'backpressure.dd.json#instruments/bp-0001' }],
+      AC_ITEM,
+    );
+    expect(markdown).toContain('[bp-0001](backpressure.dd.md#instruments)');
+  });
+
+  it('still links a genuinely undeclared bare .dd.json value to its sibling', () => {
+    // The boundary the guard must NOT cross. `cite` is absent from the item
+    // shape, so nothing declared it a link and nothing declared what it targets:
+    // the address inference of A3 / workshop-002 Ruling 3 selected it on the
+    // value alone. Whether that inference should accept a bare `.dd.json` at all
+    // is a live question, and a separate one — this fix answers what a
+    // DECLARATION means, so the inferred bytes must come through untouched.
+    const markdown = renderRows([{ id: 'ac-0001', cite: 'other.dd.json' }], {
+      type: 'object',
+      fields: { id: { type: 'string' } },
+    });
+    expect(markdown).toContain('[other.dd.json](other.dd.md)');
+    // Carried over from the replaced legacy test, and only now on the path that
+    // test claimed: `#` with nothing after it is a link to the top of the page,
+    // which is a different destination from the page itself.
+    expect(markdown).not.toContain('other.dd.md#');
   });
 });
