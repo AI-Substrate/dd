@@ -1,0 +1,22 @@
+src/acts/graph.ts
+  h_9e71e8b09f7cf2 174-184
+src/links/map.ts
+  h_9e71e8b09f7cf2 5,235-243,248-251,294-303,490,555-597,681-683
+src/links/report.ts
+  h_9e71e8b09f7cf2 545-554,570-571
+test/acts/dd-graph-map-live.test.ts
+  h_9e71e8b09f7cf2 8,699-860
+test/services/dd/links/map.test.ts
+  h_9e71e8b09f7cf2 4-8,128,132-134,197-204,208-219,1375-1389,1400-1405,1415-1419,1421-1439,1441,1447-1449,1452-1457,1461,1467-1482,1484-1487,1489,1491,1493-1512,1515-1682
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "f0464094145cfdb789094d752036013f15cb4951",
+  "prompts": {},
+  "humans": {
+    "h_9e71e8b09f7cf2": {
+      "author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
