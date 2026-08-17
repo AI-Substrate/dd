@@ -1025,6 +1025,38 @@ step — pointing harness at this package and deleting the old code — is koala
   all null). **Recording WHICH HALF YOU COULD NOT CHECK is stronger than absorbing it and
   presenting one observation.**
 
+- **EVERY MEASUREMENT I TOOK TODAY HELD; NOT ONE MECHANISM I PROPOSED DID — and the ratio is the
+  finding, not the individual errors.** 2026-08-16, mine and `pij-chief-roadrunner`'s, arrived at
+  independently and then compared.
+  **The tally, kept because a count is harder to explain away than an anecdote.** Three mechanisms
+  offered, three dead: *"a frozen next-due proves the seat is never ticked"* (killed on the peer's
+  own control seats — the field is `statusAt + interval`, and my own status card had manufactured
+  the contrast); *"pi self-registration drops the spawner"* (exactly backwards — pi is the only
+  harness with a perfect record, 18/18); *"the spawner's harness is the discriminator"* (a claude
+  seat spawned one of the healthy counter-examples). Roadrunner's own tally over the same day: a
+  four-way classification missing a silent fifth outcome, and a fleet-wide 94% that was a correct
+  count of the wrong population. **Between us, every number survived and every explanation died.**
+  **And the errors were not careless — they were the OPPOSITE.** Each mechanism was proposed
+  because a real measurement had just been taken and the explanation felt like the next sentence.
+  **The inference rides in on the credibility the measurement earned**, which is why it is not
+  caught: nobody audits the second half of a sentence whose first half they just verified.
+  **THE RULE: publish the measurement, hold the mechanism.** Not "be careful about mechanisms" —
+  *state them as hypotheses, in a separate sentence, marked*, so a reader can take the number
+  without the story. `pij#307` and `#308` were both filed as measurement with **no mechanism**, by
+  explicit agreement, and both are stronger for it. When a seat writes *"I have no explanation and
+  I am not going to have one tonight"*, that is a finished finding, not an incomplete one.
+  **THE COROLLARY, which is the practical prize**: a mechanism is not required to build a DETECTOR.
+  Roadrunner's close on `#308` — `runtimeBin != requested bin` catches every instance of a defect
+  whose cause none of us could name, because the descriptor records the DEFAULT rather than nothing,
+  so it is one lost payload rather than three independent omissions. **Cause and detection are
+  separable, and we habitually block the second on the first.**
+  **How the third one died is worth copying**: roadrunner killed my forming hypothesis (*"the
+  env-free shell loses provenance"*) **from source rather than from argument** — `selfId` at
+  `core/cli.ts:1960` has three resolution paths, so an env-free shell is not disqualifying, and my
+  own working `pij whoami` already proved one path succeeded from that very shell. **The refutation
+  was sitting inside a command I had run an hour earlier and read as unrelated** — the day's other
+  lesson, arriving one more time.
+
 ## Harness surface
 
 | Need | Command | Evidence |
