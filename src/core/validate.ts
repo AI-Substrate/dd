@@ -2,6 +2,7 @@ import { isAddressFailure, normalizeFilePath, parseAddress } from './address.js'
 import { LINKS_BUCKET_FIELD, readLinksBucket } from './bucket.js';
 import {
   COMPLETION_STATES,
+  DEFAULT_REL,
   ID_PREFIXES,
   MINTED_ID_PATTERN,
   PRESSURE_NOT_APPLICABLE,
@@ -59,6 +60,53 @@ export interface DdLinkCell {
    * happened to sit under.
    */
   rel: string;
+}
+
+/**
+ * The ONE schema marker that makes a link cell name an ordinary repository file
+ * rather than a place inside a dd document (BRIEF ruling 3: plain, with no
+ * `file:ts`, no globs and no extension allowlist — constraining is purely
+ * additive later, and shipping the constraint first would fix a vocabulary
+ * before any consumer has asked for one).
+ */
+export const FILE_LINK_TARGET = 'file';
+
+/**
+ * Which directory a file reference's authored path is anchored on.
+ *
+ * The two populations do NOT share a base and cannot be given one. A structured
+ * `target: "file"` cell stores a ruled repository-relative path, so it resolves
+ * from the repository root. An incidental Markdown destination is an href that a
+ * human clicks in the generated sibling, so it resolves from the document's own
+ * directory — anything else would check a different file than the rendered link
+ * opens. Carried per reference, because a single resolver would be silently
+ * wrong in one arm and which arm depends on how deep the citing document sits.
+ */
+export type DdFileRefBase = 'repo' | 'document';
+
+/** One reference from a dd document to an ordinary file. */
+export interface DdFileRef {
+  /** The destination exactly as the author wrote it — what a finding must name. */
+  raw: string;
+  /** JSON-ish location of the authoring cell. */
+  location: string;
+  base: DdFileRefBase;
+  /** As {@link DdLinkCell.rel}. Incidental Markdown references carry `ref`. */
+  rel: string;
+}
+
+/**
+ * The narrowest host seam dd can ask for, and deliberately the whole of it:
+ * does this path exist?
+ *
+ * Existence is the entire ruled contract (BRIEF ruling 2) — no read, no parse,
+ * no hash, no VCS tracking, no schema resolution, no freshness. A port with a
+ * `readText` on it would make every one of those reachable by accident, so the
+ * seam does not have one. `NodeSchemaFs.exists` already satisfies this
+ * structurally; wiring it is Phase 2's job.
+ */
+export interface FileExistence {
+  exists(path: string): boolean;
 }
 
 interface ValidationContext {
@@ -136,18 +184,37 @@ function canonicalFilePath(raw: string): string {
 }
 
 /**
- * Resolve an address's `file` part against the CITING document, anchoring a
- * relative target on the citer's directory.
+ * Anchor a relative path on `dir`, leaving an already-root-anchored one alone.
  *
  * S-1 F2: absoluteness was tested with `startsWith('/')`, which a drive-letter
  * path does not satisfy — so `C:/other/e.dd.json` cited from `/repo/docs/plan
  * .dd.json` resolved to `/repo/docs/C:/other/e.dd.json`. Not a separator bug:
  * it fired on forward slashes exactly as hard as on backslashes.
  */
-export function resolveAddressFile(fromPath: string, target: string): string {
+function anchorFile(dir: string, target: string): string {
   const posixTarget = target.replaceAll('\\', '/');
   if (isRootAnchored(posixTarget)) return canonicalFilePath(posixTarget);
-  return canonicalFilePath(`${dirname(fromPath)}/${posixTarget}`);
+  return canonicalFilePath(`${dir}/${posixTarget}`);
+}
+
+/**
+ * Resolve an address's `file` part against the CITING document, anchoring a
+ * relative target on the citer's directory.
+ */
+export function resolveAddressFile(fromPath: string, target: string): string {
+  return anchorFile(dirname(fromPath), target);
+}
+
+/**
+ * Resolve a REPOSITORY-relative path — the base a structured `target: "file"`
+ * cell is ruled to use (BRIEF ruling: "document rows then carry plain
+ * repo-relative paths"). Deliberately a different base from
+ * {@link resolveAddressFile}: one resolver for both would silently check the
+ * wrong file in one arm, and which arm is wrong depends on how deep the citing
+ * document sits.
+ */
+export function resolveRepoFile(repoRoot: string, target: string): string {
+  return anchorFile(repoRoot, target);
 }
 
 export function isPathWithinRepo(path: string, root: string): boolean {
@@ -197,16 +264,74 @@ function nonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
+/**
+ * `not-applicable` is the explicit out for an assertion no instrument checks.
+ * It is keyed on the RELATION, never on a field name, so any schema that
+ * declares `rel: "pressure"` inherits the escape — and silence still fails,
+ * which is the whole bargain: saying "nothing checks this" is legal, saying
+ * nothing at all is not.
+ *
+ * Named rather than inlined because THREE places must agree that this string is
+ * not an address, and until the grammar accepted a bare path they agreed by
+ * accident: the sentinel failed to parse, so every consumer downstream of
+ * `collectLinkCells` coped with it without ever being told about it. It parses
+ * now, so the agreement has to be explicit or the escape becomes a dangling
+ * edge to a file called `not-applicable`.
+ */
+function isPressureEscape(raw: string, rel: string): boolean {
+  return raw === PRESSURE_NOT_APPLICABLE && rel === 'pressure';
+}
+
 function validateLink(raw: string, shape: DdShape, location: string, ctx: ValidationContext) {
-  // `not-applicable` is the explicit out for an assertion no instrument checks.
-  // It is keyed on the RELATION, never on a field name, so any schema that
-  // declares `rel: "pressure"` inherits the escape — and silence still fails,
-  // which is the whole bargain: saying "nothing checks this" is legal, saying
-  // nothing at all is not.
-  if (raw === PRESSURE_NOT_APPLICABLE && relOf(shape) === 'pressure') return;
+  if (isPressureEscape(raw, relOf(shape))) return;
   const address = parseAddress(raw);
   if (isAddressFailure(address)) {
     addIssue(ctx, 'address-malformed', 'ERROR', location, address.message);
+    return;
+  }
+
+  // A `target: "file"` cell names an ordinary file and nothing inside it, and it
+  // is ruled REPO-relative — so the citing-document path warnings below would be
+  // answering the wrong question here. Its whole contract (path base, escape,
+  // existence) belongs to `validateFileRefs`, which is the only thing holding
+  // the probe.
+  if (shape.target === FILE_LINK_TARGET) {
+    if (address.file === null || address.segments.length > 0) {
+      addIssue(
+        ctx,
+        'link-type-mismatch',
+        'ERROR',
+        location,
+        `link targets a document interior, expected "${FILE_LINK_TARGET}"`,
+      );
+    }
+    return;
+  }
+
+  // Every OTHER link cell is a dd address, and a dd link points at a place
+  // INSIDE a document. The grammar now accepts a bare path, but acceptance is
+  // not permission: the whole-file form is reserved for `target: "file"`, so a
+  // dd cell holding one is the same defect it was before the grammar widened —
+  // most often a `#` lost to a typo. Rejecting HERE, in the pure pass, is what
+  // keeps that typo an ERROR instead of decaying into a missing-file WARN.
+  if (address.segments.length === 0) {
+    if (shape.target) {
+      addIssue(
+        ctx,
+        'link-type-mismatch',
+        'ERROR',
+        location,
+        `link targets the whole file "${address.file}", expected "${shape.target}"`,
+      );
+      return;
+    }
+    addIssue(
+      ctx,
+      'address-malformed',
+      'ERROR',
+      location,
+      'address must contain exactly one "#" file/interior boundary',
+    );
     return;
   }
   if (address.file !== null) {
@@ -256,15 +381,26 @@ function validateLink(raw: string, shape: DdShape, location: string, ctx: Valida
   }
 }
 
-function collectShapeLinks(
-  value: unknown,
-  shape: DdShape,
-  location: string,
-  links: DdLinkCell[],
-): void {
+/** A schema-declared prose cell — the only place an incidental reference may hide. */
+interface DdTextCell {
+  value: string;
+  location: string;
+}
+
+interface CellSink {
+  links: DdLinkCell[];
+  texts: DdTextCell[];
+}
+
+function collectShapeCells(value: unknown, shape: DdShape, location: string, sink: CellSink): void {
   if (shape.type === 'link') {
-    if (typeof value === 'string') {
-      links.push({
+    // The pressure escape is not an address and must not become an edge: a
+    // consumer reading the graph would see an outbound link to a file called
+    // `not-applicable` that never resolves, which is the opposite of what the
+    // author said. Dropped HERE so every consumer inherits it, rather than in
+    // each of them.
+    if (typeof value === 'string' && !isPressureEscape(value, relOf(shape))) {
+      sink.links.push({
         raw: value,
         location,
         ...(shape.target && { target: shape.target }),
@@ -273,17 +409,25 @@ function collectShapeLinks(
     }
     return;
   }
+  // Prose, and ONLY schema-declared prose. Markdown discovery is scoped by the
+  // schema rather than by looking string-shaped, so a field nobody declared as
+  // text is never scanned and a path mentioned outside `[label](…)` is never
+  // guessed at.
+  if (shape.type === 'text') {
+    if (typeof value === 'string') sink.texts.push({ value, location });
+    return;
+  }
   if (shape.type === 'array' && Array.isArray(value) && shape.items) {
     const itemShape = shape.items;
     value.forEach((entry, index) => {
-      collectShapeLinks(entry, itemShape, `${location}[${index}]`, links);
+      collectShapeCells(entry, itemShape, `${location}[${index}]`, sink);
     });
     return;
   }
   if (shape.type === 'object' && isRecord(value)) {
     for (const [field, fieldShape] of Object.entries(shape.fields ?? {})) {
       if (field in value) {
-        collectShapeLinks(value[field], fieldShape, `${location}.${field}`, links);
+        collectShapeCells(value[field], fieldShape, `${location}.${field}`, sink);
       }
     }
     // The links BUCKET (ac-7002): edges an author attached to a row without the
@@ -297,7 +441,8 @@ function collectShapeLinks(
         `${location}.${LINKS_BUCKET_FIELD}`,
       );
       for (const entry of bucket.entries) {
-        links.push({
+        if (isPressureEscape(entry.ref, entry.rel)) continue;
+        sink.links.push({
           raw: entry.ref,
           location: `${location}.${LINKS_BUCKET_FIELD}[${entry.index}].ref`,
           rel: entry.rel,
@@ -311,22 +456,207 @@ function collectShapeLinks(
     if (valuesShape) {
       for (const [key, entry] of Object.entries(value)) {
         if (shape.fields && key in shape.fields) continue;
-        collectShapeLinks(entry, valuesShape, `${location}.${key}`, links);
+        collectShapeCells(entry, valuesShape, `${location}.${key}`, sink);
       }
     }
   }
 }
 
-export function collectLinkCells(doc: DdDoc, schema: ResolvedDdSchema): DdLinkCell[] {
+function collectCells(doc: DdDoc, schema: ResolvedDdSchema): CellSink {
   const sections = new Map(doc.sections.map((section) => [section.name, section]));
-  const links: DdLinkCell[] = [];
+  const sink: CellSink = { links: [], texts: [] };
   for (const [name, declaration] of Object.entries(schema.sections)) {
     const section = sections.get(name);
     if (section) {
-      collectShapeLinks(section.value, declaration.shape, `$.sections[${name}].value`, links);
+      collectShapeCells(section.value, declaration.shape, `$.sections[${name}].value`, sink);
     }
   }
-  return links;
+  return sink;
+}
+
+export function collectLinkCells(doc: DdDoc, schema: ResolvedDdSchema): DdLinkCell[] {
+  return collectCells(doc, schema).links;
+}
+
+/**
+ * Explicit inline Markdown links, and nothing that merely resembles one.
+ *
+ * `!` is captured rather than excluded by a lookbehind so an IMAGE is matched
+ * and then dropped: an image is a reference to a rendered asset, not a link a
+ * reader follows, and the ruling keeps the population to what an author marked
+ * as a link. A reference-style `[label][id]` has no `(`, an autolink has no
+ * `[`, and a destination containing whitespace or a paren never matches — so
+ * each of those is outside the population by CONSTRUCTION rather than by a
+ * filter that could be forgotten.
+ */
+const INLINE_MARKDOWN_LINK = /(!?)\[[^\]\n]*\]\(([^()\s]*)(?:\s+(?:"[^"]*"|'[^']*'))?\)/g;
+
+/** Any URI scheme — `https:`, `mailto:`, `ftp:`, and every other non-local one. */
+const URI_SCHEME = /^[A-Za-z][A-Za-z0-9+.-]*:/;
+
+/** One run of backticks — the delimiter of an inline code span. */
+const BACKTICK_RUN = /`+/g;
+
+/**
+ * The half-open ranges of `text` that a Markdown renderer shows as CODE.
+ *
+ * A document that talks about link syntax writes that syntax down, and the
+ * only thing separating an example from a citation is the backticks around it
+ * — this repository's own plan says an inline `` [label](local/path) `` produces
+ * an edge, and meant the sentence to be prose about the form, not a link to a
+ * file called `local/path`.
+ *
+ * The CommonMark rule is followed exactly as far as it is modelled: a run of N
+ * backticks opens a span, and the closer is the next run of EXACTLY N. An
+ * unmatched run is literal text rather than an opener, so scanning resumes at
+ * the run after it instead of swallowing the rest of the value — otherwise one
+ * stray backtick anywhere would silently blind the extractor to every real
+ * link that followed it.
+ *
+ * Nothing else about Markdown is modelled here, and nothing else needs to be:
+ * the population this filters is already only the explicit inline links that
+ * {@link INLINE_MARKDOWN_LINK} matched.
+ */
+function codeSpans(text: string): Array<readonly [number, number]> {
+  const runs = [...text.matchAll(BACKTICK_RUN)];
+  const spans: Array<readonly [number, number]> = [];
+  let open = 0;
+  while (open < runs.length) {
+    const opener = runs[open];
+    let close = open + 1;
+    while (close < runs.length && runs[close][0].length !== opener[0].length) close += 1;
+    if (close === runs.length) {
+      open += 1;
+      continue;
+    }
+    spans.push([opener.index, runs[close].index + runs[close][0].length]);
+    open = close + 1;
+  }
+  return spans;
+}
+
+function markdownFileDestinations(text: string): string[] {
+  const destinations: string[] = [];
+  const spans = codeSpans(text);
+  for (const match of text.matchAll(INLINE_MARKDOWN_LINK)) {
+    // Inside a code span the author wrote CHARACTERS, not a link. BOTH
+    // structural delimiters are tested, and they are tested SEPARATELY rather
+    // than as a range, because those are different questions. A candidate that
+    // merely OVERLAPS a span can still be a real link — `[label with `code`]
+    // (real.ts)` puts code in the LABEL, and rejecting on overlap would drop
+    // it. What is not a link is one whose `[` or whose `](` was itself written
+    // as code: in ``[label` code](crossing.ts)` `` the bracket is prose and the
+    // `](` is inside the span, so the form only LOOKS closed.
+    //
+    // The closing delimiter is located, not searched for: the label pattern
+    // excludes `]`, so the first `]` in the match IS the structural one.
+    const closing = match.index + match[0].indexOf(']');
+    const coded = ([start, end]: readonly [number, number]): boolean =>
+      (match.index >= start && match.index < end) || (closing >= start && closing < end);
+    if (spans.some(coded)) continue;
+    const destination = match[2] ?? '';
+    if (match[1] === '!') continue;
+    if (destination.length === 0) continue;
+    // Fragment-ONLY is an anchor inside the same rendered page; there is no
+    // file to look for. A path WITH a fragment still names a file, and the
+    // fragment is dropped at resolution rather than here, so the finding can
+    // still quote what the author actually wrote.
+    if (destination.startsWith('#')) continue;
+    if (URI_SCHEME.test(destination)) continue;
+    destinations.push(destination);
+  }
+  return destinations;
+}
+
+/**
+ * Every reference from this document to an ordinary file: one per `target:
+ * "file"` cell, one per explicit inline Markdown link in declared prose.
+ *
+ * Structured references come first, then incidental ones, each in document
+ * order — one deterministic sequence, from one walk of the schema.
+ */
+export function collectFileRefs(doc: DdDoc, schema: ResolvedDdSchema): DdFileRef[] {
+  const cells = collectCells(doc, schema);
+  const refs: DdFileRef[] = [];
+  for (const cell of cells.links) {
+    if (cell.target !== FILE_LINK_TARGET) continue;
+    refs.push({ raw: cell.raw, location: cell.location, base: 'repo', rel: cell.rel });
+  }
+  for (const cell of cells.texts) {
+    for (const raw of markdownFileDestinations(cell.value)) {
+      refs.push({ raw, location: cell.location, base: 'document', rel: DEFAULT_REL });
+    }
+  }
+  return refs;
+}
+
+/**
+ * Existence, and nothing else (BRIEF ruling 2).
+ *
+ * Every finding here is a WARN, deliberately and by ruling: this is the FIRST
+ * dd check whose answer depends on files dd does not own, so a sparse clone or
+ * a vendored `.dd.json` would otherwise fail a gate over something that is not
+ * wrong. A path that escapes the repository is reported and NOT probed — the
+ * probe is a host call, and dd does not make one about a path outside the tree
+ * it was asked about.
+ */
+export function validateFileRefs(
+  refs: readonly DdFileRef[],
+  fromPath: string,
+  repoRoot: string,
+  existence: FileExistence,
+): DdIssue[] {
+  const ctx = { issues: [] as DdIssue[], path: fromPath };
+  for (const ref of refs) {
+    // A Markdown destination may carry an anchor (`notes.md#intro`); the FILE is
+    // what exists or does not. A structured cell stores a plain path and is left
+    // exactly as authored — `validateLink` has already refused any `#` there.
+    const authored = ref.base === 'document' ? (ref.raw.split('#')[0] ?? ref.raw) : ref.raw;
+    if (ref.raw.includes('\\')) {
+      addIssue(
+        ctx,
+        'address-path-non-posix',
+        'WARN',
+        ref.location,
+        'address paths should use POSIX separators',
+      );
+    }
+    if (isRootAnchored(ref.raw)) {
+      addIssue(
+        ctx,
+        'address-path-absolute',
+        'WARN',
+        ref.location,
+        ref.base === 'repo'
+          ? 'file link paths should be relative to the repository root'
+          : 'address paths should be relative to the containing document',
+      );
+    }
+    const target =
+      ref.base === 'repo'
+        ? resolveRepoFile(repoRoot, authored)
+        : resolveAddressFile(fromPath, authored);
+    if (!isPathWithinRepo(target, repoRoot)) {
+      addIssue(
+        ctx,
+        'address-path-escape',
+        'WARN',
+        ref.location,
+        `address resolves outside the repository: ${target}`,
+      );
+      continue;
+    }
+    if (!existence.exists(target)) {
+      addIssue(
+        ctx,
+        'address-target-missing',
+        'WARN',
+        ref.location,
+        `file link target is missing: ${ref.raw}`,
+      );
+    }
+  }
+  return ctx.issues;
 }
 
 function validateShape(

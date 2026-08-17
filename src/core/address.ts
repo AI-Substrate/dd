@@ -6,6 +6,11 @@ export interface DdAddressSegment {
 export interface DdAddress {
   /** Null means the bare-`#` same-document form. */
   file: string | null;
+  /**
+   * Empty with a non-null `file` is the WHOLE-FILE form: the address names a
+   * file and nothing inside it. Empty with a null `file` is not producible by
+   * the parser — `#` alone is malformed.
+   */
   segments: DdAddressSegment[];
 }
 
@@ -28,12 +33,27 @@ export function isAddressFailure(result: DdAddress | DdAddressFailure): result i
 /**
  * Parse the locked `file#name/id/name/id...` grammar without resolving any target.
  * Segment kinds are positional hints until P4 resolves optional ids against a schema.
+ *
+ * A raw with NO `#` is the whole-file form — the bare repository path, parsed as
+ * `{ file, segments: [] }` (wl-0023, whole-file-form proposal). It is the ruled
+ * storage shape for a `target: "file"` cell, it is already what `ddocs links` and
+ * `ddocs graph map` mean by a bare path, and it leaves the fragment free for a
+ * future `file#method`. Empty input and a trailing `#` stay malformed: the first
+ * names nothing, and the second encodes absence as an empty interior.
+ *
+ * GRAMMAR ACCEPTANCE IS NOT PERMISSION TO GUESS. Nothing here says a bare string
+ * IS a file reference; `core/validate.ts` still requires `target: "file"` or an
+ * explicit inline Markdown link before any path is looked for.
  */
 export function parseAddress(raw: string): DdAddress | DdAddressFailure {
   if (raw.includes('@')) return malformed('"@" is reserved and is not part of the v1 grammar');
   const boundary = raw.indexOf('#');
-  if (boundary < 0 || boundary !== raw.lastIndexOf('#')) {
-    return malformed('address must contain exactly one "#" file/interior boundary');
+  if (boundary !== raw.lastIndexOf('#')) {
+    return malformed('address must contain at most one "#" file/interior boundary');
+  }
+  if (boundary < 0) {
+    if (raw.length === 0) return malformed('address must not be empty');
+    return { file: raw, segments: [] };
   }
   const filePart = raw.slice(0, boundary);
   const interior = raw.slice(boundary + 1);
@@ -55,8 +75,15 @@ export function parseAddress(raw: string): DdAddress | DdAddressFailure {
   return { file: filePart.length === 0 ? null : filePart, segments };
 }
 
+/**
+ * Emit the canonical spelling. An address with no interior formats as the bare
+ * path it was written as — never with a trailing `#`, which the parser refuses
+ * and which would put a meaningless fragment into every rendered href.
+ */
 export function formatAddress(address: DdAddress): string {
-  return `${address.file ?? ''}#${address.segments.map((segment) => segment.value).join('/')}`;
+  const interior = address.segments.map((segment) => segment.value).join('/');
+  if (interior.length === 0) return address.file ?? '';
+  return `${address.file ?? ''}#${interior}`;
 }
 
 export function normalizeFilePath(raw: string): string {

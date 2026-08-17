@@ -1,0 +1,140 @@
+{
+  "dd": {
+    "schema": "builder/plan"
+  },
+  "sections": [
+    {
+      "name": "meta",
+      "value": {
+        "title": "Links from dd to ordinary files",
+        "slug": "file-links",
+        "ordinal": 4,
+        "status": "in-progress",
+        "complexity": "CS-4",
+        "summary": "Add typed repository-file edges and explicit incidental Markdown file references while preserving dd address semantics.",
+        "mode": "Full",
+        "plan_version": "1.0.0",
+        "created": "2026-08-16",
+        "confidence": "0.91",
+        "complexity_breakdown": "S=2 I=2 D=1 N=2 F=1 T=2 (10/12): public grammar, six consuming surfaces, new leaf-node shape, mutation-sensitive integration proof"
+      }
+    },
+    {
+      "name": "summary",
+      "value": "## Business specification\n\nAdd two deliberately distinct ways for a dd to reach an ordinary repository file. Structured fields declare `items: { type: \"link\", target: \"file\", rel: ... }` and store plain repository-relative paths; explicit inline Markdown links in schema-declared `text` fields are incidental references. Missing targets produce one named WARN, make `ddocs build` degraded with exit 0, and never become a validation error. Existing targets produce no finding. Structured edges appear in `ddocs links` and `ddocs graph` and render as working links in the generated sibling.\n\nWhole-file proposal: the canonical form is the bare path (`src/search/index.ts`), parsed as `file` plus an empty `segments` array and formatted back without `#`. Empty input and trailing `#` remain invalid. Existing `#section`, `file#section/id`, and the already-accepted future `file#method` syntax remain unchanged. `target: \"file\"` is the structured marker; no extension allowlist, glob, hashing, freshness, or `verify-basis` integration lands here.\n\nPath semantics are explicit: structured file-link values resolve from the repository root because that is the ruled storage contract; Markdown destinations resolve from the containing/generated document directory because the validator must check the same target the literal Markdown href opens. HTTP(S) and other URI-schemed destinations, fragment-only links, image syntax, and bare paths in prose are not local file references.\n\nTesting strategy: Hybrid. Mutation-sensitive unit tests pin parser round-trips, Markdown extraction boundaries, target classification, and existence-only resolution. Existing integration suites prove build envelopes, rendered hrefs, link reports, graph nodes/edges, and the CLI grammar. Use real temporary files and repository fixtures; no mocks. Required negative controls: existing file -> zero findings; delete that file -> exactly one WARN naming it; restore -> green. External URL and unmarked bare prose path stay absent.\n\nDocumentation strategy: no baked-doc edits in this stream; the brief forbids that surface. The plan, proposal, tests, CLI help/diagnostics, and PR evidence carry the contract. Any public documentation follow-up requires a separate ruling.\n\n## Implementation plan\n\nPhase 1 changes the public address grammar and creates one shared file-reference model: parser/formatter, schema-declared file cells, narrow inline-Markdown discovery for `text`, explicit path-base metadata, and a pure existence check over an injected `exists(path)` seam. It must not read, parse, hash, track, or schema-resolve ordinary targets.\n\nPhase 2 carries those cells through traversal, resolved leaf nodes, links/graph output, rendering, build degradation, and CLI address/link behavior. Ordinary file nodes are terminal and distinguishable from dd document nodes; they are never queued as ddocs. Existing files render as resolved solid graph nodes; missing files stay unresolved/dashed and yield exactly one WARN.\n\nGate matrix: G1 Clarify PASS (brief rulings settle behavior); G2 Constitution N/A; G3 Architecture PASS (core stays host-free; injected seam); G4 ADR N/A; G5 Structure PASS within the dd-native scaffold constraint; G6 Testing PASS (behavioral and mutation-sensitive); G7 Domains N/A. Public `.d.ts` shape and every `parseAddress` caller receive cross-model review before approval."
+    },
+    {
+      "name": "goals",
+      "value": [
+        "Let a schema declare queryable structured edges from dd rows to any ordinary repository file with `target: file`.",
+        "Check explicit inline Markdown file references in `text` fields without guessing bare paths from prose.",
+        "Represent a whole file with the canonical bare-path address form while preserving every existing interior-address form and future `file#method` syntax.",
+        "Report missing files as one WARN and a degraded build, never an error or blocking exit.",
+        "Render structured file links as working sibling-relative Markdown and expose the same edges through `ddocs links` and `ddocs graph`."
+      ]
+    },
+    {
+      "name": "non_goals",
+      "value": [
+        "No `file#method`, symbol, line, anchor, or language-server resolution.",
+        "No hashing, freshness ledger, `verify-basis`, content validation, tracking requirement, extension allowlist, glob, or MIME policy.",
+        "No heuristic detection of bare paths in prose and no checking of external URLs, fragment-only links, reference-style Markdown, or images.",
+        "No new verb and no change to `src/acts/status.ts` planned-verbs accounting.",
+        "No edits to `.harness/government/**`, baked documentation content, `.the-flow-state.json`, `the-flow.json`, or `the-flow.md`."
+      ]
+    },
+    {
+      "name": "acceptance_criteria",
+      "value": [
+        {
+          "id": "ac-0001",
+          "claim": "`ddocs address validate notes.md` returns ok with canonical address `notes.md`, form `file`, and no segments; existing `#interior` and `file#interior` round-trip byte-for-byte, trailing `#` stays invalid, and `src/foo.ts#parseThing` remains syntax-valid.",
+          "state": "checked"
+        },
+        {
+          "id": "ac-0002",
+          "claim": "A schema field declared as `type: array`, `items: { type: link, target: file, rel: implemented_by }` accepts plain repository-relative file paths and emits one structured `implemented_by` edge per value.",
+          "state": "checked"
+        },
+        {
+          "id": "ac-0003",
+          "claim": "An inline `[label](local/path)` in a schema-declared `text` value produces one incidental `ref` edge whose local target is checked relative to the generated document; `https://example.com`, a bare prose path, fragment-only links, and image syntax produce no file edge or finding.",
+          "state": "checked"
+        },
+        {
+          "id": "ac-0004",
+          "claim": "For both structured and incidental file links, an existing target yields zero file-link findings; removing one target yields exactly one WARN naming that authored path and owner; restoring it clears the warning. No ordinary target is read, parsed, hashed, tracked, or schema-resolved.",
+          "state": "checked"
+        },
+        {
+          "id": "ac-0005",
+          "claim": "`ddocs build` and `ddocs build --check` return `degraded` with exit 0 and expose the named file-link WARN when a target is missing; with all targets present they return `ok` and no file-link findings, while drift remains an error.",
+          "state": "checked"
+        },
+        {
+          "id": "ac-0006",
+          "claim": "Generated `.dd.md` renders each structured repo-relative file path as a working href relative to the sibling location with no trailing `#`; authored Markdown links remain byte-meaningful and open the same target the existence check tested.",
+          "state": "checked"
+        },
+        {
+          "id": "ac-0007",
+          "claim": "`ddocs links <ordinary-file>` and `ddocs graph` expose structured and incidental inbound edges. An existing ordinary file is a resolved terminal node and solid Mermaid edge; a missing file is unresolved/dashed. Ordinary files are never traversed as dd documents.",
+          "state": "checked"
+        },
+        {
+          "id": "ac-0008",
+          "claim": "The public `parseAddress`, link-cell, graph-node, and resolver types describe ordinary files without fake schema/hash/interior values; every existing caller compiles, package export checks pass, and the emitted declaration delta is reviewed explicitly.",
+          "state": "checked"
+        },
+        {
+          "id": "ac-0009",
+          "claim": "`ddocs status --json` remains 10/10, forbidden files remain untouched, targeted mutation proofs show the new guards fail on plausible regressions, and `just checks` passes before the PR is opened.",
+          "state": "checked"
+        },
+        {
+          "id": "ac-000a",
+          "claim": "After bare-path parsing lands, a missing-`#` dd-address typo is mechanically characterized in both a link field with a declared dd target and a link field with no target. The typed case errors on type before existence. If the untyped case degrades to a missing-file WARN, implementation halts and returns the measured result to the o-prime for a ruling before product-surface work continues; otherwise the hard-error tripwire is pinned.",
+          "state": "checked"
+        }
+      ]
+    },
+    {
+      "name": "phases",
+      "value": [
+        {
+          "id": "ph-252f",
+          "title": "Address and discovery contract",
+          "brief": "Change the public grammar to represent whole files as bare paths; introduce one explicit file-reference cell contract covering structured `target: file` values and narrow Markdown links in `text`; preserve dd-interior behavior and keep existence as an injected pure question.",
+          "state": "checked",
+          "tasks": "assets/tasks/phase-1/tasks.dd.json#tasks",
+          "objective": "Establish canonical syntax, collection, path-base, and existence contracts before any product surface consumes them.",
+          "delivers": [
+            "Whole-file parser/formatter contract with compatibility tests",
+            "Structured file-target collection and narrow Markdown discovery",
+            "Explicit repo-vs-document path bases and existence-only validation",
+            "Public type delta with no fake dd metadata"
+          ],
+          "key_risks": "`parseAddress` is public and has 30 references; a broad Markdown matcher or shared path base would silently classify the wrong population. Approval condition: after bare-path parsing, prove a missing-`#` dd-address typo in both dd-targeted and untargeted link fields. Typed must error before existence; if untargeted becomes WARN-only, halt and return the measured result to the o-prime before continuing."
+        },
+        {
+          "id": "ph-62e4",
+          "title": "Product surfaces and end-to-end proof",
+          "brief": "Carry file-reference cells through validation, resolved terminal graph nodes, links reports, Mermaid, rendering, build degradation, and CLI address/link faces. Prove both presence and absence and independently mutate the world so WARN and graph resolution cannot pass vacuously.",
+          "state": "checked",
+          "depends_on": [
+            "ph-252f"
+          ],
+          "tasks": "assets/tasks/phase-2/tasks.dd.json#tasks",
+          "objective": "Expose one truthful file-edge model across every shipped face without traversing, hashing, or schema-resolving ordinary files.",
+          "delivers": [
+            "Working relative hrefs in generated siblings",
+            "Degraded build/validate findings for missing targets",
+            "Resolved ordinary-file leaf nodes in links and graph output",
+            "CLI and package-level end-to-end tests plus full gate"
+          ],
+          "key_risks": "Existing graph code treats nodes absent from the dd corpus as unresolved, and build currently never validates links; both can look green while reporting a false world."
+        }
+      ]
+    }
+  ]
+}

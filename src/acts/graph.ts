@@ -44,7 +44,7 @@ export function registerGraphCommand(dd: Command, io: CliIo, deps: DdActDeps): v
 
       const graphed = traverseCorpus(
         scan.paths,
-        { schemaResolver: ctx.resolver, docLoader: ctx.loader },
+        { schemaResolver: ctx.resolver, docLoader: ctx.loader, fileExistence: ctx.fs },
         { repoRoot: ctx.repoRoot, mode: 'sweep' },
       );
       // Emitted directly, never through the render layer: `ddocs graph` is what
@@ -171,7 +171,17 @@ function registerGraphMapCommand(graph: Command, io: CliIo, deps: DdActDeps): vo
       ) => {
         const ctx = await createLinkContext(io, deps);
         const port = mapPort(io, ctx.port);
-        const linkDeps = { schemaResolver: ctx.resolver, docLoader: ctx.loader };
+        // `ctx.fs` IS a `FileExistence` — one `exists(path): boolean`, and
+        // deliberately nothing more. Handing it over is what lets the map say
+        // which external file dependencies are actually on disk; without it every
+        // one of them would read as unmeasured, which is honest but blind.
+        // `resolveMapSeed` never consults it, so an ordinary-file seed is
+        // unchanged.
+        const linkDeps = {
+          schemaResolver: ctx.resolver,
+          docLoader: ctx.loader,
+          fileExistence: ctx.fs,
+        };
 
         const depth = Number(opts.depth);
         if (!Number.isInteger(depth) || depth < 0) {

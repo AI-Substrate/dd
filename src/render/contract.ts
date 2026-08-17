@@ -64,6 +64,16 @@ export interface DdAdapterSet {
 export interface DdRenderContext {
   /** Source document path. Only its basename is rendered, so output is cwd-independent. */
   path: string;
+  /**
+   * The repository root, for rebasing a structured `target: "file"` path onto the
+   * generated sibling. Passed IN rather than derived, because the renderer is
+   * pure and must not go looking for a git root.
+   *
+   * Optional, and its absence is not a default: a repo-root-relative path read as
+   * document-relative names a different file, so without a root there is no
+   * honest href to compute and the authored path renders as plain text instead.
+   */
+  repoRoot?: string;
   schema: ResolvedDdSchema;
   /** The schema's gate-terminal set (P2 `SchemaRecord.gateTerminal`); defaults to the built-in. */
   gateTerminal?: readonly string[];

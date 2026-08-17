@@ -542,7 +542,16 @@ function nodeRow(
 ): string[] {
   const mark = node.mark === '' ? '   ' : node.mark;
   const progress = node.progress ? ` ${node.progress.terminal}/${node.progress.total}` : '';
-  const flag = node.resolved ? '' : '  (unresolved)';
+  // An external dependency says so where the reader is already looking. A dd
+  // node keeps the bare `(unresolved)` it has always carried; a file says which
+  // KIND of thing is missing, because "unresolved" alone reads as a broken dd
+  // address rather than as a file that is not on disk — or was never measured.
+  const flag =
+    node.kind === 'file'
+      ? `  (external file${node.resolved ? '' : ', unresolved'})`
+      : node.resolved
+        ? ''
+        : '  (unresolved)';
   const { head, tail } = splitAddress(shown);
   const lead = `${prefix}${arrow}${mark}${progress} `;
   const room = MAP_WIDTH - (cellWidth(lead) + cellWidth(shown) + cellWidth(flag)) - 2;
@@ -558,7 +567,8 @@ function nodeRow(
   const spans: Span[] = [
     { text: head, style: (text) => fade(palette.path(text)) },
     { text: tail, style: (text) => accent(palette.id(text)) },
-    { text: flag, style: palette.alarm },
+    // A dependency that IS there is not an alarm; a missing one still is.
+    { text: flag, style: node.resolved ? palette.faint : palette.alarm },
     { text: label, style: (text) => fade(palette.label(text)) },
   ];
   return wrapSpans(spans, leadSpans, padToCells(continuation, cellWidth(lead)));

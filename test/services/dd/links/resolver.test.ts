@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { resolveLink } from '../../../../src/links/resolver.js';
-import { deps, docPath, REPO } from './helpers.js';
+import { deps, docPath, FixtureDocLoader, REPO } from './helpers.js';
 
 const PLAN = docPath('docs/plan.dd.json');
 
@@ -111,7 +111,12 @@ describe('ddocs links resolver — every unresolved reason', () => {
     ['plan.dd.json#preamble/deeper', 'not-a-container'],
     ['missing.dd.json#entries', 'file-unreadable'],
     ['../../../outside.dd.json#entries', 'path-escape'],
-    ['no-hash-at-all', 'malformed'],
+    // wl-0023: a bare path is now valid SYNTAX, so this stops being a grammar
+    // failure. It is still refused, and refused before the loader is touched —
+    // the resolver descends interiors and this address names none. `no-interior`
+    // rather than `section-unknown`, because the doctor reads that reason as an
+    // interior DEFECT it owns and would call a correct file citation an ERROR.
+    ['no-hash-at-all', 'no-interior'],
     ['plan.dd.json#entries@abcd', 'malformed'],
   ] as const)('%s fails with reason %s', (raw, reason) => {
     const result = resolve(raw);
@@ -123,6 +128,32 @@ describe('ddocs links resolver — every unresolved reason', () => {
       reason,
       owner: PLAN,
     });
+  });
+
+  /**
+   * wl-0023 — the whole-file form is refused on the GRAMMAR, not on the world.
+   *
+   * Both arms name a file that really is in the corpus, so "it failed" cannot be
+   * explained by the file being absent, and neither is opened: an existing
+   * `.dd.json` would otherwise be read and parsed only to be told it named no
+   * section, and a `target: "file"` path would be read at all — which the
+   * existence-only ruling forbids.
+   */
+  it('refuses a whole-file address without reading it', () => {
+    const loader = new FixtureDocLoader();
+    for (const raw of ['plan.dd.json', 'docs/plan.dd.json']) {
+      const result = resolveLink(raw, deps(loader), { repoRoot: REPO, fromPath: PLAN });
+      expect(result.ok).toBe(false);
+      expect(result.issues[0]).toMatchObject({
+        reason: 'no-interior',
+        message: 'address names a whole file and no interior',
+      });
+    }
+    expect(loader.loads).toEqual([]);
+    // Non-vacuity: the same loader DOES record a read for an address that names
+    // an interior, so the empty list above is a refusal and not an inert stub.
+    resolveLink('plan.dd.json#phases', deps(loader), { repoRoot: REPO, fromPath: PLAN });
+    expect(loader.loads).toEqual([PLAN]);
   });
 
   it('refuses to guess a base document for a bare-# address', () => {

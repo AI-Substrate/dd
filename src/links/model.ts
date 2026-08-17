@@ -17,12 +17,21 @@ export type DdLinkIssueClass =
  * Why an address failed to reach a target. Workshop 001 rules every one of these
  * an ERROR, so the class does not discriminate them — the reason does, and it is
  * what a consumer switches on instead of matching message text.
+ *
+ * `no-interior` is a REASON of its own and not a flavour of `section-unknown`,
+ * and the difference is what the doctor reads. `section-unknown` means "this
+ * document has no such section" — a defect inside a dd document, which the
+ * doctor owns. The whole-file form means the address never named an interior at
+ * all, which for a `target: "file"` cell is CORRECT rather than defective. Under
+ * the old spelling the doctor would promote every ordinary-file citation in the
+ * corpus to an ERROR, because it could not tell the two apart.
  */
 export type DdLinkUnresolvedReason =
   | 'file-unreadable'
   | 'id-not-found'
   | 'malformed'
   | 'no-base-document'
+  | 'no-interior'
   | 'not-a-container'
   | 'part-unknown'
   | 'path-escape'
@@ -83,13 +92,27 @@ export type DdLinkResolution =
   | { ok: true; target: DdLinkTarget; issues: DdLinkIssue[] }
   | { ok: false; issues: DdLinkIssue[] };
 
-/** One outbound edge: a schema-declared link cell that names another document. */
+/**
+ * What an edge's target IS. dd documents and ordinary repository files are both
+ * legitimate destinations, and almost nothing may treat them alike: a document
+ * is loaded, parsed, schema-resolved and followed, an ordinary file is probed
+ * for existence and never opened.
+ *
+ * Read this rather than sniffing {@link DdLinkEdge.target}. Only the STRUCTURED
+ * half of the file population carries a declared `target`; an inline Markdown
+ * destination in declared prose is the same kind of edge with no declaration
+ * behind it, so a `target === 'file'` test would silently follow half of them.
+ */
+export type DdEdgeKind = 'document' | 'file';
+
+/** One outbound edge: a link cell, or an inline Markdown link, that names a target. */
 export interface DdLinkEdge {
+  kind: DdEdgeKind;
   /** Absolute path of the document holding the cell. */
   from: string;
-  /** Absolute path of the document the address lands in; null when it never resolved to a file. */
+  /** Absolute path of the target; null when the address never resolved to a file. */
   to: string | null;
-  /** The raw cell value. */
+  /** The raw cell value, or the authored Markdown destination. */
   address: string;
   /** JSON-ish location of the cell inside `from`. */
   location: string;
@@ -105,7 +128,9 @@ export interface DdLinkEdge {
   sameDocument: boolean;
 }
 
-export interface DdGraphNode {
+/** A dd document the traversal loaded — everything on it was read off the file. */
+export interface DdDocumentNode {
+  kind: 'document';
   /** Absolute POSIX-logical path — the node's identity. */
   path: string;
   schema: string;
@@ -116,11 +141,30 @@ export interface DdGraphNode {
   external: boolean;
 }
 
+/**
+ * An ordinary repository file that a document cites and that EXISTS — a resolved
+ * terminal node, and deliberately nothing more.
+ *
+ * It carries a path and no other field, because a path is the only thing dd
+ * measured. `schema`, `sha`, `tracked` and `external` are all absent rather than
+ * defaulted: the existence seam reads nothing, so every one of those values
+ * would have to be invented, and an invented `sha: ''` is indistinguishable
+ * downstream from a real digest of an empty file. A missing file gets NO node at
+ * all, which is what makes {@link toMermaid} draw it dashed without being told.
+ */
+export interface DdFileNode {
+  kind: 'file';
+  /** Absolute POSIX-logical path — the node's identity. */
+  path: string;
+}
+
+export type DdGraphNode = DdDocumentNode | DdFileNode;
+
 export interface DdCorpusGraph {
   nodes: DdGraphNode[];
   edges: DdLinkEdge[];
   issues: DdLinkIssue[];
-  /** Documents the traversal actually visited, in visit order. */
+  /** Documents the traversal actually visited, in visit order. Never an ordinary file. */
   visited: string[];
 }
 

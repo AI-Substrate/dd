@@ -226,9 +226,15 @@ export async function writeDocumentWithSibling(options: {
 }
 
 /**
- * `ok` unless the render was degraded by an adapter. Workshop-003 W1 rule 5 makes
- * that loudness mandatory, and the envelope status IS the severity a gate reads
- * (KF-05) — so a degraded render surfaces without failing the build.
+ * `ok` unless the render was degraded. Workshop-003 W1 rule 5 makes that loudness
+ * mandatory, and the envelope status IS the severity a gate reads (KF-05) — so a
+ * degraded render surfaces without failing the build.
+ *
+ * A missing ordinary-file target degrades for the same reason and NEVER fails:
+ * the answer depends on files dd does not own, so a sparse clone would otherwise
+ * break a gate over something that is not wrong. Drift stays an ERROR and is
+ * decided before this function is reached, so a degraded render can never mask
+ * stale committed markdown.
  */
 function envelopeFor(
   outcome: 'written' | 'checked',
@@ -237,7 +243,7 @@ function envelopeFor(
   clock: Clock,
 ): Envelope {
   const evidence = [{ label: 'rendered markdown', path: result.sibling }];
-  const degradations = [...result.warnings, ...result.refreshIssues];
+  const degradations = [...result.warnings, ...result.refreshIssues, ...result.fileIssues];
   if (degradations.length === 0) {
     return formatOk('ddocs build', data, clock, {
       ...(outcome === 'written' && { evidence }),
@@ -257,6 +263,9 @@ function envelopeFor(
       : []),
     ...(result.refreshIssues.length > 0
       ? [`${result.refreshIssues.length} live reference(s) could not be refreshed`]
+      : []),
+    ...(result.fileIssues.length > 0
+      ? [`${result.fileIssues.length} file link finding(s) — the render is unaffected`]
       : []),
   ].join('; ');
   return formatDegraded(
@@ -297,6 +306,7 @@ export function registerBuildCommand(dd: Command, io: CliIo, deps: DdActDeps): v
         adapter_warnings: result.warnings,
         refreshed_bases: result.refreshed,
         refresh_issues: result.refreshIssues,
+        file_findings: result.fileIssues,
       };
 
       // --check: compare against the committed sibling and NEVER write. The drift

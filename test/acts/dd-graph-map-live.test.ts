@@ -5,7 +5,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import { FakeClock } from '../../src/adapters/clock/fake-clock.js';
 import { buildProgram } from '../../src/app.js';
 import type { DdMapResult } from '../../src/links/map.js';
-import { cellWidth } from '../../src/links/report.js';
+import { cellWidth, type DdLinksReport } from '../../src/links/report.js';
 import type { Envelope } from '../../src/output/envelope.js';
 import type { CliIo, Writers } from '../../src/output/output-port.js';
 
@@ -694,5 +694,167 @@ describe('ddocs graph map — 80 columns over the whole terminal surface (T005)'
       .map((line) => line.replace(/^[ \u2502]+/, ''))
       .join('');
     expect(joined).toContain(address);
+  });
+});
+
+/**
+ * wl-0023: the map shows what `ddocs links` shows.
+ *
+ * These two verbs read ONE graph, so a file edge that `ddocs links` reports and
+ * `ddocs graph map` does not is a false absence on the surface a reader trusts
+ * most. Driven end to end because the thing under test is a WIRE: `mapAddress`
+ * cannot measure existence unless the act hands it the same filesystem probe the
+ * corpus traversal already uses, and only the real act can prove it does.
+ *
+ * Its own corpus, deliberately: the shared `seedCorpus` is pinned by exact node
+ * counts above, and adding a file link to it would move those pins rather than
+ * test this.
+ */
+describe('ddocs graph map — external file dependencies, live (wl-0023)', () => {
+  const FILE_PLAN_SCHEMA = {
+    dd_schema: 1,
+    description: 'A plan whose criteria point at ordinary repository files',
+    sections: {
+      meta: { shape: { type: 'object', fields: { title: { type: 'string' } } } },
+      criteria: {
+        shape: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['id'],
+            fields: {
+              id: { type: 'string' },
+              claim: { type: 'string' },
+              implemented_by: {
+                type: 'array',
+                items: { type: 'link', target: 'file', rel: 'implemented_by' },
+              },
+              note: { type: 'text' },
+            },
+          },
+        },
+      },
+    },
+  };
+
+  let files = '';
+  let previous = '';
+
+  /** An ordinary file, written as its own bytes rather than as a dd document. */
+  const writeFile = (relative: string, text: string): void => {
+    const path = join(files, relative);
+    mkdirSync(join(path, '..'), { recursive: true });
+    writeFileSync(path, text, 'utf8');
+  };
+
+  beforeAll(() => {
+    files = mkdtempSync(join(tmpdir(), 'dd-graph-map-files-'));
+    repo = files;
+    write('.dd/schemas/demo/plan/schema.json', FILE_PLAN_SCHEMA);
+    write('plan.dd.json', {
+      dd: { schema: 'demo/plan', spec: 'dd@1' },
+      sections: [
+        { name: 'meta', value: { title: 'Search rollout' } },
+        {
+          name: 'criteria',
+          value: [
+            {
+              id: 'ac-1a2b',
+              claim: 'Queries are fast',
+              implemented_by: ['src/search.ts', 'docs/handbook.md'],
+              note: 'background in [the handbook](docs/handbook.md)',
+            },
+            {
+              id: 'ac-5e6f',
+              claim: 'Index rebuild is idempotent',
+              implemented_by: ['src/rebuild.ts'],
+              note: 'see [the missing design note](docs/design.md)',
+            },
+          ],
+        },
+      ],
+      references: [],
+    });
+    // Two of the four cited files are on disk. `src/rebuild.ts` and
+    // `docs/design.md` are deliberately absent — cited and not there is the state
+    // the map has to be able to say out loud.
+    writeFile('src/search.ts', 'export const search = (): void => {};\n');
+    writeFile('docs/handbook.md', '# Handbook\n');
+  });
+
+  afterAll(() => {
+    rmSync(files, { recursive: true, force: true });
+  });
+
+  beforeEach(() => {
+    previous = process.cwd();
+    process.chdir(files);
+  });
+
+  afterEach(() => {
+    process.chdir(previous);
+    vi.restoreAllMocks();
+  });
+
+  /** `address+rel+location`: an edge as the author wrote it, not as a walk derived it. */
+  const authored = (edges: readonly { address: string; rel: string; location: string }[]) =>
+    edges.map((edge) => `${edge.address}\u0000${edge.rel}\u0000${edge.location}`);
+
+  it('reports the same outbound file edges `ddocs links` does, edge for edge', async () => {
+    const links = await runDd(['dd', 'links', 'plan.dd.json']);
+    const report = links.envelope?.data as DdLinksReport;
+    const linked = report.outbound.filter((edge) => edge.kind === 'file');
+    expect(linked).toHaveLength(5);
+
+    const map = await runDd(['dd', 'graph', 'map', 'plan.dd.json', '--direction', 'out']);
+    expect(map.code).toBe(0);
+    const data = map.envelope?.data as DdMapResult;
+    const fileKeys = new Set(
+      data.nodes.filter((node) => node.kind === 'file').map((node) => node.key),
+    );
+    const mapped = data.edges.filter((edge) => fileKeys.has(edge.to));
+
+    expect(authored(mapped)).toEqual(authored(linked));
+  });
+
+  it('distinguishes a file that is there from one that is not, in JSON', async () => {
+    const run = await runDd(['dd', 'graph', 'map', 'plan.dd.json', '--direction', 'out']);
+    const data = run.envelope?.data as DdMapResult;
+    const external = data.nodes.filter((node) => node.kind === 'file');
+
+    // The wire under test: without the act handing over its filesystem probe,
+    // every one of these would read `resolved: false` and the map would call a
+    // file that is plainly there unmeasured.
+    expect(external.map((node) => [node.address, node.resolved])).toEqual([
+      ['src/search.ts', true],
+      ['docs/handbook.md', true],
+      ['src/rebuild.ts', false],
+      ['docs/design.md', false],
+    ]);
+    // Leaves: no edge leaves a file node, so the JSON says "external dependency"
+    // and means it.
+    const fileKeys = new Set(external.map((node) => node.key));
+    expect(data.edges.some((edge) => fileKeys.has(edge.from))).toBe(false);
+    for (const node of external) expect(node.interior).toEqual([]);
+  });
+
+  it('labels both external states in the human render, inside 80 columns', async () => {
+    const run = await runDd(['dd', 'graph', 'map', 'plan.dd.json', '--direction', 'out'], {
+      mode: 'human',
+    });
+    expect(run.out).toContain('src/search.ts  (external file)');
+    expect(run.out).toContain('src/rebuild.ts  (external file, unresolved)');
+    expect(run.out).toContain('docs/design.md  (external file, unresolved)');
+    // No inbound limitation sentence and no ordinary-file seed text: the ruling
+    // put that question out of scope, and a map that answered it here would be
+    // answering a question nobody asked.
+    expect(run.out).not.toContain('inbound');
+    for (const line of run.out.split('\n')) expect(cellWidth(line)).toBeLessThanOrEqual(80);
+  });
+
+  it('keeps an ordinary-file seed exactly as it was — E430, unchanged', async () => {
+    const run = await runDd(['dd', 'graph', 'map', 'src/search.ts']);
+    expect(run.code).toBe(1);
+    expect(run.envelope?.error?.code).toBe('E430');
   });
 });
