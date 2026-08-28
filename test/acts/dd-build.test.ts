@@ -465,9 +465,9 @@ describe('harness dd build — ordinary file targets', () => {
         message: `file link target is missing: ${valid}`,
       }),
     ]);
-    expect(
-      findings(missing.envelope).some((finding) => finding.message.includes(invalid)),
-    ).toBe(false);
+    expect(findings(missing.envelope).some((finding) => finding.message.includes(invalid))).toBe(
+      false,
+    );
   });
 
   it('stays silent for a URL, a bare prose path, a fragment and an image', async () => {
