@@ -1,0 +1,31 @@
+src/acts/derive.ts
+  s_4e3ef5f086a696::t_7d5a3c095c6a5e 617-723,725-727,731-732,736-748,750,756,764-773,775-778,780,782,798-800,822-828,830-847,852
+  s_4e3ef5f086a696::t_1fdeb543ac6bed 135-140,142-161,167
+  s_4e3ef5f086a696::t_d29426d56d7804 462-578,591
+  s_4e3ef5f086a696::t_5c184e29b7f512 594-598,607-608,612-613
+  s_4e3ef5f086a696::t_73d93ad1bfb926 728-730,733-735
+  s_4e3ef5f086a696::t_bdc41c43d04833 871-888
+  s_4e3ef5f086a696::t_c81d3bda25f381 76-83
+  s_4e3ef5f086a696::t_f69db4ed04a86b 377-391,424
+  s_4e3ef5f086a696::t_ede6c185eb39b7 904-905,912-915
+  s_4e3ef5f086a696::t_3a0def1cebdd3f 24-31
+  s_4e3ef5f086a696::t_694211544d4fb1 724,749,916
+test/acts/dd-derive-live.test.ts
+  s_4e3ef5f086a696::t_4ad9d90e7e432a 1272-1405
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "885d3b31a587662d7990430099d3070043eb241a",
+  "prompts": {},
+  "sessions": {
+    "s_4e3ef5f086a696": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "293c5b07-c11f-4af9-bcf4-a2b6dce0f46e",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
