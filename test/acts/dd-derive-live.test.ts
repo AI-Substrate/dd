@@ -1269,6 +1269,140 @@ describe('ddocs derive — cycles across mixed directions', () => {
   });
 });
 
+describe('ddocs derive — cycles the rollup tree cannot see', () => {
+  /**
+   * The CROSS-EDGE shape, and the one a spanning tree is blind to.
+   *
+   * `dia-root` has two inbound `satisfies` citers, `dia-a` and `dia-b`; both
+   * derive from `dia-c`; and when `closesLoop`, `dia-c` derives back to `dia-b`.
+   *
+   * Every row is terminal, so nothing here is open. The loop `dia-b -> dia-c ->
+   * dia-c` is invisible to the tree for two compounding reasons: the tree keeps
+   * one parent per node, so `dia-c` hangs off `dia-a` and the `dia-b -> dia-c`
+   * edge is never a tree edge; and the double-count guard then SUPPRESSES that
+   * second edge outright, discarding the evidence before the question is asked.
+   * The answer was `ok` / `complete: true` / `total: 4` / no degradations.
+   */
+  function writeDiamond(closesLoop: boolean): void {
+    write('docs/dia-root.dd.json', {
+      dd: { schema: 'probe/plan' },
+      sections: [
+        { name: 'meta', value: { title: 'Diamond root' } },
+        {
+          name: 'acceptance_criteria',
+          value: [{ id: 'ac-000d', criterion: 'two citers', state: 'checked' }],
+        },
+      ],
+      references: [],
+    });
+    const citer = (id: string) => ({
+      dd: { schema: 'probe/plan' },
+      sections: [
+        { name: 'meta', value: { title: id } },
+        {
+          name: 'tasks',
+          value: [
+            {
+              id,
+              title: id,
+              state: 'checked',
+              satisfies: 'dia-root.dd.json#acceptance_criteria/ac-000d',
+              done: 'dia-c.dd.json#tasks/tk-000c',
+            },
+          ],
+        },
+      ],
+      references: [],
+    });
+    write('docs/dia-a.dd.json', citer('tk-000a'));
+    write('docs/dia-b.dd.json', citer('tk-000b'));
+    write('docs/dia-c.dd.json', {
+      dd: { schema: 'probe/plan' },
+      sections: [
+        { name: 'meta', value: { title: 'shared target' } },
+        {
+          name: 'tasks',
+          value: [
+            {
+              id: 'tk-000c',
+              title: 'tk-000c',
+              state: 'checked',
+              ...(closesLoop && { done: 'dia-b.dd.json#tasks/tk-000b' }),
+            },
+          ],
+        },
+      ],
+      references: [],
+    });
+  }
+
+  it('degrades on a cycle closed by a CROSS edge, though every readable row is terminal', async () => {
+    writeDiamond(true);
+
+    const run = await runDd(['derive', 'docs/dia-root.dd.json#acceptance_criteria/ac-000d']);
+    const root = rootOf(run);
+
+    // Nothing is open anywhere in this corpus, so `incomplete` is empty and the
+    // ONLY thing that can refuse completeness is the loop. A rollup that decides
+    // cycles from its own tree reports ok/true/4 here.
+    expect(run.envelope?.status).toBe('degraded');
+    expect(root.incomplete).toEqual([]);
+    expect(root.complete).toBe(false);
+    expect(root.degradations).toEqual([
+      {
+        reason: 'cycle',
+        // The row whose cell CLOSES the loop — the one an author can change.
+        address: 'docs/dia-b.dd.json#tasks/tk-000b',
+        detail:
+          'completion cycle: docs/dia-c.dd.json#tasks/tk-000c' +
+          ' -[derives outbound]-> docs/dia-b.dd.json#tasks/tk-000b' +
+          ' -[derives outbound]-> docs/dia-c.dd.json#tasks/tk-000c',
+      },
+    ]);
+    // ONE rollup tree still, with the same totals and the same flattening: the
+    // cycle pass reports, it does not re-shape or double-count.
+    expect(root.total).toBe(4);
+    expect(root.nodes.map((node) => node.address)).toEqual([
+      'docs/dia-a.dd.json#tasks/tk-000a',
+      'docs/dia-b.dd.json#tasks/tk-000b',
+    ]);
+    // The pre-pass reads the graph but must not widen what the answer rests on.
+    expect(root.basis).toEqual([
+      'docs/dia-a.dd.json',
+      'docs/dia-b.dd.json',
+      'docs/dia-c.dd.json',
+      'docs/dia-root.dd.json',
+    ]);
+  });
+
+  it('leaves a plain diamond alone — a shared target is not a loop', async () => {
+    // THE GUARD ON THE GUARD. Break only the closing edge and everything else
+    // stays identical: same four documents, same two citers, same shared target,
+    // same totals. If this also degraded, the test above would be passing for
+    // the wrong reason — "any node reached twice" rather than "a cycle".
+    writeDiamond(false);
+
+    const run = await runDd(['derive', 'docs/dia-root.dd.json#acceptance_criteria/ac-000d']);
+    const root = rootOf(run);
+
+    expect(run.envelope?.status).toBe('ok');
+    expect(root.complete).toBe(true);
+    expect(root.degradations).toEqual([]);
+    expect(root.total).toBe(4);
+  });
+
+  it('reports a cross-edge cycle once, deterministically, however many runs', async () => {
+    writeDiamond(true);
+    const first = await runDd(['derive', 'docs/dia-root.dd.json#acceptance_criteria/ac-000d']);
+    const second = await runDd(['derive', 'docs/dia-root.dd.json#acceptance_criteria/ac-000d']);
+
+    expect(second.out).toBe(first.out);
+    // Exactly ONE degradation: a back edge can be reached by several DFS paths,
+    // and reporting the same loop twice would double-count the defect.
+    expect(rootOf(first).degradations).toHaveLength(1);
+  });
+});
+
 describe('ddocs derive — determinism', () => {
   it('emits byte-identical output for two runs over an unchanged inbound rollup', async () => {
     writeSatisfiesCorpus('unchecked');
