@@ -14,6 +14,22 @@ export interface DdRollupInput {
   id: string;
   source?: string;
   section?: DdSection;
+  /**
+   * The gate-terminal set governing THIS node's own section, when it differs
+   * from the one the whole rollup was called with.
+   *
+   * A rollup composed by following links crosses DOCUMENT boundaries, and two
+   * documents in one tree may resolve different schemas — a `builder/plan` row
+   * judged by the built-in five can derive from a `builder/review` row whose
+   * schema declares `approved`/`waived`. One set applied to the whole tree would
+   * then be confidently wrong about half of it, in exactly the way a hardcoded
+   * set is confidently wrong about a custom schema. The set travels WITH the node
+   * it governs, because that is where the schema that declared it was resolved.
+   *
+   * Absent means "judge me by the rollup's set", so an existing single-schema
+   * caller is unaffected.
+   */
+  gateTerminal?: readonly string[];
   children?: readonly DdRollupInput[];
 }
 
@@ -94,6 +110,11 @@ export function deriveState(
 /**
  * Compose pre-resolved sections across document boundaries. The caller owns link
  * resolution; core owns the invariant that every descendant must be complete.
+ *
+ * `gateTerminal` is the set for nodes that do not carry their own; a node's own
+ * {@link DdRollupInput.gateTerminal} wins for that node and is NOT inherited,
+ * because it was resolved from that node's document and says nothing about a
+ * child living in another one.
  */
 export function deriveRollup(
   input: DdRollupInput,
@@ -101,7 +122,7 @@ export function deriveRollup(
 ): DdRollupState {
   const children = (input.children ?? []).map((child) => deriveRollup(child, gateTerminal));
   const own = input.section
-    ? deriveState(input.section, gateTerminal)
+    ? deriveState(input.section, input.gateTerminal ?? gateTerminal)
     : { complete: true, status: 'complete' as const, terminal: 0, total: 0, incomplete: [] };
   const terminal = own.terminal + children.reduce((sum, child) => sum + child.terminal, 0);
   const total = own.total + children.reduce((sum, child) => sum + child.total, 0);
