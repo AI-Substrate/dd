@@ -152,6 +152,62 @@ Note also: the /pij skill installs in more than one place (repo copy vs.
 `~/.claude/skills/pij/` vs. `~/.agents/skills/pij/`) and copies can drift — check which
 one a seat actually loaded before concluding it ignored doctrine it was never given.
 
+## Make the packet cheap to contradict — the five mechanisms
+
+**Added 2026-08-28.** Sourced from `pij-driving-nigel` (flowspace3 PM), which had **four contract
+defects forced on it by measurement in one day, all four raised by CODERS rather than by the PM** —
+and could therefore say what mechanically made contradicting its packets cheap. Adopted here
+because the same day, in this repo, every finding that mattered also travelled upward: a fresh PM
+contradicted a green suite and two prior seats, Jordan contradicted a reviewer's APPROVE, and a
+consumer's coder contradicted my own written brief. **Not once did a correct instruction flow down
+and prevent a defect.**
+
+**A brief cannot be right.** Mine went stale within a day, twice. Nigel's was wrong by the time it
+was written. **So a brief's job is to be CHEAP TO CONTRADICT**, and these are the mechanisms that
+make it so — mechanisms, not intentions, so they work in a fleet that has never met you:
+
+1. **The ack is a NAMED STAGE with a NAMED OUTPUT.** Require a numbered plan back before any code,
+   and say in the packet that corrections are welcome. This converts contradiction from an
+   interruption into a **deliverable** — the seat objecting is completing the step, not derailing
+   the process. Three of nigel's four defects surfaced here, *before a diff existed*.
+2. **Write that EVIDENCE OUTRANKS THE PACKET.** Not "raise concerns" — *"your evidence outranks
+   this packet."* A seat deciding whether to contradict is really deciding whether it will be
+   believed, and a written precommitment to believe measurement is the cheapest thing a brief can
+   carry.
+3. **RULE BY NUMBER, FAST.** Every contradiction gets an explicit accepted/overruled with a reason,
+   in minutes. **The second contradiction is priced by how the first was received.** Give the reason
+   at length precisely when overruling, so the next one still arrives.
+4. **BEAR THE COST OF BEING WRONG VISIBLY.** Record your own wrong inferences where the fleet can
+   see them. A seat watching its supervisor record being wrong learns that the price of being wrong
+   is survivable. (This government does it in `orient-local.md`; several entries there are mine
+   against myself.)
+5. **NO FIXTURE MAY BE RELABELLED — "never hand-write an envelope you have not seen."** Nigel did
+   not anticipate this one and it turned out load-bearing: it gave a coder **a rule to point at
+   rather than a judgement to defend.** It did not have to argue that the PM's brief was stale, only
+   that the bytes did not exist. **A rule that makes a contradiction mechanical rather than
+   interpersonal is worth more than any amount of encouragement.**
+
+### Why upward, and what that implies
+
+Nigel's sharpening, kept because it is the correct causal account: findings travel upward **from the
+point of contact with reality**. The coder touches the binary, so it corrects the PM. The PM touches
+the corpus, so it corrects the o-prime. The human touches the product, so he corrects the reviewer.
+**Nobody in that chain is smarter than the person above them — they are closer to the thing.**
+
+So the design goal is not *"get better instructions down"*. It is **"keep the path from the point of
+contact upward as short and as cheap as possible"**, and **every layer that has to be PERSUADED
+rather than SHOWN is length added to that path.**
+
+**The quiet failure mode**: if contradicting the packet is expensive — in tone, in time, in
+permission, in having to be sure first — the measurements stop arriving and **the government goes
+blind while its documents stay confident.** Treat a stretch with no upward corrections as a missing
+instrument, not as a good week.
+
+**And the honest caveat, nigel's own**: its packets were cheap to contradict *partly by luck* — it
+wrote "evidence outranks the packet" as inherited doctrine, not because it had predicted four
+defects. **The system worked better than its author's foresight, which is the argument for encoding
+the mechanism and against trusting judgement.**
+
 ## Source index
 
 | What | Where |
