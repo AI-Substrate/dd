@@ -1,0 +1,33 @@
+src/core/validate.ts
+  s_b668fefb3076c7::t_4d4e31e69b8181 583-584
+test/acts/dd-build.test.ts
+  s_15d888f4b629c1::t_3b9e14754dd68b 417-472
+test/acts/dd-graph-map-live.test.ts
+  s_15d888f4b629c1::t_8cf2f12d1ccdb4 743-744,766,785,810,833,845-857
+test/services/dd/render/renderer.test.ts
+  s_15d888f4b629c1::t_282833246f3d44 589-614
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "df51c2e6063f76a686cad809def7ceecd950c2e1",
+  "prompts": {},
+  "sessions": {
+    "s_15d888f4b629c1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a5a5588f-0979-439f-a1bf-ddf185a089c7",
+        "model": "claude-fable-5"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    },
+    "s_b668fefb3076c7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "fc0e0064-8d84-48e6-b499-eca0c65baafc",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
