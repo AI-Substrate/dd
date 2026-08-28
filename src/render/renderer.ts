@@ -256,10 +256,14 @@ function renderLink(
   origin: LinkOrigin,
   declaredTarget?: string,
 ): string {
-  if (declaredTarget === FILE_LINK_TARGET) return renderFileLink(raw, resolved);
-
   const address = parseAddress(raw);
   if (isAddressFailure(address)) return escapeCell(raw);
+
+  if (declaredTarget === FILE_LINK_TARGET) {
+    return address.file !== null && address.segments.length === 0
+      ? renderFileLink(raw, resolved)
+      : escapeCell(raw);
+  }
 
   // An interior-less address names a FILE and nothing inside it, and the only
   // cell allowed to emit an href to a file is one whose schema declared

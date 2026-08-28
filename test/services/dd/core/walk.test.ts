@@ -500,6 +500,66 @@ describe('dd-core validate walk — ordinary file targets are reported, never op
     expect(loader.calls).toEqual([NEIGHBOUR]);
   });
 
+  it('probes only the legal whole-file arm of a mixed target:file document', () => {
+    const schema: ResolvedDdSchema = {
+      name: 'files/composed',
+      sections: {
+        rows: {
+          shape: {
+            type: 'object',
+            fields: {
+              implemented_by: {
+                type: 'array',
+                items: { type: 'link', target: 'file', rel: 'implemented_by' },
+              },
+            },
+          },
+        },
+      },
+    };
+    const probe = new Recorder(['/repo/src/valid.ts']);
+    const issues = validateWalk(
+      {
+        dd: { schema: schema.name },
+        sections: [
+          {
+            name: 'rows',
+            value: { implemented_by: ['src/library.ts#parseThing', 'src/valid.ts'] },
+          },
+        ],
+        references: [],
+      },
+      SUBJECT,
+      {
+        schemaResolver: {
+          resolve: (ref: string) =>
+            ref === schema.name
+              ? { ok: true as const, schema }
+              : { ok: false as const, message: `schema not found: ${ref}` },
+        },
+        docLoader: new NeighbourLoader(),
+        fileExistence: probe,
+      },
+      { repoRoot: '/repo', depth: 0, mode: 'direct' },
+    );
+
+    expect(probe.probed).toEqual(['/repo/src/valid.ts']);
+    expect(issues).toEqual([
+      expect.objectContaining({
+        class: 'link-type-mismatch',
+        severity: 'ERROR',
+        location: '$.sections[rows].value.implemented_by[0]',
+      }),
+    ]);
+    expect(
+      issues.some(
+        (issue) =>
+          issue.class === 'address-target-missing' &&
+          issue.location === '$.sections[rows].value.implemented_by[0]',
+      ),
+    ).toBe(false);
+  });
+
   it('reports one WARN per missing target, owned by the citing document', () => {
     const { issues } = run([HANDBOOK]);
     expect(issues).toEqual([

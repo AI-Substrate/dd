@@ -580,6 +580,8 @@ export function collectFileRefs(doc: DdDoc, schema: ResolvedDdSchema): DdFileRef
   const refs: DdFileRef[] = [];
   for (const cell of cells.links) {
     if (cell.target !== FILE_LINK_TARGET) continue;
+    const address = parseAddress(cell.raw);
+    if (isAddressFailure(address) || address.file === null || address.segments.length > 0) continue;
     refs.push({ raw: cell.raw, location: cell.location, base: 'repo', rel: cell.rel });
   }
   for (const cell of cells.texts) {

@@ -740,6 +740,8 @@ describe('ddocs graph map — external file dependencies, live (wl-0023)', () =>
   let files = '';
   let previous = '';
 
+  const INVALID_FILE = 'src/library.ts#parseThing';
+  const VALID_FILE = 'src/valid.ts';
   /** An ordinary file, written as its own bytes rather than as a dd document. */
   const writeFile = (relative: string, text: string): void => {
     const path = join(files, relative);
@@ -761,7 +763,7 @@ describe('ddocs graph map — external file dependencies, live (wl-0023)', () =>
             {
               id: 'ac-1a2b',
               claim: 'Queries are fast',
-              implemented_by: ['src/search.ts', 'docs/handbook.md'],
+              implemented_by: ['src/search.ts', INVALID_FILE, VALID_FILE, 'docs/handbook.md'],
               note: 'background in [the handbook](docs/handbook.md)',
             },
             {
@@ -780,6 +782,7 @@ describe('ddocs graph map — external file dependencies, live (wl-0023)', () =>
     // the map has to be able to say out loud.
     writeFile('src/search.ts', 'export const search = (): void => {};\n');
     writeFile('docs/handbook.md', '# Handbook\n');
+    writeFile(VALID_FILE, 'export const valid = true;\n');
   });
 
   afterAll(() => {
@@ -804,7 +807,7 @@ describe('ddocs graph map — external file dependencies, live (wl-0023)', () =>
     const links = await runDd(['dd', 'links', 'plan.dd.json']);
     const report = links.envelope?.data as DdLinksReport;
     const linked = report.outbound.filter((edge) => edge.kind === 'file');
-    expect(linked).toHaveLength(5);
+    expect(linked).toHaveLength(6);
 
     const map = await runDd(['dd', 'graph', 'map', 'plan.dd.json', '--direction', 'out']);
     expect(map.code).toBe(0);
@@ -827,6 +830,7 @@ describe('ddocs graph map — external file dependencies, live (wl-0023)', () =>
     // file that is plainly there unmeasured.
     expect(external.map((node) => [node.address, node.resolved])).toEqual([
       ['src/search.ts', true],
+      [VALID_FILE, true],
       ['docs/handbook.md', true],
       ['src/rebuild.ts', false],
       ['docs/design.md', false],
@@ -836,6 +840,19 @@ describe('ddocs graph map — external file dependencies, live (wl-0023)', () =>
     const fileKeys = new Set(external.map((node) => node.key));
     expect(data.edges.some((edge) => fileKeys.has(edge.from))).toBe(false);
     for (const node of external) expect(node.interior).toEqual([]);
+  });
+
+  it('excludes an invalid file interior while retaining the valid sibling as a resolved leaf', async () => {
+    const run = await runDd(['dd', 'graph', 'map', 'plan.dd.json', '--direction', 'out']);
+    const data = run.envelope?.data as DdMapResult;
+
+    expect(data.edges.some((edge) => JSON.stringify(edge).includes(INVALID_FILE))).toBe(false);
+    expect(data.nodes.some((node) => JSON.stringify(node).includes(INVALID_FILE))).toBe(false);
+
+    const valid = data.nodes.find((node) => node.address === VALID_FILE);
+    expect(valid).toMatchObject({ address: VALID_FILE, kind: 'file', resolved: true });
+    expect(data.edges.some((edge) => edge.to === valid?.key)).toBe(true);
+    expect(data.edges.some((edge) => edge.from === valid?.key)).toBe(false);
   });
 
   it('labels both external states in the human render, inside 80 columns', async () => {

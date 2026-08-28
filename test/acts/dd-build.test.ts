@@ -414,6 +414,62 @@ describe('harness dd build — ordinary file targets', () => {
     );
   });
 
+  it('excludes an invalid file interior while preserving valid href and missing-file behavior', async () => {
+    const invalid = 'src/library.ts#parseThing';
+    const valid = 'src/valid.ts';
+    writeFileSync(
+      join(repo, DOCUMENT),
+      `${JSON.stringify(
+        {
+          dd: { schema: 'render/filelinks', spec: 'dd@1' },
+          sections: [
+            { name: 'meta', value: { title: 'Mixed file links' } },
+            {
+              name: 'tasks',
+              value: [
+                { id: 'ac-invalid', implemented_by: invalid },
+                { id: 'ac-valid', implemented_by: valid },
+              ],
+            },
+          ],
+          references: [],
+        },
+        null,
+        2,
+      )}\n`,
+      'utf8',
+    );
+    writeFileSync(join(repo, valid), 'export const valid = true;\n', 'utf8');
+
+    const written = await runDd(['dd', 'build', DOCUMENT]);
+    expect(written.code).toBe(0);
+    expect(written.envelope.status).toBe('ok');
+    expect(findings(written.envelope)).toEqual([]);
+
+    const siblingDir = join(repo, 'docs/plans/nested');
+    const markdown = readFileSync(join(siblingDir, 'notes.dd.md'), 'utf8');
+    expect(markdown).toContain(invalid);
+    expect(markdown).not.toContain(`[${invalid}]`);
+    const href = markdown.match(/\[src\/valid\.ts\]\(([^)]+)\)/)?.[1];
+    expect(href).toBe('../../../src/valid.ts');
+    expect(existsSync(join(siblingDir, href ?? ''))).toBe(true);
+
+    rmSync(join(repo, valid));
+    const missing = await runDd(['dd', 'build', DOCUMENT]);
+    expect(missing.code).toBe(0);
+    expect(missing.envelope.status).toBe('degraded');
+    expect(findings(missing.envelope)).toEqual([
+      expect.objectContaining({
+        class: 'address-target-missing',
+        location: '$.sections[tasks].value[1].implemented_by',
+        message: `file link target is missing: ${valid}`,
+      }),
+    ]);
+    expect(
+      findings(missing.envelope).some((finding) => finding.message.includes(invalid)),
+    ).toBe(false);
+  });
+
   it('stays silent for a URL, a bare prose path, a fragment and an image', async () => {
     // All four live in the `summary` section of the same document, so this row is
     // green in every arm above as well — it is stated once, alone, so a failure

@@ -586,6 +586,32 @@ describe('renderDd — an interior-less address links only where the schema name
     expect(markdown).toContain('[docs/spec.md](../../../docs/spec.md)');
   });
 
+  it('renders an invalid target:file interior plainly beside a valid whole-file href', () => {
+    const markdown = renderRows(
+      [
+        {
+          id: 'ac-0001',
+          invalid: 'src/library.ts#parseThing',
+          valid: 'src/valid.ts',
+        },
+      ],
+      {
+        type: 'object',
+        fields: {
+          id: { type: 'string' },
+          invalid: { type: 'link', target: 'file' },
+          valid: { type: 'link', target: 'file' },
+        },
+      },
+      { repoRoot: '/repo' },
+    );
+
+    expect(markdown).toContain(
+      '| ac-0001 | src/library.ts#parseThing | [src/valid.ts](../../../src/valid.ts) |',
+    );
+    expect(markdown).not.toContain('[src/library.ts#parseThing]');
+  });
+
   it('still links a dd-target address that carries a real interior', () => {
     // The second positive control: an address WITH an interior is untouched, so
     // the guard is proven to key on the empty interior and not on the cell.
