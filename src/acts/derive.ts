@@ -1,16 +1,20 @@
 import type { Command } from 'commander';
 import { isAddressFailure, parseAddress } from '../core/address.js';
-import { type DdRollupInput, deriveRollup } from '../core/derive.js';
+import {
+  type DdNodeRollup,
+  type DdNodeRollupInput,
+  type DdRollupDegradation,
+  type DdRollupUnknown,
+  deriveNodeRollup,
+} from '../core/derive.js';
 import type { DdSection } from '../core/model.js';
 import {
   addressableAt,
   boundedWalk,
   type DdDocumentIndex,
   type DdLinkEdge,
-  type DdLinkIssue,
   indexDocument,
   isWithinLocation,
-  linkIssue,
   resolveMapSeed,
   traverseCorpus,
   UNBOUNDED,
@@ -42,21 +46,21 @@ import { codedLinkIssues, createLinkContext, type DdActDeps, nextActionFor } fro
  */
 const DERIVES_REL = 'derives';
 
-/**
- * The state a descendant gets when the walk could not read it.
- *
- * It is never gate-terminal under any schema anyone would write — the leading
- * `#` cannot appear in a sane enum vocabulary — so `deriveState` counts it as
- * incomplete and names the unreachable address in `incomplete[]`. That is the
- * whole mechanism behind ruling 3: a rollup over a partially-resolved tree
- * CANNOT come back `complete`, and it does not come back complete because the
- * act remembered to check — it comes back incomplete because core applied the
- * one invariant it owns to an entry the act honestly reported as unknown.
- *
- * It is internal by construction: `deriveState` projects entries down to their
- * IDS, so this string never reaches the envelope.
- */
-const UNRESOLVED_STATE = '#unresolved';
+/** Degradation reasons this verb can report. Open by contract, enumerated here. */
+const REASON = {
+  unreadable: 'descendant-unreadable',
+  schemaUnresolved: 'descendant-schema-unresolved',
+  unaddressable: 'descendant-unaddressable',
+  unparseable: 'descendant-address-unparseable',
+  cycle: 'cycle',
+  overlap: 'overlapping-region',
+} as const;
+
+/** Why a document could not be turned into an index, when it could not. */
+interface IndexFailure {
+  reason: string;
+  detail: string;
+}
 
 /** A document region whose state entries have already been counted exactly once. */
 interface Region {
@@ -71,9 +75,12 @@ interface DeriveNode {
   address: string;
   path: string | null;
   interior: string[];
+  sectionName: string;
   region: Region | null;
   section: DdSection | null;
-  gateTerminal: readonly string[] | null;
+  gateTerminal: readonly string[];
+  unknown: DdRollupUnknown[];
+  degradations: DdRollupDegradation[];
   resolved: boolean;
 }
 
@@ -137,16 +144,19 @@ export function registerDeriveCommand(dd: Command, io: CliIo, deps: DdActDeps): 
         return;
       }
 
-      const issues: DdLinkIssue[] = [];
       const indexes = new Map<string, DdDocumentIndex | null>();
-      const gateTerminals = new Map<string, readonly string[] | null>();
-      const schemaNames = new Map<string, string | null>();
+      const indexFailures = new Map<string, IndexFailure>();
+      const gateTerminals = new Map<string, readonly string[]>();
 
       /**
        * Index one document, and resolve the gate-terminal set its rows are judged
        * by, in the same step — the two always travel together (ruling 1), so a
        * document can never be indexed without the set that says what "done" means
        * inside it.
+       *
+       * Every path asked for is remembered whether or not it could be read: that
+       * set IS the basis, and a document that was consulted and found missing is
+       * part of what would change this answer if it appeared.
        */
       const indexFor = (path: string): DdDocumentIndex | null => {
         const cached = indexes.get(path);
@@ -154,21 +164,23 @@ export function registerDeriveCommand(dd: Command, io: CliIo, deps: DdActDeps): 
         const loaded = ctx.loader.load(path);
         if (!loaded.ok) {
           indexes.set(path, null);
-          gateTerminals.set(path, null);
-          schemaNames.set(path, null);
+          indexFailures.set(path, { reason: REASON.unreadable, detail: loaded.message });
           return null;
         }
         const resolution = ctx.resolver.resolveDetailed(loaded.doc.dd.schema, loaded.path);
         if (!resolution.record) {
           indexes.set(path, null);
-          gateTerminals.set(path, null);
-          schemaNames.set(path, loaded.doc.dd.schema);
+          indexFailures.set(path, {
+            reason: REASON.schemaUnresolved,
+            detail:
+              resolution.issues.find((issue) => issue.severity === 'ERROR')?.message ??
+              `schema "${loaded.doc.dd.schema}" did not resolve`,
+          });
           return null;
         }
         const index = indexDocument(path, loaded.doc, resolution.record.schema);
         indexes.set(path, index);
         gateTerminals.set(path, resolution.record.gateTerminal);
-        schemaNames.set(path, resolution.record.name);
         return index;
       };
 
@@ -180,18 +192,19 @@ export function registerDeriveCommand(dd: Command, io: CliIo, deps: DdActDeps): 
         // that will not load never gets here (`resolveMapSeed` refuses it
         // first), so this is an unresolvable schema or an interior the index
         // does not carry, and E401/E430 already name both.
-        const unresolvableSchema = seedIndex === null;
+        const failure = indexFailures.get(seed.path);
+        const schemaFailed = failure?.reason === REASON.schemaUnresolved;
         exitWithEnvelope(
           formatError(
             'ddocs derive',
-            unresolvableSchema ? ErrorCodes.DD_SCHEMA_UNRESOLVABLE : ErrorCodes.DD_LINK_UNRESOLVED,
-            unresolvableSchema
-              ? `the schema for ${displayAddress(ctx.repoRoot, seed.path, [])} could not be resolved, so nothing beneath it can be derived`
+            schemaFailed ? ErrorCodes.DD_SCHEMA_UNRESOLVABLE : ErrorCodes.DD_LINK_UNRESOLVED,
+            schemaFailed
+              ? `the schema for ${displayAddress(ctx.repoRoot, seed.path, [])} could not be resolved, so nothing beneath it can be derived: ${failure?.detail ?? ''}`
               : `address resolved to a document but names nothing addressable: ${address}`,
             ctx.clock,
             {
               details: { address, path: posixRelative(ctx.repoRoot, seed.path) },
-              next_action: unresolvableSchema
+              next_action: schemaFailed
                 ? 'Run `ddocs schema list` to see which schemas resolve from here.'
                 : 'Run `ddocs address validate <address> --resolve` to see what the address names.',
             },
@@ -210,61 +223,101 @@ export function registerDeriveCommand(dd: Command, io: CliIo, deps: DdActDeps): 
         mode: 'direct',
         follow: true,
       });
-      issues.push(...corpus.issues);
       const edges: readonly DdLinkEdge[] = corpus.edges;
+      // `corpus.issues` is deliberately NOT consumed. `traverseCorpus` follows
+      // EVERY relation to build the edge list, so its issues describe a superset
+      // of this rollup's closure — a `ref` neighbour with an unresolvable schema
+      // would degrade an answer it is not part of, and flip `complete` to false
+      // for a tree that is genuinely complete. MEASURED, not theoretical: a
+      // document reachable only through `meta.log` did exactly that, while
+      // `basis` correctly excluded it, and the disagreement between the two was
+      // the tell. Every document this rollup actually consults is described by
+      // `describe()` below, which reports its own failure precisely; that is the
+      // reporting surface, and it is exactly the closure.
 
       const nodes = new Map<string, DeriveNode>();
+      const parentOf = new Map<string, string>();
       const counted: Region[] = [];
 
-      const sectionFor = (interior: readonly string[], value: unknown): DdSection => ({
-        name: interior.at(-1) ?? 'document',
-        value,
-      });
+      const sectionOf = (interior: readonly string[]): string => interior.at(0) ?? '';
+
+      /** A node standing in for a subtree that could not be surveyed. */
+      const unknownNode = (
+        key: string,
+        nodeAddress: string,
+        path: string | null,
+        interior: string[],
+        failure: IndexFailure,
+      ): DeriveNode => {
+        const section = sectionOf(interior);
+        return {
+          key,
+          address: nodeAddress,
+          path,
+          interior,
+          sectionName: section,
+          region: null,
+          section: null,
+          // No schema resolved here, so there is NO terminal set to report. An
+          // empty array says that; borrowing the parent's would be a claim about
+          // a vocabulary nobody read.
+          gateTerminal: [],
+          unknown: [{ id: interior.at(-1) ?? nodeAddress, address: nodeAddress, section }],
+          degradations: [{ reason: failure.reason, address: nodeAddress, detail: failure.detail }],
+          resolved: false,
+        };
+      };
 
       const describe = (path: string, interior: string[]): DeriveNode => {
         const key = nodeId(path, interior);
         const index = indexFor(path);
-        const entry = index ? addressableAt(index, interior) : undefined;
-        const address = displayAddress(ctx.repoRoot, path, interior);
-        if (!entry) {
-          return {
-            key,
-            address,
-            path,
-            interior,
-            region: null,
-            section: sectionFor(interior, [{ id: address, state: UNRESOLVED_STATE }]),
-            gateTerminal: null,
-            resolved: false,
+        const nodeAddress = displayAddress(ctx.repoRoot, path, interior);
+        if (!index) {
+          const failure = indexFailures.get(path) ?? {
+            reason: REASON.unreadable,
+            detail: `${nodeAddress} could not be read`,
           };
+          return unknownNode(key, nodeAddress, path, interior, failure);
+        }
+        const entry = addressableAt(index, interior);
+        if (!entry) {
+          return unknownNode(key, nodeAddress, path, interior, {
+            reason: REASON.unaddressable,
+            detail: `the document resolved but carries nothing addressable at ${interior.join('/')}`,
+          });
         }
         return {
           key,
-          address,
+          address: nodeAddress,
           path,
           interior,
+          sectionName: sectionOf(interior),
           region: { path, location: entry.location },
-          section: sectionFor(interior, entry.value),
-          gateTerminal: gateTerminals.get(path) ?? null,
+          section: { name: interior.at(-1) ?? 'document', value: entry.value },
+          gateTerminal: gateTerminals.get(path) ?? [],
+          unknown: [],
+          degradations: [],
           resolved: true,
         };
       };
 
-      /** A `derives` cell that points at nothing — a node, never a silence. */
-      const danglingNode = (edge: DdLinkEdge): DeriveNode => ({
-        key: `!${edge.from}\u0000${edge.location}`,
-        address: edge.address,
-        path: null,
-        interior: [],
-        region: null,
-        section: sectionFor([], [{ id: edge.address, state: UNRESOLVED_STATE }]),
-        gateTerminal: null,
-        resolved: false,
-      });
-
       const seedNode = describe(seed.path, seed.interior);
+      // The root ECHOES the request, per the wire contract, rather than the
+      // canonicalised spelling the walk keys on.
+      seedNode.address = address;
       nodes.set(seedNode.key, seedNode);
       if (seedNode.region) counted.push(seedNode.region);
+
+      /** The chain of keys from the root down to `key`, root first. */
+      const ancestry = (key: string): string[] => {
+        const chain: string[] = [];
+        let current: string | undefined = key;
+        while (current !== undefined) {
+          chain.unshift(current);
+          current = parentOf.get(current);
+        }
+        return chain;
+      };
 
       const expand = (key: string): { key: string; edge: DeriveEdge }[] => {
         const from = nodes.get(key);
@@ -274,6 +327,12 @@ export function registerDeriveCommand(dd: Command, io: CliIo, deps: DdActDeps): 
         if (!anchor) return [];
 
         const steps: { key: string; edge: DeriveEdge }[] = [];
+        const schedule = (node: DeriveNode): void => {
+          if (!nodes.has(node.key)) nodes.set(node.key, node);
+          if (!parentOf.has(node.key)) parentOf.set(node.key, key);
+          steps.push({ key: node.key, edge: { from: key, to: node.key } });
+        };
+
         for (const edge of edges) {
           if (edge.from !== from.path) continue;
           if (edge.rel !== DERIVES_REL) continue;
@@ -281,54 +340,79 @@ export function registerDeriveCommand(dd: Command, io: CliIo, deps: DdActDeps): 
 
           const parsed = parseAddress(edge.address);
           if (edge.to === null || isAddressFailure(parsed)) {
-            const node = danglingNode(edge);
-            if (!nodes.has(node.key)) nodes.set(node.key, node);
-            steps.push({ key: node.key, edge: { from: key, to: node.key } });
+            // A `derives` cell that points at nothing is a NODE, never a
+            // silence. `ddocs links` can report ok with no issue for exactly
+            // this shape; a completion answer must not, because the subtree it
+            // failed to reach is the subtree that decides the verdict.
+            schedule(
+              unknownNode(
+                `!${edge.from}\u0000${edge.location}`,
+                edge.address,
+                null,
+                [from.sectionName],
+                {
+                  reason: REASON.unparseable,
+                  detail: `the derives cell at ${edge.location} does not resolve to a document in this repository`,
+                },
+              ),
+            );
             continue;
           }
 
           const interior = parsed.segments.map((segment) => segment.value);
+          const targetKey = nodeId(edge.to, interior);
+          const chain = ancestry(key);
+          if (chain.includes(targetKey)) {
+            // A `derives` CYCLE. Terminate THIS branch only — every other branch
+            // of this node keeps being walked — and name every member, because
+            // "the walk stopped here" is useless without saying which documents
+            // form the loop. It DEGRADES rather than succeeding quietly: a cycle
+            // means some node's completeness is defined in terms of itself, and
+            // no number computed over that is trustworthy.
+            const members = [...chain.slice(chain.indexOf(targetKey)), targetKey].map((member) =>
+              posixRelative(ctx.repoRoot, member),
+            );
+            from.degradations.push({
+              reason: REASON.cycle,
+              address: from.address,
+              detail: `derives cycle: ${members.join(' -> ')}`,
+            });
+            continue;
+          }
+
           const node = describe(edge.to, interior);
           const nodeRegion = node.region;
           if (nodeRegion) {
-            const enclosing = counted.find((counted) => regionCovers(counted, nodeRegion));
+            const enclosing = counted.find((region) => regionCovers(region, nodeRegion));
             if (enclosing) {
               // Every row here was already counted — skipping is the ONLY thing
-              // that keeps the arithmetic right, and it covers three cases at
-              // once because a region contains itself: an ancestor that already
-              // spans this node (the document-scope case, where `tasks[].done`
-              // points inside the document node's own value), a diamond where
-              // two parents derive from one target, and a `derives` CYCLE
-              // arriving back at somewhere already counted.
+              // that keeps the arithmetic right, and it covers the document-scope
+              // case (where `tasks[].done` points inside the document node's own
+              // value) and a diamond where two parents derive from one target.
               //
-              // Nothing is lost in any of them: the rows are in the total and,
-              // if open, named in `incomplete[]`. Only the tree SHAPE is
-              // flatter. `boundedWalk`'s scheduled set independently guarantees
-              // the walk terminates; this guarantees it counts.
+              // Nothing is lost and nothing is hidden: the rows are in the total
+              // and, if open, named in `incomplete`. Only the tree SHAPE is
+              // flatter. A CYCLE never reaches here — it was named above — so
+              // this silence never covers a defect.
               continue;
             }
-            const swallowed = counted.find((counted) => regionCovers(nodeRegion, counted));
+            const swallowed = counted.find((region) => regionCovers(nodeRegion, region));
             if (swallowed) {
               // The reverse overlap, and it cannot be resolved by skipping OR by
               // adding: adding double-counts the inner region, skipping drops
-              // the rest of the outer one. Refusing to guess is the ruling —
-              // an inexact derived number is worse than the stored field this
-              // verb exists to distrust.
-              issues.push(
-                linkIssue(
-                  'link-scan-incomplete',
-                  'WARN',
-                  edge.location,
-                  `${node.address} encloses a region already counted in this rollup — it was left out rather than counted twice`,
-                  edge.from,
-                ),
-              );
+              // the rest of the outer one. So it is reported rather than
+              // guessed — an inexact derived number is worse than the stored
+              // field this verb exists to distrust.
+              from.degradations.push({
+                reason: REASON.overlap,
+                address: node.address,
+                detail: `${node.address} encloses a region already counted in this rollup, so it was left out rather than counted twice`,
+              });
               continue;
             }
             counted.push(nodeRegion);
           }
-          nodes.set(node.key, node);
-          steps.push({ key: node.key, edge: { from: key, to: node.key } });
+          schedule(node);
         }
         return steps;
       };
@@ -346,64 +430,45 @@ export function registerDeriveCommand(dd: Command, io: CliIo, deps: DdActDeps): 
         childrenOf.set(visit.via.from, [...(childrenOf.get(visit.via.from) ?? []), visit.key]);
       }
 
-      const toInput = (key: string): DdRollupInput => {
+      const toInput = (key: string): DdNodeRollupInput => {
         const node = nodes.get(key);
         const children = (childrenOf.get(key) ?? []).map(toInput);
-        if (!node) return { id: key, children };
+        if (!node) return { address: key, children };
         return {
-          id: node.address,
-          ...(node.path !== null && { source: posixRelative(ctx.repoRoot, node.path) }),
+          address: node.address,
+          sectionName: node.sectionName,
           ...(node.section && { section: node.section }),
-          ...(node.gateTerminal && { gateTerminal: node.gateTerminal }),
+          gateTerminal: node.gateTerminal,
+          ...(node.unknown.length > 0 && { unknown: node.unknown }),
+          ...(node.degradations.length > 0 && { degradations: node.degradations }),
           children,
         };
       };
 
-      const seedGateTerminal = gateTerminals.get(seed.path) ?? undefined;
-      const rollup = deriveRollup(toInput(seedNode.key), seedGateTerminal);
+      // Built AFTER the walk, so degradations recorded during expansion (cycles,
+      // overlaps) are already on their nodes.
+      const rollup = deriveNodeRollup(toInput(seedNode.key), seedNode.gateTerminal);
 
-      const unresolved = walk.order
-        .map((visit) => nodes.get(visit.key))
-        .filter((node): node is DeriveNode => node !== undefined && !node.resolved)
-        .map((node) => node.address);
+      // Every document this rollup consulted, including ones it could not read:
+      // creating a missing target changes the answer, so a consumer keying
+      // re-derivation on this set must be told to watch it. Sorted and deduped
+      // so two runs over an unchanged corpus are byte-identical.
+      const basis = [
+        ...new Set([...indexes.keys()].map((path) => posixRelative(ctx.repoRoot, path))),
+      ]
+        .filter((path) => path.length > 0)
+        .sort();
 
-      const coded = codedLinkIssues(issues);
-      const data = {
-        address,
-        path: posixRelative(ctx.repoRoot, seed.path),
-        interior: seed.interior,
-        schema: schemaNames.get(seed.path) ?? null,
-        gate_terminal: [...(seedGateTerminal ?? [])],
-        rel: DERIVES_REL,
-        complete: rollup.complete,
-        status: rollup.status,
-        terminal: rollup.terminal,
-        total: rollup.total,
-        incomplete: rollup.incomplete,
-        children: rollup.children,
-        counts: { nodes: walk.order.length, unresolved: unresolved.length },
-        unresolved,
-        issues: coded,
-      };
+      const data = { ...rollup, basis };
 
-      if (unresolved.length > 0) {
+      if (rollup.degradations.length > 0) {
         exitWithEnvelope(
           formatDegraded(
             'ddocs derive',
             data,
-            `${unresolved.length} descendant(s) could not be read (${unresolved.join(', ')}) — they are counted as incomplete, so this rollup is a floor and not a verdict.`,
-            ctx.clock,
-          ),
-          port,
-        );
-        return;
-      }
-      if (coded.length > 0) {
-        exitWithEnvelope(
-          formatDegraded(
-            'ddocs derive',
-            data,
-            `${coded.length} issue(s) were raised while walking the tree — re-run \`ddocs doctor\` before trusting this rollup.`,
+            `${rollup.degradations.length} part(s) of this tree could not be surveyed (${[
+              ...new Set(rollup.degradations.map((degradation) => degradation.reason)),
+            ].join(', ')}) — the rollup is a floor, not a verdict.`,
             ctx.clock,
           ),
           port,
@@ -414,7 +479,7 @@ export function registerDeriveCommand(dd: Command, io: CliIo, deps: DdActDeps): 
         formatOk('ddocs derive', data, ctx.clock, {
           next_action: rollup.complete
             ? 'Nothing is open beneath this address.'
-            : `Open rows: ${rollup.incomplete.join(', ')}`,
+            : `Open rows: ${rollup.incomplete.map((entry) => entry.id).join(', ')}`,
         }),
         port,
       );
@@ -438,16 +503,15 @@ function derivePort(io: CliIo, jsonPort: OutputPort): OutputPort {
         if (envelope.next_action) io.writers.err(`  \u2192 ${envelope.next_action}\n`);
         return;
       }
-      const data = envelope.data as {
-        address: string;
-        complete: boolean;
-        terminal: number;
-        total: number;
-        incomplete: string[];
-      };
+      const data = envelope.data as DdNodeRollup;
       const mark = data.complete ? '[x]' : '[ ]';
-      io.writers.out(`${mark} ${data.address} ${data.terminal}/${data.total}\n`);
-      for (const id of data.incomplete) io.writers.err(`  open: ${id}\n`);
+      io.writers.out(
+        `${mark} ${data.address} ${data.total - data.incomplete.length}/${data.total}\n`,
+      );
+      for (const entry of data.incomplete) io.writers.err(`  open: ${entry.id}\n`);
+      for (const degradation of data.degradations) {
+        io.writers.err(`  ${degradation.reason}: ${degradation.address}\n`);
+      }
       if (envelope.next_action) io.writers.err(`  \u2192 ${envelope.next_action}\n`);
     },
   };

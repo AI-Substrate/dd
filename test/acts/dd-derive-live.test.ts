@@ -8,27 +8,31 @@ import type { Envelope } from '../../src/output/envelope.js';
 import type { CliIo, Writers } from '../../src/output/output-port.js';
 
 /**
- * The payload `ddocs derive` puts in its envelope. Named here so an assertion
- * reads a FIELD rather than an index into `unknown` — a rollup answer whose
- * counts were asserted through casts is one rename away from asserting nothing.
+ * The ruled recursive wire shape, named here so an assertion reads a FIELD
+ * rather than an index into `unknown`. A payload asserted through casts is one
+ * rename away from asserting nothing, which is this repo's most-repeated defect.
  */
-interface DerivePayload {
+interface Incomplete {
+  id: string;
   address: string;
-  path: string;
-  interior: string[];
-  schema: string | null;
-  gate_terminal: string[];
-  rel: string;
-  complete: boolean;
-  status: 'complete' | 'incomplete';
-  terminal: number;
-  total: number;
-  incomplete: string[];
-  children: Array<{ id: string; terminal: number; total: number; incomplete: string[] }>;
-  counts: { nodes: number; unresolved: number };
-  unresolved: string[];
-  issues: unknown[];
+  section: string;
+  state?: string;
 }
+interface Degradation {
+  reason: string;
+  address: string;
+  detail?: string;
+}
+interface Node {
+  address: string;
+  complete: boolean;
+  gate_terminal: string[];
+  total: number;
+  incomplete: Incomplete[];
+  nodes: Node[];
+  degradations: Degradation[];
+}
+type Root = Node & { basis: string[] };
 
 interface Run {
   envelope: Envelope | null;
@@ -87,31 +91,26 @@ async function runDd(argv: string[], io?: Partial<CliIo>): Promise<Run> {
   };
 }
 
-/** The envelope's payload, with the run named in the failure when it is absent. */
-function payloadOf(run: Run): DerivePayload {
+/** The envelope's payload, with the whole run named in the failure when absent. */
+function rootOf(run: Run): Root {
   if (!run.envelope) {
     throw new Error(`no envelope — code=${run.code} out=${run.out} err=${run.err}`);
   }
-  return run.envelope.data as DerivePayload;
+  return run.envelope.data as Root;
 }
 
-/**
- * A plan-shaped schema on the BUILT-IN five, whose two composition edges are
- * declared with `rel: "derives"` — the relation `ddocs derive` composes over.
- * Mirrors the shipped `builder/plan` seam (`phases[].tasks`, `tasks[].done`)
- * without depending on it, so this suite pins the VERB rather than that schema.
- */
+/** Every node of the rollup, root first, in traversal order. */
+function flatten(node: Node): Node[] {
+  return [node, ...node.nodes.flatMap(flatten)];
+}
+
 const PLAN_SCHEMA = {
   dd_schema: 1,
   description: 'a plan whose phases derive from task files and whose tasks derive from assertions',
   sections: {
     meta: {
       required: true,
-      shape: {
-        type: 'object',
-        required: ['title'],
-        fields: { title: { type: 'string' } },
-      },
+      shape: { type: 'object', required: ['title'], fields: { title: { type: 'string' } } },
     },
     phases: {
       shape: {
@@ -125,8 +124,8 @@ const PLAN_SCHEMA = {
             state: { type: 'state' },
             note: { type: 'string' },
             tasks: { type: 'link', rel: 'derives' },
-            // A NON-derives link, deliberately: it points at a document full of
-            // open rows, and every count below is proof it was not followed.
+            // A NON-derives link, deliberately: every count is proof it was not
+            // followed, and the neighbour it reaches is deliberately broken.
             cites: { type: 'link', rel: 'proven_by' },
           },
         },
@@ -173,12 +172,9 @@ const PLAN_SCHEMA = {
 
 /**
  * A schema whose completion vocabulary is its OWN — `approved`/`waived` are
- * terminal and nothing else is.
- *
- * Trap 2 in the brief: a verb tested only against the built-in five proves
- * nothing about ruling 1. Every state value here is outside the built-in five,
- * so an implementation that reached for a hardcoded terminal set cannot score a
- * single terminal row in this document.
+ * terminal and nothing else is. Every state value is outside the built-in five,
+ * so an implementation reaching for a hardcoded set scores zero terminal rows
+ * here and cannot reach those assertions by accident.
  */
 const REVIEW_SCHEMA = {
   dd_schema: 1,
@@ -220,13 +216,25 @@ function write(path: string, value: unknown): void {
   writeFileSync(full, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
 }
 
-function read(path: string): Record<string, unknown> {
-  return JSON.parse(readFileSync(join(repo, path), 'utf8')) as Record<string, unknown>;
+function read(path: string): { sections: Array<{ name: string; value: unknown }> } {
+  return JSON.parse(readFileSync(join(repo, path), 'utf8')) as {
+    sections: Array<{ name: string; value: unknown }>;
+  };
 }
 
-/** One `done_when` assertion row. */
 function assertion(id: string, state: string) {
   return { id, assertion: `assert ${id}`, state, ...(state === 'na' && { note: 'n/a' }) };
+}
+
+function planDoc(phases: unknown[]) {
+  return {
+    dd: { schema: 'probe/plan' },
+    sections: [
+      { name: 'meta', value: { title: 'Plan' } },
+      { name: 'phases', value: phases },
+    ],
+    references: [],
+  };
 }
 
 beforeEach(() => {
@@ -235,21 +243,13 @@ beforeEach(() => {
   write('.dd/schemas/probe/plan/schema.json', PLAN_SCHEMA);
   write('.dd/schemas/probe/review/schema.json', REVIEW_SCHEMA);
 
-  // The plan: two phases, both STORED as `checked`, deriving from two task files.
-  write('docs/plan.dd.json', {
-    dd: { schema: 'probe/plan' },
-    sections: [
-      { name: 'meta', value: { title: 'Plan' } },
-      {
-        name: 'phases',
-        value: [
-          { id: 'ph-0001', title: 'Done phase', state: 'checked', tasks: 'done.dd.json#tasks' },
-          { id: 'ph-0002', title: 'Open phase', state: 'checked', tasks: 'open.dd.json#tasks' },
-        ],
-      },
-    ],
-    references: [],
-  });
+  write(
+    'docs/plan.dd.json',
+    planDoc([
+      { id: 'ph-0001', title: 'Done phase', state: 'checked', tasks: 'done.dd.json#tasks' },
+      { id: 'ph-0002', title: 'Open phase', state: 'checked', tasks: 'open.dd.json#tasks' },
+    ]),
+  );
 
   // Every row terminal, across three DIFFERENT terminal states.
   write('docs/done.dd.json', {
@@ -305,78 +305,100 @@ afterEach(() => {
   rmSync(repo, { recursive: true, force: true });
 });
 
-describe('ddocs derive — the two arms', () => {
-  it('reports complete with an EMPTY incomplete list, and counts every row, for an all-terminal tree', async () => {
-    const run = await runDd(['derive', 'docs/done.dd.json#tasks']);
-    const data = payloadOf(run);
+describe('ddocs derive — the recursive wire contract', () => {
+  it('gives every node address, complete, gate_terminal, total, incomplete, nodes and degradations', async () => {
+    const root = rootOf(await runDd(['derive', 'docs/plan.dd.json#phases']));
 
-    expect(run.envelope?.status).toBe('ok');
-    expect(run.code).toBe(0);
-    expect(data.complete).toBe(true);
-    expect(data.status).toBe('complete');
-    // The arm that catches "reports incomplete for everything": an empty list is
-    // only meaningful beside a total that proves rows were actually read.
-    expect(data.incomplete).toEqual([]);
-    expect(data.total).toBe(5);
-    expect(data.terminal).toBe(5);
+    for (const node of flatten(root)) {
+      expect(Object.keys(node).sort(), node.address).toEqual(
+        ['address', 'complete', 'degradations', 'gate_terminal', 'incomplete', 'nodes', 'total']
+          .concat(node === root ? ['basis'] : [])
+          .sort(),
+      );
+      expect(typeof node.address, node.address).toBe('string');
+      expect(typeof node.complete, node.address).toBe('boolean');
+      expect(Number.isInteger(node.total), node.address).toBe(true);
+      expect(Array.isArray(node.incomplete), node.address).toBe(true);
+      expect(Array.isArray(node.nodes), node.address).toBe(true);
+      expect(Array.isArray(node.degradations), node.address).toBe(true);
+      expect(Array.isArray(node.gate_terminal), node.address).toBe(true);
+    }
+    // The root echoes the request verbatim; descendants are fully qualified.
+    expect(root.address).toBe('docs/plan.dd.json#phases');
+    expect(flatten(root).length).toBeGreaterThan(1);
   });
 
-  it('names EXACTLY the open ids — and not the terminal siblings beside them — for a mixed tree', async () => {
-    const run = await runDd(['derive', 'docs/open.dd.json#tasks']);
-    const data = payloadOf(run);
+  it('roots a sorted, unique, repo-relative basis that includes the root document', async () => {
+    const root = rootOf(await runDd(['derive', 'docs/plan.dd.json#phases']));
 
-    expect(run.envelope?.status).toBe('ok');
-    // Exactly, and in full: `as-0004` is checked and `tk-0003`/`tk-0004` are
-    // stored checked, so an implementation that reported "everything open"
-    // would name five ids here and an implementation that reported the SECTION
-    // only would name none.
-    expect(data.incomplete).toEqual(['as-0005', 'as-0006']);
-    expect(data.complete).toBe(false);
-    expect(data.status).toBe('incomplete');
-    expect(data.total).toBe(5);
-    expect(data.terminal).toBe(3);
+    expect(root.basis).toEqual(['docs/done.dd.json', 'docs/open.dd.json', 'docs/plan.dd.json']);
+    expect(root.basis).toEqual([...root.basis].sort());
+    expect(new Set(root.basis).size).toBe(root.basis.length);
+    // Only descendant nodes are consulted; the basis is the closure, not the
+    // corpus — and it is a ROOT-only field, which this asserts structurally.
+    expect((root.nodes[0] as Partial<Root> | undefined)?.basis).toBeUndefined();
   });
 });
 
-describe('ddocs derive — the derived summary contradicts the stored field', () => {
+describe('ddocs derive — the two arms', () => {
+  it('reports complete with empty incomplete AND empty degradations for an all-terminal tree', async () => {
+    const run = await runDd(['derive', 'docs/done.dd.json#tasks']);
+    const root = rootOf(run);
+
+    expect(run.envelope?.status).toBe('ok');
+    expect(run.code).toBe(0);
+    expect(root.complete).toBe(true);
+    expect(root.incomplete).toEqual([]);
+    expect(root.degradations).toEqual([]);
+    // The count is what stops "reports incomplete for everything" scoring here.
+    expect(root.total).toBe(5);
+  });
+
+  it('names exactly the open rows, each with its row-local id and fully qualified address', async () => {
+    const run = await runDd(['derive', 'docs/open.dd.json#tasks']);
+    const root = rootOf(run);
+
+    expect(run.envelope?.status).toBe('ok');
+    expect(root.complete).toBe(false);
+    expect(root.total).toBe(5);
+    expect(root.incomplete).toEqual([
+      {
+        id: 'as-0005',
+        address: 'docs/open.dd.json#done_when/tk-0003/as-0005',
+        section: 'done_when',
+        state: 'unchecked',
+      },
+      {
+        id: 'as-0006',
+        address: 'docs/open.dd.json#done_when/tk-0004/as-0006',
+        section: 'done_when',
+        state: 'blocked',
+      },
+    ]);
+    expect(root.degradations).toEqual([]);
+  });
+
   it('reports incomplete for a phase whose own state, and its tasks own states, all read checked', async () => {
-    const stored = read('docs/plan.dd.json');
-    const phases = (stored.sections as Array<{ name: string; value: unknown }>).find(
-      (section) => section.name === 'phases',
-    );
-    // The premise, asserted rather than assumed: every stored state on the path
-    // from the seed to the open rows claims done.
+    const phases = read('docs/plan.dd.json').sections.find((s) => s.name === 'phases');
     expect((phases?.value as Array<{ state: string }>).map((row) => row.state)).toEqual([
       'checked',
       'checked',
     ]);
 
-    const run = await runDd(['derive', 'docs/plan.dd.json#phases']);
-    const data = payloadOf(run);
+    const root = rootOf(await runDd(['derive', 'docs/plan.dd.json#phases']));
 
-    expect(data.complete).toBe(false);
-    expect(data.incomplete).toEqual(['as-0005', 'as-0006']);
+    expect(root.complete).toBe(false);
+    expect(root.incomplete.map((entry) => entry.id)).toEqual(['as-0005', 'as-0006']);
     // 2 phases + 4 tasks + 6 assertions.
-    expect(data.total).toBe(12);
-    expect(data.terminal).toBe(10);
-  });
-
-  it('composes the tree across document boundaries rather than answering about one section', async () => {
-    const run = await runDd(['derive', 'docs/plan.dd.json#phases']);
-    const data = payloadOf(run);
-
-    // Section-only would be 2/2 and childless. The children ARE the composition,
-    // and their ids are the addresses the walk resolved.
-    expect(data.children.map((child) => child.id)).toEqual([
+    expect(root.total).toBe(12);
+    expect(root.nodes.map((node) => node.address)).toEqual([
       'docs/done.dd.json#tasks',
       'docs/open.dd.json#tasks',
     ]);
-    expect(data.counts.nodes).toBe(7);
-    expect(data.rel).toBe('derives');
   });
 });
 
-describe('ddocs derive — ruling 1: the gate-terminal set comes from the resolved schema', () => {
+describe('ddocs derive — ruling 1: gate_terminal is resolved per node', () => {
   beforeEach(() => {
     write('docs/review.dd.json', {
       dd: { schema: 'probe/review' },
@@ -396,23 +418,17 @@ describe('ddocs derive — ruling 1: the gate-terminal set comes from the resolv
   });
 
   it('judges a custom-enum document by its own terminal set, not the built-in five', async () => {
-    const run = await runDd(['derive', 'docs/review.dd.json#rows']);
-    const data = payloadOf(run);
+    const root = rootOf(await runDd(['derive', 'docs/review.dd.json#rows']));
 
-    expect(data.gate_terminal).toEqual(['approved', 'waived']);
-    // Against the built-in five NONE of these three would be terminal, so a
-    // hardcoded set scores 0/3 here and cannot reach this row by accident.
-    expect(data.terminal).toBe(2);
-    expect(data.total).toBe(3);
-    expect(data.incomplete).toEqual(['rv-0003']);
+    expect(root.gate_terminal).toEqual(['approved', 'waived']);
+    // Against the built-in five NONE of these would be terminal: 0/3, not 2/3.
+    expect(root.total).toBe(3);
+    expect(root.incomplete.map((entry) => entry.id)).toEqual(['rv-0003']);
   });
 
-  it('applies each document its OWN terminal set when one rollup spans two schemas', async () => {
-    const plan = read('docs/plan.dd.json') as {
-      sections: Array<{ name: string; value: Array<Record<string, unknown>> }>;
-    };
-    const phases = plan.sections.find((section) => section.name === 'phases');
-    phases?.value.push({
+  it('carries each node its OWN terminal set when one rollup spans two schemas', async () => {
+    const plan = read('docs/plan.dd.json');
+    (plan.sections.find((s) => s.name === 'phases')?.value as unknown[]).push({
       id: 'ph-0003',
       title: 'Review phase',
       state: 'checked',
@@ -420,58 +436,252 @@ describe('ddocs derive — ruling 1: the gate-terminal set comes from the resolv
     });
     write('docs/plan.dd.json', plan);
 
-    const run = await runDd(['derive', 'docs/plan.dd.json#phases']);
-    const data = payloadOf(run);
+    const root = rootOf(await runDd(['derive', 'docs/plan.dd.json#phases']));
 
-    // The SEED resolves `probe/plan`, whose terminal set is the built-in five.
-    expect(data.gate_terminal).toEqual(['checked', 'human-skipped', 'na']);
-    const review = data.children.find((child) => child.id === 'docs/review.dd.json#rows');
-    // If the seed's set had been applied to the whole tree, `approved` and
-    // `waived` would both be non-terminal and this child would be 0/3 with all
-    // three ids named. That it is 2/3 naming only `rv-0003` is the difference.
-    expect(review).toBeDefined();
-    expect(review?.terminal).toBe(2);
+    expect(root.gate_terminal).toEqual(['checked', 'human-skipped', 'na']);
+    const review = root.nodes.find((node) => node.address === 'docs/review.dd.json#rows');
+    expect(review?.gate_terminal).toEqual(['approved', 'waived']);
+    // Under the ROOT's set all three review rows would be open. Under its own,
+    // exactly one is — and that difference is the whole of ruling 1.
     expect(review?.total).toBe(3);
-    expect(review?.incomplete).toEqual(['rv-0003']);
+    expect(review?.incomplete.map((entry) => entry.id)).toEqual(['rv-0003']);
   });
 });
 
-describe('ddocs derive — ruling 3: never fake success', () => {
-  it('degrades, refuses to report complete, and NAMES the descendant it could not read', async () => {
-    write('docs/broken.dd.json', {
+describe('ddocs derive — a degradation outranks completeness', () => {
+  it('degrades on a MISSING descendant document, counts it incomplete, and flips when the world is repaired', async () => {
+    write(
+      'docs/broken.dd.json',
+      planDoc([
+        { id: 'ph-9001', title: 'Points nowhere', state: 'checked', tasks: 'gone.dd.json#tasks' },
+      ]),
+    );
+
+    const before = await runDd(['derive', 'docs/broken.dd.json#phases']);
+    const broken = rootOf(before);
+    expect(before.envelope?.status).toBe('degraded');
+    expect(before.code).toBe(0);
+    expect(before.envelope?.next_action).toBeTruthy();
+    expect(broken.complete).toBe(false);
+    expect(broken.degradations).toEqual([
+      {
+        reason: 'descendant-unreadable',
+        address: 'docs/gone.dd.json#tasks',
+        detail: expect.stringContaining('gone.dd.json'),
+      },
+    ]);
+    // COUNTED, not skipped: the unreachable subtree is one incomplete row, and
+    // it carries NO `state` because none was readable.
+    expect(broken.total).toBe(2);
+    expect(broken.incomplete.map((entry) => entry.address)).toContain('docs/gone.dd.json#tasks');
+    expect(broken.incomplete.at(-1)).not.toHaveProperty('state');
+
+    // Repair the WORLD, not the assertion.
+    write('docs/gone.dd.json', {
       dd: { schema: 'probe/plan' },
       sections: [
-        { name: 'meta', value: { title: 'Broken' } },
-        {
-          name: 'phases',
-          value: [
-            {
-              id: 'ph-9001',
-              title: 'Points nowhere',
-              state: 'checked',
-              tasks: 'gone.dd.json#tasks',
-            },
-          ],
-        },
+        { name: 'meta', value: { title: 'Found' } },
+        { name: 'tasks', value: [{ id: 'tk-9999', title: 'now here', state: 'checked' }] },
       ],
       references: [],
     });
 
-    const run = await runDd(['derive', 'docs/broken.dd.json#phases']);
-    const data = payloadOf(run);
-
-    expect(run.envelope?.status).toBe('degraded');
-    // Every stored state in that document reads `checked`. A rollup that trusted
-    // what it could reach would say complete; this one cannot.
-    expect(data.complete).toBe(false);
-    expect(data.unresolved).toEqual(['docs/gone.dd.json#tasks']);
-    expect(data.incomplete).toContain('docs/gone.dd.json#tasks');
-    expect(data.counts.unresolved).toBe(1);
-    // The envelope contract: `next_action` is REQUIRED on any non-ok status.
-    expect(run.envelope?.next_action).toBeTruthy();
+    const after = await runDd(['derive', 'docs/broken.dd.json#phases']);
+    const repaired = rootOf(after);
+    expect(after.envelope?.status).toBe('ok');
+    expect(repaired.complete).toBe(true);
+    expect(repaired.degradations).toEqual([]);
+    expect(repaired.incomplete).toEqual([]);
+    expect(repaired.total).toBe(2);
   });
 
-  it('errors, and does not emit a rollup at all, when the seed address does not resolve', async () => {
+  it('degrades SEPARATELY on a descendant whose schema will not resolve, and flips when the schema is repaired', async () => {
+    write(
+      'docs/host.dd.json',
+      planDoc([
+        {
+          id: 'ph-9002',
+          title: 'Bad schema below',
+          state: 'checked',
+          tasks: 'stranger.dd.json#tasks',
+        },
+      ]),
+    );
+    write('docs/stranger.dd.json', {
+      dd: { schema: 'nobody/knows' },
+      sections: [{ name: 'tasks', value: [{ id: 'tk-8888', state: 'checked' }] }],
+      references: [],
+    });
+
+    const before = await runDd(['derive', 'docs/host.dd.json#phases']);
+    const unresolved = rootOf(before);
+    expect(before.envelope?.status).toBe('degraded');
+    expect(unresolved.complete).toBe(false);
+    expect(unresolved.degradations.map((degradation) => degradation.reason)).toEqual([
+      'descendant-schema-unresolved',
+    ]);
+    expect(unresolved.degradations[0]?.address).toBe('docs/stranger.dd.json#tasks');
+    // No schema resolved there, so there is no terminal vocabulary to report.
+    const stranger = unresolved.nodes.find((n) => n.address === 'docs/stranger.dd.json#tasks');
+    expect(stranger?.gate_terminal).toEqual([]);
+    expect(stranger?.total).toBe(1);
+
+    // Repair the WORLD: give the document a schema that resolves.
+    write('docs/stranger.dd.json', {
+      dd: { schema: 'probe/plan' },
+      sections: [
+        { name: 'meta', value: { title: 'Stranger' } },
+        { name: 'tasks', value: [{ id: 'tk-8888', title: 'known', state: 'checked' }] },
+      ],
+      references: [],
+    });
+
+    const after = await runDd(['derive', 'docs/host.dd.json#phases']);
+    const repaired = rootOf(after);
+    expect(after.envelope?.status).toBe('ok');
+    expect(repaired.complete).toBe(true);
+    expect(repaired.degradations).toEqual([]);
+    expect(repaired.nodes[0]?.gate_terminal).toEqual(['checked', 'human-skipped', 'na']);
+  });
+
+  it('refuses complete for an all-terminal tree that carries a degradation, with incomplete empty', async () => {
+    // Every readable row is terminal; only the unreachable branch is not. This
+    // is the `complete:false, incomplete:[]` shape the contract makes legal
+    // ONLY when degradations is non-empty — asserted together, so neither can
+    // drift without the other noticing.
+    write(
+      'docs/mixed.dd.json',
+      planDoc([
+        { id: 'ph-9003', title: 'terminal but blind', state: 'checked', tasks: 'nowhere.dd.json' },
+      ]),
+    );
+
+    const root = rootOf(await runDd(['derive', 'docs/mixed.dd.json#phases']));
+
+    expect(root.complete).toBe(false);
+    expect(root.degradations.length).toBeGreaterThan(0);
+    expect(root.incomplete.every((entry) => entry.state === undefined)).toBe(true);
+  });
+});
+
+describe('ddocs derive — cycles', () => {
+  beforeEach(() => {
+    write(
+      'docs/cycle-a.dd.json',
+      planDoc([
+        { id: 'ph-aaaa', title: 'loops', state: 'checked', tasks: 'cycle-b.dd.json#phases' },
+        { id: 'ph-side', title: 'side branch', state: 'checked', tasks: 'side.dd.json#tasks' },
+      ]),
+    );
+    write(
+      'docs/cycle-b.dd.json',
+      planDoc([
+        { id: 'ph-bbbb', title: 'back', state: 'checked', tasks: 'cycle-a.dd.json#phases' },
+      ]),
+    );
+    write('docs/side.dd.json', {
+      dd: { schema: 'probe/plan' },
+      sections: [
+        { name: 'meta', value: { title: 'Side' } },
+        { name: 'tasks', value: [{ id: 'tk-side', title: 's', state: 'checked' }] },
+      ],
+      references: [],
+    });
+  });
+
+  it('degrades on a derives cycle, names every member, and NEVER reports complete', async () => {
+    const run = await runDd(['derive', 'docs/cycle-a.dd.json#phases']);
+    const root = rootOf(run);
+
+    expect(run.envelope?.status).toBe('degraded');
+    const cycle = root.degradations.find((degradation) => degradation.reason === 'cycle');
+    expect(cycle).toBeDefined();
+    expect(cycle?.detail).toBe(
+      'derives cycle: docs/cycle-a.dd.json#phases -> docs/cycle-b.dd.json#phases -> docs/cycle-a.dd.json#phases',
+    );
+    // EVERY row in this corpus is `checked`, so a walk that merely terminated
+    // would report complete with an empty incomplete list. That is precisely
+    // the defect: a cycle means a node's completeness is defined by itself.
+    expect(root.incomplete).toEqual([]);
+    expect(root.complete).toBe(false);
+  });
+
+  it('terminates only the looping branch and keeps the independent one', async () => {
+    const root = rootOf(await runDd(['derive', 'docs/cycle-a.dd.json#phases']));
+
+    expect(root.nodes.map((node) => node.address)).toEqual([
+      'docs/cycle-b.dd.json#phases',
+      'docs/side.dd.json#tasks',
+    ]);
+    // The side branch was fully walked and its rows counted: 2 phase rows +
+    // 1 cycle-b phase row + 1 side task.
+    const side = root.nodes.find((node) => node.address === 'docs/side.dd.json#tasks');
+    expect(side?.total).toBe(1);
+    expect(side?.degradations).toEqual([]);
+    expect(root.total).toBe(4);
+    // The looping branch stops AT cycle-b: it has no children of its own.
+    expect(root.nodes[0]?.nodes).toEqual([]);
+  });
+});
+
+describe('ddocs derive — an empty subtree is exact, not a failure', () => {
+  it('reports complete true, total 0 and empty arrays for a section carrying no assertion', async () => {
+    write('docs/empty.dd.json', planDoc([]));
+
+    const run = await runDd(['derive', 'docs/empty.dd.json#phases']);
+    const root = rootOf(run);
+
+    expect(run.envelope?.status).toBe('ok');
+    expect(root.complete).toBe(true);
+    expect(root.total).toBe(0);
+    expect(root.incomplete).toEqual([]);
+    expect(root.nodes).toEqual([]);
+    expect(root.degradations).toEqual([]);
+  });
+});
+
+describe('ddocs derive — the walk', () => {
+  it('follows derives edges only, leaving a broken proven_by neighbour out of the answer entirely', async () => {
+    // The neighbour is BROKEN as well as non-derives: its schema does not
+    // resolve. If the rollup consulted anything outside the derives closure it
+    // would degrade here, and it must not.
+    write('docs/log.dd.json', {
+      dd: { schema: 'nobody/knows' },
+      sections: [{ name: 'tasks', value: [{ id: 'tk-9001', state: 'unchecked' }] }],
+      references: [],
+    });
+    write(
+      'docs/citer.dd.json',
+      planDoc([
+        { id: 'ph-cite', title: 'cites a log', state: 'checked', cites: 'log.dd.json#tasks' },
+      ]),
+    );
+
+    const run = await runDd(['derive', 'docs/citer.dd.json#phases']);
+    const root = rootOf(run);
+
+    expect(run.envelope?.status).toBe('ok');
+    expect(root.complete).toBe(true);
+    expect(root.degradations).toEqual([]);
+    expect(root.total).toBe(1);
+    expect(root.basis).toEqual(['docs/citer.dd.json']);
+  });
+
+  it('gives the same counts at document scope as at section scope, counting no row twice', async () => {
+    const section = rootOf(await runDd(['derive', 'docs/open.dd.json#tasks']));
+    const document = rootOf(await runDd(['derive', 'docs/open.dd.json']));
+
+    expect(document.total).toBe(section.total);
+    expect(document.incomplete.map((entry) => entry.id)).toEqual(
+      section.incomplete.map((entry) => entry.id),
+    );
+    // Shape DOES differ, and saying so keeps the claim above honest rather than
+    // accidentally true because both runs did the same thing.
+    expect(flatten(section).length).toBe(3);
+    expect(flatten(document).length).toBe(1);
+  });
+
+  it('errors, and emits no rollup at all, when the seed address does not resolve', async () => {
     const run = await runDd(['derive', 'docs/plan.dd.json#phases/ph-nope']);
 
     expect(run.envelope?.status).toBe('error');
@@ -481,102 +691,27 @@ describe('ddocs derive — ruling 3: never fake success', () => {
   });
 });
 
-describe('ddocs derive — the walk', () => {
-  it('terminates on a derives cycle and counts each document in it exactly once', async () => {
-    write('docs/cycle-a.dd.json', {
-      dd: { schema: 'probe/plan' },
-      sections: [
-        { name: 'meta', value: { title: 'A' } },
-        {
-          name: 'phases',
-          value: [
-            { id: 'ph-aaaa', state: 'unchecked', title: 'A', tasks: 'cycle-b.dd.json#phases' },
-          ],
-        },
-      ],
-      references: [],
-    });
-    write('docs/cycle-b.dd.json', {
-      dd: { schema: 'probe/plan' },
-      sections: [
-        { name: 'meta', value: { title: 'B' } },
-        {
-          name: 'phases',
-          value: [{ id: 'ph-bbbb', state: 'checked', title: 'B', tasks: 'cycle-a.dd.json#phases' }],
-        },
-      ],
-      references: [],
-    });
+describe('ddocs derive — determinism', () => {
+  it('emits byte-identical output for two runs over an unchanged corpus', async () => {
+    const first = await runDd(['derive', 'docs/plan.dd.json#phases']);
+    const second = await runDd(['derive', 'docs/plan.dd.json#phases']);
 
-    const run = await runDd(['derive', 'docs/cycle-a.dd.json#phases']);
-    const data = payloadOf(run);
-
-    expect(run.envelope?.status).toBe('ok');
-    // Two nodes, two rows. A walk without the breaker never returns; a walk that
-    // re-entered the cycle once would report 4 rows and a doubled total.
-    expect(data.counts.nodes).toBe(2);
-    expect(data.total).toBe(2);
-    expect(data.terminal).toBe(1);
-    expect(data.incomplete).toEqual(['ph-aaaa']);
-  });
-
-  it('gives the same counts at document scope as at section scope, counting no row twice', async () => {
-    const section = payloadOf(await runDd(['derive', 'docs/open.dd.json#tasks']));
-    const document = payloadOf(await runDd(['derive', 'docs/open.dd.json']));
-
-    // The document node structurally contains `done_when`, which the `done`
-    // links also point at. The arithmetic must not notice: same rows, counted
-    // once, whichever way the tree was shaped to reach them.
-    expect(document.total).toBe(section.total);
-    expect(document.terminal).toBe(section.terminal);
-    expect(document.incomplete).toEqual(section.incomplete);
-    // Shape DOES differ, and saying so keeps the claim above honest rather than
-    // accidentally true because both runs did the same thing.
-    expect(section.counts.nodes).toBe(3);
-    expect(document.counts.nodes).toBe(1);
-  });
-
-  it('follows derives edges only, leaving a proven_by neighbour out of the total', async () => {
-    write('docs/log.dd.json', {
-      dd: { schema: 'probe/plan' },
-      sections: [
-        { name: 'meta', value: { title: 'Log' } },
-        {
-          name: 'tasks',
-          value: [
-            { id: 'tk-9001', title: 'open', state: 'unchecked' },
-            { id: 'tk-9002', title: 'open', state: 'unchecked' },
-          ],
-        },
-      ],
-      references: [],
-    });
-    const plan = read('docs/plan.dd.json') as {
-      sections: Array<{ name: string; value: Array<Record<string, unknown>> }>;
-    };
-    plan.sections
-      .find((section) => section.name === 'phases')
-      ?.value.push({
-        id: 'ph-0004',
-        title: 'Cites a log',
-        state: 'checked',
-        cites: 'log.dd.json#tasks',
-      });
-    write('docs/plan.dd.json', plan);
-
-    const run = await runDd(['derive', 'docs/plan.dd.json#phases']);
-    const data = payloadOf(run);
-
-    // 12 as before, +1 for the new phase row itself and NOTHING for the two open
-    // rows it cites. Following `proven_by` would make this 15 and would name
-    // tk-9001/tk-9002 among the open ids.
-    expect(data.total).toBe(13);
-    expect(data.incomplete).toEqual(['as-0005', 'as-0006']);
-    expect(data.children.map((child) => child.id)).not.toContain('docs/log.dd.json#tasks');
+    expect(second.out).toBe(first.out);
+    // Not vacuous: prove the bytes are a real payload, not two empty strings.
+    expect(first.out.length).toBeGreaterThan(200);
+    expect(rootOf(first).total).toBe(12);
   });
 });
 
-describe('ddocs derive — ruling 4: the port ledger is untouched', () => {
+describe('ddocs derive — the program contract', () => {
+  it('accepts the output flag before AND after the verb', async () => {
+    const before = await runDd(['--json', 'derive', 'docs/open.dd.json#tasks']);
+    const after = await runDd(['derive', 'docs/open.dd.json#tasks', '--json']);
+
+    expect(rootOf(before).total).toBe(5);
+    expect(rootOf(after).total).toBe(5);
+  });
+
   it('leaves `ddocs status` reporting ten of ten ported verbs', async () => {
     const run = await runDd(['status']);
     const data = run.envelope?.data as { ported: string[]; planned: number; remaining: string[] };
@@ -585,13 +720,10 @@ describe('ddocs derive — ruling 4: the port ledger is untouched', () => {
     expect(data.planned).toBe(10);
     expect(data.ported).toHaveLength(10);
     expect(data.remaining).toEqual([]);
-    // `derive` is native, not ported: it must not appear in the ledger at all.
     expect(data.ported).not.toContain('derive');
   });
-});
 
-describe('ddocs derive — human mode', () => {
-  it('puts the headline count on stdout and the open ids on stderr', async () => {
+  it('puts the headline count on stdout and the open rows on stderr in human mode', async () => {
     const run = await runDd(['derive', 'docs/open.dd.json#tasks'], { mode: 'human' });
 
     expect(run.out.trim()).toBe('[ ] docs/open.dd.json#tasks 3/5');
