@@ -1057,6 +1057,38 @@ step — pointing harness at this package and deleting the old code — is koala
   was sitting inside a command I had run an hour earlier and read as unrelated** — the day's other
   lesson, arriving one more time.
 
+- **A MESSAGE BODY COMPOSED IN A SHELL IS EXECUTED BEFORE IT IS SENT — and the failure is silent
+  on the sending side.** 2026-08-28, mine, found by the recipient rather than by me.
+  I sent `pij-instant-lynx` a domain brief quoting dd's own `RENDER_BANNER`, which contains
+  backticks around a command name. I built the body as a **double-quoted shell string**. Bash
+  performed command substitution, ran the quoted command with no argument, and **spliced its error
+  envelope into the delivered message in place of my citation.** Minimal case, verified:
+  `BODY="x \`echo INJECTED\`"` prints `x INJECTED`.
+  **I SAW THE EVIDENCE AND DISMISSED IT.** A stray `error: missing required argument 'path'`
+  appeared in my terminal beside a successful send. I could not attribute it, the receipt was
+  normal, and I moved on. **The same entry three above this one says the uneventful result is the
+  one nobody interrogates** — an unexplained error line next to a success is exactly that shape,
+  and I had written the rule down and still walked past it. Lynx caught it by reading what actually
+  arrived.
+  **IT SELECTS FOR THE MESSAGES THAT MATTER MOST.** Backticks live in code constants, CLI examples,
+  `file:line` citations, markdown — so the bodies carrying precise technical content are the ones
+  most likely to be silently altered, **and altered into something that looks like ordinary output
+  rather than like damage.** A corrupted citation reads as a citation.
+  **THE RELAY CASE IS A REAL INJECTION PATH, not a formatting nuisance.** An agent that relays
+  received text — a peer's message, a file, a user's paste — into a double-quoted `pij send`
+  **executes that text on the relaying agent's machine.** I relay other seats' words constantly.
+  Flagged to the pij primes as a platform question; I proposed no mechanism, having had a poor run
+  of those.
+  **THE RULE: never compose a wire message as a double-quoted shell string.** Write the body with a
+  **single-quoted heredoc** to a file, then send `"$(cat <file>)"` — command substitution reads the
+  file and does not re-evaluate its contents. This entry was written after switching to that form,
+  and every message in this repo's government should be.
+  **And the general one, worth more than the shell specific**: **a channel that transforms your
+  words between composition and delivery will not tell you it did.** The sender sees the text it
+  wrote; only the recipient sees the text that arrived. **Anything you are quoting exactly — a
+  constant, a path, a hash — is worth having the recipient read back**, because the whole class of
+  corruption here is invisible from where the author stands.
+
 ## Harness surface
 
 | Need | Command | Evidence |
