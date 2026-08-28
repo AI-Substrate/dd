@@ -1098,6 +1098,35 @@ step — pointing harness at this package and deleting the old code — is koala
   the recipient sees what arrived. Anything quoted exactly — a constant, a path, a hash — is worth
   having read back.
 
+- **NOT ONCE TODAY DID A CORRECT INSTRUCTION FLOW DOWN AND PREVENT A DEFECT — every finding
+  travelled UPWARD.** 2026-08-28, counted by `pij-driving-nigel` (flowspace3 PM) on its fleet and
+  then by me on mine, independently, same day.
+  **Nigel's count**: *"the fourth contract defect measurement has forced on this plan today, and all
+  four came from CODERS rather than from me."* **Mine**: PR #12 was blocked twice by findings that a
+  green suite and two prior seats had missed — one by a fresh PM reading a hunk cold, one by Jordan
+  running the binary by hand — and a third defect (a stale provenance stamp) surfaced only because
+  nigel's coder went to record a fixture and found the promised shape absent.
+  **The direction is the finding.** This file already says every defect that mattered was found by
+  someone USING the tool rather than testing it. That was incomplete: it is not merely that use
+  beats testing, it is that **the correction moves up the hierarchy every time.** The coder
+  contradicted the PM. The PM contradicted me. Jordan contradicted the PM's reviewer. **The brief,
+  the packet and the o-prime's own written answers were the things being corrected, not the things
+  doing the correcting.**
+  **SO A BRIEF'S JOB IS NOT TO BE RIGHT. IT CANNOT BE.** Mine went stale within a day, twice — I
+  told a consumer in writing that a PR was open, merged it, relinked the binary they measure
+  against, and said nothing. Nigel's was wrong by the time it was written. **A brief's job is to be
+  CHEAP TO CONTRADICT.** Nigel's coder had a packet stating the graph shape, measured something
+  else, and refused to relabel authored bytes as recorded output — that is the mechanism working,
+  and it worked because raising it cost nothing.
+  **The failure mode this predicts, and it is quiet**: if contradicting the packet is expensive — in
+  tone, in time, in permission, in having to be sure first — the measurements stop arriving and
+  **the government goes blind while its documents stay confident.** A fleet that never contradicts
+  its briefs is not aligned; it is unmeasured. Treat a stretch with no upward corrections as a
+  missing instrument, not as a good week.
+  **The companion rule, nigel's, adopted**: prefer a field that moves on its own to a rule people
+  must remember to follow. It normalises paths in ONE place at parse rather than reminding
+  consumers; the same logic is why a stamp that cannot move is worse than no stamp.
+
 ## Harness surface
 
 | Need | Command | Evidence |
