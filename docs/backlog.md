@@ -441,3 +441,29 @@ the first two do not: the renderer would keep emitting hrefs it knows may be wro
 
 **Do NOT fix this by deleting the inference** — an undeclared `.dd.json#…` value rendering as a
 link is a real convenience that predates the defect.
+
+## 29 — The whole-file legality predicate is spelled in THREE places · UNASSIGNED · **ADDED 2026-08-28**
+
+**Raised by** `pij-drab-jellyfish` (reviewer) on PR #12 as an `APPROVE_WITH_NOTES` maintainability
+note, and **passed up rather than swallowed** by `pij-civil-chinchilla` (PM), which is the correct
+handling: it is behaviourally aligned today and was **not** a merge blocker, and consolidating it
+would have widened the correction past the accepted packet.
+
+**Why it is filed rather than dropped.** This is the same shape as the defect that PR #12 was
+blocked for. That fix's own source comment reads: *"THREE places must agree that this string is not
+an address, and until the grammar accepted a bare path they agreed by accident."* The sentinel bug
+happened because three consumers agreed **by accident** and one stopped agreeing when the grammar
+widened — and the fix was applied to one of the three, with the renderer left behind and shipping a
+dead link across ten rows of an unrelated plan.
+
+So the note is not "duplication is untidy". It is: **this file has now produced two separate defects
+from N-places-must-agree, in the same PR, four days apart.** A third instance is a prediction, not a
+worry.
+
+**What would close it**: one predicate for "is this value the legal whole-file form", called from
+every site that needs it, with a test that fails if a site is added that does not use it. The
+consolidation is cheap; the reason to do it is that the *next* grammar change is what breaks the
+accidental agreement, and grammar changes are exactly what this area keeps getting.
+
+**Do NOT close it by comment.** A comment saying "keep these three in sync" is the mechanism that
+already failed here.
