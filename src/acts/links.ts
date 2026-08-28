@@ -1,5 +1,11 @@
 import type { Command } from 'commander';
-import { linksFor, resolveLinksTarget, scanCorpus, traverseCorpus } from '../links/index.js';
+import {
+  DD_SUFFIX,
+  linksFor,
+  resolveLinksTarget,
+  scanCorpus,
+  traverseCorpus,
+} from '../links/index.js';
 import { formatDegraded, formatError, formatOk } from '../output/envelope.js';
 import { ErrorCodes } from '../output/error-codes.js';
 import { exitWithEnvelope } from '../output/exit.js';
@@ -31,7 +37,7 @@ export function registerLinksCommand(dd: Command, io: CliIo, deps: DdActDeps): v
 
       const graph = traverseCorpus(
         scan.paths,
-        { schemaResolver: ctx.resolver, docLoader: ctx.loader },
+        { schemaResolver: ctx.resolver, docLoader: ctx.loader, fileExistence: ctx.fs },
         { repoRoot: ctx.repoRoot, mode: 'sweep' },
       );
       // OD-1 applies to both halves, in opposite directions. The *scan* for
@@ -39,17 +45,25 @@ export function registerLinksCommand(dd: Command, io: CliIo, deps: DdActDeps): v
       // named on the command line, which is a direct invocation and is never
       // skipped — otherwise pointing this verb at an excluded document would
       // answer "no links" when the truth is "I refused to look".
+      //
+      // An ordinary file is exempt from that second half, and this is the one
+      // place the distinction is load-bearing rather than tidy: a direct
+      // traversal LOADS its seed, so running it on `src/library.ts` would open an
+      // ordinary file as a dd document. There is nothing to find there anyway —
+      // outbound edges live in documents, and a file was never opened.
+      const document = path.endsWith(DD_SUFFIX);
       const swept = graph.nodes.some((node) => node.path === path);
-      const edges = swept
-        ? graph.edges
-        : [
-            ...graph.edges,
-            ...traverseCorpus(
-              [path],
-              { schemaResolver: ctx.resolver, docLoader: ctx.loader },
-              { repoRoot: ctx.repoRoot, mode: 'direct', follow: false },
-            ).edges,
-          ];
+      const edges =
+        swept || !document
+          ? graph.edges
+          : [
+              ...graph.edges,
+              ...traverseCorpus(
+                [path],
+                { schemaResolver: ctx.resolver, docLoader: ctx.loader, fileExistence: ctx.fs },
+                { repoRoot: ctx.repoRoot, mode: 'direct', follow: false },
+              ).edges,
+            ];
       const report = linksFor(path, { ...graph, edges }, target);
       const issues = codedLinkIssues(graph.issues);
       const data = {

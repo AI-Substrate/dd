@@ -33,6 +33,9 @@ export function nextActionFor(issues: readonly DdLinkIssue[], address: string): 
   if (reason === 'no-base-document') {
     return 'Address the file explicitly — `<path>#<interior>`. A bare-"#" address only means something inside its own document.';
   }
+  if (reason === 'no-interior') {
+    return 'An ordinary file has no interior to resolve. Inspect what points at it with `ddocs links <path>`, or address a place inside a dd document as `<path>#<interior>`.';
+  }
   if (reason === 'malformed') {
     return 'Generate the address instead of writing it: `ddocs address generate "<interior>" --path <file>`.';
   }

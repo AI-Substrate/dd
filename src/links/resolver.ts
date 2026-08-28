@@ -164,6 +164,21 @@ export function resolveLink(
   if (isAddressFailure(parsed)) return fail('malformed', parsed.message);
   const address = normalizeAddress(parsed);
 
+  // The whole-file form is SYNTAX, not a resolvable target: this resolver's whole
+  // job is to descend an interior, and there is none. Refused here rather than
+  // inside `descend` — which already answers `section-unknown` for an empty
+  // interior — so the verdict does not depend on whether the file happens to be
+  // readable, and so a `target: "file"` path is never opened and parsed just to
+  // be told it named no section. Existence for those cells is
+  // `validateFileRefs`' job and it reads nothing.
+  //
+  // `no-interior` and not `section-unknown`: the doctor treats the latter as an
+  // interior defect it owns, so reusing it turned every correct ordinary-file
+  // citation in the corpus into an ERROR.
+  if (address.segments.length === 0) {
+    return fail('no-interior', 'address names a whole file and no interior');
+  }
+
   if (address.file === null && options.fromPath === null) {
     return fail(
       'no-base-document',

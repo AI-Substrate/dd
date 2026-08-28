@@ -1,5 +1,13 @@
 import { createHash } from 'node:crypto';
-import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -637,5 +645,254 @@ describe('ddocs links family — live over a real corpus', () => {
     const scoped = await runDd(['dd', 'doctor', '--path', 'docs']);
     expect(scoped.code).toBe(0);
     expect((scoped.envelope.data as { root: string }).root.endsWith('/docs')).toBe(true);
+  });
+});
+
+/**
+ * Ordinary files through the shipped verbs, over a corpus of their own.
+ *
+ * A separate root rather than more cells in `seedCorpus`: the arms below DELETE a
+ * target and put it back, and a shared corpus would carry that mutation into
+ * every other test in the file.
+ */
+describe('ddocs links family — ordinary files are targets, never documents', () => {
+  let fileRepo = '';
+  let previousDir = '';
+
+  const FILE_SCHEMA = {
+    dd_schema: 1,
+    description: 'A nested plan citing ordinary repository files',
+    sections: {
+      tasks: {
+        required: true,
+        shape: {
+          type: 'array',
+          items: {
+            type: 'object',
+            required: ['id'],
+            fields: {
+              id: { type: 'string' },
+              implemented_by: { type: 'link', target: 'file', rel: 'implemented_by' },
+              notes: { type: 'text' },
+            },
+          },
+        },
+      },
+    },
+  };
+
+  /** Deep enough that repo-root and document-relative anchoring cannot coincide. */
+  const DOC = 'docs/plans/nested/plan.dd.json';
+  const PRESENT = 'src/library.ts';
+  const MISSING = 'src/gone.ts';
+  const NEIGHBOUR = 'docs/plans/nested/other.dd.json';
+
+  function seed(): void {
+    const path = (relative: string) => join(fileRepo, relative);
+    mkdirSync(join(fileRepo, 'src'), { recursive: true });
+    mkdirSync(join(fileRepo, 'docs/plans/nested'), { recursive: true });
+    mkdirSync(join(fileRepo, '.dd/schemas/files/plan'), { recursive: true });
+    writeFileSync(
+      path('.dd/schemas/files/plan/schema.json'),
+      `${JSON.stringify(FILE_SCHEMA, null, 2)}\n`,
+    );
+    writeFileSync(path(PRESENT), 'export const LIBRARY = 1;\n');
+    writeFileSync(path('docs/plans/handbook.md'), '# Handbook\n');
+    const doc = (tasks: unknown) => ({
+      dd: { schema: 'files/plan', spec: 'dd@1' },
+      sections: [{ name: 'tasks', value: tasks }],
+      references: [],
+    });
+    writeFileSync(
+      path(DOC),
+      `${JSON.stringify(
+        doc([
+          {
+            id: 'tk-a1b2',
+            implemented_by: PRESENT,
+            notes: 'Read the [handbook](../handbook.md) first.',
+          },
+          { id: 'tk-c3d4', implemented_by: MISSING },
+        ]),
+        null,
+        2,
+      )}\n`,
+    );
+    // A second citing document, so an inbound report has more than one origin to
+    // be right about — and a real dd document in the corpus beside the files.
+    writeFileSync(
+      path(NEIGHBOUR),
+      `${JSON.stringify(doc([{ id: 'tk-e5f6', notes: `Also see [lib](../../../${PRESENT}).` }]), null, 2)}\n`,
+    );
+  }
+
+  beforeAll(() => {
+    // `realpathSync`: macOS hands back a `/var` symlink, while the act reports
+    // the resolved path it actually read. Pinning the real one here keeps every
+    // expectation below comparable without a per-assertion adjustment.
+    fileRepo = realpathSync(mkdtempSync(join(tmpdir(), 'dd-file-links-')));
+    seed();
+  });
+
+  afterAll(() => {
+    rmSync(fileRepo, { recursive: true, force: true });
+  });
+
+  beforeEach(() => {
+    previousDir = process.cwd();
+    process.chdir(fileRepo);
+  });
+
+  afterEach(() => {
+    process.chdir(previousDir);
+    vi.restoreAllMocks();
+  });
+
+  interface Edge {
+    kind: string;
+    from: string;
+    to: string | null;
+    address: string;
+    rel: string;
+  }
+
+  it('reports both structured and incidental inbound edges for an ordinary file', async () => {
+    const result = await runDd(['dd', 'links', PRESENT]);
+    expect(result.code).toBe(0);
+    // ok, not degraded: the ordinary target is not an unscannable document, and
+    // saying "the report may be incomplete" about it would be false.
+    expect(result.envelope.status).toBe('ok');
+    const data = result.envelope.data as { inbound: Edge[]; outbound: Edge[]; issues: unknown[] };
+    expect(data.issues).toEqual([]);
+    expect(
+      data.inbound
+        .map((edge) => ({ from: edge.from, address: edge.address, rel: edge.rel }))
+        .sort((a, b) => a.from.localeCompare(b.from)),
+    ).toEqual([
+      { from: join(fileRepo, NEIGHBOUR), address: `../../../${PRESENT}`, rel: 'ref' },
+      { from: join(fileRepo, DOC), address: PRESENT, rel: 'implemented_by' },
+    ]);
+    expect(data.inbound.every((edge) => edge.kind === 'file')).toBe(true);
+    // A file was never opened, so nothing inside it can point anywhere.
+    expect(data.outbound).toEqual([]);
+  });
+
+  it('reports a missing ordinary file without calling the report incomplete', async () => {
+    const result = await runDd(['dd', 'links', MISSING]);
+    expect(result.code).toBe(0);
+    expect(result.envelope.status).toBe('ok');
+    const data = result.envelope.data as { inbound: Edge[]; issues: unknown[] };
+    // The citation is the point: a reader needs to see WHO points at the file
+    // that is not there.
+    expect(data.inbound.map((edge) => edge.from)).toEqual([join(fileRepo, DOC)]);
+    expect(data.issues).toEqual([]);
+  });
+
+  it('will not read a dd-shaped file that is not named as one', async () => {
+    // `.dd.json` IS the enumeration contract, not a hint: the corpus scan matches
+    // that suffix and nothing else. So a file whose BYTES are a valid document
+    // but whose NAME is not is an ordinary file, and `ddocs links` must answer
+    // about it as one.
+    //
+    // Without the fence in the act, the target's absence from the sweep sends it
+    // through a DIRECT traversal, which loads and parses its seed — and this file
+    // would parse. The lie is visible: outbound edges reported for a document the
+    // corpus never enumerated.
+    const impostor = 'docs/plans/nested/renamed.json';
+    writeFileSync(
+      join(fileRepo, impostor),
+      `${JSON.stringify({
+        dd: { schema: 'files/plan', spec: 'dd@1' },
+        sections: [{ name: 'tasks', value: [{ id: 'tk-9999', implemented_by: PRESENT }] }],
+        references: [],
+      })}\n`,
+    );
+    try {
+      const result = await runDd(['dd', 'links', impostor]);
+      expect(result.code).toBe(0);
+      const data = result.envelope.data as { inbound: Edge[]; outbound: Edge[] };
+      expect(data.outbound).toEqual([]);
+      expect(data.inbound).toEqual([]);
+    } finally {
+      rmSync(join(fileRepo, impostor));
+    }
+  });
+
+  it('draws the existing file solid and the missing one dashed, in one diagram', async () => {
+    const result = await runDd(['dd', 'graph']);
+    expect(result.code).toBe(0);
+    expect(result.envelope.status).toBe('ok');
+    const data = result.envelope.data as {
+      mermaid: string;
+      nodes: { kind: string; path: string }[];
+      edges: Edge[];
+    };
+    const line = (label: string) =>
+      data.mermaid
+        .split('\n')
+        .find((row) => row.includes(`["${label}"]`))
+        ?.trim();
+    const id = (label: string) => line(label)?.match(/^([nu]\d+)\[/)?.[1];
+    const present = id(PRESENT);
+    const missing = id(MISSING);
+    expect(present).toBeDefined();
+    expect(missing).toBeDefined();
+    // The rel label sits BETWEEN the arrow and the node id, so the line style and
+    // the destination are only pinned together by matching both ends.
+    expect(data.mermaid).toMatch(new RegExp(`-->\\|implemented_by\\| ${present}$`, 'm'));
+    expect(data.mermaid).toMatch(new RegExp(`-\\.->\\|implemented_by\\| ${missing}$`, 'm'));
+    expect(data.mermaid).toContain('classDef unresolved');
+
+    // The node list agrees with the picture: the file that exists is a terminal
+    // node, the one that does not is only ever an edge.
+    const files = data.nodes
+      .filter((node) => node.kind === 'file')
+      .map((node) => node.path)
+      .sort();
+    expect(files).toEqual([join(fileRepo, 'docs/plans/handbook.md'), join(fileRepo, PRESENT)]);
+    expect(files).not.toContain(join(fileRepo, MISSING));
+    // Four file edges: the two structured cells, the handbook href, and the
+    // neighbour's href — every citation the corpus contains, present or not.
+    expect(
+      data.edges
+        .filter((edge) => edge.kind === 'file')
+        .map((edge) => edge.address)
+        .sort(),
+    ).toEqual(['../../../src/library.ts', '../handbook.md', MISSING, PRESENT]);
+  });
+
+  it('answers `address validate --resolve` with existence, and never a fake target', async () => {
+    const found = await runDd(['dd', 'address', 'validate', PRESENT, '--resolve']);
+    expect(found.code).toBe(0);
+    expect(found.envelope.status).toBe('ok');
+    expect(found.envelope.data).toEqual(
+      expect.objectContaining({
+        address: PRESENT,
+        file: PRESENT,
+        form: 'file',
+        classified: false,
+        segments: [],
+        target: { path: join(fileRepo, PRESENT), exists: true },
+      }),
+    );
+    // No `schema`, `sha` or `tracked` anywhere in the answer — nothing read them.
+    const target = (found.envelope.data as { target: Record<string, unknown> }).target;
+    expect(Object.keys(target).sort()).toEqual(['exists', 'path']);
+
+    const absent = await runDd(['dd', 'address', 'validate', MISSING, '--resolve']);
+    expect(absent.code).toBe(0);
+    expect(absent.envelope.status).toBe('degraded');
+    expect(absent.envelope.data).toMatchObject({ target: { exists: false } });
+  });
+
+  it('refuses to verify a basis for an ordinary file, and says why', async () => {
+    const result = await runDd(['dd', 'link', 'verify-basis', PRESENT, '--sha', 'deadbeef']);
+    expect(result.code).toBe(1);
+    expect(result.envelope.status).toBe('error');
+    const issues = (result.envelope.error?.details as { issues: { reason: string }[] }).issues;
+    expect(issues[0]?.reason).toBe('no-interior');
+    // The reason earns its OWN next action: the generic one tells the reader to
+    // fix the address, and there is nothing wrong with this address.
+    expect(result.envelope.next_action).toContain('An ordinary file has no interior to resolve');
   });
 });

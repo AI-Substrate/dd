@@ -369,3 +369,274 @@ describe('renderDd — render rules', () => {
     expect(output).toContain('no-boundary-here');
   });
 });
+
+describe('renderDd — an ordinary file link renders as a working href', () => {
+  const REPO_ROOT = '/repo';
+  /** Deliberately deep: a sibling-relative href only differs from the authored one below the root. */
+  const NESTED = '/repo/docs/plans/004-file-links/plan.dd.json';
+
+  const SCHEMA = {
+    name: 'test/filelinks',
+    sections: {
+      meta: {
+        shape: {
+          type: 'object',
+          fields: { title: { type: 'string' }, spec: { type: 'link', target: 'file' } },
+        },
+      },
+      tasks: {
+        shape: {
+          type: 'array',
+          items: {
+            type: 'object',
+            fields: {
+              id: { type: 'string' },
+              implemented_by: { type: 'link', target: 'file' },
+              sources: { type: 'array', items: { type: 'link', target: 'file' } },
+              notes: { type: 'text' },
+            },
+          },
+        },
+      },
+    },
+  } as unknown as ResolvedDdSchema;
+
+  const DOC: DdDoc = {
+    dd: { schema: 'test/filelinks' },
+    sections: [
+      { name: 'meta', value: { title: 'File links', spec: 'docs/spec.md' } },
+      {
+        name: 'tasks',
+        value: [
+          {
+            id: 'tk-a1b2',
+            implemented_by: 'src/search/index.ts',
+            sources: ['src/a.ts', 'src/b.ts'],
+            notes: 'Read the [handbook](../handbook.md) first.',
+          },
+        ],
+      },
+    ],
+    references: [],
+  };
+
+  function render(repoRoot?: string): string {
+    return renderDd(DOC, {
+      path: NESTED,
+      schema: SCHEMA,
+      ...(repoRoot !== undefined && { repoRoot }),
+    });
+  }
+
+  it('rebases a repository-relative path onto the generated sibling, with no trailing #', () => {
+    const markdown = render(REPO_ROOT);
+    // The sibling is `docs/plans/004-file-links/plan.dd.md`, so reaching the
+    // repository root costs exactly three levels. The href bytes ARE the
+    // contract: a reader clicks this, and `../../../` is what makes it open.
+    expect(markdown).toContain('[src/search/index.ts](../../../src/search/index.ts)');
+    expect(markdown).not.toContain('src/search/index.ts#');
+    expect(markdown).not.toContain('](src/search/index.ts)');
+  });
+
+  it('rebases a file link in a field table as well as in a row', () => {
+    expect(render(REPO_ROOT)).toContain('[docs/spec.md](../../../docs/spec.md)');
+  });
+
+  it('rebases every member of a declared array of file links', () => {
+    const markdown = render(REPO_ROOT);
+    expect(markdown).toContain('[src/a.ts](../../../src/a.ts)');
+    expect(markdown).toContain('[src/b.ts](../../../src/b.ts)');
+  });
+
+  it('leaves an authored Markdown link exactly as written', () => {
+    // Document-relative already, because that is what an href in the sibling
+    // means. Rebasing it would break the link AND disagree with the existence
+    // check, which resolves the same bytes against the same directory.
+    expect(render(REPO_ROOT)).toContain('Read the [handbook](../handbook.md) first.');
+  });
+
+  it('renders the authored path as plain text when no repository root was given', () => {
+    // Without a root there is no honest href to compute — `src/search/index.ts`
+    // relative to the sibling names a file that is not there. Say the path,
+    // rather than link to the wrong one.
+    const markdown = render();
+    expect(markdown).toContain('src/search/index.ts');
+    expect(markdown).not.toContain('](src/search/index.ts)');
+    expect(markdown).not.toContain('[src/search/index.ts](');
+  });
+
+  it('emits a document-rooted document the same href it authored', () => {
+    // The degenerate arm: with the document AT the repository root the rebase is
+    // the identity, so a test that only ever runs deep could pass on a helper
+    // that returns its input.
+    const flat = renderDd(DOC, { path: '/repo/plan.dd.json', schema: SCHEMA, repoRoot: REPO_ROOT });
+    expect(flat).toContain('[src/search/index.ts](src/search/index.ts)');
+  });
+});
+
+describe('renderDd — an interior-less address links only where the schema named a file', () => {
+  // wl-0023. A whole-file address has no interior, so there is nothing to anchor
+  // on and nothing but the authored bytes to point at. Emitting a link anyway
+  // produced ten dead `[not-applicable](not-applicable)` hrefs in the shipped
+  // plan corpus: the `pressure` escape is a SENTINEL, not an address, and the
+  // renderer is the third independent consumer that never learned so. The rule
+  // is general over SCHEMA-DIRECTED links — declared cells and bucket entries,
+  // zero segments, no declared file target — because the escape is only the
+  // instance that was noticed; a typo and a bare path authored into a dd-target
+  // cell are the same type error and rendered the same dead href.
+  //
+  // It stops at the schema. A genuinely undeclared scalar is not type-wrong,
+  // because no type was given; `looksLikeAddress` alone decides those and its
+  // behaviour is unchanged here — the last test holds that boundary. The legacy
+  // test this block replaced looked like it held it but did not: its
+  // `cite: { type: 'link' }` was a DECLARED link with an implicit dd target, and
+  // its comment calling it undeclared inference was simply wrong.
+
+  function renderRows(
+    rows: readonly unknown[],
+    itemShape: Record<string, unknown>,
+    context: { path?: string; repoRoot?: string } = {},
+  ): string {
+    const schema = {
+      name: 'test/sentinel',
+      sections: { acceptance_criteria: { shape: { type: 'array', items: itemShape } } },
+    } as unknown as ResolvedDdSchema;
+    const doc: DdDoc = {
+      dd: { schema: 'test/sentinel' },
+      sections: [{ name: 'acceptance_criteria', value: rows }],
+      references: [],
+    };
+    return renderDd(doc, {
+      path: context.path ?? '/repo/docs/plans/001-dd-extraction/plan.dd.json',
+      schema,
+      ...(context.repoRoot !== undefined && { repoRoot: context.repoRoot }),
+    });
+  }
+
+  const AC_ITEM = {
+    type: 'object',
+    fields: {
+      id: { type: 'string' },
+      pressure: { type: 'link', rel: 'pressure' },
+    },
+  };
+
+  it('renders the pressure escape in a declared dd-target cell as plain text', () => {
+    const markdown = renderRows([{ id: 'ac-0001', pressure: 'not-applicable' }], AC_ITEM);
+    expect(markdown).toContain('| ac-0001 | not-applicable |');
+    // The href BYTES are the defect. Asserting the text alone would pass on the
+    // broken renderer, whose output also contains `not-applicable`.
+    expect(markdown).not.toContain('[not-applicable]');
+    expect(markdown).not.toContain('](not-applicable)');
+  });
+
+  it('renders a links-bucket pressure escape as plain text', () => {
+    // The bucket carries its relation in the DATA and reaches `renderLink` with
+    // no declared target at all, so it is an independent arm: a fix that only
+    // read declared shapes would leave this one emitting the dead href.
+    const markdown = renderRows(
+      [{ id: 'ac-0001', links: [{ rel: 'pressure', ref: 'not-applicable' }] }],
+      { type: 'object', fields: { id: { type: 'string' } } },
+    );
+    expect(markdown).toContain('pressure: not-applicable');
+    expect(markdown).not.toContain('[not-applicable]');
+    expect(markdown).not.toContain('](not-applicable)');
+  });
+
+  it('renders any other bare-path-shaped value in a dd-target cell as plain text', () => {
+    // The general class the sentinel belongs to. `docs/spec.md` is a typo or a
+    // missing `target: "file"`; `other.dd.json` is a real document the schema
+    // still never authorised an href to — and it used to render one, aimed at a
+    // sibling `.dd.md` this cell never declared. Both say the value instead.
+    //
+    // Both declared spellings are on this row: `pressure` leaves the target
+    // implicit, `cite` names it. A dd target is a dd target however it was
+    // written, and the guard must not be reading the absence of the key.
+    const markdown = renderRows(
+      [{ id: 'ac-0001', pressure: 'docs/spec.md', cite: 'other.dd.json' }],
+      {
+        type: 'object',
+        fields: {
+          id: { type: 'string' },
+          pressure: { type: 'link', rel: 'pressure' },
+          cite: { type: 'link', target: 'dd' },
+        },
+      },
+    );
+    expect(markdown).toContain('| ac-0001 | docs/spec.md | other.dd.json |');
+    expect(markdown).not.toContain('](docs/spec.md)');
+    expect(markdown).not.toContain('other.dd.md');
+    // No trailing-`#` form either: absence of a link subsumes the older
+    // separator rule this block replaced.
+    expect(markdown).not.toContain('other.dd.json#');
+  });
+
+  it('still links a declared target:file whole-file path, rebased onto the sibling', () => {
+    // Positive control. The guard must not swallow the ONE declaration that
+    // authorises a file href — if it did, tests 1-3 would pass on a renderer
+    // that had simply stopped linking.
+    const markdown = renderRows(
+      [{ id: 'ac-0001', spec: 'docs/spec.md' }],
+      {
+        type: 'object',
+        fields: { id: { type: 'string' }, spec: { type: 'link', target: 'file' } },
+      },
+      { repoRoot: '/repo' },
+    );
+    expect(markdown).toContain('[docs/spec.md](../../../docs/spec.md)');
+  });
+
+  it('renders an invalid target:file interior plainly beside a valid whole-file href', () => {
+    const markdown = renderRows(
+      [
+        {
+          id: 'ac-0001',
+          invalid: 'src/library.ts#parseThing',
+          valid: 'src/valid.ts',
+        },
+      ],
+      {
+        type: 'object',
+        fields: {
+          id: { type: 'string' },
+          invalid: { type: 'link', target: 'file' },
+          valid: { type: 'link', target: 'file' },
+        },
+      },
+      { repoRoot: '/repo' },
+    );
+
+    expect(markdown).toContain(
+      '| ac-0001 | src/library.ts#parseThing | [src/valid.ts](../../../src/valid.ts) |',
+    );
+    expect(markdown).not.toContain('[src/library.ts#parseThing]');
+  });
+
+  it('still links a dd-target address that carries a real interior', () => {
+    // The second positive control: an address WITH an interior is untouched, so
+    // the guard is proven to key on the empty interior and not on the cell.
+    const markdown = renderRows(
+      [{ id: 'ac-0001', pressure: 'backpressure.dd.json#instruments/bp-0001' }],
+      AC_ITEM,
+    );
+    expect(markdown).toContain('[bp-0001](backpressure.dd.md#instruments)');
+  });
+
+  it('still links a genuinely undeclared bare .dd.json value to its sibling', () => {
+    // The boundary the guard must NOT cross. `cite` is absent from the item
+    // shape, so nothing declared it a link and nothing declared what it targets:
+    // the address inference of A3 / workshop-002 Ruling 3 selected it on the
+    // value alone. Whether that inference should accept a bare `.dd.json` at all
+    // is a live question, and a separate one — this fix answers what a
+    // DECLARATION means, so the inferred bytes must come through untouched.
+    const markdown = renderRows([{ id: 'ac-0001', cite: 'other.dd.json' }], {
+      type: 'object',
+      fields: { id: { type: 'string' } },
+    });
+    expect(markdown).toContain('[other.dd.json](other.dd.md)');
+    // Carried over from the replaced legacy test, and only now on the path that
+    // test claimed: `#` with nothing after it is a link to the top of the page,
+    // which is a different destination from the page itself.
+    expect(markdown).not.toContain('other.dd.md#');
+  });
+});

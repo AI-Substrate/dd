@@ -1,8 +1,13 @@
 import { isAddressFailure, parseAddress } from '../core/address.js';
 import {
+  collectFileRefs,
   collectLinkCells,
+  type DdFileRef,
+  FILE_LINK_TARGET,
+  type FileExistence,
   isPathWithinRepo,
   resolveAddressFile,
+  resolveRepoFile,
   type SchemaResolver,
 } from '../core/validate.js';
 import { type DocLoader, shouldExcludeFromSweep } from '../core/walk.js';
@@ -17,6 +22,13 @@ import {
 export interface DdTraverseDeps {
   schemaResolver: SchemaResolver;
   docLoader: DocLoader;
+  /**
+   * The whole of what dd may ask about an ordinary file. Injected and OPTIONAL:
+   * without it the traversal still emits every file edge, and emits no file
+   * NODE, because a node here means "measured, and present". Silently defaulting
+   * to "exists" would draw a solid arrow into a file nobody looked for.
+   */
+  fileExistence?: FileExistence;
 }
 
 export interface DdTraverseOptions {
@@ -29,6 +41,27 @@ export interface DdTraverseOptions {
   mode: 'direct' | 'sweep';
   /** Follow edges beyond the seed set — the radius-∞ traversal. Default true. */
   follow?: boolean;
+}
+
+/**
+ * Where a file reference's authored path actually lands.
+ *
+ * This deliberately mirrors the anchoring inside `validateFileRefs`, and the two
+ * must stay identical: the graph draws an arrow at whatever this returns, and
+ * the validator reports "missing" about whatever that returns. If they ever
+ * disagree, `ddocs graph` shows an edge into a file `ddocs build` never checked —
+ * a corpus test passes the SAME existence recorder through both and compares the
+ * probe lists, so a drift here reddens rather than shipping.
+ *
+ * A Markdown destination may carry an anchor (`notes.md#intro`); the FILE is what
+ * exists or does not. A structured cell stores a plain path and is left exactly
+ * as authored — `validateLink` has already refused any `#` there.
+ */
+function fileRefTarget(ref: DdFileRef, fromPath: string, repoRoot: string): string {
+  const authored = ref.base === 'document' ? (ref.raw.split('#')[0] ?? ref.raw) : ref.raw;
+  return ref.base === 'repo'
+    ? resolveRepoFile(repoRoot, authored)
+    : resolveAddressFile(fromPath, authored);
 }
 
 /**
@@ -66,6 +99,8 @@ export function traverseCorpus(
   /** Every path this walk has ever put on the queue — the tripwire's denominator. */
   const scheduled = new Set<string>(seeds);
   const nodes: DdGraphNode[] = [];
+  /** Ordinary files already emitted as nodes — two citers of one file are one node. */
+  const fileNodes = new Set<string>();
   const edges: DdLinkEdge[] = [];
   const issues: DdLinkIssue[] = [];
   const queue: string[] = [...seeds];
@@ -108,6 +143,7 @@ export function traverseCorpus(
 
     const resolved = deps.schemaResolver.resolve(result.doc.dd.schema, path);
     nodes.push({
+      kind: 'document',
       path,
       schema: resolved.ok ? resolved.schema.name : result.doc.dd.schema,
       sha: result.sha,
@@ -130,9 +166,21 @@ export function traverseCorpus(
     }
 
     for (const cell of collectLinkCells(result.doc, resolved.schema)) {
+      // An ordinary file is not a dd document, so it has no place in the DOCUMENT
+      // half of this walk: its path is anchored on the REPOSITORY ROOT, and every
+      // line below anchors on the CITING DOCUMENT. Resolving one here does not
+      // merely fail — it invents `<doc-dir>/<repo-relative-path>`, a file that
+      // usually does not exist, and then asks the loader to open it.
+      //
+      // These cells are not dropped: the file walk below picks them up from
+      // `collectFileRefs`, which is also where the INCIDENTAL half comes from.
+      // Both populations have to come from that one collector, or the graph and
+      // the validator would disagree about which references exist at all.
+      if (cell.target === FILE_LINK_TARGET) continue;
       const address = parseAddress(cell.raw);
       if (isAddressFailure(address)) {
         edges.push({
+          kind: 'document',
           from: path,
           to: null,
           address: cell.raw,
@@ -147,6 +195,7 @@ export function traverseCorpus(
       const to = sameDocument ? path : resolveAddressFile(path, address.file as string);
       const within = isPathWithinRepo(to, options.repoRoot);
       edges.push({
+        kind: 'document',
         from: path,
         to: within ? to : null,
         address: cell.raw,
@@ -159,6 +208,33 @@ export function traverseCorpus(
         scheduled.add(to);
         if (!visited.has(to)) queue.push(to);
       }
+    }
+
+    // The FILE half. Both origins come from one collector so the graph and the
+    // validator cannot disagree about the population, and neither one is ever
+    // scheduled: an ordinary file is a leaf of this walk by construction, not by
+    // a check that could be forgotten further down.
+    for (const ref of collectFileRefs(result.doc, resolved.schema)) {
+      const to = fileRefTarget(ref, path, options.repoRoot);
+      const within = isPathWithinRepo(to, options.repoRoot);
+      edges.push({
+        kind: 'file',
+        from: path,
+        to: within ? to : null,
+        address: ref.raw,
+        location: ref.location,
+        rel: ref.rel,
+        sameDocument: false,
+        ...(ref.base === 'repo' && { target: FILE_LINK_TARGET }),
+      });
+      // The probe is a host call, and dd does not make one about a path outside
+      // the tree it was asked about — the same refusal `validateFileRefs` makes,
+      // for the same reason. An escaping reference stays an edge to nowhere.
+      if (!within) continue;
+      if (deps.fileExistence?.exists(to) !== true) continue;
+      if (fileNodes.has(to)) continue;
+      fileNodes.add(to);
+      nodes.push({ kind: 'file', path: to });
     }
   }
 

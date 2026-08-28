@@ -191,11 +191,21 @@ const DECLARED_SURFACE = [
     file: 'dist/core/validate.d.ts',
     subpaths: ['./core/validate'],
     label: '…/core/validate',
-    authority: 'the P7 baseline',
+    authority: 'the P7 baseline, widened by wl-0023 (file links)',
     names: [
       'DdIssue', 'DdIssueClass', 'DdLinkCell', 'DdSeverity', 'SchemaResolveResult',
       'SchemaResolver', 'collectLinkCells', 'isPathWithinRepo', 'resolveAddressFile',
       'validateDocument',
+      // wl-0023 — the ordinary-file reference contract, ratified as ONE decision
+      // rather than seven. `FILE_LINK_TARGET` is the single schema marker that
+      // makes a link cell name a file; `DdFileRef`/`DdFileRefBase` are the
+      // two-base reference a consumer reads; `collectFileRefs`/`validateFileRefs`
+      // are the collector and the existence check; `resolveRepoFile` is the
+      // repo-root anchoring the structured half is ruled to use. `FileExistence`
+      // is the whole host seam — `exists` and deliberately nothing else, so a
+      // consumer implementing it can never be asked for a read.
+      'DdFileRef', 'DdFileRefBase', 'FILE_LINK_TARGET', 'FileExistence',
+      'collectFileRefs', 'resolveRepoFile', 'validateFileRefs',
     ],
   },
   {
@@ -212,8 +222,14 @@ const DECLARED_SURFACE = [
     file: 'dist/links/index.d.ts',
     subpaths: ['./links'],
     label: '…/links',
-    authority: 'the P7 baseline',
+    authority: 'the P7 baseline, widened by wl-0023 (file links)',
     names: [
+      // wl-0023 — the graph now distinguishes what an edge POINTS AT.
+      // `DdEdgeKind` is that discriminant; `DdDocumentNode`/`DdFileNode` are the
+      // two arms `DdGraphNode` became, so a consumer reading `sha`/`schema` off a
+      // node is now made to ask which kind it has rather than reading an invented
+      // value off an ordinary file.
+      'DdDocumentNode', 'DdEdgeKind', 'DdFileNode',
       'DD_SUFFIX', 'DdAdapterGap', 'DdAdapterGapSource', 'DdAddressable', 'DdAddressableKind',
       'DdBasisResult', 'DdBasisState', 'DdBasisVerdict', 'DdCorpusGraph', 'DdCorpusScan',
       'DdDoctorDeps', 'DdDoctorFinding', 'DdDoctorOptions', 'DdDoctorReport', 'DdDocumentIndex',

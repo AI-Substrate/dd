@@ -1,4 +1,13 @@
 import { describe, expect, it } from 'vitest';
+import type { DdDoc, ResolvedDdSchema } from '../../../../src/core/model.js';
+import {
+  collectFileRefs,
+  FILE_LINK_TARGET,
+  type FileExistence,
+  type SchemaResolver,
+  validateFileRefs,
+} from '../../../../src/core/validate.js';
+import type { DocLoader, DocLoadResult } from '../../../../src/core/walk.js';
 import type { DdLinkEdge } from '../../../../src/links/model.js';
 import { reachableFrom, traverseCorpus } from '../../../../src/links/traverse.js';
 import { deps, docPath, FixtureDocLoader, REPO } from './helpers.js';
@@ -182,6 +191,219 @@ describe('ddocs links traversal — edges and nodes', () => {
   });
 });
 
+describe('ddocs links traversal — an ordinary file is not a document', () => {
+  const CITING = docPath('docs/nested/citing.dd.json');
+  const CHILD = docPath('docs/nested/child.dd.json');
+  /** Repo-root anchored, because that is where a structured `target: "file"` path is ruled to sit. */
+  const LIBRARY = docPath('src/library.ts');
+  /** Document-relative, because that is the href a reader clicks in the generated sibling. */
+  const HANDBOOK = docPath('docs/handbook.md');
+  /**
+   * The path a document-relative resolution would INVENT for `src/library.ts`
+   * cited from `docs/nested/`. Naming it makes the failure legible: if the two
+   * bases are ever collapsed into one, this is the string that shows up — and it
+   * is a file that does not exist anywhere in the repository.
+   */
+  const INVENTED = docPath('docs/nested/src/library.ts');
+
+  const SCHEMA: ResolvedDdSchema = {
+    name: 'test/citing',
+    sections: {
+      // Repo-root relative, by the file-target contract.
+      implemented_by: { shape: { type: 'link', target: FILE_LINK_TARGET } },
+      // Document-relative: an inline Markdown link inside declared prose.
+      notes: { shape: { type: 'text' } },
+      // An ordinary dd edge beside them. Without this the loader instrument
+      // proves nothing: an empty `loads` is also what a traversal that never ran
+      // looks like.
+      dependency: { shape: { type: 'link', target: 'test/citing/section/phases' } },
+    },
+  } as ResolvedDdSchema;
+
+  const WORLD: Record<string, DdDoc> = {
+    [CITING]: {
+      dd: { schema: 'test/citing' },
+      sections: [
+        { name: 'implemented_by', value: 'src/library.ts' },
+        { name: 'notes', value: 'See the [handbook](../handbook.md) before editing.' },
+        { name: 'dependency', value: 'child.dd.json#phases' },
+      ],
+      references: [],
+    },
+    [CHILD]: {
+      dd: { schema: 'test/citing' },
+      sections: [{ name: 'phases', value: [] }],
+      references: [],
+    },
+  };
+
+  class WorldLoader implements DocLoader {
+    readonly loads: string[] = [];
+
+    load(path: string): DocLoadResult {
+      this.loads.push(path);
+      const found = WORLD[path];
+      if (found === undefined) {
+        return {
+          ok: false,
+          path,
+          reason: 'missing',
+          message: `address target is missing: ${path}`,
+        };
+      }
+      return { ok: true, path, doc: found, sha: `sha-${path}`, tracked: true };
+    }
+  }
+
+  const WORLD_SCHEMAS: SchemaResolver = { resolve: () => ({ ok: true, schema: SCHEMA }) };
+
+  /** Existence over a named world, recording every path it was asked about. */
+  class Present implements FileExistence {
+    readonly probes: string[] = [];
+
+    constructor(private readonly present: ReadonlySet<string>) {}
+
+    exists(path: string): boolean {
+      this.probes.push(path);
+      return this.present.has(path);
+    }
+  }
+
+  function walk(present: Iterable<string>) {
+    const loader = new WorldLoader();
+    const existence = new Present(new Set(present));
+    const graph = traverseCorpus(
+      [CITING],
+      { schemaResolver: WORLD_SCHEMAS, docLoader: loader, fileExistence: existence },
+      { repoRoot: REPO, mode: 'sweep' },
+    );
+    return { graph, loader, existence };
+  }
+
+  const BOTH = [LIBRARY, HANDBOOK];
+
+  it('never loads, queues or resolves an ordinary file named by a target:file cell', () => {
+    const { graph, loader } = walk(BOTH);
+
+    // The whole finding, in one assertion: the ordinary files are absent from the
+    // loader, and the dd neighbour beside them is present, so the traversal
+    // demonstrably ran.
+    expect(loader.loads).toEqual([CITING, CHILD]);
+    expect(loader.loads).not.toContain(LIBRARY);
+    expect(loader.loads).not.toContain(HANDBOOK);
+    expect(loader.loads).not.toContain(INVENTED);
+    expect(graph.visited).toEqual([CITING, CHILD]);
+    expect(graph.issues).toEqual([]);
+  });
+
+  it('anchors a structured path on the repository root and a Markdown href on the document', () => {
+    const { graph } = walk(BOTH);
+    expect(graph.edges).toEqual([
+      {
+        kind: 'document',
+        from: CITING,
+        to: CHILD,
+        address: 'child.dd.json#phases',
+        location: '$.sections[dependency].value',
+        target: 'test/citing/section/phases',
+        rel: 'ref',
+        sameDocument: false,
+      },
+      {
+        kind: 'file',
+        from: CITING,
+        to: LIBRARY,
+        address: 'src/library.ts',
+        location: '$.sections[implemented_by].value',
+        target: FILE_LINK_TARGET,
+        rel: 'ref',
+        sameDocument: false,
+      },
+      {
+        kind: 'file',
+        from: CITING,
+        to: HANDBOOK,
+        address: '../handbook.md',
+        location: '$.sections[notes].value',
+        rel: 'ref',
+        sameDocument: false,
+      },
+    ]);
+    expect(graph.edges.map((edge) => edge.to)).not.toContain(INVENTED);
+  });
+
+  it('makes an existing ordinary file a resolved terminal node carrying nothing it did not measure', () => {
+    const { graph, existence } = walk(BOTH);
+    expect(existence.probes).toEqual([LIBRARY, HANDBOOK]);
+    expect(graph.nodes).toEqual([
+      expect.objectContaining({ kind: 'document', path: CITING }),
+      { kind: 'file', path: LIBRARY },
+      { kind: 'file', path: HANDBOOK },
+      expect.objectContaining({ kind: 'document', path: CHILD }),
+    ]);
+    // No invented digest, tracking flag or schema — the probe read nothing, so
+    // there is nothing honest to put in those fields.
+    const file = graph.nodes.find((node) => node.path === LIBRARY);
+    expect(Object.keys(file ?? {})).toEqual(['kind', 'path']);
+  });
+
+  it('leaves a missing ordinary file as an edge with no node, and still never opens it', () => {
+    const { graph, loader } = walk([HANDBOOK]);
+    expect(graph.nodes.map((node) => node.path)).toEqual([CITING, HANDBOOK, CHILD]);
+    // The citation survives its target's absence: the edge is what a reader needs
+    // to see in order to fix the path.
+    expect(graph.edges).toContainEqual(expect.objectContaining({ kind: 'file', to: LIBRARY }));
+    expect(loader.loads).toEqual([CITING, CHILD]);
+  });
+
+  it('emits edges but no file nodes when no existence probe was supplied', () => {
+    const loader = new WorldLoader();
+    const graph = traverseCorpus(
+      [CITING],
+      { schemaResolver: WORLD_SCHEMAS, docLoader: loader },
+      { repoRoot: REPO, mode: 'sweep' },
+    );
+    // "I did not check" and "it is not there" must not render the same way as
+    // each other by accident, but they DO render the same way here on purpose:
+    // only a measured existence earns a resolved node.
+    expect(graph.edges.filter((edge) => edge.kind === 'file')).toHaveLength(2);
+    expect(graph.nodes.every((node) => node.kind === 'document')).toBe(true);
+    expect(loader.loads).toEqual([CITING, CHILD]);
+  });
+
+  it('refuses to probe a path that escapes the repository', () => {
+    const escaping: Record<string, DdDoc> = {
+      [CITING]: {
+        dd: { schema: 'test/citing' },
+        sections: [{ name: 'implemented_by', value: '../../etc/passwd' }],
+        references: [],
+      },
+    };
+    const existence = new Present(new Set());
+    const graph = traverseCorpus(
+      [CITING],
+      {
+        schemaResolver: WORLD_SCHEMAS,
+        docLoader: {
+          load: (path) => {
+            const found = escaping[path];
+            return found === undefined
+              ? { ok: false, path, reason: 'missing', message: 'missing' }
+              : { ok: true, path, doc: found, sha: 'sha', tracked: true };
+          },
+        },
+        fileExistence: existence,
+      },
+      { repoRoot: REPO, mode: 'sweep' },
+    );
+    // The probe is a host call. dd does not make one about a path outside the
+    // tree it was asked about — the same rule `validateFileRefs` holds.
+    expect(existence.probes).toEqual([]);
+    expect(graph.edges).toEqual([expect.objectContaining({ kind: 'file', to: null })]);
+    expect(graph.nodes.map((node) => node.kind)).toEqual(['document']);
+  });
+});
+
 describe('ddocs links traversal — sweep exclusion (OD-1)', () => {
   const excluded = docPath('docs/sweep-excluded.dd.json');
 
@@ -213,6 +435,7 @@ describe('ddocs links traversal — sweep exclusion (OD-1)', () => {
 
 describe('ddocs links traversal — reachability over a built edge list', () => {
   const edge = (from: string, to: string | null): DdLinkEdge => ({
+    kind: 'document',
     from,
     to,
     address: `${to ?? 'nowhere'}#entries`,
@@ -246,5 +469,89 @@ describe('ddocs links traversal — reachability over a built edge list', () => 
 
   it('returns the seed alone when nothing leaves it', () => {
     expect([...reachableFrom('lonely', [edge('a', 'b')])]).toEqual(['lonely']);
+  });
+});
+
+/**
+ * The graph and the validator must probe the SAME bytes.
+ *
+ * `traverseCorpus` draws an arrow at whatever it resolves a reference to, and
+ * `validateFileRefs` reports "missing" about whatever IT resolves the same
+ * reference to. Those are two copies of one anchoring rule, sitting in two
+ * layers that may not import each other — so if they ever diverge, `ddocs graph`
+ * shows an edge into a file `ddocs build` never checked, and neither side has a
+ * test that notices.
+ *
+ * This is that test, and it is deliberately not an assertion about either
+ * implementation: the SAME recorder is handed to both, and the two probe lists
+ * are compared. It cannot pass by agreeing with itself.
+ */
+describe('ddocs links traversal — the graph probes what the validator probes', () => {
+  const DOC = docPath('docs/plans/nested/subject.dd.json');
+
+  const SCHEMA: ResolvedDdSchema = {
+    name: 'test/agreement',
+    sections: {
+      implemented_by: { shape: { type: 'link', target: FILE_LINK_TARGET } },
+      notes: { shape: { type: 'text' } },
+    },
+  } as ResolvedDdSchema;
+
+  const SUBJECT: DdDoc = {
+    dd: { schema: 'test/agreement' },
+    sections: [
+      // Every shape the anchoring has to get right at once: a repo-root path, a
+      // sibling href, an href carrying a fragment, one climbing out of the
+      // subtree, and the negatives that must never be probed at all.
+      { name: 'implemented_by', value: 'src/deep/library.ts' },
+      {
+        name: 'notes',
+        value: [
+          'See [a](./a.md), [b](../b.md), [c](../../c.md#section),',
+          '[d](https://example.com/x.md), [e](#anchor) and ![f](../img.png).',
+        ].join(' '),
+      },
+    ],
+    references: [],
+  };
+
+  class Recorder implements FileExistence {
+    readonly probes: string[] = [];
+
+    exists(path: string): boolean {
+      this.probes.push(path);
+      return false;
+    }
+  }
+
+  it('resolves both populations to the same paths the existence check tests', () => {
+    const fromGraph = new Recorder();
+    traverseCorpus(
+      [DOC],
+      {
+        schemaResolver: { resolve: () => ({ ok: true, schema: SCHEMA }) },
+        docLoader: {
+          load: (path) =>
+            path === DOC
+              ? { ok: true, path, doc: SUBJECT, sha: 'sha', tracked: true }
+              : { ok: false, path, reason: 'missing', message: 'missing' },
+        },
+        fileExistence: fromGraph,
+      },
+      { repoRoot: REPO, mode: 'sweep' },
+    );
+
+    const fromValidator = new Recorder();
+    validateFileRefs(collectFileRefs(SUBJECT, SCHEMA), DOC, REPO, fromValidator);
+
+    expect(fromGraph.probes).toEqual(fromValidator.probes);
+    // Non-vacuity: two empty lists are also equal. Name what the shared list must
+    // contain, so an agreement on nothing cannot pass.
+    expect(fromGraph.probes).toEqual([
+      docPath('src/deep/library.ts'),
+      docPath('docs/plans/nested/a.md'),
+      docPath('docs/plans/b.md'),
+      docPath('docs/c.md'),
+    ]);
   });
 });

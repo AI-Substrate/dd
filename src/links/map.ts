@@ -2,7 +2,7 @@ import { isAddressFailure, parseAddress } from '../core/address.js';
 import { DEFAULT_GATE_TERMINAL_STATES } from '../core/constants.js';
 import { deriveItems } from '../core/derive.js';
 import type { DdDoc, DdShape, ResolvedDdSchema } from '../core/model.js';
-import { isPathWithinRepo, type SchemaResolver } from '../core/validate.js';
+import { type FileExistence, isPathWithinRepo, type SchemaResolver } from '../core/validate.js';
 import { isRecord } from '../core/value.js';
 import type { DocLoader } from '../core/walk.js';
 import { posixRelative, resolveInRepo, toPosix } from '../shared/posix-path.js';
@@ -232,11 +232,23 @@ export interface DdMapNode {
   distance: number;
   /** Walk key of the node this one was first reached from — `null` for the seed. */
   parent: string | null;
-  kind: DdAddressableKind | 'unresolved';
+  /**
+   * What the node IS.
+   *
+   * The addressable kinds a dd interior can be, plus the two the corpus needs
+   * and an interior cannot name: `file` — an ordinary repository file, which is
+   * an EXTERNAL DEPENDENCY of the corpus and always a leaf of it — and
+   * `unresolved`, a dd address that reached nothing.
+   */
+  kind: DdAddressableKind | 'file' | 'unresolved';
   mark: DdMapMark;
   /** Terminal/total, only when the mark was derived from descendants (`[~]`). */
   progress: { terminal: number; total: number } | null;
   label: string | null;
+  /**
+   * Measured, and there. On a `file` node this is the existence probe's answer
+   * and nothing else: absent means UNMEASURED, and unmeasured is never resolved.
+   */
   resolved: boolean;
 }
 
@@ -279,6 +291,16 @@ export interface DdMapResult {
 export interface DdMapDeps {
   schemaResolver: SchemaResolver;
   docLoader: DocLoader;
+  /**
+   * The whole of what dd may ask about an ordinary file, and the same seam
+   * `traverseCorpus` takes. Injected and OPTIONAL: without it the map still
+   * shows every file edge, and shows every file node as unresolved, because a
+   * solid arrow into a file nobody looked for is a lie a map cannot afford.
+   *
+   * Never a {@link DocLoader}. Existence is the entire contract — opening the
+   * file is the one thing the file contract forbids.
+   */
+  fileExistence?: FileExistence;
 }
 
 export interface DdMapOptions {
@@ -465,7 +487,7 @@ export function mapAddress(
     address: string;
     path: string | null;
     interior: string[];
-    kind: DdAddressableKind | 'unresolved';
+    kind: DdAddressableKind | 'file' | 'unresolved';
     mark: DdMapMark;
     progress: DdMapNode['progress'];
     label: string | null;
@@ -530,6 +552,49 @@ export function mapAddress(
       if (edge.from !== from.path) continue;
       if (options.rels !== undefined && !options.rels.includes(edge.rel)) continue;
       if (!isWithinLocation(edge.location, anchor.location)) continue;
+      if (edge.kind === 'file') {
+        // An ordinary file is an EXTERNAL DEPENDENCY of the corpus and a leaf of
+        // it. It is SHOWN — `ddocs links` shows it, and one graph cannot have two
+        // populations — and it is never opened, because existence is the whole of
+        // what dd may ask about a file (BRIEF ruling 2).
+        //
+        // Keyed on the file's own path behind a `file` marker, so however many
+        // rows cite it there is one dependency, and so a file that happens to
+        // share a path with a dd document can never collapse into that node.
+        const key =
+          edge.to === null
+            ? `${arm}\u0000!file\u0000${edge.from}\u0000${edge.location}`
+            : `${arm}\u0000file\u0000${nodeId(edge.to, [])}`;
+        if (!descriptors.has(key)) {
+          descriptors.set(key, {
+            address:
+              edge.to === null ? edge.address : displayAddress(options.repoRoot, edge.to, []),
+            path: edge.to,
+            interior: [],
+            kind: 'file',
+            mark: '',
+            progress: null,
+            label: null,
+            // Unmeasured is NOT resolved. `edge.to` is already null for a path
+            // that escapes the repository — dd does not probe outside the tree it
+            // was asked about — and an absent seam means nobody looked, so both
+            // land where a missing file lands: visible, and unresolved.
+            resolved: edge.to !== null && deps.fileExistence?.exists(edge.to) === true,
+          });
+        }
+        steps.push({
+          key,
+          edge: {
+            from: fromKey,
+            to: key,
+            address: edge.address,
+            location: edge.location,
+            rel: edge.rel,
+            arm,
+          },
+        });
+        continue;
+      }
       const parsed = parseAddress(edge.address);
       if (edge.to === null || isAddressFailure(parsed)) {
         // A dangling cell is a node, not a silence: the map exists to show that
@@ -613,6 +678,9 @@ export function mapAddress(
   const expand = (key: string): { key: string; edge: DdMapEdge }[] => {
     const descriptor = descriptors.get(key);
     if (!descriptor?.resolved) return [];
+    // A file is a leaf by construction rather than by a check further down: it
+    // has no addressable interior, and finding that out would mean opening it.
+    if (descriptor.kind === 'file') return [];
     const arm = key.slice(0, key.indexOf('\u0000')) as DdMapArm;
     if (arm === 'seed') {
       return [

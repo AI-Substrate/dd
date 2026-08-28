@@ -236,8 +236,29 @@ describe('harness dd act surface', () => {
     expect(result.code).toBe(0);
     expect(result.envelope.data).toMatchObject({ classified: false, form: 'bare' });
 
-    const malformed = await runDd(['dd', 'address', 'validate', 'no-hash-here']);
+    // wl-0023: a bare path is the WHOLE-FILE form, so this is now a success —
+    // and the assertion is on what the caller can observe, because "exit 0" on
+    // its own would also be true of a verb that had stopped checking anything.
+    // `segments: []` is the load-bearing half: it is what tells a caller the
+    // address named no interior, and the only thing separating `file` from
+    // `qualified`.
+    const wholeFile = await runDd(['dd', 'address', 'validate', 'docs/plans/notes.md']);
+    expect(wholeFile.code).toBe(0);
+    expect(wholeFile.envelope.status).toBe('ok');
+    expect(wholeFile.envelope.data).toMatchObject({
+      address: 'docs/plans/notes.md',
+      file: 'docs/plans/notes.md',
+      form: 'file',
+      classified: false,
+      segments: [],
+    });
+
+    // E405 keeps a real guard. `#tasks//tk-a1b2` has an EMPTY interior segment,
+    // which no widening of the grammar can make meaningful — unlike the bare
+    // path that used to stand here, which this phase turned valid.
+    const malformed = await runDd(['dd', 'address', 'validate', '#tasks//tk-a1b2']);
     expect(malformed.code).toBe(1);
+    expect(malformed.envelope.status).toBe('error');
     expect(malformed.envelope.error?.code).toBe('E405');
   });
 

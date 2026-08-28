@@ -95,7 +95,7 @@ export function registerValidateCommand(dd: Command, io: CliIo, deps: DdActDeps)
       const issues: ReportedIssue[] = validateWalk(
         doc,
         target,
-        { schemaResolver: resolver, docLoader: loader },
+        { schemaResolver: resolver, docLoader: loader, fileExistence: fs },
         { repoRoot, depth, mode: 'direct' },
       ).map((issue) => ({ ...issue, code: DD_ISSUE_CODES[issue.class] }));
 
