@@ -47,6 +47,7 @@ export {
   type DdMapOptions,
   type DdMapResult,
   indexDocument,
+  interiorReaches,
   isWithinLocation,
   mapAddress,
   resolveMapSeed,

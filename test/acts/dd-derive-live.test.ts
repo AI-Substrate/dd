@@ -1,11 +1,17 @@
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { COMPLETION_RELATIONS } from '../../src/acts/derive.js';
 import { FakeClock } from '../../src/adapters/clock/fake-clock.js';
 import { buildProgram } from '../../src/app.js';
 import type { Envelope } from '../../src/output/envelope.js';
 import type { CliIo, Writers } from '../../src/output/output-port.js';
+
+/** This repo's `src/`, resolved from the test file rather than from the cwd — the
+ * suite chdirs into a temporary corpus, so a relative path would move. */
+const SRC_ROOT = join(dirname(fileURLToPath(import.meta.url)), '../../src');
 
 /**
  * The ruled recursive wire shape, named here so an assertion reads a FIELD
@@ -143,6 +149,33 @@ const PLAN_SCHEMA = {
             state: { type: 'state' },
             note: { type: 'string' },
             done: { type: 'link', rel: 'derives' },
+            // The INBOUND-followed relation. Stored task -> criterion, which is
+            // why a criterion's rollup has to walk it backwards.
+            satisfies: { type: 'link', rel: 'satisfies' },
+            // One cell per NON-followed relation class, so a test can point at a
+            // broken neighbour through each of them separately. `implemented_by`
+            // is deliberately outside the frozen five: it is the unknown-relation
+            // case, and it must be refused by the conservative default rather
+            // than by a name appearing in a list.
+            proves: { type: 'link', rel: 'proven_by' },
+            implements: { type: 'link', rel: 'implemented_by' },
+            see: { type: 'link', rel: 'ref' },
+          },
+        },
+      },
+    },
+    acceptance_criteria: {
+      shape: {
+        type: 'array',
+        items: {
+          type: 'object',
+          required: ['id', 'state'],
+          fields: {
+            id: { type: 'string' },
+            criterion: { type: 'text' },
+            state: { type: 'state' },
+            note: { type: 'string' },
+            pressure: { type: 'link', rel: 'pressure' },
           },
         },
       },
@@ -589,15 +622,18 @@ describe('ddocs derive — cycles', () => {
     });
   });
 
-  it('degrades on a derives cycle, names every member, and NEVER reports complete', async () => {
+  it('degrades on a completion cycle, names every member and hop, and NEVER reports complete', async () => {
     const run = await runDd(['derive', 'docs/cycle-a.dd.json#phases']);
     const root = rootOf(run);
 
     expect(run.envelope?.status).toBe('degraded');
     const cycle = root.degradations.find((degradation) => degradation.reason === 'cycle');
     expect(cycle).toBeDefined();
+    // The RELATION and DIRECTION of each hop, not just the member list: a loop
+    // closed by `derives` and one closed by inbound `satisfies` are different
+    // defects, and an author cannot act on a bare list of documents.
     expect(cycle?.detail).toBe(
-      'derives cycle: docs/cycle-a.dd.json#phases -> docs/cycle-b.dd.json#phases -> docs/cycle-a.dd.json#phases',
+      'completion cycle: docs/cycle-a.dd.json#phases -[derives outbound]-> docs/cycle-b.dd.json#phases -[derives outbound]-> docs/cycle-a.dd.json#phases',
     );
     // EVERY row in this corpus is `checked`, so a walk that merely terminated
     // would report complete with an empty incomplete list. That is precisely
@@ -691,7 +727,559 @@ describe('ddocs derive — the walk', () => {
   });
 });
 
+/**
+ * A criterion whose OWN row is stored `checked`, and a task in ANOTHER document
+ * that points at it with `satisfies`.
+ *
+ * This is the shape the whole correction exists for, and every part of it is
+ * load-bearing. The criterion is stored terminal, so a rollup that believes the
+ * stored field reports complete. The constituting work lives in a different
+ * file, so a walk that only follows edges FORWARDS never sees it. And the open
+ * assertion sits one hop BELOW the task, so the answer is only right if the
+ * inbound arm recurses rather than merely attaching a leaf.
+ */
+function writeSatisfiesCorpus(childState: string): void {
+  write('docs/criteria.dd.json', {
+    dd: { schema: 'probe/plan' },
+    sections: [
+      { name: 'meta', value: { title: 'Criteria' } },
+      {
+        name: 'acceptance_criteria',
+        value: [{ id: 'ac-0001', criterion: 'the verb rolls up', state: 'checked' }],
+      },
+    ],
+    references: [],
+  });
+  write('docs/work.dd.json', {
+    dd: { schema: 'probe/plan' },
+    sections: [
+      { name: 'meta', value: { title: 'Work' } },
+      {
+        name: 'tasks',
+        value: [
+          {
+            id: 'tk-5001',
+            title: 'satisfier',
+            state: 'checked',
+            satisfies: 'criteria.dd.json#acceptance_criteria/ac-0001',
+            done: '#done_when/tk-5001',
+          },
+        ],
+      },
+      { name: 'done_when', value: { 'tk-5001': [assertion('as-5001', childState)] } },
+    ],
+    references: [],
+  });
+}
+
+describe('ddocs derive — the ruled relation set', () => {
+  it('names the followed relations and their directions in exactly one table', () => {
+    // The table IS the contract, so it is asserted directly rather than
+    // re-derived from behaviour — a behavioural-only pin cannot tell "the table
+    // says this" apart from "some call site happens to agree".
+    expect(COMPLETION_RELATIONS).toEqual({ derives: 'outbound', satisfies: 'inbound' });
+
+    // Every relation dd knows about is ruled ON or ruled OUT, with nothing
+    // undecided: the three excluded built-ins are excluded BY ABSENCE, which is
+    // the same mechanism that excludes a relation invented tomorrow.
+    for (const rel of ['pressure', 'proven_by', 'ref', 'implemented_by', 'invented-today']) {
+      expect(Object.keys(COMPLETION_RELATIONS)).not.toContain(rel);
+    }
+  });
+
+  it('carries no second relation set anywhere in the verb', () => {
+    // The failure mode this closes is a call site that re-states `'derives'` and
+    // then drifts from the table. The table's keys are bare identifiers, so a
+    // QUOTED relation name in this file can only be a second set — and it would
+    // be invisible to every behavioural test until the two disagreed.
+    const source = readFileSync(join(SRC_ROOT, 'acts/derive.ts'), 'utf8');
+    const stripped = source.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+
+    for (const rel of ['derives', 'satisfies', 'proven_by', 'pressure', 'ref']) {
+      expect([...stripped.matchAll(new RegExp(`['"\`]${rel}['"\`]`, 'g'))], rel).toEqual([]);
+    }
+    // Not vacuous: the table itself is still there, spelled the one legal way.
+    expect(stripped).toContain('COMPLETION_RELATIONS');
+    expect(stripped).toMatch(/\n\s+derives: 'outbound',\n\s+satisfies: 'inbound',/);
+  });
+});
+
+describe('ddocs derive — inbound satisfies is followed, and only inbound', () => {
+  it('recursively exposes the inbound satisfier and everything beneath it', async () => {
+    writeSatisfiesCorpus('unchecked');
+
+    const run = await runDd(['derive', 'docs/criteria.dd.json#acceptance_criteria/ac-0001']);
+    const root = rootOf(run);
+
+    // The criterion's OWN row is stored `checked`. Believing it is exactly the
+    // defect this verb exists to catch.
+    const stored = read('docs/criteria.dd.json').sections.find(
+      (section) => section.name === 'acceptance_criteria',
+    );
+    expect((stored?.value as Array<{ state: string }>)[0]?.state).toBe('checked');
+
+    expect(run.envelope?.status).toBe('ok');
+    expect(root.complete).toBe(false);
+    // The child is a NODE, reached across a document boundary, and it carries
+    // its own child in turn — a flat attachment would stop one level short.
+    expect(root.nodes.map((node) => node.address)).toEqual(['docs/work.dd.json#tasks/tk-5001']);
+    expect(root.nodes[0]?.nodes.map((node) => node.address)).toEqual([
+      'docs/work.dd.json#done_when/tk-5001',
+    ]);
+    // 1 criterion row + 1 task row + 1 assertion.
+    expect(root.total).toBe(3);
+    expect(root.incomplete).toEqual([
+      {
+        id: 'as-5001',
+        address: 'docs/work.dd.json#done_when/tk-5001/as-5001',
+        section: 'done_when',
+        state: 'unchecked',
+      },
+    ]);
+    expect(root.basis).toEqual(['docs/criteria.dd.json', 'docs/work.dd.json']);
+    expect(root.degradations).toEqual([]);
+  });
+
+  it('does NOT follow satisfies outbound — a task never rolls up the criterion it serves', async () => {
+    writeSatisfiesCorpus('unchecked');
+
+    const run = await runDd(['derive', 'docs/work.dd.json#tasks/tk-5001']);
+    const root = rootOf(run);
+
+    // THE DIRECTION FIXTURE. If `satisfies` were followed outbound, the
+    // criterion would appear here as a child, the total would be 3 instead of 2,
+    // and `criteria.dd.json` would join the basis. Reversing the direction in
+    // the table reddens all three of these at once.
+    expect(root.nodes.map((node) => node.address)).toEqual(['docs/work.dd.json#done_when/tk-5001']);
+    expect(root.total).toBe(2);
+    expect(root.basis).toEqual(['docs/work.dd.json']);
+    expect(root.incomplete.map((entry) => entry.id)).toEqual(['as-5001']);
+    expect(run.envelope?.status).toBe('ok');
+  });
+
+  it('flips the parent to complete when ONLY the descendant row is closed', async () => {
+    // THE NON-VACUITY PLANT, run as a pair. Nothing about the criterion changes
+    // between these two runs — its stored row reads `checked` in both — so the
+    // difference can only have come from the descendant.
+    writeSatisfiesCorpus('unchecked');
+    const before = rootOf(
+      await runDd(['derive', 'docs/criteria.dd.json#acceptance_criteria/ac-0001']),
+    );
+    expect(before.complete).toBe(false);
+    expect(before.incomplete.map((entry) => entry.id)).toEqual(['as-5001']);
+
+    writeSatisfiesCorpus('checked');
+    const after = rootOf(
+      await runDd(['derive', 'docs/criteria.dd.json#acceptance_criteria/ac-0001']),
+    );
+
+    expect(after.complete).toBe(true);
+    expect(after.incomplete).toEqual([]);
+    expect(after.degradations).toEqual([]);
+    // The tree is the SAME size — only a state value moved. A run that lost the
+    // child would also report complete, and this is what tells them apart.
+    expect(after.total).toBe(3);
+    expect(after.nodes.map((node) => node.address)).toEqual(['docs/work.dd.json#tasks/tk-5001']);
+  });
+
+  it('reaches a section from a citer of a row inside it, but not one row from a citer of the section', async () => {
+    writeSatisfiesCorpus('unchecked');
+    // A second task cites the SECTION rather than the row.
+    write('docs/broad.dd.json', {
+      dd: { schema: 'probe/plan' },
+      sections: [
+        { name: 'meta', value: { title: 'Broad' } },
+        {
+          name: 'tasks',
+          value: [
+            {
+              id: 'tk-5002',
+              title: 'cites the section',
+              state: 'unchecked',
+              satisfies: 'criteria.dd.json#acceptance_criteria',
+            },
+          ],
+        },
+      ],
+      references: [],
+    });
+
+    const row = rootOf(
+      await runDd(['derive', 'docs/criteria.dd.json#acceptance_criteria/ac-0001']),
+    );
+    const section = rootOf(await runDd(['derive', 'docs/criteria.dd.json#acceptance_criteria']));
+
+    // A citation of the SECTION does not constitute one particular row in it.
+    expect(row.nodes.map((node) => node.address)).toEqual(['docs/work.dd.json#tasks/tk-5001']);
+    // A citation of a ROW does constitute the section that holds it — so the
+    // section sees BOTH citers.
+    expect(section.nodes.map((node) => node.address)).toEqual([
+      'docs/broad.dd.json#tasks/tk-5002',
+      'docs/work.dd.json#tasks/tk-5001',
+    ]);
+    expect(section.incomplete.map((entry) => entry.id)).toEqual(['tk-5002', 'as-5001']);
+  });
+});
+
+describe('ddocs derive — unfollowed relations never touch the answer', () => {
+  /** The neighbour every unfollowed cell points at: unreadable AND unchecked. */
+  function writeRubble(): void {
+    write('docs/rubble.dd.json', {
+      dd: { schema: 'nobody/knows' },
+      sections: [{ name: 'tasks', value: [{ id: 'tk-6666', state: 'unchecked' }] }],
+      references: [],
+    });
+  }
+
+  it.each([
+    ['proven_by', 'proves'],
+    ['implemented_by', 'implements'],
+    ['ref', 'see'],
+  ])('leaves a broken %s neighbour out of nodes, basis and totals', async (_rel, field) => {
+    writeRubble();
+    write('docs/holder.dd.json', {
+      dd: { schema: 'probe/plan' },
+      sections: [
+        { name: 'meta', value: { title: 'Holder' } },
+        {
+          name: 'tasks',
+          value: [
+            {
+              id: 'tk-6001',
+              title: 'points sideways',
+              state: 'checked',
+              [field]: 'rubble.dd.json#tasks',
+            },
+          ],
+        },
+      ],
+      references: [],
+    });
+
+    const run = await runDd(['derive', 'docs/holder.dd.json#tasks']);
+    const root = rootOf(run);
+
+    // The neighbour is BOTH unreadable and open. Following it would degrade the
+    // envelope AND add an incomplete row, so `ok` + `complete` + a basis of one
+    // is three independent proofs it was not followed.
+    expect(run.envelope?.status).toBe('ok');
+    expect(root.complete).toBe(true);
+    expect(root.total).toBe(1);
+    expect(root.nodes).toEqual([]);
+    expect(root.degradations).toEqual([]);
+    expect(root.basis).toEqual(['docs/holder.dd.json']);
+  });
+
+  it('leaves a broken pressure neighbour out, and tolerates the not-applicable sentinel beside it', async () => {
+    writeRubble();
+    write('docs/pressured.dd.json', {
+      dd: { schema: 'probe/plan' },
+      sections: [
+        { name: 'meta', value: { title: 'Pressured' } },
+        {
+          name: 'acceptance_criteria',
+          value: [
+            {
+              id: 'ac-6001',
+              criterion: 'measured',
+              state: 'checked',
+              pressure: 'rubble.dd.json#tasks',
+            },
+            // The non-address sentinel, sitting in a followed rollup. It is not
+            // an address, and a table that treated `pressure` as followable
+            // would have to decide what to do with it.
+            {
+              id: 'ac-6002',
+              criterion: 'unmeasured',
+              state: 'checked',
+              pressure: 'not-applicable',
+            },
+          ],
+        },
+      ],
+      references: [],
+    });
+
+    const run = await runDd(['derive', 'docs/pressured.dd.json#acceptance_criteria']);
+    const root = rootOf(run);
+
+    expect(run.envelope?.status).toBe('ok');
+    expect(root.complete).toBe(true);
+    expect(root.total).toBe(2);
+    expect(root.nodes).toEqual([]);
+    expect(root.basis).toEqual(['docs/pressured.dd.json']);
+  });
+
+  it('ignores an unfollowed edge that points back INTO the rollup, so it cannot double-count', async () => {
+    writeSatisfiesCorpus('unchecked');
+    // A `proven_by` citer of the criterion, carrying an open row of its own. If
+    // the inbound arm keyed on "any edge that reaches me" instead of on the
+    // relation table, this row would join the total.
+    write('docs/evidence.dd.json', {
+      dd: { schema: 'probe/plan' },
+      sections: [
+        { name: 'meta', value: { title: 'Evidence' } },
+        {
+          name: 'tasks',
+          value: [
+            {
+              id: 'tk-6002',
+              title: 'evidences it',
+              state: 'unchecked',
+              proves: 'criteria.dd.json#acceptance_criteria/ac-0001',
+            },
+          ],
+        },
+      ],
+      references: [],
+    });
+
+    const root = rootOf(
+      await runDd(['derive', 'docs/criteria.dd.json#acceptance_criteria/ac-0001']),
+    );
+
+    expect(root.total).toBe(3);
+    expect(root.nodes.map((node) => node.address)).toEqual(['docs/work.dd.json#tasks/tk-5001']);
+    expect(root.incomplete.map((entry) => entry.id)).toEqual(['as-5001']);
+    expect(root.basis).not.toContain('docs/evidence.dd.json');
+  });
+});
+
+describe('ddocs derive — conservative failure on a FOLLOWED inbound path', () => {
+  it('degrades when a document below an inbound satisfier is missing, and flips when it appears', async () => {
+    write('docs/ac-host.dd.json', {
+      dd: { schema: 'probe/plan' },
+      sections: [
+        { name: 'meta', value: { title: 'Host' } },
+        {
+          name: 'acceptance_criteria',
+          value: [{ id: 'ac-7001', criterion: 'reachable', state: 'checked' }],
+        },
+      ],
+      references: [],
+    });
+    write('docs/worker.dd.json', {
+      dd: { schema: 'probe/plan' },
+      sections: [
+        { name: 'meta', value: { title: 'Worker' } },
+        {
+          name: 'tasks',
+          value: [
+            {
+              id: 'tk-7001',
+              title: 'satisfier with a hole below it',
+              state: 'checked',
+              satisfies: 'ac-host.dd.json#acceptance_criteria/ac-7001',
+              done: 'absent.dd.json#tasks',
+            },
+          ],
+        },
+      ],
+      references: [],
+    });
+
+    const before = await runDd(['derive', 'docs/ac-host.dd.json#acceptance_criteria/ac-7001']);
+    const broken = rootOf(before);
+
+    // The failure is two hops away and reached THROUGH the inbound arm, so this
+    // proves the arm propagates degradations rather than merely attaching nodes.
+    expect(before.envelope?.status).toBe('degraded');
+    expect(before.code).toBe(0);
+    expect(broken.complete).toBe(false);
+    expect(broken.degradations).toEqual([
+      {
+        reason: 'descendant-unreadable',
+        address: 'docs/absent.dd.json#tasks',
+        detail: expect.stringContaining('absent.dd.json'),
+      },
+    ]);
+    expect(broken.incomplete.map((entry) => entry.address)).toContain('docs/absent.dd.json#tasks');
+    expect(broken.incomplete.at(-1)).not.toHaveProperty('state');
+    // The consulted-but-missing path is in the basis: creating it changes this
+    // answer, so a consumer keying re-derivation on the basis must watch it.
+    expect(broken.basis).toEqual([
+      'docs/absent.dd.json',
+      'docs/ac-host.dd.json',
+      'docs/worker.dd.json',
+    ]);
+
+    write('docs/absent.dd.json', {
+      dd: { schema: 'probe/plan' },
+      sections: [
+        { name: 'meta', value: { title: 'Present' } },
+        { name: 'tasks', value: [{ id: 'tk-7002', title: 'here now', state: 'checked' }] },
+      ],
+      references: [],
+    });
+
+    const after = await runDd(['derive', 'docs/ac-host.dd.json#acceptance_criteria/ac-7001']);
+    const repaired = rootOf(after);
+    expect(after.envelope?.status).toBe('ok');
+    expect(repaired.complete).toBe(true);
+    expect(repaired.degradations).toEqual([]);
+    expect(repaired.total).toBe(3);
+  });
+
+  it('degrades SEPARATELY, with its own reason, when a document below an inbound satisfier will not resolve its schema', async () => {
+    write('docs/ac-host2.dd.json', {
+      dd: { schema: 'probe/plan' },
+      sections: [
+        { name: 'meta', value: { title: 'Host' } },
+        {
+          name: 'acceptance_criteria',
+          value: [{ id: 'ac-7003', criterion: 'reachable', state: 'checked' }],
+        },
+      ],
+      references: [],
+    });
+    write('docs/worker2.dd.json', {
+      dd: { schema: 'probe/plan' },
+      sections: [
+        { name: 'meta', value: { title: 'Worker' } },
+        {
+          name: 'tasks',
+          value: [
+            {
+              id: 'tk-7004',
+              title: 'satisfier over a stranger',
+              state: 'checked',
+              satisfies: 'ac-host2.dd.json#acceptance_criteria/ac-7003',
+              done: 'alien.dd.json#tasks',
+            },
+          ],
+        },
+      ],
+      references: [],
+    });
+    write('docs/alien.dd.json', {
+      dd: { schema: 'nobody/knows' },
+      sections: [{ name: 'tasks', value: [{ id: 'tk-7005', state: 'checked' }] }],
+      references: [],
+    });
+
+    const run = await runDd(['derive', 'docs/ac-host2.dd.json#acceptance_criteria/ac-7003']);
+    const root = rootOf(run);
+
+    expect(run.envelope?.status).toBe('degraded');
+    expect(root.complete).toBe(false);
+    // A DIFFERENT reason from the missing-document case — collapsing the two
+    // would tell an author to create a file that already exists.
+    expect(root.degradations.map((degradation) => degradation.reason)).toEqual([
+      'descendant-schema-unresolved',
+    ]);
+    expect(root.degradations[0]?.address).toBe('docs/alien.dd.json#tasks');
+    const alien = root.nodes[0]?.nodes.find((node) => node.address === 'docs/alien.dd.json#tasks');
+    expect(alien?.gate_terminal).toEqual([]);
+  });
+});
+
+describe('ddocs derive — cycles across mixed directions', () => {
+  beforeEach(() => {
+    write('docs/loop-ac.dd.json', {
+      dd: { schema: 'probe/plan' },
+      sections: [
+        { name: 'meta', value: { title: 'Loop AC' } },
+        {
+          name: 'acceptance_criteria',
+          value: [{ id: 'ac-9001', criterion: 'loops back', state: 'checked' }],
+        },
+      ],
+      references: [],
+    });
+    // satisfies INBOUND to the criterion, then derives OUTBOUND straight back to
+    // it: the loop only exists if BOTH directions are followed, so it cannot be
+    // found by a walker that follows one.
+    write('docs/loop-task.dd.json', {
+      dd: { schema: 'probe/plan' },
+      sections: [
+        { name: 'meta', value: { title: 'Loop task' } },
+        {
+          name: 'tasks',
+          value: [
+            {
+              id: 'tk-9001',
+              title: 'satisfies and derives from the same row',
+              state: 'checked',
+              satisfies: 'loop-ac.dd.json#acceptance_criteria/ac-9001',
+              done: 'loop-ac.dd.json#acceptance_criteria/ac-9001',
+            },
+          ],
+        },
+      ],
+      references: [],
+    });
+    write('docs/loop-side.dd.json', {
+      dd: { schema: 'probe/plan' },
+      sections: [
+        { name: 'meta', value: { title: 'Side' } },
+        {
+          name: 'tasks',
+          value: [
+            {
+              id: 'tk-9002',
+              title: 'independent satisfier',
+              state: 'checked',
+              satisfies: 'loop-ac.dd.json#acceptance_criteria/ac-9001',
+              done: '#done_when/tk-9002',
+            },
+          ],
+        },
+        { name: 'done_when', value: { 'tk-9002': [assertion('as-9002', 'checked')] } },
+      ],
+      references: [],
+    });
+  });
+
+  it('names every member AND the relation and direction of every hop', async () => {
+    const run = await runDd(['derive', 'docs/loop-ac.dd.json#acceptance_criteria/ac-9001']);
+    const root = rootOf(run);
+
+    expect(run.envelope?.status).toBe('degraded');
+    const cycle = root.degradations.find((degradation) => degradation.reason === 'cycle');
+    expect(cycle?.detail).toBe(
+      'completion cycle: docs/loop-ac.dd.json#acceptance_criteria/ac-9001' +
+        ' -[satisfies inbound]-> docs/loop-task.dd.json#tasks/tk-9001' +
+        ' -[derives outbound]-> docs/loop-ac.dd.json#acceptance_criteria/ac-9001',
+    );
+  });
+
+  it('never reports complete even though every readable row is terminal, and keeps the side branch', async () => {
+    const root = rootOf(
+      await runDd(['derive', 'docs/loop-ac.dd.json#acceptance_criteria/ac-9001']),
+    );
+
+    // EVERY row in this corpus is terminal. A walk that merely stopped at the
+    // loop would report complete with an empty incomplete list — which is the
+    // defect, because a node whose completeness is defined by itself has no
+    // trustworthy answer.
+    expect(root.incomplete).toEqual([]);
+    expect(root.complete).toBe(false);
+    // Only the CYCLIC branch was cut. The independent satisfier was walked to
+    // the bottom: 1 criterion + 2 task rows + 1 assertion.
+    expect(root.nodes.map((node) => node.address)).toEqual([
+      'docs/loop-side.dd.json#tasks/tk-9002',
+      'docs/loop-task.dd.json#tasks/tk-9001',
+    ]);
+    const side = root.nodes.find((node) => node.address.includes('loop-side'));
+    expect(side?.degradations).toEqual([]);
+    expect(side?.nodes.map((node) => node.address)).toEqual([
+      'docs/loop-side.dd.json#done_when/tk-9002',
+    ]);
+    expect(root.total).toBe(4);
+  });
+});
+
 describe('ddocs derive — determinism', () => {
+  it('emits byte-identical output for two runs over an unchanged inbound rollup', async () => {
+    writeSatisfiesCorpus('unchecked');
+    const first = await runDd(['derive', 'docs/criteria.dd.json#acceptance_criteria/ac-0001']);
+    const second = await runDd(['derive', 'docs/criteria.dd.json#acceptance_criteria/ac-0001']);
+
+    expect(second.out).toBe(first.out);
+    expect(first.out.length).toBeGreaterThan(200);
+    expect(rootOf(first).total).toBe(3);
+  });
+
   it('emits byte-identical output for two runs over an unchanged corpus', async () => {
     const first = await runDd(['derive', 'docs/plan.dd.json#phases']);
     const second = await runDd(['derive', 'docs/plan.dd.json#phases']);
