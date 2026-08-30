@@ -1127,6 +1127,37 @@ step — pointing harness at this package and deleting the old code — is koala
   must remember to follow. It normalises paths in ONE place at parse rather than reminding
   consumers; the same logic is why a stamp that cannot move is worse than no stamp.
 
+- **WRITE-SIDE CONFIRMATION IS NOT EVIDENCE OF READ-SIDE SUCCESS — and the producer is standing on
+  the one surface that cannot see the failure.** 2026-08-30, mine, found while validating an ingest;
+  second instance of this exact shape in one session.
+  I ingested this seat's transcript into `flowspace3` on `pij-instant-lynx`'s instructions and ran
+  the two-stage proof they specified. **`conversation list` reported it correctly — 4,572 turns,
+  right repo, right worktree.** Then `get conv:<guid>#t4000` answered **"no conversation … is
+  indexed"** and `search --source conversation` returned **zero for every term**, including words
+  certain to appear. Two surfaces disagreeing about one guid.
+  **FOUR CONTROLS BEFORE REPORTING, because "my ingest is broken" and "the store is broken" are
+  indistinguishable from where I stood**: every conversation query returned zero, not just mine;
+  other sources were healthy in the same query path (`code: 17, doc: 68`); `get` failed identically
+  on a conversation ingested two days earlier; and the queue was drained (398,529 done, 24 pending),
+  so it was not lag. Scope was ruled out as the whole explanation because *my* conversation was in
+  *my* repo and still failed.
+  Lynx reproduced it against its own conversation within minutes: a same-day regression from a PR
+  that added repo scoping to conversation reads, where the listing renders a repo string without the
+  prefix the query scope carries. **Storage was intact the whole time.**
+  **THE SHAPE, and it is the reusable part: a store that ACCEPTS, and LISTS, and cannot READ BACK
+  looks exactly like a working store from the ingest side — which is the side everyone tests from.**
+  Every signal available to the writer said success. The failure was only visible to a reader, and
+  the writer had no reason to become one.
+  **This is the same defect as the shell-composed message body** three entries up: *the sender sees
+  the text it wrote; only the recipient sees the text that arrived.* Twice in one session, in
+  unrelated systems, from opposite directions. **So the rule generalises: after any write you care
+  about, READ IT BACK THROUGH THE CONSUMER'S PATH, not through the writer's acknowledgement.** An
+  accept, a receipt, a 200, a listing — none of them are the consumer's experience, and all of them
+  are what a producer naturally checks.
+  **And the operational half**: this cost ten minutes and found a P1 in a peer government the same
+  day it was introduced. Validation that only confirms what the writer already believes is not
+  validation; it is a second copy of the write.
+
 ## Harness surface
 
 | Need | Command | Evidence |
