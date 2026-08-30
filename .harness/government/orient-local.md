@@ -1157,6 +1157,19 @@ step — pointing harness at this package and deleting the old code — is koala
   **And the operational half**: this cost ten minutes and found a P1 in a peer government the same
   day it was introduced. Validation that only confirms what the writer already believes is not
   validation; it is a second copy of the write.
+  **THE CLASS, NAMED — 2026-08-30, after the third instance in one week across three systems: AN
+  ACCEPT IS A STATEMENT ABOUT THE REQUEST, NEVER ABOUT THE THING REQUESTED.** The three:
+  `flowspace3`'s conversation store accepted, listed, and could not read back; `harness convo sync`
+  returned `ok` while a dead child ingested nothing; and `flowspace3 conversation ingest` accepts a
+  session id that **does not exist**, queues it, and fails only on drain where nobody is looking.
+  **Every one of those surfaces phrases its acknowledgement as though it were about the thing.**
+  `ok`, `accepted: true`, `fired`, a 200, a receipt, a listing — all are true statements about a
+  request having been *received*, and all are read as statements about work having been *done*.
+  **The cheap fix, and it is the same fix every time: validate where the caller is still listening.**
+  Lynx's own PR #83 fixed the read-back regression by normalizing at store-write rather than at
+  query; the ingest fix is to check the session exists at accept rather than at drain. **Both move
+  the check from where the failure is invisible to where someone is still waiting for an answer.**
+  Filed as `flowspace3` row 107 and `harness-engineering` row 22.
 
 ## Harness surface
 
