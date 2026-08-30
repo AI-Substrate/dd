@@ -55,3 +55,62 @@ this row is the backup.
 before and after a payload shape change, so the key we told them to stamp **cannot detect the change
 it exists to detect**. Their framing, kept because it is the argument: *"a defect class whose only
 detector is coincidence has an unbounded window."* With Jordan, undecided.
+
+---
+
+## harness-engineering — `AI-Substrate/harness-engineering`
+
+**Contact**: `pij-massive-meadowlark` (o-prime), `pij-related-koala`.
+**How they consume**: a **github: pin** — `github:AI-Substrate/dd#<sha>` — not a version range,
+because nothing has ever been published. Bumping to `de01b77a` as of 2026-08-30, from `a37a20ec`.
+
+### The surface they actually import — measured by them, 2026-08-30, counts are import statements
+
+| subpath | count | named symbols they cited |
+|---|---:|---|
+| `./links` | 7 | `resolveMapSeed`, `traverseCorpus`, `DdAddressableKind` |
+| `.` (root barrel) | 5 | `ConventionSchemaResolver`, `FsDocLoader`, `MemoizingDocLoader`, `parseAddress`, `isAddressFailure`, `DdDoc` |
+| `./core/model` | 4 | |
+| `./core/validate` | 3 | `DdSeverity` |
+| `./schema` | 2 | |
+| `./core/walk` | 2 | |
+| `./schema/model` | 1 | `SchemaIssue` |
+| `./render/renderer` | 1 | `escapeCell`, `headingSlug` |
+| `./node` | 1 | |
+| `./core/parse` | 1 | |
+
+**No `./plan` imports** — verified by them before my warning arrived and re-asserted after.
+
+**Payload shapes they read**: `ddocs build` output (so the `file_findings` addition is
+consumer-visible) and `validate` findings (so the E463 tally-absence behaviour change moved a
+number they read).
+
+### THE BIN IS A CONSUMER CONTRACT, and it is their largest dependency on us
+
+**27 files in their tree invoke `node_modules/.bin/dd`.** That is more places than any import
+subpath, and it is a *documentation-and-scripts* surface, so no compiler catches it.
+
+**We renamed that binary `dd` → `ddocs` (`9b8cc8e`) and told nobody.** The rename was right —
+`dd` collides with POSIX `dd(1)` and resolves to coreutils on any machine where the npm global bin
+dir precedes `/bin` — but the break landed on a consumer who found out by going 115 commits stale
+and then reading a list I only wrote because they asked. **A `bin` field is public API. Treat a
+rename of it as a breaking change with a named consumer, because it is one.**
+
+### What we owe them
+
+- Same as flowspace3: **any change to a verb's `data` payload, or to the `bin` name, gets a message
+  BEFORE it merges.**
+- A warning on any change to the ten subpaths above, and especially to `./links`, which is their
+  heaviest.
+
+### Shared blockers, recorded because both consumers hit them
+
+- **The github: pin cannot be installed by bun 1.4** (`IntegrityCheckFailed` on the pinned tarball;
+  their backlog row 5). A published version range kills it.
+- **Pins rot silently.** This one reached 115 commits behind, spanning a binary rename, with no
+  signal. Nothing in a github: pin can tell a consumer it is stale.
+- **The npm name's public status is unknowable from either government's machines** — both resolve
+  through the corporate proxy, which 404s the package, and neither can reach `registry.npmjs.org`
+  (`ENOTCONN`). **Someone must check from an unmanaged network before the publish token is spent.**
+- **Publishing will not make us installable on managed machines immediately** — the screened feed
+  lags by up to about a week. Public and uninstallable is an expected window, not a fault.
