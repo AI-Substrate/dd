@@ -1193,6 +1193,17 @@ step — pointing harness at this package and deleting the old code — is koala
   chose, not derived from their case; stopping at a clean result on a self-selected population is
   the same wrong-population error this file already catalogues. Stating the method is what let the
   reporter check my work and then beat me to the real answer with one command.
+  **THE CLOSE MAKES IT SHARPER THAN "NOBODY SUSPECTS THE LENS", AND WORSE.** The reader had
+  **announced itself in plain text**: the reviewer's own harness read tool printed the footer
+  `[Some lines truncated to 768 chars]`, and a bash view showed a `...[+N]` marker. **The lens said
+  what it was doing, in the output being read, and was still not suspected** — the number in the
+  report came *from the disclosure itself*. So the failure is not that the transformation was
+  invisible; it is that **a caveat inside output is read as part of the data's presentation rather
+  than as a claim about the data.**
+  **And the "confirmation" was vacuous**: a grep the reviewer took as corroboration was a broken
+  regex matching `[0]`. Two independent signals agreed — a truncation footer and a grep hit — and
+  **neither was evidence.** A false corroboration is more dangerous than none, because it converts
+  a suspicion into a filed defect against someone else's repo.
 
 ## Harness surface
 
