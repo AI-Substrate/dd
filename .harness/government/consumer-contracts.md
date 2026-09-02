@@ -114,3 +114,39 @@ rename of it as a breaking change with a named consumer, because it is one.**
   (`ENOTCONN`). **Someone must check from an unmanaged network before the publish token is spent.**
 - **Publishing will not make us installable on managed machines immediately** — the screened feed
   lags by up to about a week. Public and uninstallable is an expected window, not a fault.
+
+---
+
+## This seat's identity — a mapping, recorded before it is needed
+
+**2026-09-02.** The pij platform is migrating from the legacy TypeScript daemon to a Rust one. I
+adopted into `rs` minutes before a *"primes do not adopt yet"* hold landed, so **this seat is
+DUAL-PRESENT**:
+
+| generation | id | resolves |
+|---|---|---|
+| legacy | **`pij-mental-dajeil`** | `pij whoami` |
+| rs | **`pij-joyous-rooster`** | `pij-rs whoami` |
+
+Same pane `%285`, same pid, same folder. Jordan's ruling, relayed 2026-09-02: **HOLD — the legacy
+daemon stays up until plan 129 (`migrate-seat`) lands, primes do not adopt, and a seat that already
+adopted is dual-present rather than lost. Do not un-adopt.**
+
+**Why this is recorded here rather than left in a message.** `pij-mental-dajeil` is the seat of
+record throughout `.harness/government/`, is addressed by name in **harness-engineering's** and
+**flowspace3's** committed plan documents, and is the identity this repo's conversation is indexed
+under in flowspace3. A rename without preservation turns every one of those into a dangling
+pointer **in other people's repos**, and the seat that could explain the mapping is the one that got
+renamed. That argument is what the hold is protecting; this table is what survives if it fails.
+
+**Operationally, while dual-present**: adopting into `rs` makes `pij send` route to `rs` and
+**refuse to fall back**, so an early-moved seat is mute toward everyone still on legacy. The escape
+hatch is an environment variable, not a flag, and it is verified working from this seat:
+
+```bash
+PIJ_DAEMON_GENERATION=legacy pij send <legacy-id> --body-file <path>
+```
+
+**If the rename ever stands**: publish the mapping to both consumer governments *before* their
+documents go stale, and keep the OLD id beside the new one wherever the new one is published — a
+stale document needs a mapping, not a forwarding address.
