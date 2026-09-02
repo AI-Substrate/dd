@@ -1170,6 +1170,29 @@ step — pointing harness at this package and deleting the old code — is koala
   query; the ingest fix is to check the session exists at accept rather than at drain. **Both move
   the check from where the failure is invisible to where someone is still waiting for an answer.**
   Filed as `flowspace3` row 107 and `harness-engineering` row 22.
+  **AND THE MIRROR, 2026-09-02 — A SYMPTOM OBSERVED THROUGH A READER MAY BELONG TO THE READER.**
+  A defect was routed to me as *"`ddocs build` silently truncates table cells at 768 chars"*, with
+  real lost data behind it: three owed lists and an acceptance-criteria row gone from a reviewer
+  packet. **I could not reproduce it** — 2000-, 1500- and 1528-character cells all rendered whole,
+  lists complete to the last item, and `git log -S'768' --all -- src/` proved that literal has
+  **never existed in this repo's history**, so it was not an old-version regression either.
+  **The discriminator was one command, and it was not a code question**: `wc -c` the cell in the
+  `.dd.md` ON DISK, rather than what any tool displayed. The reporter did, found 1024-, 643- and
+  2748-character values at full length, and withdrew it — the cap is reader-side, in whatever
+  surface showed them the short cell.
+  **What made the mis-route reasonable rather than careless**: the reporter had lost real data and
+  had a plausible producer to blame. **Nobody suspects the lens.** A reader that transforms what it
+  shows you is invisible precisely because it is the thing you are looking through — so the defect
+  gets attributed to whatever produced the data, and the owner of the producer spends the
+  investigation.
+  **THE RULE: before attributing a defect to a producer, read the artifact with something other than
+  the tool that showed you the problem.** And when a number in a bug report is alien to your own
+  code and native to the reporter's — `768` is `3x256` and a standard embedding dimension, and
+  appears nowhere in dd — **that is evidence about WHERE, not merely about what.**
+  **Report NOT-REPRODUCED WITH METHOD STATED, never "not a bug."** My four probes were shapes I
+  chose, not derived from their case; stopping at a clean result on a self-selected population is
+  the same wrong-population error this file already catalogues. Stating the method is what let the
+  reporter check my work and then beat me to the real answer with one command.
 
 ## Harness surface
 
