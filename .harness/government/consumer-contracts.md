@@ -150,3 +150,23 @@ PIJ_DAEMON_GENERATION=legacy pij send <legacy-id> --body-file <path>
 **If the rename ever stands**: publish the mapping to both consumer governments *before* their
 documents go stale, and keep the OLD id beside the new one wherever the new one is published — a
 stale document needs a mapping, not a forwarding address.
+
+### The peers this file names, and their rs ids
+
+**Every legacy id written anywhere in this repo's government means the rs id beside it.** Recorded
+2026-09-02 while the mapping still had a living author; `pij-varied-alpaca` (harness-engineering)
+maintains the cross-government copy at
+`substrate/harness-engineering/scratch/convo-rs-identity/meadowlark-rs-id.txt`.
+
+| government | legacy id (as written in this repo) | rs id |
+|---|---|---|
+| dd (this seat) | `pij-mental-dajeil` | `pij-joyous-rooster` |
+| harness-engineering | `pij-massive-meadowlark` | `pij-varied-alpaca` |
+| flowspace3 | `pij-instant-lynx` | `pij-binding-magpie` |
+| pij | `pij-still-weasel` | rs-native, no legacy id |
+| (PM) | `pij-respectable-clam` | `pij-elegant-skink` |
+
+**Not recorded for tidiness.** This file, `orient-local.md`, `how-fleets-work.md` and this repo's
+backlog all cite peers by their legacy names, as do two other governments' documents citing me.
+**The mapping is the only thing that makes those citations resolvable after a shutdown**, and it is
+cheapest to write while every seat in it is still alive to confirm its own row.
