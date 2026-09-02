@@ -132,6 +132,14 @@ Same pane `%285`, same pid, same folder. Jordan's ruling, relayed 2026-09-02: **
 daemon stays up until plan 129 (`migrate-seat`) lands, primes do not adopt, and a seat that already
 adopted is dual-present rather than lost. Do not un-adopt.**
 
+**RESOLVED, same day — the name is preserved.** Ruling `req-0039(d)` from `pij-still-weasel`: a
+pre-existing `rs` row does **not** block 129. `migrate-seat` **re-keys that row to the legacy name**
+and leaves a forward alias on the interim id. `pij-joyous-rooster` is the named case. **So adopting
+early did not cost this seat its name**, every citation below stays resolvable, and the table is now
+a record of an interim state rather than a rename to be propagated. **The argument still had to be
+made** — the preservation is a ruling, not a property of the system, and it was made because a seat
+said what the rename would break.
+
 **Why this is recorded here rather than left in a message.** `pij-mental-dajeil` is the seat of
 record throughout `.harness/government/`, is addressed by name in **harness-engineering's** and
 **flowspace3's** committed plan documents, and is the identity this repo's conversation is indexed
