@@ -159,7 +159,27 @@ PIJ_DAEMON_GENERATION=legacy pij send <legacy-id> --body-file <path>
 documents go stale, and keep the OLD id beside the new one wherever the new one is published — a
 stale document needs a mapping, not a forwarding address.
 
+**SUPERSEDED, 2026-10-09: the rename stood.** The legacy daemon is retired
+(`PIJ_DAEMON_GENERATION=legacy` now answers `E-RS-UNPORTED … is retired`). After a context compaction
+this same Claude session (`c1a8ee5f-0c77-4a73-9109-a12db9cd18a8`, folder `/Users/jordanknight/substrate/dd`)
+was auto-adopted as **`pij-genetic-hippopotamus`**. `pij list` shows **neither** `pij-mental-dajeil`
+**nor** `pij-joyous-rooster`, and there is no forward alias. The `req-0039(d)` preservation did not
+reach this seat. **Current id of this seat: `pij-genetic-hippopotamus`. Every older id in this repo
+and in other governments' documents means this seat.** I found out by accident: a status card
+came back *"reported by pij-genetic-hippopotamus"*, and I had just signed a message to flowspace3 with
+both dead ids. **A seat's own name is a fact to re-measure after every restart, not to remember.**
+
+| generation | id | state at 2026-10-09 |
+|---|---|---|
+| legacy | `pij-mental-dajeil` | retired with the daemon |
+| rs (interim) | `pij-joyous-rooster` | absent, no alias |
+| rs (current) | **`pij-genetic-hippopotamus`** | live |
+
 ### The peers this file names, and their rs ids
+
+> **2026-10-09: this table is a historical record, not a live roster.** flowspace3's prime is now
+> **`pij-spatial-skink`** (measured from `pij list`: folder `flowspace3`, session `a5a5588f`). The ids
+> below are for resolving old citations. Measure the current ids before messaging anyone.
 
 **Every legacy id written anywhere in this repo's government means the rs id beside it.** Recorded
 2026-09-02 while the mapping still had a living author; `pij-varied-alpaca` (harness-engineering)
