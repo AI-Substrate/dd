@@ -434,8 +434,23 @@ function markOf(entry: DdAddressable): { mark: DdMapMark; progress: DdMapNode['p
   return { mark: '[~]', progress: { terminal: done, total: items.length } };
 }
 
-function isPrefixOf(prefix: readonly string[], segments: readonly string[]): boolean {
-  return prefix.length <= segments.length && prefix.every((part, i) => part === segments[i]);
+/**
+ * Does an edge whose target interior is `target` REACH the node at `node`?
+ *
+ * The inbound arm's reach predicate, and the only one: an edge lands at a node
+ * when it names that node or something INSIDE it, so a citation of
+ * `#acceptance_criteria/ac-0201` reaches the section too, while a citation of
+ * the section does not reach one particular row within it.
+ *
+ * Exported because a SECOND caller now asks the same question — `ddocs derive`
+ * follows `satisfies` inbound, and "which citers count as beneath this node" has
+ * to mean there exactly what it means here. Two prefix checks one directory
+ * apart eventually disagree about a boundary case, and the disagreement shows up
+ * as a completion number that is wrong rather than as a test that is red — the
+ * same trap `deriveItems` exists to close for structural collection.
+ */
+export function interiorReaches(node: readonly string[], target: readonly string[]): boolean {
+  return node.length <= target.length && node.every((part, i) => part === target[i]);
 }
 
 /**
@@ -654,7 +669,7 @@ export function mapAddress(
       // An edge reaches this node when it lands AT it or INSIDE it: a citation of
       // `#acceptance_criteria/ac-0201` reaches the section too, but a citation of
       // the section does not reach one particular row inside it.
-      if (!isPrefixOf(to.interior, target)) continue;
+      if (!interiorReaches(to.interior, target)) continue;
       const index = indexFor(edge.from);
       const interior = index ? anchorForLocation(index, edge.location) : [];
       const key = keyFor(arm, nodeId(edge.from, interior));
