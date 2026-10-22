@@ -283,7 +283,12 @@ export function interiorResolver(deps: DdLinkResolverDeps, repoRoot: string): In
         class: issue.class,
         severity: at.inline ? 'WARN' : issue.severity,
         location: issue.location,
-        message: issue.message,
+        // A prose field can hold many links, and they all share the field's
+        // location, so the message must say WHICH one failed. Two misses of the
+        // same id in different files would otherwise be byte-identical, and the
+        // doctor's dedup would drop one. A structured cell holds one address at
+        // its own location, so its message is left exactly as it was.
+        message: at.inline ? `${raw}: ${issue.message}` : issue.message,
         owner: issue.owner,
         reason: issue.reason,
       });

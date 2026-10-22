@@ -164,12 +164,17 @@ function corpus(docs: Record<string, DdDoc>, files: readonly string[] = []) {
   };
 }
 
-function unresolved(issue: { location: string; severity: string }, owner: string) {
+/** `address` is given for an inline link: its message names the link, since a field can hold many. */
+function unresolved(
+  issue: { location: string; severity: string; address?: string },
+  owner: string,
+  missing = MISSING_ROW,
+) {
   return {
     class: 'link-unresolved',
     severity: issue.severity,
     location: issue.location,
-    message: MISSING_ROW,
+    message: issue.address === undefined ? missing : `${issue.address}: ${missing}`,
     owner,
     reason: 'id-not-found',
   };
@@ -226,7 +231,9 @@ describe('row 30: an inline link into a .dd.json interior is a dd address', () =
     corpus({ [WORLD]: WORLD_DOC, [CH]: chapter({ what: INLINE }) }, [`${REPO}/notes.md`]);
 
   it('validate flags the misspelled row as one E430 WARN and passes the real row', () => {
-    expect(world().walk(CH)).toEqual([unresolved({ location: WHAT, severity: 'WARN' }, CH)]);
+    expect(world().walk(CH)).toEqual([
+      unresolved({ location: WHAT, severity: 'WARN', address: 'world.dd.json#entities/haldn' }, CH),
+    ]);
   });
 
   it('graph draws both dd addresses as inline document edges and the ordinary file as a file edge', () => {
@@ -239,6 +246,25 @@ describe('row 30: an inline link into a .dd.json interior is a dd address', () =
       { kind: 'document', origin: 'inline', address: 'world.dd.json#entities/haldn', to: WORLD },
       { kind: 'file', origin: undefined, address: 'notes.md#intro', to: `${REPO}/notes.md` },
     ]);
+  });
+
+  it('keeps two inline misses of the same id in different files apart: validate 2, doctor 2', () => {
+    const ATLAS = `${REPO}/atlas.dd.json`;
+    const docs = {
+      [WORLD]: WORLD_DOC,
+      [ATLAS]: WORLD_DOC,
+      [CH]: chapter({
+        what: '[a](world.dd.json#entities/haldn) [b](atlas.dd.json#entities/haldn) [c](atlas.dd.json#entities/halden)',
+      }),
+    };
+    const expected = [
+      unresolved({ location: WHAT, severity: 'WARN', address: 'world.dd.json#entities/haldn' }, CH),
+      unresolved({ location: WHAT, severity: 'WARN', address: 'atlas.dd.json#entities/haldn' }, CH),
+    ];
+    const doctor = corpus(docs).doctor().findings;
+    expect(doctor).toHaveLength(2);
+    expect(doctor).toEqual(expected);
+    expect(corpus(docs).walk(CH)).toEqual(expected);
   });
 
   it('ignores a dd address written inside a code span: no edge, no finding', () => {
@@ -269,7 +295,10 @@ describe('row 30: an inline link into a .dd.json interior is a dd address', () =
       .map((edge) => edge.to);
     expect(targets).toEqual([WORLD, WORLD]);
     expect(corpus(docs).walk(NESTED)).toEqual([
-      unresolved({ location: WHAT, severity: 'WARN' }, NESTED),
+      unresolved(
+        { location: WHAT, severity: 'WARN', address: '../world.dd.json#entities/haldn' },
+        NESTED,
+      ),
     ]);
   });
 
@@ -337,7 +366,7 @@ describe('row 30: an inline link into a .dd.json interior is a dd address', () =
     expect(corpus(docs).walk(CH, { depth: 0 })).toEqual([missing]);
     expect(corpus(docs).walk(CH, { depth: 1 })).toEqual([
       missing,
-      unresolved({ location: WHAT, severity: 'WARN' }, CH),
+      unresolved({ location: WHAT, severity: 'WARN', address: 'world.dd.json#entities/haldn' }, CH),
     ]);
   });
 });
@@ -354,7 +383,7 @@ describe('rows 30 + 31: doctor and validate report a missing row identically', (
 
   const expected = [
     unresolved({ location: `${INTRODUCES}[1]`, severity: 'ERROR' }, CH),
-    unresolved({ location: WHAT, severity: 'WARN' }, CH),
+    unresolved({ location: WHAT, severity: 'WARN', address: 'world.dd.json#entities/haldn' }, CH),
   ];
 
   it('doctor reports one ERROR for the typed miss and one WARN for the inline miss', () => {
@@ -363,7 +392,7 @@ describe('rows 30 + 31: doctor and validate report a missing row identically', (
     expect(report.counts).toEqual({ error: 1, warn: 1 });
   });
 
-  it("the walk's findings and the doctor's edge-pass findings are identical, so dedup collapses them", () => {
+  it("the walk and a reconstruction of doctor's edge pass produce identical findings", () => {
     const corpusUnderTest = world();
     const walked = corpusUnderTest.walk(CH);
     const edgePass = corpusUnderTest
