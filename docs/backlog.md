@@ -467,3 +467,32 @@ accidental agreement, and grammar changes are exactly what this area keeps getti
 
 **Do NOT close it by comment.** A comment saying "keep these three in sync" is the mechanism that
 already failed here.
+
+## 30 — An inline link into a `.dd.json` interior is filed as a FILE edge and its interior is never checked · UNASSIGNED · **ADDED 2026-10-23** · reported by `pij-literary-signet` (novels), reproduced here
+
+`[Halden](world.dd.json#entities/haldn)` in a `text` field: `validate` ok, `doctor` ok. `ddocs graph` emits the
+edge as **`kind: "file"`, address `world.dd.json#entities/haldn`**, which is an interior address carried on an edge
+whose contract says it has none. `markdownFileDestinations` (`src/core/validate.ts`) sends every inline destination
+to `collectFileRefs`, and `validateFileRefs` drops the fragment and checks only that the file exists. That was right
+for `notes.md#intro`. It is wrong when the destination is a dd document: the graph then asserts a row edge that no
+check verifies. **Introduced by PR #12 (file links), this seat's work.**
+
+Fix shape: an inline destination whose file is a `.dd.json` and that carries a fragment becomes a **document** edge
+(origin `inferred`), and its interior is resolved like any dd address. A miss is **WARN**, because prose is softer than a
+typed column, which also matches the file-link ruling (missing → WARN). Ordinary files stay existence-only (wl-0023
+ruling 2), and `file#method` stays untouched (ruling 4). Repro corpus: `scratch` copy of signet's `ddt/` (in that
+session's scratchpad; report at `~/github/novels/scratch/ddocs-report-inline-links.md`).
+
+## 31 — `validate` loads every linked document and never checks the row exists; only `doctor` does (E430) · UNASSIGNED · **ADDED 2026-10-23** · same reporter
+
+A typed `link` cell to `world.dd.json#entities/haldn` (no such row): `validate ch1.dd.json` → **ok**, at depth 3
+or 5. `doctor` → **E430 ERROR** `no entry with id "haldn" in "entities"`. `validateWalk` (`src/core/walk.ts:141`)
+already has the target **loaded**. It checks that the file exists, that it's tracked, basis staleness, and the type
+of `segments[0]` only. It never resolves the id. `dd-overview.md:85` advertises validate as *"this doc, its links,
+their health"*, so a reader expects a dangling row to be caught.
+
+Recommended fix: resolve the interior in the walk with the same code and severity as doctor (E430 ERROR), so there
+is one rule and two verbs. **This is a consumer-visible change**: flowspace3 runs `ddocs validate` per document and
+will see new findings, so message `pij-spatial-skink` before merge (consumer-contracts.md). Related, not a defect
+per the reporter: the typed-target check uses `segments[0]` only, so a nested `facts[]` row satisfies
+`target: …/section/entities`.
