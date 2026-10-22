@@ -1,0 +1,48 @@
+src/core/dd-link.ts
+  s_a4fb9e22128e3f::t_271bb4b527655c 1-64
+src/core/validate.ts
+  s_a4fb9e22128e3f::t_12b13ab47c82f7 10,31,44-45,67-74,497-499,501-513
+  s_a4fb9e22128e3f::t_ef023493f8fe1b 489-496,500
+src/links/resolver.ts
+  s_a4fb9e22128e3f::t_6e70c556e0c5d7 8-13,15,236-291
+  s_a4fb9e22128e3f::t_9a91163fa815cb 292-293
+src/links/traverse.ts
+  s_a4fb9e22128e3f::t_f016b770b5ff40 2,169-171,209,222-225
+src/links/doctor.ts
+  s_a4fb9e22128e3f::t_8701ab3692c9d5 13,86-100,152-156
+src/acts/validate.ts
+  s_a4fb9e22128e3f::t_f94ab05fb81afa 10-11,88-95,104-108,113
+  s_a4fb9e22128e3f::t_7466dd44de41b8 109-112
+test/services/dd/links/row-interiors.test.ts
+  s_a4fb9e22128e3f::t_a20e065c89d894 1-97,102-153,159-246,250-251,255-276,281-302,306-325,329-382
+  s_a4fb9e22128e3f::t_7466dd44de41b8 98-101,154-158,247-249,252-254,277-280,303-305,326-328
+src/links/model.ts
+  s_a4fb9e22128e3f::t_14843dded726fa 95-99
+  s_a4fb9e22128e3f::t_8f711f8bcc611e 1,5-8,22-24,26-30,124-130
+test/acts/dd-row-interiors.test.ts
+  s_a4fb9e22128e3f::t_7466dd44de41b8 127-133,180-187
+  s_a4fb9e22128e3f::t_74f60da6ab1edd 1-126,134-145,147-150,161-179,188-189
+  s_a4fb9e22128e3f::t_85f3817d27e8b7 146,151-160
+src/links/scan.ts
+  s_a4fb9e22128e3f::t_50442594073bc2 1,6-7
+src/core/walk.ts
+  s_a4fb9e22128e3f::t_0d1ea3c8c88a4e 7,41-57,159-166,172,178-183,187-191,193-195,275
+  s_a4fb9e22128e3f::t_21ed7fc6dc9ea8 192
+  s_a4fb9e22128e3f::t_4a91032478016e 276
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "5c05a78e2246e113d5873e94f77debaa7dd15d8e",
+  "prompts": {},
+  "sessions": {
+    "s_a4fb9e22128e3f": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "3600b5ad-d386-49f4-90bd-18d52e626b6a",
+        "model": "claude-opus-5.5"
+      },
+      "human_author": "Jordan Knight <jakkaj@gmail.com>"
+    }
+  }
+}
