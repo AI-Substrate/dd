@@ -11,9 +11,12 @@ is `.harness/government/how-fleets-work.md`.
 
 ## npm resolves through a corporate supply-chain proxy — do not route around it
 
-Every dependency in `package-lock.json` resolves through
-**`packagefeedproxy.microsoft.io`** — measured 2026-08-14: **166 of 166 resolved entries,
-zero from the public registry.** This is a **corporate supply-chain control on a managed
+Every dependency in `package-lock.json` resolves through the configured registry
+**`packagefeedproxy.microsoft.io`** (`npm config get registry`). The proxy serves tarballs from
+**`ms-feed-*.pkgs.visualstudio.com`** hosts, so those, not the proxy's own name, are what appear in
+the lockfile's `resolved` URLs. Measured 2026-10-23: **160 of 160 resolved entries on
+`ms-feed-*` hosts, zero from the public registry.** (The 2026-08-14 version of this line named the
+proxy as the resolved host, which no lockfile entry ever showed. Caught by `pij-resident-emu`.) This is a **corporate supply-chain control on a managed
 system**, not a mirror chosen for speed. Packages are screened before they become visible
 here, which is why the feed lags `registry.npmjs.org` by up to about a week.
 
