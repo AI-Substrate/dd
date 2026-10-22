@@ -10,7 +10,7 @@ import {
   type DdLinkUnresolvedReason,
   linkIssue,
 } from './model.js';
-import { resolveLink } from './resolver.js';
+import { interiorResolver } from './resolver.js';
 import { scanCorpus } from './scan.js';
 import { reachableFrom, traverseCorpus } from './traverse.js';
 
@@ -49,26 +49,6 @@ export interface DdDoctorReport {
   graph: DdCorpusGraph;
 }
 
-/**
- * The interior-resolution reasons the doctor owns.
- *
- * Everything else a failed resolution can say is already reported, at its ruled
- * severity, by a layer that got there first: a missing or untracked target and a
- * path that leaves the repository are WARNs from dd-core's validator and walk
- * (workshop 001 § Resolution), a malformed address is its ERROR, and a target
- * whose schema will not resolve raises that ERROR against the target itself when
- * the sweep reaches it. Repeating any of those here would double-report it — and
- * reporting a missing file as an ERROR would contradict the severity table
- * outright. What no other layer does is follow the interior, so that is exactly
- * what this pass adds.
- */
-const INTERIOR_REASONS = new Set<DdLinkUnresolvedReason>([
-  'id-not-found',
-  'not-a-container',
-  'part-unknown',
-  'section-unknown',
-]);
-
 function key(finding: DdDoctorFinding): string {
   return `${finding.owner}|${finding.class}|${finding.location}|${finding.message}`;
 }
@@ -103,7 +83,21 @@ export function runDoctor(
   // traversal is built on: `ddocs graph`, `ddocs links` and this sweep are three
   // readings of ONE walk, so a corpus cannot have an ordinary-file node in the
   // graph verb and not in the doctor's copy of the same graph.
-  const walkDeps = { schemaResolver: deps.schemaResolver, docLoader, fileExistence: fs };
+  //
+  // ONE interior adapter for both passes below: the walk reports a missing row
+  // from each document it validates, and the edge pass reports it from every
+  // edge the traversal drew. Same adapter, so the two findings are identical
+  // (owner, class, location, message, severity, reason) and `key()` collapses them.
+  const interior = interiorResolver(
+    { schemaResolver: deps.schemaResolver, docLoader },
+    options.repoRoot,
+  );
+  const walkDeps = {
+    schemaResolver: deps.schemaResolver,
+    docLoader,
+    fileExistence: fs,
+    resolveInterior: interior,
+  };
   const scan = scanCorpus(fs, options.root);
   const findings: DdDoctorFinding[] = [...scan.issues];
 
@@ -154,17 +148,12 @@ export function runDoctor(
     // the doctor promoted every ordinary-file citation in the corpus to an ERROR.
     if (edge.kind === 'file') continue;
     if (!reached.has(edge.from)) continue;
-    const resolution = resolveLink(edge.address, walkDeps, {
-      repoRoot: options.repoRoot,
-      fromPath: edge.from,
-      location: edge.location,
-      owner: edge.from,
-    });
-    if (resolution.ok) continue;
     findings.push(
-      ...resolution.issues.filter(
-        (issue) => issue.reason !== undefined && INTERIOR_REASONS.has(issue.reason),
-      ),
+      ...interior(edge.address, {
+        fromPath: edge.from,
+        location: edge.location,
+        inline: edge.origin === 'inline',
+      }),
     );
   }
 

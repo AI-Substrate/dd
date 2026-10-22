@@ -1,4 +1,5 @@
 import { isAddressFailure, parseAddress } from '../core/address.js';
+import { isInlineDdAddress } from '../core/dd-link.js';
 import {
   collectFileRefs,
   collectLinkCells,
@@ -165,7 +166,9 @@ export function traverseCorpus(
       continue;
     }
 
-    for (const cell of collectLinkCells(result.doc, resolved.schema)) {
+    // `inline: true` adds the dd addresses written as Markdown links in prose:
+    // they name a row, so they are DOCUMENT edges, followed like any other.
+    for (const cell of collectLinkCells(result.doc, resolved.schema, { inline: true })) {
       // An ordinary file is not a dd document, so it has no place in the DOCUMENT
       // half of this walk: its path is anchored on the REPOSITORY ROOT, and every
       // line below anchors on the CITING DOCUMENT. Resolving one here does not
@@ -203,6 +206,7 @@ export function traverseCorpus(
         rel: cell.rel,
         sameDocument,
         ...(cell.target && { target: cell.target }),
+        ...(cell.origin && { origin: cell.origin }),
       });
       if (follow && within) {
         scheduled.add(to);
@@ -215,6 +219,10 @@ export function traverseCorpus(
     // scheduled: an ordinary file is a leaf of this walk by construction, not by
     // a check that could be forgotten further down.
     for (const ref of collectFileRefs(result.doc, resolved.schema)) {
+      // A prose link to a dd ROW is already a document edge above. It stays in
+      // `collectFileRefs` so `validateFileRefs` (and `ddocs build`) still check
+      // its file exists, but it must not be drawn twice.
+      if (ref.base === 'document' && isInlineDdAddress(ref.raw)) continue;
       const to = fileRefTarget(ref, path, options.repoRoot);
       const within = isPathWithinRepo(to, options.repoRoot);
       edges.push({

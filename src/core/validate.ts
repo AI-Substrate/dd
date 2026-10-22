@@ -7,6 +7,7 @@ import {
   MINTED_ID_PATTERN,
   PRESSURE_NOT_APPLICABLE,
 } from './constants.js';
+import { type DdLinkUnresolvedReason, isInlineDdAddress } from './dd-link.js';
 import type { DdDoc, DdShape, ResolvedDdSchema } from './model.js';
 import { relOf } from './rel.js';
 import { tallyMismatches } from './tally.js';
@@ -27,6 +28,7 @@ export type DdIssueClass =
   | 'human-skipped-receipt-required'
   | 'id-invalid'
   | 'link-type-mismatch'
+  | 'link-unresolved'
   | 'schema-shape'
   | 'schema-unresolvable'
   | 'state-note-required'
@@ -39,6 +41,8 @@ export interface DdIssue {
   message: string;
   /** The document that must change to resolve the finding. */
   owner: string;
+  /** Present only on `link-unresolved`: why the address failed to reach its target. */
+  reason?: DdLinkUnresolvedReason;
 }
 
 export type SchemaResolveResult =
@@ -60,6 +64,14 @@ export interface DdLinkCell {
    * happened to sit under.
    */
   rel: string;
+  /**
+   * `inline` for a dd address written as a Markdown link in declared prose
+   * (`[Halden](world.dd.json#entities/halden)`), absent for a structured cell.
+   * Only collected when asked for (`collectLinkCells(…, { inline: true })`).
+   * Prose is softer than a typed column, so an unresolved interior here is a
+   * WARN rather than an ERROR.
+   */
+  origin?: 'inline';
 }
 
 /**
@@ -474,8 +486,31 @@ function collectCells(doc: DdDoc, schema: ResolvedDdSchema): CellSink {
   return sink;
 }
 
-export function collectLinkCells(doc: DdDoc, schema: ResolvedDdSchema): DdLinkCell[] {
-  return collectCells(doc, schema).links;
+/**
+ * Every link cell in this document, in document order.
+ *
+ * `inline: true` also returns the dd addresses written as inline Markdown links
+ * in declared prose, tagged `origin: 'inline'`, after the structured cells. Off
+ * by default: callers that reason about structured cells only (basis refresh,
+ * plan checks) keep exactly the population they had.
+ */
+export function collectLinkCells(
+  doc: DdDoc,
+  schema: ResolvedDdSchema,
+  options: { inline?: boolean } = {},
+): DdLinkCell[] {
+  const cells = collectCells(doc, schema);
+  if (!options.inline) return cells.links;
+  const inline: DdLinkCell[] = [];
+  for (const cell of cells.texts) {
+    // The same extractor `collectFileRefs` uses, so code spans, images, URI
+    // schemes and fragment-only anchors are filtered identically on both paths.
+    for (const raw of markdownFileDestinations(cell.value)) {
+      if (!isInlineDdAddress(raw)) continue;
+      inline.push({ raw, location: cell.location, rel: DEFAULT_REL, origin: 'inline' });
+    }
+  }
+  return [...cells.links, ...inline];
 }
 
 /**
