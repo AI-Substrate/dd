@@ -496,3 +496,17 @@ is one rule and two verbs. **This is a consumer-visible change**: flowspace3 run
 will see new findings, so message `pij-spatial-skink` before merge (consumer-contracts.md). Related, not a defect
 per the reporter: the typed-target check uses `segments[0]` only, so a nested `facts[]` row satisfies
 `target: …/section/entities`.
+
+## 32 — `ddocs set` writes a typed link to a missing row and answers `ok` · UNASSIGNED · **ADDED 2026-10-23** · reported by `pij-literary-signet`, reproduced here on `a9fab8f`
+
+`ddocs set "ch1.dd.json#beats/b1/introduces" --value-json '["world.dd.json#entities/nobody"]'` → **`ok`**, and the
+write lands. The next `ddocs validate ch1.dd.json` → **`error` E430**. So since PR #17, the writer and the validator
+disagree about the same value. `set` validates the document before writing, but doesn't run the outbound walk
+that now resolves interiors.
+
+**Don't fix this by making `set` refuse.** Linking to a row before it exists is legitimate authoring order, for
+example two seats writing in parallel, or a beat written before its fact. A refusal would be fr-0008 again, an
+instrument that punishes correct use. Recommended: `set`/`add` still write, but the envelope comes back
+**`degraded`** with the E430 finding and a `next_action` naming the missing row. The consequence then shows up at
+the moment of writing without blocking it. Whether a typed miss should *refuse* is a ruling for Jordan, not a
+default for an implementer.
