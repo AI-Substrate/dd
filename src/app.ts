@@ -2,6 +2,7 @@ import { Command, CommanderError } from 'commander';
 import { registerAddressCommands } from './acts/address.js';
 import { registerAgentsStartHereCommand } from './acts/agents-start-here.js';
 import { registerBuildCommand } from './acts/build.js';
+import { registerDeriveCommand } from './acts/derive.js';
 import { registerDocsCommands } from './acts/docs.js';
 import { registerDoctorCommand } from './acts/doctor.js';
 import { registerGraphCommand } from './acts/graph.js';
@@ -116,6 +117,12 @@ export function buildProgram(io: CliIo, deps: ActDeps): Command {
   registerGraphCommand(program, io, deps);
   registerDoctorCommand(program, io, deps);
   registerWriterCommands(program, io, deps);
+
+  // AFTER the frozen block, and the position is the contract. `derive` is native
+  // to this package rather than ported (`PLANNED_VERBS` is the port ledger and
+  // stays at ten), so registering it here leaves the frozen `--help` order of the
+  // ported family byte-identical and appends rather than inserts.
+  registerDeriveCommand(program, io, deps);
 
   acceptOutputFlagsEverywhere(program);
 

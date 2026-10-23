@@ -52,8 +52,14 @@ async function runDd(argv: string[]): Promise<{ envelope: Envelope; code: number
  * verb is native. A verb ported from upstream belongs in the frozen list inside
  * the row below, where its position is pinned — putting it here instead would
  * hide exactly the surface change this row exists to catch.
+ *
+ * `derive` joined on 2026-08-28 under the same claim and the same evidence:
+ * `ddocs derive` exposes the completion rollup dd already computed in
+ * `core/derive.ts` and had no way to call, and its stream brief rules that it
+ * "adds no row to the port ledger" — `dd-derive-live.test.ts` asserts `status`
+ * still reports 10/10 with it registered.
  */
-const NATIVE_VERBS = new Set(['version', 'status', 'agents-start-here']);
+const NATIVE_VERBS = new Set(['version', 'status', 'agents-start-here', 'derive']);
 
 describe('harness dd act surface', () => {
   // The two live `ddocs validate` rows below hand the act repo-relative fixture
