@@ -1,5 +1,10 @@
+import type { DdLinkUnresolvedReason } from '../core/dd-link.js';
 import type { DdReferenceMode } from '../core/model.js';
 import type { DdSeverity } from '../core/validate.js';
+
+// Defined in dd-core because dd-core's findings carry it too (the walk resolves
+// interiors through an injected resolver). Re-exported so `./links` keeps the name.
+export type { DdLinkUnresolvedReason };
 
 /**
  * Findings this layer owns. dd-core already names every class the single-document
@@ -14,29 +19,16 @@ export type DdLinkIssueClass =
   | 'link-unresolved';
 
 /**
- * Why an address failed to reach a target. Workshop 001 rules every one of these
- * an ERROR, so the class does not discriminate them — the reason does, and it is
- * what a consumer switches on instead of matching message text.
+ * Why an address failed to reach a target: see `DdLinkUnresolvedReason` in
+ * `core/dd-link.ts`. Every reason is reported under the one class
+ * `link-unresolved` (E430); the reason discriminates them.
  *
- * `no-interior` is a REASON of its own and not a flavour of `section-unknown`,
- * and the difference is what the doctor reads. `section-unknown` means "this
- * document has no such section" — a defect inside a dd document, which the
- * doctor owns. The whole-file form means the address never named an interior at
- * all, which for a `target: "file"` cell is CORRECT rather than defective. Under
- * the old spelling the doctor would promote every ordinary-file citation in the
- * corpus to an ERROR, because it could not tell the two apart.
+ * SEVERITY FOLLOWS ORIGIN, not reason. Workshop 001 rules a failed resolution
+ * an ERROR, and that still holds for every structured cell. A dd address
+ * written as an inline Markdown link in prose (`origin: 'inline'`) is reported
+ * as a WARN instead: prose is softer than a typed column, the same reason a
+ * missing file link is a WARN.
  */
-export type DdLinkUnresolvedReason =
-  | 'file-unreadable'
-  | 'id-not-found'
-  | 'malformed'
-  | 'no-base-document'
-  | 'no-interior'
-  | 'not-a-container'
-  | 'part-unknown'
-  | 'path-escape'
-  | 'schema-unresolvable'
-  | 'section-unknown';
 
 export interface DdLinkIssue {
   class: DdLinkIssueClass;
@@ -100,8 +92,11 @@ export type DdLinkResolution =
  *
  * Read this rather than sniffing {@link DdLinkEdge.target}. Only the STRUCTURED
  * half of the file population carries a declared `target`; an inline Markdown
- * destination in declared prose is the same kind of edge with no declaration
- * behind it, so a `target === 'file'` test would silently follow half of them.
+ * destination to an ordinary file in declared prose is the same kind of edge
+ * with no declaration behind it, so a `target === 'file'` test would silently
+ * follow half of them. An inline destination that is a dd address
+ * (`world.dd.json#entities/halden`) is a `document` edge, tagged
+ * `origin: 'inline'`.
  */
 export type DdEdgeKind = 'document' | 'file';
 
@@ -126,6 +121,13 @@ export interface DdLinkEdge {
   rel: string;
   /** True for the bare-`#` same-document form (an edge back into `from`). */
   sameDocument: boolean;
+  /**
+   * `inline` when the edge is a dd address written as a Markdown link in
+   * declared prose (`[Halden](world.dd.json#entities/halden)`); absent for a
+   * structured cell. Such an edge is `kind: 'document'` and its interior is
+   * resolved, with a miss reported as a WARN rather than an ERROR.
+   */
+  origin?: 'inline';
 }
 
 /** A dd document the traversal loaded — everything on it was read off the file. */

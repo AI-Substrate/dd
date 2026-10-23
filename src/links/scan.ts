@@ -1,9 +1,10 @@
+import { DD_SUFFIX } from '../core/dd-link.js';
 import { SCAN_SKIP_DIRS, SCAN_SKIP_PATHS, type SchemaFs } from '../schema/model.js';
 import { posixJoin, posixNormalize } from '../shared/posix-path.js';
 import { type DdLinkIssue, linkIssue } from './model.js';
 
-/** Every deterministic document carries this suffix; enumeration matches nothing else. */
-export const DD_SUFFIX = '.dd.json';
+// Defined in dd-core so the inline dd-address predicate can use it without a cycle.
+export { DD_SUFFIX };
 
 export interface DdCorpusScan {
   /** Absolute POSIX-logical paths, sorted — enumeration order is part of the contract. */

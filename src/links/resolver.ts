@@ -5,9 +5,14 @@ import {
   parseAddress,
 } from '../core/address.js';
 import type { DdDoc, DdShape, ResolvedDdSchema } from '../core/model.js';
-import { isPathWithinRepo, resolveAddressFile, type SchemaResolver } from '../core/validate.js';
+import {
+  type DdIssue,
+  isPathWithinRepo,
+  resolveAddressFile,
+  type SchemaResolver,
+} from '../core/validate.js';
 import { isRecord } from '../core/value.js';
-import type { DocLoader } from '../core/walk.js';
+import type { DocLoader, ValidateWalkDeps } from '../core/walk.js';
 import { resolveInRepo } from '../shared/posix-path.js';
 import {
   type DdLinkIssue,
@@ -226,5 +231,68 @@ export function resolveLink(
       sha: loaded.sha,
       tracked: loaded.tracked,
     },
+  };
+}
+
+/**
+ * The interior-resolution reasons: what only FOLLOWING an address can find.
+ *
+ * Everything else a failed resolution can say is already reported, at its ruled
+ * severity, by a layer that got there first: a missing or untracked target and a
+ * path that leaves the repository are WARNs from dd-core's validator and walk
+ * (workshop 001 § Resolution), a malformed address is its ERROR, and a target
+ * whose schema will not resolve raises that ERROR against the target itself when
+ * the sweep reaches it. Repeating any of those here would double-report it — and
+ * reporting a missing file as an ERROR would contradict the severity table
+ * outright. What no other layer does is follow the interior, so that is exactly
+ * what {@link interiorResolver} reports.
+ */
+export const INTERIOR_REASONS: ReadonlySet<DdLinkUnresolvedReason> = new Set([
+  'id-not-found',
+  'not-a-container',
+  'part-unknown',
+  'section-unknown',
+]);
+
+export type InteriorResolver = NonNullable<ValidateWalkDeps['resolveInterior']>;
+
+/**
+ * {@link resolveLink}, narrowed to interior failures: the ONE adapter behind
+ * `validateWalk`'s injected `resolveInterior` and the doctor's edge pass, so the
+ * two verbs report a missing row identically (same class, code, message and
+ * reason) and the doctor's dedup collapses the pair.
+ *
+ * Severity follows origin. A structured cell keeps `resolveLink`'s ERROR; an
+ * inline Markdown link in prose (`at.inline`) is restamped WARN, because prose
+ * is softer than a typed column.
+ */
+export function interiorResolver(deps: DdLinkResolverDeps, repoRoot: string): InteriorResolver {
+  return (raw, at) => {
+    const resolution = resolveLink(raw, deps, {
+      repoRoot,
+      fromPath: at.fromPath,
+      location: at.location,
+      owner: at.fromPath,
+    });
+    if (resolution.ok) return [];
+    const issues: DdIssue[] = [];
+    for (const issue of resolution.issues) {
+      if (issue.class !== 'link-unresolved') continue;
+      if (issue.reason === undefined || !INTERIOR_REASONS.has(issue.reason)) continue;
+      issues.push({
+        class: issue.class,
+        severity: at.inline ? 'WARN' : issue.severity,
+        location: issue.location,
+        // A prose field can hold many links, and they all share the field's
+        // location, so the message must say WHICH one failed. Two misses of the
+        // same id in different files would otherwise be byte-identical, and the
+        // doctor's dedup would drop one. A structured cell holds one address at
+        // its own location, so its message is left exactly as it was.
+        message: at.inline ? `${raw}: ${issue.message}` : issue.message,
+        owner: issue.owner,
+        reason: issue.reason,
+      });
+    }
+    return issues;
   };
 }

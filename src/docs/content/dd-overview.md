@@ -94,6 +94,32 @@ exist, and `1` with an `error` envelope naming the first ERROR-class finding. Ev
 carries its class, severity, location, and the **owner** — the document that must change to fix
 it, which is not always the one you ran the command on.
 
+What "its links, their health" covers, for each link in a document the walk visits (`ddocs
+doctor` applies the same rules to the whole corpus):
+
+```text
+introduces: ["world.dd.json#entities/halden"]   a link cell (also bare "#entities/halden")
+[Halden](world.dd.json#entities/halden)        a prose link into a dd document's interior
+[notes](notes.md#intro)   [w](world.dd.json)   any other prose link
+```
+
+| Link | Missing file | Missing row |
+|---|---|---|
+| A link cell | `E431`, WARN | `E430 link-unresolved`, **ERROR** |
+| A prose link into a dd document's interior | `E431`, WARN | `E430 link-unresolved`, **WARN** |
+| Any other prose link, or a `target: "file"` cell | `E431`, WARN | not checked: existence only |
+
+A prose link is softer than a typed column, so it warns rather than fails. A link written inside
+backticks is an example, not a link, and is never checked. Rows, and the files that link cells
+name, are checked by following links, so from `--depth 1` up. `--depth 0` still checks the files
+that prose links and `target: "file"` cells cite.
+
+Only link cells widen the walk: the document a link cell names is validated in turn, up to
+`--depth`. A prose link into a `.dd.json` interior checks that the file exists and the row
+resolves, and nothing more. It does not add the cited document to the walk, so that document's
+own findings, tracking and basis appear only when it is validated directly or swept by
+`ddocs doctor`. `ddocs graph` still draws it as a document edge.
+
 ## Reading it with jq
 
 ```bash

@@ -4,6 +4,7 @@ import {
   collectFileRefs,
   collectLinkCells,
   type DdIssue,
+  type DdLinkCell,
   FILE_LINK_TARGET,
   type FileExistence,
   isPathWithinRepo,
@@ -37,6 +38,23 @@ export interface ValidateWalkDeps {
    * into a claim.
    */
   fileExistence?: FileExistence;
+  /**
+   * Interior resolution, INJECTED: dd-core cannot import the links layer's
+   * resolver without a cycle, and dd keeps one resolver, not two. Wire it with
+   * `interiorResolver` from `links/resolver.ts`, the same adapter the doctor
+   * uses, so a row that does not exist is the same finding (`link-unresolved`,
+   * E430) from both verbs.
+   *
+   * It returns only interior failures (no such section, part or id). Severity
+   * follows origin: ERROR for a structured cell, WARN for `inline: true`.
+   *
+   * Optional, and its absence means UNMEASURED, exactly as for
+   * `fileExistence`: with no resolver the walk reports no interior findings.
+   */
+  resolveInterior?: (
+    raw: string,
+    at: { fromPath: string; location: string; inline: boolean },
+  ) => readonly DdIssue[];
 }
 
 export interface ValidateWalkOptions {
@@ -138,20 +156,42 @@ export function validateWalk(
     }
     if (current.remaining === 0) continue;
 
-    for (const link of collectLinkCells(current.doc, resolvedSchema.schema)) {
+    const interior = (link: DdLinkCell): readonly DdIssue[] =>
+      deps.resolveInterior?.(link.raw, {
+        fromPath: current.path,
+        location: link.location,
+        inline: link.origin === 'inline',
+      }) ?? [];
+
+    for (const link of collectLinkCells(current.doc, resolvedSchema.schema, { inline: true })) {
       // A `target: "file"` cell names an ordinary file. It must never be loaded,
       // parsed, hashed or queued as a dd document — its existence is
       // `validateFileRefs`'s job, through a probe that reads nothing.
       if (link.target === FILE_LINK_TARGET) continue;
       const address = parseAddress(link.raw);
-      if (isAddressFailure(address) || address.file === null) continue;
+      if (isAddressFailure(address)) continue;
       // A dd link with no interior is the whole-file form in a cell that may not
       // hold one; `validateDocument` has already reported it as an ERROR. Walking
       // it anyway would probe the filesystem for a path the author never meant to
       // write and add a missing-file WARN on top of the real finding.
       if (address.segments.length === 0) continue;
+      // The bare-`#` form addresses this document: nothing to load or queue, but
+      // the row it names still has to exist.
+      if (address.file === null) {
+        issues.push(...interior(link));
+        continue;
+      }
       const targetPath = resolveAddressFile(current.path, address.file);
       if (!isPathWithinRepo(targetPath, options.repoRoot)) continue;
+
+      // A dd address in prose already had its FILE checked by `validateFileRefs`
+      // above, at every depth, and `ddocs build` shares that check. What is new
+      // for it is the interior, and only that: no second missing-file WARN, no
+      // tracking or basis findings, and it does not widen the walk.
+      if (link.origin === 'inline') {
+        issues.push(...interior(link));
+        continue;
+      }
 
       const loaded = deps.docLoader.load(targetPath);
       if (!loaded.ok) {
@@ -231,6 +271,8 @@ export function validateWalk(
           }
         }
       }
+
+      issues.push(...interior(link));
 
       queue.push({
         doc: loaded.doc,

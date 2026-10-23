@@ -7,6 +7,8 @@ import { NodeProcess } from '../adapters/process/node-process.js';
 import { parse } from '../core/parse.js';
 import type { DdIssue } from '../core/validate.js';
 import { validateWalk } from '../core/walk.js';
+import { MemoizingDocLoader } from '../links/loader.js';
+import { interiorResolver } from '../links/resolver.js';
 import { NodeSchemaFs } from '../node/index.js';
 import { formatDegraded, formatError, formatOk } from '../output/envelope.js';
 import { ErrorCodes } from '../output/error-codes.js';
@@ -83,10 +85,14 @@ export function registerValidateCommand(dd: Command, io: CliIo, deps: DdActDeps)
         repoRoot,
         ...(home !== undefined && { home: toPosix(home) }),
       });
-      const loader = new FsDocLoader(
-        fs,
-        new NodeHash(),
-        depth === 0 ? null : await trackedPaths(new NodeExec(), repoRoot),
+      // Memoized because the interior check loads each target a second time,
+      // through `resolveLink`, after the walk has loaded it.
+      const loader = new MemoizingDocLoader(
+        new FsDocLoader(
+          fs,
+          new NodeHash(),
+          depth === 0 ? null : await trackedPaths(new NodeExec(), repoRoot),
+        ),
       );
 
       // OD-1: direct invocation NEVER skips a document. `sweep_exclude` and the
@@ -95,7 +101,16 @@ export function registerValidateCommand(dd: Command, io: CliIo, deps: DdActDeps)
       const issues: ReportedIssue[] = validateWalk(
         doc,
         target,
-        { schemaResolver: resolver, docLoader: loader, fileExistence: fs },
+        {
+          schemaResolver: resolver,
+          docLoader: loader,
+          fileExistence: fs,
+          // The doctor's own adapter, so a missing row is the same E430 here as there.
+          resolveInterior: interiorResolver(
+            { schemaResolver: resolver, docLoader: loader },
+            repoRoot,
+          ),
+        },
         { repoRoot, depth, mode: 'direct' },
       ).map((issue) => ({ ...issue, code: DD_ISSUE_CODES[issue.class] }));
 
